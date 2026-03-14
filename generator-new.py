@@ -132,9 +132,9 @@ def save_as_html_table(rows, md_path, title):
 def get_browser():
     """Detects common browser paths for HTML2Image"""
     paths = [
-        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
-        r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
-        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" ,
+        r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"       ,
+        r"C:\Program Files\Google\Chrome\Application\chrome.exe"        ,
     ]
     for path in paths:
         if os.path.exists(path): return path
@@ -147,14 +147,34 @@ def export_df_to_png(df, path, filename, title):
         messagebox.showerror("[!] Error: Could not find Edge nor Chrome")
         return
 
-    descending_metrics  = ["Solos", "Doubles", "Rigs", "Rig Rate", "Onlist Guess Rate", "Offlist Guess Rate", "Average Correct", "Onlist Synergy", "Offlist Synergy", "Shared Rigs"]
     ascending_metrics   = ["Sevens"]
+    descending_metrics  = [
+        "Solos", 
+        "Doubles", 
+        "Rigs", 
+        "Rig Rate", 
+        "Onlist Guess Rate", 
+        "Offlist Guess Rate", 
+        "Average Correct", 
+        "Onlist Synergy", 
+        "Offlist Synergy", 
+        "Shared Rigs"
+    ]
 
     stats = {}
     for col in df.columns:
         if col in descending_metrics or col in ascending_metrics:
-            numeric_col = pd.to_numeric(df[col].astype(str).str.replace('%', ''), errors = 'coerce')
-            if not numeric_col.dropna().empty: stats[col] = {'max': numeric_col.max(), 'min': numeric_col.min()}
+            numeric_col = pd.to_numeric(df[col].astype(str).str.replace('%', ''), errors = 'coerce').dropna()
+            if not numeric_col.empty:
+                max_val         = numeric_col.max()
+                min_val         = numeric_col.min()
+                counts          = numeric_col.value_counts()
+                stats[col]      = {
+                    'max'       : max_val, 
+                    'min'       : min_val,
+                    'show_max'  : counts.get(max_val, 0) <= 3,
+                    'show_min'  : counts.get(min_val, 0) <= 3
+                }
 
     rows_html = ""
     rows_html += '  <thead><tr>\n'
@@ -171,8 +191,8 @@ def export_df_to_png(df, path, filename, title):
             if col_name in stats:
                 val = pd.to_numeric(str(cell).replace('%', ''), errors = 'coerce')
                 if pd.notnull(val):
-                    is_max = (val == stats[col_name]['max'])
-                    is_min = (val == stats[col_name]['min'])
+                    is_max = (val == stats[col_name]['max']) and stats[col_name]['show_max']
+                    is_min = (val == stats[col_name]['min']) and stats[col_name]['show_min']
                     if      col_name in descending_metrics:
                         if      is_max: style = ' style="color: #0056B3; font-weight: bold;"'
                         elif    is_min: style = ' style="color: #D95400; font-weight: bold;"'
@@ -185,9 +205,8 @@ def export_df_to_png(df, path, filename, title):
         rows_html += '  </tr>\n'
     rows_html += '</tbody>'
 
-    # ... rest of your existing hti and screenshot logic ...
-    width       = max(2000, len(df.columns) * 110)
-    height      = max(2000, len(df)         * 55)
+    width       = max(2000, len(df.columns) * 120)
+    height      = max(2000, len(df)         * 60)
     hti         = Html2Image(size = (width, height), browser_executable = browser_path, output_path = path)
     full_html   = f"""
     <html>
@@ -305,19 +324,24 @@ def process_files():
     all_song_vintages           = []
     all_song_difficulties       = []
     total_correct_answers_sum   = 0
+    total_blanks                = 0
     total_erigs                 = 0
     total_doubles               = 0
     total_sevens                = 0
+    total_fulls                 = 0
     genre_counter               = Counter()
     tag_counter                 = Counter()
     player_list_vintages        = defaultdict(list)
     player_list_correct_counts  = defaultdict(list) 
     player_missed_erigs         = defaultdict(int)
     watched_only_valid          = True
+    team_vintage                = defaultdict(list)
     team_correct_per_song       = defaultdict(list)
     team_onlist_synergy         = defaultdict(list)
     team_offlist_synergy        = defaultdict(list)
     team_shared_rig_pct         = defaultdict(list)
+    team_solos                  = defaultdict(int)
+    team_overs                  = defaultdict(list)
 
     for path in json_paths:
         with open(path, encoding="utf-8") as f: data = json.load(f)
@@ -372,24 +396,30 @@ def process_files():
                         if len(cur_c) == 1 and len(opp_c) > 0: player_blocks[list(cur_c)[0]] += 1
 
                 for t_id in teams_in_file_list:
-                    roster = team_rosters       [t_id]
-                    c_on_t = correct & roster
-                    team_correct_per_song       [t_id].append(len(c_on_t)       / 4.0)
-                    t_rigs = song_riggers & roster
+                    roster = team_rosters               [t_id]
+                    c_on_t = correct        & roster
+                    t_rigs = song_riggers   & roster
+                    team_correct_per_song               [t_id].append(len(c_on_t)       / 4.0)
+                    if year is not None: team_vintage   [t_id].append(year)
                     if t_rigs:
-                        team_onlist_synergy     [t_id].append(len(c_on_t)       / 4.0)
-                        team_shared_rig_pct     [t_id].append((len(t_rigs) - 1) / 3.0)
-                    else: team_offlist_synergy  [t_id].append(len(c_on_t)       / 4.0)
+                        team_onlist_synergy             [t_id].append(len(c_on_t)       / 4.0)
+                        team_shared_rig_pct             [t_id].append((len(t_rigs) - 1) / 3.0)
+                        team_overs                      [t_id].append(len(correct))
+                    else: team_offlist_synergy          [t_id].append(len(c_on_t)       / 4.0)
 
-            if len(correct) == 2:
-                total_doubles                                               += 1
-                for p in correct: player_two_eighths[p]                     += 1
-            elif len(correct) == 1: 
-                total_erigs                                                 += 1
-                erigs_counts[list(correct)[0]]                              += 1
-            if apply_rev and len(final_file_members - correct) == 1: 
-                total_sevens                                                += 1
+            if len(final_file_members - correct) == 0: total_fulls += 1
+            elif apply_rev and len(final_file_members - correct) == 1: 
+                total_sevens += 1
                 player_reverse_erigs[list(final_file_members - correct)[0]] += 1
+            elif len(correct) == 2:
+                total_doubles += 1
+                for p in correct: player_two_eighths[p] += 1
+            elif len(correct) == 1: 
+                total_erigs += 1
+                solo_winner = list(correct)[0]
+                erigs_counts[solo_winner] += 1
+                if solo_winner in raw_assignments: team_solos[raw_assignments[solo_winner][0]] += 1
+            elif len(correct) == 0: total_blanks += 1
 
             for name in final_file_members:
                 if name in correct:
@@ -484,58 +514,106 @@ def process_files():
     tied_missed     = [n for n, v in player_missed_erigs.items()    if v == max_missed_val  and v > 0]
 
     def format_most_stat(names, value):
-        if not names        : return "N/A"
-        if len(names) >= 3  : return f"{names[0]} and others ({value})"
-        return f"{', '.join(names)} ({value})"
+        if not names            : return "N/A"
+        elif len(names) == 2    : return f"{names[0]} and {names[1]} ({value})"
+        elif len(names) >= 3    : return f"{names[0]} and others ({value})"
+        else                    : return f"{names[0]} ({value})"
 
     str_solos   = format_most_stat(tied_solos,      max_solos_val)
     str_doubles = format_most_stat(tied_doubles,    max_doubles_val)
     str_sevens  = format_most_stat(tied_sevens,     max_sevens_val)
     str_missed  = format_most_stat(tied_missed,     max_missed_val)
 
-    no_erig_pool = [n for n in plist if erigs_counts[n] == 0 and song_participation[n] > 0]
-    best_no_erig = sorted(no_erig_pool, key = lambda x: (correct_counts[x] / song_participation[x]), reverse = True)[0]  if no_erig_pool else "N/A"
-    
+    no_erig_pool        = [n for n in plist if erigs_counts[n] ==   0 and song_participation[n] > 0]
+    solos_pool          = [n for n in plist if erigs_counts[n] >    0 and song_participation[n] > 0]
+    best_no_erig        = sorted(no_erig_pool,  key = lambda x: (correct_counts[x] / song_participation[x]), reverse = True)    [0] if no_erig_pool else "N/A"
+    worst_with_solos    = sorted(solos_pool,    key = lambda x: (correct_counts[x] / song_participation[x]), reverse = False)   [0] if solos_pool   else "N/A"
+
+    if solos_pool:
+        min_missed_val      = min(player_missed_erigs[n] for n in solos_pool)
+        tied_least_missed   = [n for n in solos_pool if player_missed_erigs[n] == min_missed_val]
+        tied_least_missed.sort(key = lambda x: erigs_counts[x], reverse = True)
+        top_player          = tied_least_missed[0]
+        second_player       = tied_least_missed[1]
+        if len(tied_least_missed) > 2   : str_least_missed = f"{top_player} and others ({player_missed_erigs[top_player]}, {erigs_counts[top_player]})"
+        if len(tied_least_missed) > 1   : str_least_missed = f"{top_player} and {second_player} ({player_missed_erigs[top_player]}, {erigs_counts[top_player]})"
+        else                            : str_least_missed = f"{top_player} ({player_missed_erigs[top_player]}, {erigs_counts[top_player]})"
+    else                                : str_least_missed = "N/A"
+
     tour_stats = [
         ["Average Vintage",                     format_year(round(np.mean(all_song_vintages), 2))],
         ["Average Difficulty",                  f"{np.mean(all_song_difficulties):.2f}"],
         ["Average Guess Rate",                  f"{100 * (total_correct_answers_sum / sum(song_participation.values())):.2f}"],
+        ["Total Blanks",                        total_blanks],
         ["Total Solos",                         total_erigs],
         ["Total Doubles",                       total_doubles],
         ["Total Sevens",                        total_sevens],
-        ["Most Popular Genre",                  f"{genre_counter    .most_common(1)[0][0]} ({genre_counter  .most_common(1)[0][1]})"                if genre_counter            else "N/A"],
-        ["Most Popular Tag",                    f"{tag_counter      .most_common(1)[0][0]} ({tag_counter    .most_common(1)[0][1]})"                if tag_counter              else "N/A"],
+        ["Total Fulls",                         total_fulls],
+        ["Most Popular Genre",                  f"{genre_counter    .most_common(1)[0][0]} ({genre_counter  .most_common(1)[0][1]})" if genre_counter   else "N/A"],
+        ["Most Popular Tag",                    f"{tag_counter      .most_common(1)[0][0]} ({tag_counter    .most_common(1)[0][1]})" if tag_counter     else "N/A"],
         ["Most Solos",                          str_solos],
         ["Most Doubles",                        str_doubles],
         ["Most Sevens",                         str_sevens],
-        ["Highest Guess Rate with no Solos",    f"{best_no_erig} ({100 * (correct_counts[best_no_erig] / song_participation[best_no_erig]):.2f})"   if best_no_erig != "N/A"    else "N/A"],
+        ["Highest Guess Rate with no Solos",    f"{best_no_erig} ({     100 * (correct_counts[best_no_erig]     / song_participation[best_no_erig])     :.2f})"                                     if best_no_erig     != "N/A" else "N/A"],
+        ["Lowest Guess Rate with Solos",        f"{worst_with_solos} ({ 100 * (correct_counts[worst_with_solos] / song_participation[worst_with_solos]) :.2f}, {erigs_counts[worst_with_solos]})"   if worst_with_solos != "N/A" else "N/A"]
     ]
 
-    if watched_only_valid: tour_stats.append(["Most Missed Solos", str_missed])
+    if watched_only_valid: 
+        tour_stats.append(["Most Missed Solos",     str_missed])
+        tour_stats.append(["Least Missed Solos",    str_least_missed])
 
     extra_content       = [["Statistic", "Value"]] + tour_stats
     team_stats_content  = []
     if use_teams:
-        team_stats_content.append(["Team", "Average Correct", "Onlist Synergy", "Offlist Synergy", "Shared Rigs"])
-        stats_list = []
+        team_stats_content  = [["Team", "Average Vintage", "Average Correct", "Onlist Synergy", "Offlist Synergy", "Shared Rigs", "Total Solos", "Average Overs"]]
+        stats_list          = []
         for t_id in team_correct_per_song.keys():
-            avg_corr = np.mean(team_correct_per_song[t_id]) if team_correct_per_song[t_id] else 0.0
             stats_list.append({
                 "id"        : t_id,
-                "avg"       : avg_corr,
-                "onlist"    : np.mean(team_onlist_synergy   [t_id]) if team_onlist_synergy  [t_id] else 0.0,
-                "offlist"   : np.mean(team_offlist_synergy  [t_id]) if team_offlist_synergy [t_id] else 0.0,
-                "shared"    : np.mean(team_shared_rig_pct   [t_id]) if team_shared_rig_pct  [t_id] else 0.0
+                "vintage"   : np.mean(team_vintage          [t_id]) if team_vintage             [t_id] else np.nan,
+                "avg"       : np.mean(team_correct_per_song [t_id]) if team_correct_per_song    [t_id] else 0.0,
+                "onlist"    : np.mean(team_onlist_synergy   [t_id]) if team_onlist_synergy      [t_id] else 0.0,
+                "offlist"   : np.mean(team_offlist_synergy  [t_id]) if team_offlist_synergy     [t_id] else 0.0,
+                "shared"    : np.mean(team_shared_rig_pct   [t_id]) if team_shared_rig_pct      [t_id] else 0.0,
+                "solos"     : team_solos                    [t_id],
+                "overs"     : np.mean(team_overs            [t_id]) if team_overs               [t_id] else 0.0
             })
         
         stats_list.sort(key = lambda x: x["avg"], reverse = True)
-        for item in stats_list: team_stats_content.append([
-            t1_lookup.get(item["id"], f"Team {item['id']}"),
-            f"{item['avg']      * 100:.2f}",
-            f"{item['onlist']   * 100:.2f}",
-            f"{item['offlist']  * 100:.2f}",
-            f"{item['shared']   * 100:.2f}"
-        ])
+        for item in stats_list:
+            team_stats_content.append([
+                t1_lookup.get(item["id"], f"Team {item['id']}"),
+                format_year(item["vintage"]),
+                f"{item['avg']      * 100   :.2f}",
+                f"{item['onlist']   * 100   :.2f}",
+                f"{item['offlist']  * 100   :.2f}",
+                f"{item['shared']   * 100   :.2f}",
+                item["solos"],
+                f"{item['overs']            :.2f}"
+            ])
+        save_as_html_table(team_stats_content, md_path, "Team Statistics")
+        export_df_to_png(pd.DataFrame(team_stats_content[1:], columns = team_stats_content[0]), png_dir, "Team.png", "Team Statistics")
+
+        tier_stats_content  = [["Tier", "Attacker", "Defender"]]
+        tiers               = sorted([t for t in df_ps["Tier"].unique() if t != "N/A"])
+        for tr in tiers:
+            tdf         = df_ps[df_ps["Tier"] == tr].copy()
+            tdf["OffN"] = pd.to_numeric(tdf["Offlist Guess Rate"]   .mul(100).astype(str).str.replace('%', ''), errors = 'coerce')
+            tdf["OnN"]  = pd.to_numeric(tdf["Onlist Guess Rate"]    .mul(100).astype(str).str.replace('%', ''), errors = 'coerce')
+            atk         = tdf.sort_values("OffN",   ascending = False).iloc[0]
+            dfn         = tdf.sort_values("OnN",    ascending = False).iloc[0]
+            atk_val     = f"{atk['OffN']:.2f}"
+            dfn_val     = f"{dfn['OnN']:.2f}"
+
+            tier_stats_content.append([
+                tr, 
+                f"{atk['Player']} ({atk_val})", 
+                f"{dfn['Player']} ({dfn_val})"
+            ])
+        
+        save_as_html_table(tier_stats_content, md_path, "Tier Bests")
+        export_df_to_png(pd.DataFrame(tier_stats_content[1:], columns = tier_stats_content[0]), png_dir, "Tier.png", "Tier Bests")
+        if extra_content: save_as_html_table(extra_content, md_path, "Tour Statistics")
 
     watched_content = []
     if watched_only_valid:
@@ -553,30 +631,20 @@ def process_files():
             row.append(f"{b_list[i][0]} ({format_year(b_list[i][1])})"  if i < len(b_list) else "N/A")
             watched_content.append(row)
 
-    open(md_path, 'w').close()
-
     type_cols   = ["Opening Guess Rate", "Insert Guess Rate", "Ending Guess Rate"]
     pct_cols    = ["Guess Rate"] + [c for c in type_cols if c in df_display.columns]
     if watched_only_valid   : pct_cols.extend(["Rig Rate", "Onlist Guess Rate", "Offlist Guess Rate"])
     for c in pct_cols       : df_ps[c] = pd.to_numeric(df_ps[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
-    player_header   = [list(df_ps.columns)]
-    player_data     = df_ps.values.tolist()
-    save_as_html_table(player_header + player_data, md_path, "Player Statistics")
-
-    if extra_content:
-        save_as_html_table(extra_content, md_path, "Tour Statistics")
-        export_df_to_png(
-            pd.DataFrame(extra_content[1:], columns = extra_content[0]), 
-            png_dir, f"Tour.png", "Tour Statistics"
-        )
+    if extra_content: export_df_to_png(
+        pd.DataFrame(extra_content[1:], columns = extra_content[0]), 
+        png_dir, f"Tour.png", "Tour Statistics"
+    )
     
-    if team_stats_content: 
-        save_as_html_table(team_stats_content, md_path, "Team Statistics")
-        export_df_to_png(
-            pd.DataFrame(team_stats_content[1:], columns = team_stats_content[0]), 
-            png_dir, f"Team.png", "Team Statistics"
-        )
+    if team_stats_content: export_df_to_png(
+        pd.DataFrame(team_stats_content[1:], columns = team_stats_content[0]), 
+        png_dir, f"Team.png", "Team Statistics"
+    )
 
     if watched_content: 
         save_as_html_table(watched_content, md_path, "Watched Statistics")
