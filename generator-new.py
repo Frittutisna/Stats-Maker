@@ -163,7 +163,8 @@ def export_df_to_png(df, path, filename, title):
         "Onlist Synergy", 
         "Offlist Synergy", 
         "Shared Rigs",
-        "Total Solos"
+        "Total Solos",
+        "Team Sweeps"
     ]
 
     stats = {}
@@ -323,6 +324,7 @@ def process_files():
     total_doubles               = 0
     total_sevens                = 0
     total_fulls                 = 0
+    total_sweeps                = 0
     genre_counter               = Counter()
     tag_counter                 = Counter()
     player_list_vintages        = defaultdict(list)
@@ -336,6 +338,7 @@ def process_files():
     team_offlist_synergy        = defaultdict(list)
     team_shared_rig_pct         = defaultdict(list)
     team_solos                  = defaultdict(int)
+    team_sweeps                 = defaultdict(int)
     team_overs                  = defaultdict(list)
 
     for path in json_paths:
@@ -383,7 +386,18 @@ def process_files():
             if use_teams:
                 teams_in_file_list = list({raw_assignments[p][0] for p in raw_file_players if p in raw_assignments})
                 if len(teams_in_file_list) == 2:
-                    tA, tB = teams_in_file_list[0], teams_in_file_list[1]
+                    tA, tB  = teams_in_file_list[0], teams_in_file_list[1]                    
+                    c_teamA = correct & team_rosters[tA]
+                    c_teamB = correct & team_rosters[tB]
+
+                    if len(c_teamA) == len(team_rosters[tA]) and len(c_teamB) == 0:
+                        team_sweeps[tA] += 1
+                        total_sweeps    += 1
+                    
+                    if len(c_teamB) == len(team_rosters[tB]) and len(c_teamA) == 0:
+                        team_sweeps[tB] += 1
+                        total_sweeps    += 1
+
                     for cur_t, opp_t in [(tA, tB), (tB, tA)]:
                         cur_c, opp_c = correct & team_rosters[cur_t], correct & team_rosters[opp_t]
                         if not opp_c: 
@@ -500,12 +514,10 @@ def process_files():
     max_solos_val   = max(erigs_counts.values())            if erigs_counts         else 0
     max_doubles_val = max(player_two_eighths.values())      if player_two_eighths   else 0
     max_sevens_val  = max(player_reverse_erigs.values())    if player_reverse_erigs else 0
-    max_missed_val  = max(player_missed_erigs.values())     if player_missed_erigs  else 0
 
     tied_solos      = [n for n, v in erigs_counts.items()           if v == max_solos_val   and v > 0]
     tied_doubles    = [n for n, v in player_two_eighths.items()     if v == max_doubles_val and v > 0]
     tied_sevens     = [n for n, v in player_reverse_erigs.items()   if v == max_sevens_val  and v > 0]
-    tied_missed     = [n for n, v in player_missed_erigs.items()    if v == max_missed_val  and v > 0]
 
     def format_most_stat(names, value):
         if not names            : return "N/A"
@@ -516,7 +528,6 @@ def process_files():
     str_solos   = format_most_stat(tied_solos,      max_solos_val)
     str_doubles = format_most_stat(tied_doubles,    max_doubles_val)
     str_sevens  = format_most_stat(tied_sevens,     max_sevens_val)
-    str_missed  = format_most_stat(tied_missed,     max_missed_val)
 
     no_erig_pool        = [n for n in plist if erigs_counts         [n] ==  0 and song_participation[n] > 0]
     solos_pool          = [n for n in plist if erigs_counts         [n] >   0 and song_participation[n] > 0]
@@ -536,8 +547,22 @@ def process_files():
         else:
             winner_names            = potential_least_missed[0]
             list_solos_val          = player_list_solos[winner_names]
-        str_least_missed            = f"{winner_names} ({min_missed_val}/{list_solos_val})"   
-    else: str_least_missed          = "N/A"
+        str_least_missed            = f"{winner_names} ({min_missed_val}/{list_solos_val})"
+
+        max_missed_val              = max(player_missed_erigs[n] for n in list_players_pool)
+        potential_most_missed       = [n for n in list_players_pool if player_missed_erigs[n] == max_missed_val]
+        if len(potential_most_missed) > 1:
+            min_list_solos_in_pool  = min(player_list_solos[n] for n in potential_most_missed)
+            final_tied_most         = [n for n in potential_most_missed if player_list_solos[n] == min_list_solos_in_pool]
+            winner_names_most       = format_most_stat(final_tied_most, None).split(" (")[0]
+            list_solos_val_most     = min_list_solos_in_pool
+        else:
+            winner_names_most       = potential_most_missed[0]
+            list_solos_val_most     = player_list_solos[winner_names_most]
+        str_missed                  = f"{winner_names_most} ({max_missed_val}/{list_solos_val_most})"
+    else: 
+        str_least_missed            = "N/A"
+        str_missed                  = "N/A"
 
     tour_stats = [
         ["Average Vintage",     format_year(round(np.mean(all_song_vintages), 2))],
@@ -548,6 +573,7 @@ def process_files():
         ["Total Doubles",       total_doubles],
         ["Total Sevens",        total_sevens],
         ["Total Fulls",         total_fulls],
+        ["Total Sweeps",        total_sweeps],
         ["Most Popular Genre",  f"{genre_counter    .most_common(1)[0][0]} ({genre_counter  .most_common(1)[0][1]})" if genre_counter   else "N/A"],
         ["Most Popular Tag",    f"{tag_counter      .most_common(1)[0][0]} ({tag_counter    .most_common(1)[0][1]})" if tag_counter     else "N/A"],
         ["Most Solos",          str_solos],
@@ -555,7 +581,7 @@ def process_files():
         ["Most Sevens",         str_sevens]
     ]
 
-    if best_no_erig     != "N/A": tour_stats.append(["Highest Guess Rate with no Solos",    f"{best_no_erig} ({     100 * (correct_counts[best_no_erig]     / song_participation[best_no_erig])     :.2f})"])
+    if best_no_erig     != "N/A": tour_stats.append(["Highest Guess Rate without Solos",    f"{best_no_erig} ({     100 * (correct_counts[best_no_erig]     / song_participation[best_no_erig])     :.2f})"])
     if worst_with_solos != "N/A": tour_stats.append(["Lowest Guess Rate with Solos",        f"{worst_with_solos} ({ 100 * (correct_counts[worst_with_solos] / song_participation[worst_with_solos]) :.2f}, {erigs_counts[worst_with_solos]})"])
 
     if watched_only_valid: 
@@ -567,8 +593,19 @@ def process_files():
     tier_stats_content  = []
 
     if use_teams:
-        team_stats_content  = [["Team", "Average Vintage", "Average Correct", "Onlist Synergy", "Offlist Synergy", "Shared Rigs", "Total Solos", "Average Overs"]]
-        stats_list          = []
+        team_stats_content = [[
+            "Team", 
+            "Average Vintage", 
+            "Average Correct", 
+            "Onlist Synergy", 
+            "Offlist Synergy", 
+            "Shared Rigs", 
+            "Total Solos", 
+            "Team Sweeps", 
+            "Average Overs"
+        ]]
+
+        stats_list = []
         for t_id in team_correct_per_song.keys():
             stats_list.append({
                 "id"        : t_id,
@@ -578,8 +615,10 @@ def process_files():
                 "offlist"   : np.mean(team_offlist_synergy  [t_id]) if team_offlist_synergy     [t_id] else 0.0,
                 "shared"    : np.mean(team_shared_rig_pct   [t_id]) if team_shared_rig_pct      [t_id] else 0.0,
                 "solos"     : team_solos                    [t_id],
+                "sweeps"    : team_sweeps                   [t_id],
                 "overs"     : np.mean(team_overs            [t_id]) if team_overs               [t_id] else 0.0
             })
+
         stats_list.sort(key = lambda x: x["avg"], reverse = True)
         for item in stats_list: team_stats_content.append([
             t1_lookup.get(item["id"], f"Team {item['id']}"), 
@@ -589,6 +628,7 @@ def process_files():
             f"{item['offlist']  * 100   :.2f}", 
             f"{item['shared']   * 100   :.2f}", 
             item["solos"], 
+            item["sweeps"],
             f"{item['overs']            :.2f}"
         ])
 
@@ -603,13 +643,10 @@ def process_files():
                 top_blks    = tdf[tdf["Blocks"] == max_blk]
                 atk_row     = top_atks.sort_values("Guess Rate",    ascending = False).iloc[0]
                 blk_row     = top_blks.sort_values("Blocks",        ascending = False).iloc[0]
-
                 if len(top_atks) > 1    : atk_display = f"{atk_row['Player']} ({atk_row['Points']}, {atk_row['Guess Rate'] * 100:.2f}%)"
                 else                    : atk_display = f"{atk_row['Player']} ({atk_row['Points']})"
-
                 if len(top_blks) > 1    : blk_display = f"{blk_row['Player']} ({blk_row['Blocks']}, {blk_row['Guess Rate'] * 100:.2f}%)"
                 else                    : blk_display = f"{blk_row['Player']} ({blk_row['Blocks']})"
-
                 tier_stats_content.append([tr, atk_display, blk_display])
 
     watched_content = []
