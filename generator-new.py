@@ -277,13 +277,21 @@ def process_files():
         alias_map       = load_aliases(script_dir)
         player_elo_map  = {}
         with open(codes_path, "r", encoding = "utf-8") as f:
-            content = f.read()
-            if content.strip():
+            lines = [l.strip() for l in f.readlines() if "(" in l]
+            if lines:
                 use_teams       = True
-                all_teams_raw   = [re.findall(r'([^\s(]+)\s*\((\d+\.\d+)\)', line) for line in content.strip().split('\n') if "(" in line]
                 available       = list(all_known_players)
 
-                for t_idx, members in enumerate(all_teams_raw, 1):
+                for t_idx, line in enumerate(lines, 1):
+                    team_prefix_match   = re.match(r'^(?:\\s*)?([^:\[\d\(]+)\s*\([\d.]+\):', line)
+                    explicit_team_name  = team_prefix_match.group(1).strip() if team_prefix_match else None
+
+                    if ":" in line  : player_section = line.split(":", 1)[1]
+                    else            : player_section = line
+
+                    members = re.findall(r'([^\s(]+)\s*\((\d+\.\d+)\)', player_section)
+                    if not members: continue
+
                     for i, (p_in, elo_val) in enumerate(members[:4]):
                         tier    = str(i + 1)
                         match   = next((n for n in available if n.lower() == p_in.lower()), None)
@@ -302,8 +310,9 @@ def process_files():
                             raw_assignments [match] = (t_idx, tier)
                             player_elo_map  [match] = elo_val
                             team_rosters[t_idx].add(match)
-                            if match in available   : available.remove(match)
-                            if tier == "1"          : t1_lookup[t_idx] = match
+                            if      match in available  : available.remove(match)
+                            if      explicit_team_name  : t1_lookup[t_idx] = explicit_team_name
+                            elif    tier == "1"         : t1_lookup[t_idx] = match
 
     song_participation          = defaultdict(int)
     correct_counts              = defaultdict(int)

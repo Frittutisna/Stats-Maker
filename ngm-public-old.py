@@ -176,46 +176,41 @@ def main():
     playerDB.build_lookups()
 
     # Obtain the tour players
+    html = ""
     with open(TEAMS, "r", encoding="utf-8") as file:
         for line in file.readlines():
+            line = line.strip()
+            if not line: continue
             if line.lower().startswith(("average", "avg")):
                 TEAM_AVG = float(line.split(':')[-1].strip())
-            if line.startswith("https://"):
-                line = line.strip()
-                html = download_challonge_page(line)
-            if line.lower().startswith(("sub")):
+            team_prefix_match = re.match(r'^(?:\\s*)?([^:\[\d\(]+)\s*\([\d.]+\):', line)
+            explicit_team_name = team_prefix_match.group(1).strip() if team_prefix_match else None
+            
+            if line.lower().startswith("sub"):
                 if line.split(':')[-1]:
                     for name, rank in re.findall(r'(\S+)\s*\(([\d.]+)\)', line):
-                        p_name = name
-                        p_rank = float(rank)
-                        subbing_player = playerDB.lookup_player_name(p_name)
-                        subbing_player.rank = p_rank
-                        subbing_player.set_averages(avg_df)
-                        if subbing_player is None:
-                            input(f"{p_name} not found inside IDs. "
-                                "If it's a new player ask to add, "
-                                "otherwise rename them in `teams.txt` with their AMQ name and run again. "
-                                "Press Enter to exit.")
-                            exit()
-                        teamDB.add_sub(subbing_player)
+                        subbing_player = playerDB.lookup_player_name(name)
+                        if subbing_player:
+                            subbing_player.rank = float(rank)
+                            subbing_player.set_averages(avg_df)
+                            teamDB.add_sub(subbing_player)
             else:
-                line = line.split("|", 1)[0]
-                match = re.findall(TEAMS_RE, line)
+                player_section = line.split(":", 1)[1] if ":" in line else line
+                player_section = player_section.split("|", 1)[0]
+                match = re.findall(TEAMS_RE, player_section)
                 if match:
-                    team_id = line.strip()
+                    team_id = explicit_team_name if explicit_team_name else line.strip()
                     new_team = Team(team_string=team_id)
-                    for player in match:
-                        player_name, player_rank = player
+                    for i, (player_name, player_rank) in enumerate(match):
                         new_player = playerDB.lookup_player_name(player_name)
                         if new_player is None:
-                            input(f"{player_name} not found inside IDs. "
-                                "If it's a new player ask to add, "
-                                "otherwise rename them in `teams.txt` with their AMQ name and run again. "
-                                "Press Enter to exit.")
+                            input(f"{player_name} not found inside IDs. Press Enter to exit.")
                             exit()
                         new_player.rank = float(player_rank)
                         new_player.set_averages(avg_df)
                         new_team.add_player(new_player)
+                        if not explicit_team_name and i == 0:
+                            new_team.team_string = player_name  
                     teamDB.add_team(new_team)
     TEAM_SIZE = new_team.get_team_size()
     playerDB.build_lookups()
