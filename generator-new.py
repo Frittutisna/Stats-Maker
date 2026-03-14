@@ -154,6 +154,8 @@ def export_df_to_png(df, path, filename, title):
         "Solos", 
         "Doubles", 
         "Rigs", 
+        "Points", 
+        "Blocks", 
         "Rig Rate", 
         "Onlist Guess Rate", 
         "Offlist Guess Rate", 
@@ -326,6 +328,7 @@ def process_files():
     player_list_vintages        = defaultdict(list)
     player_list_correct_counts  = defaultdict(list) 
     player_missed_erigs         = defaultdict(int)
+    player_list_solos           = defaultdict(int)
     watched_only_valid          = True
     team_vintage                = defaultdict(list)
     team_correct_per_song       = defaultdict(list)
@@ -399,7 +402,8 @@ def process_files():
                         team_overs                      [t_id].append(len(correct))
                     else: team_offlist_synergy          [t_id].append(len(c_on_t)       / 4.0)
 
-            if len(final_file_members - correct) == 0: total_fulls += 1
+            if len(ls)                              == 1: player_list_solos[ls[0]["name"]]  += 1
+            if len(final_file_members - correct)    == 0: total_fulls                       += 1
             elif apply_rev and len(final_file_members - correct) == 1: 
                 total_sevens += 1
                 player_reverse_erigs[list(final_file_members - correct)[0]] += 1
@@ -439,11 +443,13 @@ def process_files():
         active_types    = found_types if len(found_types) > 1 else {}
 
         row = {
-            "Player"     : name, 
-            "Guess Rate" : correct / total if total else 0, 
-            "Solos"      : erigs_counts[name], 
-            "Doubles"    : player_two_eighths[name], 
-            "Sevens"     : player_reverse_erigs[name], 
+            "Player"        : name, 
+            "Guess Rate"    : correct / total if total else 0, 
+            "Solos"         : erigs_counts          [name], 
+            "Doubles"       : player_two_eighths    [name], 
+            "Sevens"        : player_reverse_erigs  [name], 
+            "Points"        : player_points         [name], 
+            "Blocks"        : player_blocks         [name]
         }
 
         for t_id, label in active_types.items():
@@ -512,18 +518,26 @@ def process_files():
     str_sevens  = format_most_stat(tied_sevens,     max_sevens_val)
     str_missed  = format_most_stat(tied_missed,     max_missed_val)
 
-    no_erig_pool        = [n for n in plist if erigs_counts[n] ==   0 and song_participation[n] > 0]
-    solos_pool          = [n for n in plist if erigs_counts[n] >    0 and song_participation[n] > 0]
+    no_erig_pool        = [n for n in plist if erigs_counts         [n] ==  0 and song_participation[n] > 0]
+    solos_pool          = [n for n in plist if erigs_counts         [n] >   0 and song_participation[n] > 0]
+    list_players_pool   = [n for n in plist if player_list_solos    [n] >   0 and song_participation[n] > 0]
+
     best_no_erig        = sorted(no_erig_pool,  key = lambda x: (correct_counts[x] / song_participation[x]), reverse = True)    [0] if no_erig_pool else "N/A"
     worst_with_solos    = sorted(solos_pool,    key = lambda x: (correct_counts[x] / song_participation[x]), reverse = False)   [0] if solos_pool   else "N/A"
 
-    if solos_pool:
-        min_missed_val      = min(player_missed_erigs[n] for n in solos_pool)
-        tied_least_missed   = [n for n in solos_pool if player_missed_erigs[n] == min_missed_val]
-        tied_least_missed.sort(key = lambda x: erigs_counts[x], reverse = True)
-        top_player          = tied_least_missed[0]
-        str_least_missed    = f"{top_player} ({player_missed_erigs[top_player]}, {erigs_counts[top_player]})"
-    else: str_least_missed  = "N/A"
+    if list_players_pool:
+        min_missed_val              = min(player_missed_erigs[n] for n in list_players_pool)
+        potential_least_missed      = [n for n in list_players_pool if player_missed_erigs[n] == min_missed_val]
+        if len(potential_least_missed) > 1:
+            max_list_solos_in_pool  = max(player_list_solos[n] for n in potential_least_missed)
+            final_tied_least        = [n for n in potential_least_missed if player_list_solos[n] == max_list_solos_in_pool]
+            winner_names            = format_most_stat(final_tied_least, None).split(" (")[0]
+            list_solos_val          = max_list_solos_in_pool
+        else:
+            winner_names            = potential_least_missed[0]
+            list_solos_val          = player_list_solos[winner_names]
+        str_least_missed            = f"{winner_names} ({min_missed_val}/{list_solos_val})"   
+    else: str_least_missed          = "N/A"
 
     tour_stats = [
         ["Average Vintage",     format_year(round(np.mean(all_song_vintages), 2))],
@@ -578,15 +592,25 @@ def process_files():
             f"{item['overs']            :.2f}"
         ])
 
-        tier_stats_content  = [["Tier", "Attacker", "Defender"]]
+        tier_stats_content  = [["Tier", "Attacker", "Blocker"]]
         tiers               = sorted([t for t in df_ps["Tier"].unique() if t != "N/A"])
         for tr in tiers:
-            tdf         = df_ps[df_ps["Tier"] == tr].copy()
-            tdf["FN"]   = pd.to_numeric(tdf["Offlist Guess Rate"]   .mul(100).astype(str).str.replace('%', ''), errors = 'coerce')
-            tdf["NN"]   = pd.to_numeric(tdf["Onlist Guess Rate"]    .mul(100).astype(str).str.replace('%', ''), errors = 'coerce')
-            atk         = tdf.sort_values("FN", ascending = False).iloc[0]
-            dfn         = tdf.sort_values("NN", ascending = False).iloc[0]
-            tier_stats_content.append([tr, f"{atk['Player']} ({atk['FN']:.2f})", f"{dfn['Player']} ({dfn['NN']:.2f})"])
+            tdf = df_ps[df_ps["Tier"] == tr].copy()
+            if not tdf.empty:
+                max_pts     = tdf["Points"].max()
+                max_blk     = tdf["Blocks"].max()
+                top_atks    = tdf[tdf["Points"] == max_pts]
+                top_blks    = tdf[tdf["Blocks"] == max_blk]
+                atk_row     = top_atks.sort_values("Guess Rate",    ascending = False).iloc[0]
+                blk_row     = top_blks.sort_values("Blocks",        ascending = False).iloc[0]
+
+                if len(top_atks) > 1    : atk_display = f"{atk_row['Player']} ({atk_row['Points']}, {atk_row['Guess Rate'] * 100:.2f}%)"
+                else                    : atk_display = f"{atk_row['Player']} ({atk_row['Points']})"
+
+                if len(top_blks) > 1    : blk_display = f"{blk_row['Player']} ({blk_row['Blocks']}, {blk_row['Guess Rate'] * 100:.2f}%)"
+                else                    : blk_display = f"{blk_row['Player']} ({blk_row['Blocks']})"
+
+                tier_stats_content.append([tr, atk_display, blk_display])
 
     watched_content = []
     if watched_only_valid:

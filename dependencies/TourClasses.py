@@ -3,7 +3,7 @@ from dataclasses import *
 from typing import List, Optional, Dict, Any
 from math import comb
 from collections import Counter
-from TourFunctions import *
+from dependencies.TourFunctions import *
 
 @dataclass
 class Player:
