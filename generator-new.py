@@ -6,9 +6,9 @@ import  re
 import  tkinter         as      tk
 from    collections     import  defaultdict, Counter
 from    datetime        import  datetime
-from    tkinter         import  messagebox, ttk
 from    html2image      import  Html2Image
 from    PIL             import  Image, ImageChops, ImageOps
+from    tkinter         import  messagebox, ttk
 
 EXCLUDED_TAGS = {
     "Female Protagonist", 
@@ -48,7 +48,7 @@ def format_year(val):
 def load_aliases(script_dir):
     """Loads aliases into dictionary"""
     alias_map   = {}
-    alias_path  = os.path.join(script_dir, "aliases.txt")
+    alias_path  = os.path.join(script_dir, "dependencies", "aliases.txt")
     if os.path.exists(alias_path):
         with open(alias_path, "r", encoding = "utf-8") as f:
             for line in f:
@@ -58,9 +58,11 @@ def load_aliases(script_dir):
     return alias_map
 
 def save_alias(script_dir, existing_name, new_name):
-    """Appends new alias"""
-    alias_path = os.path.join(script_dir, "aliases.txt")
-    with open(alias_path, "a", encoding="utf-8") as f: f.write(f"{existing_name}, {new_name}\n")
+    """Appends new alias(es)"""
+    dep_dir     = os.path.join(script_dir, "dependencies")
+    os.makedirs(dep_dir, exist_ok = True)
+    alias_path  = os.path.join(dep_dir, "aliases.txt")
+    with open(alias_path, "a", encoding = "utf-8") as f: f.write(f"{existing_name}, {new_name}\n")
 
 def trim_whitespace(image_path):
     """Removes empty white space from right and bottom of image"""
@@ -158,7 +160,8 @@ def export_df_to_png(df, path, filename, title):
         "Average Correct", 
         "Onlist Synergy", 
         "Offlist Synergy", 
-        "Shared Rigs"
+        "Shared Rigs",
+        "Total Solos"
     ]
 
     stats = {}
@@ -205,10 +208,17 @@ def export_df_to_png(df, path, filename, title):
         rows_html += '  </tr>\n'
     rows_html += '</tbody>'
 
-    width       = max(2000, len(df.columns) * 120)
-    height      = max(2000, len(df)         * 60)
-    hti         = Html2Image(size = (width, height), browser_executable = browser_path, output_path = path)
-    full_html   = f"""
+    width   = max(2000, len(df.columns) * 120)
+    height  = max(2000, len(df)         * 60)
+
+    hti = Html2Image(
+        size                = (width, height), 
+        browser_executable  = browser_path, 
+        output_path         = path, 
+        custom_flags        = ['--log-level=3', '--silent']
+    )
+
+    full_html = f"""
     <html>
     <head>
     <style>
@@ -225,29 +235,11 @@ def export_df_to_png(df, path, filename, title):
     </body>
     </html>
     """
+
     hti.screenshot(html_str = full_html, save_as = filename)
     full_path = os.path.join(path, filename)
     try                     : trim_whitespace(full_path)
     except Exception as e   : print(f"[!] Error: Failed to trim {filename}: {e}")
-
-def load_aliases(script_dir):
-    """Loads aliases"""
-    alias_map   = {}
-    alias_path  = os.path.join(script_dir, "dependencies", "aliases.txt")
-    if os.path.exists(alias_path):
-        with open(alias_path, "r", encoding = "utf-8") as f:
-            for line in f:
-                if "," in line:
-                    existing, new   = [x.strip() for x in line.split(",", 1)]
-                    alias_map[new]  = existing
-    return alias_map
-
-def save_alias(script_dir, existing_name, new_name):
-    """Appends new alias(es)"""
-    dep_dir     = os.path.join(script_dir, "dependencies")
-    os.makedirs(dep_dir, exist_ok = True)
-    alias_path  = os.path.join(dep_dir, "aliases.txt")
-    with open(alias_path, "a", encoding = "utf-8") as f: f.write(f"{existing_name}, {new_name}\n")
 
 def process_files():
     script_dir  = os.path.dirname(os.path.abspath(__file__))
@@ -490,18 +482,14 @@ def process_files():
         df_display[c] = pd.to_numeric(df_display[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
     timestamp   = datetime.now().strftime("%y%m%d%H")
-    png_dir     = os.path.join(script_dir, "archive", "png", timestamp)
-    os.makedirs(png_dir, exist_ok = True)
-    export_df_to_png(df_display, png_dir, "Player.png", "Player Statistics")
-
-    md_path = os.path.join(script_dir, "archive", "md", f"{timestamp}.md")
-    os.makedirs(os.path.dirname(md_path), exist_ok = True)
+    png_dir     = os.path.join(script_dir, "archive", "png",    timestamp)
+    md_path     = os.path.join(script_dir, "archive", "md",     f"{timestamp}.md")
+    os.makedirs(png_dir,                    exist_ok = True)
+    os.makedirs(os.path.dirname(md_path),   exist_ok = True)
     open(md_path, 'w').close()
 
     player_header   = [list(df_display.columns)]
     player_data     = df_display.values.tolist()
-    save_as_html_table(player_header + player_data, md_path, "Player Statistics")
-
     plist           = list(song_participation.keys())
     max_solos_val   = max(erigs_counts.values())            if erigs_counts         else 0
     max_doubles_val = max(player_two_eighths.values())      if player_two_eighths   else 0
@@ -534,36 +522,36 @@ def process_files():
         tied_least_missed   = [n for n in solos_pool if player_missed_erigs[n] == min_missed_val]
         tied_least_missed.sort(key = lambda x: erigs_counts[x], reverse = True)
         top_player          = tied_least_missed[0]
-        second_player       = tied_least_missed[1]
-        if len(tied_least_missed) > 2   : str_least_missed = f"{top_player} and others ({player_missed_erigs[top_player]}, {erigs_counts[top_player]})"
-        if len(tied_least_missed) > 1   : str_least_missed = f"{top_player} and {second_player} ({player_missed_erigs[top_player]}, {erigs_counts[top_player]})"
-        else                            : str_least_missed = f"{top_player} ({player_missed_erigs[top_player]}, {erigs_counts[top_player]})"
-    else                                : str_least_missed = "N/A"
+        str_least_missed    = f"{top_player} ({player_missed_erigs[top_player]}, {erigs_counts[top_player]})"
+    else: str_least_missed  = "N/A"
 
     tour_stats = [
-        ["Average Vintage",                     format_year(round(np.mean(all_song_vintages), 2))],
-        ["Average Difficulty",                  f"{np.mean(all_song_difficulties):.2f}"],
-        ["Average Guess Rate",                  f"{100 * (total_correct_answers_sum / sum(song_participation.values())):.2f}"],
-        ["Total Blanks",                        total_blanks],
-        ["Total Solos",                         total_erigs],
-        ["Total Doubles",                       total_doubles],
-        ["Total Sevens",                        total_sevens],
-        ["Total Fulls",                         total_fulls],
-        ["Most Popular Genre",                  f"{genre_counter    .most_common(1)[0][0]} ({genre_counter  .most_common(1)[0][1]})" if genre_counter   else "N/A"],
-        ["Most Popular Tag",                    f"{tag_counter      .most_common(1)[0][0]} ({tag_counter    .most_common(1)[0][1]})" if tag_counter     else "N/A"],
-        ["Most Solos",                          str_solos],
-        ["Most Doubles",                        str_doubles],
-        ["Most Sevens",                         str_sevens],
-        ["Highest Guess Rate with no Solos",    f"{best_no_erig} ({     100 * (correct_counts[best_no_erig]     / song_participation[best_no_erig])     :.2f})"                                     if best_no_erig     != "N/A" else "N/A"],
-        ["Lowest Guess Rate with Solos",        f"{worst_with_solos} ({ 100 * (correct_counts[worst_with_solos] / song_participation[worst_with_solos]) :.2f}, {erigs_counts[worst_with_solos]})"   if worst_with_solos != "N/A" else "N/A"]
+        ["Average Vintage",     format_year(round(np.mean(all_song_vintages), 2))],
+        ["Average Difficulty",  f"{np.mean(all_song_difficulties):.2f}"],
+        ["Average Guess Rate",  f"{100 * (total_correct_answers_sum / sum(song_participation.values())):.2f}"],
+        ["Total Blanks",        total_blanks],
+        ["Total Solos",         total_erigs],
+        ["Total Doubles",       total_doubles],
+        ["Total Sevens",        total_sevens],
+        ["Total Fulls",         total_fulls],
+        ["Most Popular Genre",  f"{genre_counter    .most_common(1)[0][0]} ({genre_counter  .most_common(1)[0][1]})" if genre_counter   else "N/A"],
+        ["Most Popular Tag",    f"{tag_counter      .most_common(1)[0][0]} ({tag_counter    .most_common(1)[0][1]})" if tag_counter     else "N/A"],
+        ["Most Solos",          str_solos],
+        ["Most Doubles",        str_doubles],
+        ["Most Sevens",         str_sevens]
     ]
+
+    if best_no_erig     != "N/A": tour_stats.append(["Highest Guess Rate with no Solos",    f"{best_no_erig} ({     100 * (correct_counts[best_no_erig]     / song_participation[best_no_erig])     :.2f})"])
+    if worst_with_solos != "N/A": tour_stats.append(["Lowest Guess Rate with Solos",        f"{worst_with_solos} ({ 100 * (correct_counts[worst_with_solos] / song_participation[worst_with_solos]) :.2f}, {erigs_counts[worst_with_solos]})"])
 
     if watched_only_valid: 
         tour_stats.append(["Most Missed Solos",     str_missed])
         tour_stats.append(["Least Missed Solos",    str_least_missed])
-
+    
     extra_content       = [["Statistic", "Value"]] + tour_stats
     team_stats_content  = []
+    tier_stats_content  = []
+
     if use_teams:
         team_stats_content  = [["Team", "Average Vintage", "Average Correct", "Onlist Synergy", "Offlist Synergy", "Shared Rigs", "Total Solos", "Average Overs"]]
         stats_list          = []
@@ -578,42 +566,27 @@ def process_files():
                 "solos"     : team_solos                    [t_id],
                 "overs"     : np.mean(team_overs            [t_id]) if team_overs               [t_id] else 0.0
             })
-        
         stats_list.sort(key = lambda x: x["avg"], reverse = True)
-        for item in stats_list:
-            team_stats_content.append([
-                t1_lookup.get(item["id"], f"Team {item['id']}"),
-                format_year(item["vintage"]),
-                f"{item['avg']      * 100   :.2f}",
-                f"{item['onlist']   * 100   :.2f}",
-                f"{item['offlist']  * 100   :.2f}",
-                f"{item['shared']   * 100   :.2f}",
-                item["solos"],
-                f"{item['overs']            :.2f}"
-            ])
-        save_as_html_table(team_stats_content, md_path, "Team Statistics")
-        export_df_to_png(pd.DataFrame(team_stats_content[1:], columns = team_stats_content[0]), png_dir, "Team.png", "Team Statistics")
+        for item in stats_list: team_stats_content.append([
+            t1_lookup.get(item["id"], f"Team {item['id']}"), 
+            format_year(item["vintage"]), 
+            f"{item['avg']      * 100   :.2f}", 
+            f"{item['onlist']   * 100   :.2f}", 
+            f"{item['offlist']  * 100   :.2f}", 
+            f"{item['shared']   * 100   :.2f}", 
+            item["solos"], 
+            f"{item['overs']            :.2f}"
+        ])
 
         tier_stats_content  = [["Tier", "Attacker", "Defender"]]
         tiers               = sorted([t for t in df_ps["Tier"].unique() if t != "N/A"])
         for tr in tiers:
             tdf         = df_ps[df_ps["Tier"] == tr].copy()
-            tdf["OffN"] = pd.to_numeric(tdf["Offlist Guess Rate"]   .mul(100).astype(str).str.replace('%', ''), errors = 'coerce')
-            tdf["OnN"]  = pd.to_numeric(tdf["Onlist Guess Rate"]    .mul(100).astype(str).str.replace('%', ''), errors = 'coerce')
-            atk         = tdf.sort_values("OffN",   ascending = False).iloc[0]
-            dfn         = tdf.sort_values("OnN",    ascending = False).iloc[0]
-            atk_val     = f"{atk['OffN']:.2f}"
-            dfn_val     = f"{dfn['OnN']:.2f}"
-
-            tier_stats_content.append([
-                tr, 
-                f"{atk['Player']} ({atk_val})", 
-                f"{dfn['Player']} ({dfn_val})"
-            ])
-        
-        save_as_html_table(tier_stats_content, md_path, "Tier Bests")
-        export_df_to_png(pd.DataFrame(tier_stats_content[1:], columns = tier_stats_content[0]), png_dir, "Tier.png", "Tier Bests")
-        if extra_content: save_as_html_table(extra_content, md_path, "Tour Statistics")
+            tdf["FN"]   = pd.to_numeric(tdf["Offlist Guess Rate"]   .mul(100).astype(str).str.replace('%', ''), errors = 'coerce')
+            tdf["NN"]   = pd.to_numeric(tdf["Onlist Guess Rate"]    .mul(100).astype(str).str.replace('%', ''), errors = 'coerce')
+            atk         = tdf.sort_values("FN", ascending = False).iloc[0]
+            dfn         = tdf.sort_values("NN", ascending = False).iloc[0]
+            tier_stats_content.append([tr, f"{atk['Player']} ({atk['FN']:.2f})", f"{dfn['Player']} ({dfn['NN']:.2f})"])
 
     watched_content = []
     if watched_only_valid:
@@ -621,38 +594,47 @@ def process_files():
         h_list = sorted([(n, np.mean(player_list_correct_counts [n])) for n in plist if player_list_correct_counts  [n]], key = lambda x: x[1])                 [:3]
         z_list = sorted([(n, np.mean(player_list_vintages       [n])) for n in plist if player_list_vintages        [n]], key = lambda x: x[1], reverse = True) [:3]
         b_list = sorted([(n, np.mean(player_list_vintages       [n])) for n in plist if player_list_vintages        [n]], key = lambda x: x[1])                 [:3]
-
         watched_content.append(["Rank", "Easiest", "Hardest", "Newest", "Oldest"])
         for i in range(3):
             row = [f"{i + 1}{['st','nd','rd'][i]}"]
-            row.append(f"{e_list[i][0]} ({e_list[i][1]:.2f})"           if i < len(e_list) else "N/A")
-            row.append(f"{h_list[i][0]} ({h_list[i][1]:.2f})"           if i < len(h_list) else "N/A")
-            row.append(f"{z_list[i][0]} ({format_year(z_list[i][1])})"  if i < len(z_list) else "N/A")
-            row.append(f"{b_list[i][0]} ({format_year(b_list[i][1])})"  if i < len(b_list) else "N/A")
+            row.append(f"{e_list[i][0]} ({e_list                [i][1]:.2f})"   if i < len(e_list) else "N/A")
+            row.append(f"{h_list[i][0]} ({h_list                [i][1]:.2f})"   if i < len(h_list) else "N/A")
+            row.append(f"{z_list[i][0]} ({format_year(z_list    [i][1])})"      if i < len(z_list) else "N/A")
+            row.append(f"{b_list[i][0]} ({format_year(b_list    [i][1])})"      if i < len(b_list) else "N/A")
             watched_content.append(row)
 
-    type_cols   = ["Opening Guess Rate", "Insert Guess Rate", "Ending Guess Rate"]
-    pct_cols    = ["Guess Rate"] + [c for c in type_cols if c in df_display.columns]
-    if watched_only_valid   : pct_cols.extend(["Rig Rate", "Onlist Guess Rate", "Offlist Guess Rate"])
-    for c in pct_cols       : df_ps[c] = pd.to_numeric(df_ps[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+    save_as_html_table(player_header + player_data, md_path, "Player Statistics")
+    export_df_to_png(df_display, png_dir, "Player.png", "Player Statistics")
 
-    if extra_content: export_df_to_png(
-        pd.DataFrame(extra_content[1:], columns = extra_content[0]), 
-        png_dir, f"Tour.png", "Tour Statistics"
-    )
-    
-    if team_stats_content: export_df_to_png(
-        pd.DataFrame(team_stats_content[1:], columns = team_stats_content[0]), 
-        png_dir, f"Team.png", "Team Statistics"
-    )
+    if team_stats_content:
+        save_as_html_table(team_stats_content, md_path, "Team Statistics")
+        export_df_to_png(
+            pd.DataFrame(team_stats_content[1:], columns = team_stats_content[0]), 
+            png_dir, "Team.png", "Team Statistics"
+        )
+
+    if tier_stats_content:
+        save_as_html_table(tier_stats_content, md_path, "Tier Bests")
+        export_df_to_png(
+            pd.DataFrame(tier_stats_content[1:], columns = tier_stats_content[0]), 
+            png_dir, "Tier.png", "Tier Bests"
+        )
+
+    if extra_content:
+        save_as_html_table(extra_content, md_path, "Tour Statistics")
+        export_df_to_png(
+            pd.DataFrame(extra_content[1:], columns = extra_content[0]), 
+            png_dir, "Tour.png", "Tour Statistics"
+        )
 
     if watched_content: 
         save_as_html_table(watched_content, md_path, "Watched Statistics")
         export_df_to_png(
             pd.DataFrame(watched_content[1:], columns = watched_content[0]), 
-            png_dir, f"Watched.png", "Watched Statistics")
+            png_dir, "Watched.png", "Watched Statistics"
+        )
 
-    if messagebox.askyesno("Success", f"Saved to {md_path} and PNGs, click Yes to delete JSONs"):
+    if messagebox.askyesno("Success", f"Saved as Markdown and PNGs, click Yes to delete JSONs"):
         for path in json_paths:
             try     : os.remove(path)
             except  : pass
