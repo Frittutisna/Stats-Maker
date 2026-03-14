@@ -257,7 +257,7 @@ def process_files():
     all_known_players = set()
     for path in json_paths:
         try:
-            with open(path, encoding="utf-8") as f:
+            with open(path, encoding = "utf-8") as f:
                 data = json.load(f)
                 for s in data.get("songs", []):
                     for p   in s.get("correctGuessPlayers", []): all_known_players.add(p)
@@ -279,7 +279,7 @@ def process_files():
                 use_teams       = True
                 all_teams_raw   = [re.findall(r'([^\s(]+)\s*\((\d+\.\d+)\)', line) for line in content.strip().split('\n') if "(" in line]
                 available       = list(all_known_players)
-                
+
                 for t_idx, members in enumerate(all_teams_raw, 1):
                     for i, (p_in, elo_val) in enumerate(members[:4]):
                         tier    = str(i + 1)
@@ -296,8 +296,8 @@ def process_files():
                                 alias_map[p_in] = match
 
                         if match:
-                            raw_assignments[match]  = (t_idx, tier)
-                            player_elo_map[match]   = elo_val
+                            raw_assignments [match] = (t_idx, tier)
+                            player_elo_map  [match] = elo_val
                             team_rosters[t_idx].add(match)
                             if match in available   : available.remove(match)
                             if tier == "1"          : t1_lookup[t_idx] = match
@@ -336,7 +336,7 @@ def process_files():
     team_overs                  = defaultdict(list)
 
     for path in json_paths:
-        with open(path, encoding="utf-8") as f: data = json.load(f)
+        with open(path, encoding = "utf-8") as f: data = json.load(f)
         songs = data.get("songs", [])
         if not songs: continue
         
