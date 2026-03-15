@@ -149,19 +149,24 @@ def export_df_to_png(df, path, filename, title):
         messagebox.showerror("[!] Error: Could not find Edge nor Chrome")
         return
 
-    ascending_metrics   = ["Sevens"]
+    ascending_metrics   = ["Sevens", "Overs", "Average Overs"]
     descending_metrics  = [
+        "Elo", 
+        "Guess Rate", 
         "Solos", 
         "Doubles", 
         "Rigs", 
         "Points", 
         "Blocks", 
         "Rig Rate", 
-        "Onlist Guess Rate", 
-        "Offlist Guess Rate", 
-        "Average Correct", 
-        "Onlist Synergy", 
-        "Offlist Synergy", 
+        "OP GR", 
+        "IN GR", 
+        "ED GR", 
+        "Rig GR", 
+        "Off GR", 
+        "Average GR", 
+        "Rig Synergy", 
+        "Off Synergy", 
         "Shared Rigs",
         "Total Solos",
         "Team Sweeps"
@@ -422,7 +427,7 @@ def process_files():
                     if t_rigs:
                         team_onlist_synergy             [t_id].append(len(c_on_t)       / 4.0)
                         team_shared_rig_pct             [t_id].append((len(t_rigs) - 1) / 3.0)
-                        team_overs                      [t_id].append(len(correct))
+                        team_overs                      [t_id].append((len(correct), len(t_rigs)))
                     else: team_offlist_synergy          [t_id].append(len(c_on_t)       / 4.0)
 
             if len(ls)                              == 1: player_list_solos[ls[0]["name"]]  += 1
@@ -461,7 +466,7 @@ def process_files():
     for name in song_participation:
         total           = song_participation    [name]
         correct         = correct_counts        [name]
-        type_map        = {1: "Opening Guess Rate", 3: "Insert Guess Rate", 2: "Ending Guess Rate"}        
+        type_map        = {1: "OP GR", 3: "IN GR", 2: "ED GR"}        
         found_types     = {t_id: label for t_id, label in type_map.items() if any(player_type_seen[p][t_id] > 0 for p in song_participation)}
         active_types    = found_types if len(found_types) > 1 else {}
 
@@ -480,10 +485,11 @@ def process_files():
             row[label]  = player_type_correct[name][t_id] / seen if seen else np.nan
 
         if watched_only_valid: row.update({
-            "Rigs"                  : player_rigs[name], 
-            "Rig Rate"              : player_rigs[name] / total                                         if total                        else np.nan,
-            "Onlist Guess Rate"     : player_rigs_hit[name] / player_rigs[name]                         if player_rigs[name]            else np.nan,
-            "Offlist Guess Rate"    : (correct - player_rigs_hit[name]) / (total - player_rigs[name])   if (total - player_rigs[name])  else np.nan
+            "Rigs"          : player_rigs[name], 
+            "Rig Rate"      : player_rigs[name] / total                                         if total                            else np.nan,
+            "Rig GR"     : player_rigs_hit[name] / player_rigs[name]                         if player_rigs[name]                else np.nan,
+            "Off GR"    : (correct - player_rigs_hit[name]) / (total - player_rigs[name])   if (total - player_rigs[name])      else np.nan,
+            "Overs"         : np.mean(player_list_correct_counts[name])                         if player_list_correct_counts[name] else np.nan
         })
 
         if use_teams:
@@ -503,9 +509,13 @@ def process_files():
     df_ps = df_ps.sort_values("Guess Rate", ascending = False)
 
     df_display  = df_ps.copy()
-    type_cols   = ["Opening Guess Rate", "Insert Guess Rate", "Ending Guess Rate"]
+    type_cols   = ["OP GR", "IN GR", "ED GR"]
     pct_cols    = ["Guess Rate"] + [c for c in type_cols if c in df_display.columns]
-    if watched_only_valid: pct_cols.extend(["Rig Rate", "Onlist Guess Rate", "Offlist Guess Rate"])
+
+    if watched_only_valid: 
+        pct_cols.extend(["Rig Rate", "Rig GR", "Off GR"])
+        if "Overs" in df_display.columns:
+            df_display["Overs"] = pd.to_numeric(df_display["Overs"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
     for c in pct_cols: 
         df_display[c] = pd.to_numeric(df_display[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -576,7 +586,7 @@ def process_files():
     tour_stats = [
         ["Average Vintage",     format_year(round(np.mean(all_song_vintages), 2))],
         ["Average Difficulty",  f"{np.mean(all_song_difficulties):.2f}"],
-        ["Average Guess Rate",  f"{100 * (total_correct_answers_sum / sum(song_participation.values())):.2f}"],
+        ["Average GR",          f"{100 * (total_correct_answers_sum / sum(song_participation.values())):.2f}"],
         ["Total Blanks",        total_blanks],
         ["Total Solos",         total_erigs],
         ["Total Doubles",       total_doubles],
@@ -590,8 +600,8 @@ def process_files():
         ["Most Sevens",         str_sevens]
     ]
 
-    if best_no_erig     != "N/A": tour_stats.append(["Highest Guess Rate without Solos",    f"{best_no_erig} ({     100 * (correct_counts[best_no_erig]     / song_participation[best_no_erig])     :.2f})"])
-    if worst_with_solos != "N/A": tour_stats.append(["Lowest Guess Rate with Solos",        f"{worst_with_solos} ({ 100 * (correct_counts[worst_with_solos] / song_participation[worst_with_solos]) :.2f}, {erigs_counts[worst_with_solos]})"])
+    if best_no_erig     != "N/A": tour_stats.append(["Highest GR without Solos",    f"{best_no_erig} ({100      * (correct_counts[best_no_erig]     / song_participation[best_no_erig])     :.2f})"])
+    if worst_with_solos != "N/A": tour_stats.append(["Lowest GR with Solos",        f"{worst_with_solos} ({100  * (correct_counts[worst_with_solos] / song_participation[worst_with_solos]) :.2f}, {erigs_counts[worst_with_solos]})"])
 
     if watched_only_valid: 
         tour_stats.append(["Most Missed Solos",     str_missed])
@@ -605,9 +615,9 @@ def process_files():
         team_stats_content = [[
             "Team", 
             "Average Vintage", 
-            "Average Correct", 
-            "Onlist Synergy", 
-            "Offlist Synergy", 
+            "Average GR", 
+            "Rig Synergy", 
+            "Off Synergy", 
             "Shared Rigs", 
             "Total Solos", 
             "Team Sweeps", 
@@ -616,6 +626,11 @@ def process_files():
 
         stats_list = []
         for t_id in team_correct_per_song.keys():
+            if team_overs[t_id]:
+                total_rig_overs     = sum(over * rigs for over, rigs in team_overs[t_id])
+                total_rigs          = sum(rigs for _, rigs in team_overs[t_id])
+                weighted_overs      = total_rig_overs / total_rigs if total_rigs > 0 else 0.0
+            else: weighted_overs    = 0.0
             stats_list.append({
                 "id"        : t_id,
                 "vintage"   : np.mean(team_vintage          [t_id]) if team_vintage             [t_id] else np.nan,
@@ -625,20 +640,20 @@ def process_files():
                 "shared"    : np.mean(team_shared_rig_pct   [t_id]) if team_shared_rig_pct      [t_id] else 0.0,
                 "solos"     : team_solos                    [t_id],
                 "sweeps"    : team_sweeps                   [t_id],
-                "overs"     : np.mean(team_overs            [t_id]) if team_overs               [t_id] else 0.0
+                "overs"     : weighted_overs
             })
 
         stats_list.sort(key = lambda x: x["avg"], reverse = True)
         for item in stats_list: team_stats_content.append([
             t1_lookup.get(item["id"], f"Team {item['id']}"), 
             format_year(item["vintage"]), 
-            f"{item['avg']      * 100   :.2f}", 
-            f"{item['onlist']   * 100   :.2f}", 
-            f"{item['offlist']  * 100   :.2f}", 
-            f"{item['shared']   * 100   :.2f}", 
-            item["solos"], 
-            item["sweeps"],
-            f"{item['overs']            :.2f}"
+            f"{item ['avg']     * 100   :.2f}", 
+            f"{item ['onlist']  * 100   :.2f}", 
+            f"{item ['offlist'] * 100   :.2f}", 
+            f"{item ['shared']  * 100   :.2f}", 
+            item    ['solos'], 
+            item    ['sweeps'],
+            f"{item ['overs']           :.2f}"
         ])
 
         tier_stats_content  = [["Tier", "Attacker", "Blocker"]]
@@ -666,7 +681,7 @@ def process_files():
         b_list = sorted([(n, np.mean(player_list_vintages       [n])) for n in plist if player_list_vintages        [n]], key = lambda x: x[1])                 [:3]
         watched_content.append(["Rank", "Easiest", "Hardest", "Newest", "Oldest"])
         for i in range(3):
-            row = [f"{i + 1}{['st','nd','rd'][i]}"]
+            row = [f"{i + 1}"]
             row.append(f"{e_list[i][0]} ({e_list                [i][1]:.2f})"   if i < len(e_list) else "N/A")
             row.append(f"{h_list[i][0]} ({h_list                [i][1]:.2f})"   if i < len(h_list) else "N/A")
             row.append(f"{z_list[i][0]} ({format_year(z_list    [i][1])})"      if i < len(z_list) else "N/A")
