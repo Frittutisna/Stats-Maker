@@ -135,17 +135,23 @@ def process_files():
         alias_map = load_aliases(script_dir)
         
         with open(codes_path, "r", encoding="utf-8") as f:
-            content = f.read()
-        all_teams_data = []
-        for line in content.strip().split('\n'):
-            matches = re.findall(r'([^\s(]+)\s*\([\d.]+\)', line)
-            if matches: all_teams_data.append(matches[:4])
+            lines = [l.strip() for l in f.readlines() if "(" in l]
 
-        if all_teams_data:
+        if lines:
             use_teams = True
             available = list(all_known_players)
-            for t_idx, members in enumerate(all_teams_data, 1):
-                for i, p_in in enumerate(members):
+
+            for t_idx, line in enumerate(lines, 1):
+                team_prefix_match   = re.match(r'^(?:\\s*)?([^:\[\d\(]+)\s*\([\d.]+\):', line)
+                explicit_team_name  = team_prefix_match.group(1).strip() if team_prefix_match else None
+
+                if ":" in line  : player_section = line.split(":", 1)[1]
+                else            : player_section = line
+
+                members = re.findall(r'([^\s(]+)\s*\((\d+\.\d+)\)', player_section)
+                if not members: continue
+
+                for i, (p_in, elo_val) in enumerate(members[:4]):
                     tier = f"T{i+1}"
                     # 1. Direct match check
                     match = next((n for n in available if n.lower() == p_in.lower()), None)
@@ -168,7 +174,11 @@ def process_files():
                         raw_assignments[match] = (t_idx, tier)
                         team_rosters[t_idx].add(match)
                         if match in available: available.remove(match)
-                        if tier == "T1": t1_lookup[t_idx] = match
+                        
+                        if explicit_team_name: 
+                            t1_lookup[t_idx] = explicit_team_name
+                        elif tier == "T1": 
+                            t1_lookup[t_idx] = match
 
     # Statistical Counters
     correct_counts, song_participation = defaultdict(int), defaultdict(int)
