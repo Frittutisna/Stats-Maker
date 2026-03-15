@@ -169,7 +169,6 @@ def export_df_to_png(df, path, filename, title):
         "Off Synergy", 
         "Shared Rigs",
         "Total Solos",
-        "Team Sweeps"
     ]
 
     stats = {}
@@ -611,8 +610,9 @@ def process_files():
     team_stats_content  = []
     tier_stats_content  = []
 
-    if use_teams:
-        team_stats_content = [[
+    # Updated: Wrapped Team Statistics in watched_only_valid check
+    if use_teams and watched_only_valid:
+        team_headers = [
             "Team", 
             "Average Vintage", 
             "Average GR", 
@@ -620,11 +620,11 @@ def process_files():
             "Off Synergy", 
             "Shared Rigs", 
             "Total Solos", 
-            "Team Sweeps", 
+            "Team Sweeps",
             "Average Overs"
-        ]]
-
-        stats_list = []
+        ]
+        team_stats_content  = [team_headers]
+        stats_list          = []
         for t_id in team_correct_per_song.keys():
             if team_overs[t_id]:
                 total_rig_overs     = sum(over * rigs for over, rigs in team_overs[t_id])
@@ -644,18 +644,21 @@ def process_files():
             })
 
         stats_list.sort(key = lambda x: x["avg"], reverse = True)
-        for item in stats_list: team_stats_content.append([
-            t1_lookup.get(item["id"], f"Team {item['id']}"), 
-            format_year(item["vintage"]), 
-            f"{item ['avg']     * 100   :.2f}", 
-            f"{item ['onlist']  * 100   :.2f}", 
-            f"{item ['offlist'] * 100   :.2f}", 
-            f"{item ['shared']  * 100   :.2f}", 
-            item    ['solos'], 
-            item    ['sweeps'],
-            f"{item ['overs']           :.2f}"
-        ])
+        for item in stats_list:
+            row = [
+                t1_lookup.get(item["id"], f"Team {item['id']}"), 
+                format_year(item["vintage"]), 
+                f"{item ['avg']     * 100   :.2f}", 
+                f"{item ['onlist']  * 100   :.2f}", 
+                f"{item ['offlist'] * 100   :.2f}", 
+                f"{item ['shared']  * 100   :.2f}", 
+                item    ['solos'], 
+                item    ['sweeps'],
+                f"{item ['overs']           :.2f}"
+            ]
+            team_stats_content.append(row)
 
+    if use_teams:
         tier_stats_content  = [["Tier", "Attacker", "Blocker"]]
         tiers               = sorted([t for t in df_ps["Tier"].unique() if t != "N/A"])
         for tr in tiers:
