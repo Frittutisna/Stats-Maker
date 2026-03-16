@@ -498,9 +498,8 @@ def process_files():
         })
 
         if use_teams:
-            t_id, tier  = raw_assignments.get(name, ("N/A", "N/A"))
-            elo         = player_elo_map.get(name, "N/A")
-            row         = {"Team": t1_lookup.get(t_id, "N/A"), "Tier": tier, "Elo": elo, **row} 
+            elo = player_elo_map.get(name, "N/A")
+            row = {"Elo": elo, **row} 
         p_rows.append(row)
 
     df_ps = pd.DataFrame(p_rows)
@@ -665,9 +664,11 @@ def process_files():
 
     if use_teams:
         tier_stats_content  = [["Tier", "Attacker", "Blocker"]]
-        tiers               = sorted([t for t in df_ps["Tier"].unique() if t != "N/A"])
+        tiers               = sorted({v[1] for v in raw_assignments.values() if v[1] != "N/A"})
         for tr in tiers:
-            tdf = df_ps[df_ps["Tier"] == tr].copy()
+            tier_players    = [n for n, assign in raw_assignments.items() if assign[1] == tr]
+            tdf             = df_ps[df_ps["Player"].isin(tier_players)].copy()
+            
             if not tdf.empty:
                 max_pts     = tdf["Points"].max()
                 max_blk     = tdf["Blocks"].max()
@@ -675,9 +676,13 @@ def process_files():
                 top_blks    = tdf[tdf["Blocks"] == max_blk]
                 atk_row     = top_atks.sort_values("Guess Rate",    ascending = False).iloc[0]
                 blk_row     = top_blks.sort_values("Blocks",        ascending = False).iloc[0]
-                if len(top_atks) > 1    : atk_display = f"{atk_row['Player']} ({atk_row['Points']}, {atk_row['Guess Rate'] * 100:.2f}%)"
+                
+                atk_val     = atk_row['Guess Rate'] if isinstance(atk_row['Guess Rate'], float) else 0.0
+                blk_val     = blk_row['Guess Rate'] if isinstance(blk_row['Guess Rate'], float) else 0.0
+
+                if len(top_atks) > 1    : atk_display = f"{atk_row['Player']} ({atk_row['Points']}, {atk_val * 100:.2f}%)"
                 else                    : atk_display = f"{atk_row['Player']} ({atk_row['Points']})"
-                if len(top_blks) > 1    : blk_display = f"{blk_row['Player']} ({blk_row['Blocks']}, {blk_row['Guess Rate'] * 100:.2f}%)"
+                if len(top_blks) > 1    : blk_display = f"{blk_row['Player']} ({blk_row['Blocks']}, {blk_val * 100:.2f}%)"
                 else                    : blk_display = f"{blk_row['Player']} ({blk_row['Blocks']})"
                 tier_stats_content.append([tr, atk_display, blk_display])
 
