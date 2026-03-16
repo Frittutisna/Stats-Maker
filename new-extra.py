@@ -345,6 +345,7 @@ def process_files():
     player_missed_erigs         = defaultdict(int)
     player_list_solos           = defaultdict(int)
     watched_only_valid          = True
+    missing_list_count          = 0
     team_vintage                = defaultdict(list)
     team_correct_per_song       = defaultdict(list)
     team_onlist_synergy         = defaultdict(list)
@@ -393,9 +394,15 @@ def process_files():
 
             if isinstance(diff, (int, float))   : all_song_difficulties .append(diff)
             if year is not None                 : all_song_vintages     .append(year)
-            if not ls                           : watched_only_valid = False
+            if not ls                           : missing_list_count += 1
 
-            song_riggers = {p["name"] for p in ls}
+            song_riggers    = {p["name"] for p in ls}
+            unique_lister   = ls[0]["name"] if len(ls) == 1 else None
+            if unique_lister:
+                player_list_solos[unique_lister] += 1
+                is_solo = (len(correct) == 1 and list(correct)[0] == unique_lister)
+                if not is_solo: player_missed_erigs[unique_lister] += 1
+
             if use_teams:
                 teams_in_file_list = list({raw_assignments[p][0] for p in raw_file_players if p in raw_assignments})
                 if len(teams_in_file_list) == 2:
@@ -429,8 +436,7 @@ def process_files():
                         team_overs                      [t_id].append((len(correct), len(t_rigs)))
                     else: team_offlist_synergy          [t_id].append(len(c_on_t)       / 4.0)
 
-            if len(ls)                              == 1: player_list_solos[ls[0]["name"]]  += 1
-            if len(final_file_members - correct)    == 0: total_fulls                       += 1
+            if len(final_file_members - correct) == 0: total_fulls += 1
             elif apply_rev and len(final_file_members - correct) == 1: 
                 total_sevens += 1
                 player_reverse_erigs[list(final_file_members - correct)[0]] += 1
@@ -455,7 +461,7 @@ def process_files():
                     if n in correct         : player_rigs_hit[n]             +=  1
                     if year is not None     : player_list_vintages[n].append(year)
                     player_list_correct_counts[n].append(len(correct))
-                    if len(correct) == 0    : player_missed_erigs[n]    +=  1
+        watched_only_valid = missing_list_count <= 5
 
         for name in final_file_members:
             song_participation[name]                        += max_songs
@@ -610,7 +616,6 @@ def process_files():
     team_stats_content  = []
     tier_stats_content  = []
 
-    # Updated: Wrapped Team Statistics in watched_only_valid check
     if use_teams and watched_only_valid:
         team_headers = [
             "Team", 
