@@ -402,6 +402,10 @@ def main():
                         [(p, t1subs)  for p in t1subs if p not in playersSeen] +
                         [(p, t2subs)  for p in t2subs if p not in playersSeen]
                     )
+                    if not options:
+                        print("Warning: No more players available to fill the 0/0 slots. Breaking loop.")
+                        break
+
                     print(f"A 0/0 has been found inside {file_name}.\n"
                         f"Current players: {[player.name for player in playersSeen]}.\n"
                         "Which of the following is the culprit:")
@@ -409,8 +413,16 @@ def main():
                         print(f"[{i}] {p.name}")
                     try: 
                         choice = int(input("Choice: "))
+                        if 1 <= choice <= len(options):
+                            player, source_list = options[choice - 1]
+                            playersSeen.append(player)
+                            source_list.remove(player)
+                        else:
+                            print(f"Invalid number. Please choose between 1 and {len(options)}.")
+                            continue
                     except (ValueError, IndexError):
-                        print("Please input a valid choice")
+                        print("Please input a valid numeric choice.")
+                        continue
                     player, source_list = options[choice - 1]
                     playersSeen.append(player)
                     source_list.remove(player)
