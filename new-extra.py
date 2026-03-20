@@ -76,6 +76,47 @@ def trim_whitespace(image_path):
             img = ImageOps.expand(img, border = 10, fill = "white")
             img.save(image_path)
 
+class PlayerAdditionDialog(tk.Toplevel):
+    def __init__(self, parent, current_members, known_pool):
+        super().__init__(parent)
+        self.title("Manual Player Selection")
+        self.added_players  = []
+        self.known_pool     = sorted(list(known_pool - current_members))
+        
+        main_frame = ttk.Frame(self, padding = 10)
+        main_frame.pack(fill = tk.BOTH, expand = True)
+
+        tk.Label(main_frame, text = f"Lobby Count: {len(current_members)}, expected 8", font = ("Arial", 10, "bold")).pack()
+        
+        curr_text = "Detected: " + ", ".join(sorted(list(current_members)))
+        tk.Label(main_frame, text = curr_text, wraplength = 400, fg = "blue").pack(pady = 5)
+        
+        tk.Label(main_frame, text = "Select player to add:").pack(anchor = tk.W)
+        
+        self.listbox = tk.Listbox(main_frame, height = 12, selectmode = tk.MULTIPLE)
+        for name in self.known_pool: self.listbox.insert(tk.END, name)
+        self.listbox.pack(fill = tk.BOTH, expand = True, pady = 5)
+        
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(pady = 10)
+        ttk.Button(btn_frame, text="Add",       command = self.add_selected)    .pack(side = tk.LEFT, padx = 5)
+        ttk.Button(btn_frame, text="Finish",    command = self.destroy)         .pack(side = tk.LEFT, padx = 5)
+        
+        self.grab_set()
+        self.wait_window()
+
+    def add_selected(self):
+        selections = self.listbox.curselection()
+        if not selections: return
+        
+        for i in selections:
+            name = self.listbox.get(i)
+            if name not in self.added_players: 
+                self.added_players.append(name)
+        
+        messagebox.showinfo("Added", f"Added {len(selections)} players")
+        self.destroy()
+
 class SubSelectionDialog(tk.Toplevel):
     def __init__(self, parent, missing_roster):
         super().__init__(parent)
@@ -373,6 +414,17 @@ def process_files():
                     else:
                         res = SubSelectionDialog(None, missing).result
                         if res: final_file_members.add(res)
+            
+            if len(final_file_members) < 8:
+                for t_id in teams_in_file:
+                    for teammate in team_rosters[t_id]: final_file_members.add(teammate)
+
+        while len(final_file_members) < 8:
+            dialog = PlayerAdditionDialog(None, final_file_members, all_known_players)
+            if not dialog.added_players:
+                if messagebox.askyesno("Warning", "Still under 8 players, continue anyway?")    : break
+                else                                                                            : continue
+            for p in dialog.added_players                                                       : final_file_members.add(p)
 
         apply_rev           = (len(final_file_members) % 2 == 0)
         max_songs           = max(s.get("songNumber", 0) for s in songs)
