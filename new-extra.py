@@ -76,6 +76,38 @@ def trim_whitespace(image_path):
             img = ImageOps.expand(img, border = 10, fill = "white")
             img.save(image_path)
 
+def fuse_pngs(png_dir):
+    """Fuses individual PNGs into one Extra.png"""
+    files = {
+        "Tour"      : os.path.join(png_dir, "Tour.png"),
+        "Team"      : os.path.join(png_dir, "Team.png"),
+        "Tier"      : os.path.join(png_dir, "Tier.png"),
+        "Watched"   : os.path.join(png_dir, "Watched.png")
+    }
+    
+    imgs    = {k: Image.open(v) for k, v in files.items() if os.path.exists(v)}
+    if not imgs: return
+    r_keys  = [k for k in ["Team", "Tier", "Watched"] if k in imgs]
+    tour_w  = imgs["Tour"].width    if "Tour" in imgs else 0
+    tour_h  = imgs["Tour"].height   if "Tour" in imgs else 0
+    r_w     = max([imgs[k].width        for k in r_keys])       if r_keys else 0
+    r_h     = sum([imgs[k].height + 10  for k in r_keys]) - 10  if r_keys else 0
+    c_w     = tour_w + (10 if tour_w and r_w else 0) + r_w
+    c_h     = max(tour_h, r_h)
+    fused   = Image.new("RGB", (c_w, c_h), "white")
+
+    if "Tour" in imgs: fused.paste(imgs["Tour"], (0, 0))
+    curr_x = tour_w + 10 if tour_w else 0
+    curr_y = 0
+    for k in r_keys:
+        fused.paste(imgs[k], (curr_x, curr_y))
+        curr_y += imgs[k].height + 10
+        
+    final_path = os.path.join(png_dir, "Extra.png")
+    fused.save(final_path)
+    try     : trim_whitespace(final_path)
+    except  : pass
+
 class PlayerAdditionDialog(tk.Toplevel):
     def __init__(self, parent, current_members, known_pool):
         super().__init__(parent)
@@ -783,6 +815,8 @@ def process_files():
             pd.DataFrame(watched_content[1:], columns = watched_content[0]), 
             png_dir, "Watched.png", "Watched Statistics"
         )
+    
+    fuse_pngs(png_dir)
 
     if messagebox.askyesno("Success", f"Saved as Markdown and PNGs, click Yes to delete JSONs"):
         for path in json_paths:
