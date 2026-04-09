@@ -108,6 +108,11 @@ def fuse_pngs(png_dir):
     try     : trim_whitespace(final_path)
     except  : pass
 
+    for path in files.values():
+        if os.path.exists(path):
+            try     : os.remove(path)
+            except  : pass
+
 class PlayerAdditionDialog(tk.Toplevel):
     def __init__(self, parent, current_members, known_pool):
         super().__init__(parent)
@@ -186,23 +191,6 @@ class ManualMatchDialog(tk.Toplevel):
         if sel: 
             self.result = self.listbox.get(sel[0])
             self.destroy()
-
-def save_as_html_table(rows, md_path, title):
-    html =  f"## {title}\n\n"
-    html += '<table>\n'
-    for i, row in enumerate(rows):
-        style   =   ' style="text-align: center;"'
-        html    +=  f'  <tr{style}>\n'
-        for j, cell in enumerate(row):
-            is_header   =   (i == 0)
-            tag         =   'th style="text-align: center;"' if is_header else "td"
-            content     =   str(cell)
-            if is_header            : content = content.replace(" ", "<br>")
-            if j == 0 or is_header  : content = f"<b>{content}</b>"
-            html        +=  f'    <{tag}>{content}</{tag}>\n'
-        html += '  </tr>\n'
-    html += '</table>\n\n'
-    with open(md_path, "a", encoding = "utf-8") as f: f.write(html)
 
 def get_browser():
     """Detects common browser paths for HTML2Image"""
@@ -609,14 +597,11 @@ def process_files():
         df_display[c] = pd.to_numeric(df_display[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
     timestamp   = datetime.now().strftime("%y%m%d%H")
-    png_dir     = os.path.join(script_dir, "archive", "png",    timestamp)
-    md_path     = os.path.join(script_dir, "archive", "md",     f"{timestamp}.md")
-    os.makedirs(png_dir,                    exist_ok = True)
-    os.makedirs(os.path.dirname(md_path),   exist_ok = True)
-    open(md_path, 'w').close()
+    png_dir     = os.path.join(script_dir, "archive", timestamp)
 
-    player_header   = [list(df_display.columns)]
-    player_data     = df_display.values.tolist()
+    os.makedirs(png_dir, exist_ok = True)
+    export_df_to_png(df_display, png_dir, "Player.png", "Player Statistics")
+
     plist           = list(song_participation.keys())
     max_solos_val   = max(erigs_counts.values())            if erigs_counts         else 0
     max_doubles_val = max(player_two_eighths.values())      if player_two_eighths   else 0
@@ -696,11 +681,10 @@ def process_files():
         tour_stats.append(["Least Missed Solos",    str_least_missed])
     
     extra_content       = [["Statistic", "Value"]] + tour_stats
-    team_stats_content  = []
-    tier_stats_content  = []
 
     if use_teams and watched_only_valid:
-        team_headers = [
+        stats_list      = []
+        team_headers    = [
             "Team", 
             "Average Vintage", 
             "Average GR", 
@@ -708,43 +692,44 @@ def process_files():
             "Off Synergy", 
             "Shared Rigs", 
             "Total Solos", 
-            "Team Sweeps",
             "Average Overs"
         ]
-        team_stats_content  = [team_headers]
-        stats_list          = []
+
         for t_id in team_correct_per_song.keys():
             if team_overs[t_id]:
-                total_rig_overs     = sum(over * rigs for over, rigs in team_overs[t_id])
-                total_rigs          = sum(rigs for _, rigs in team_overs[t_id])
+                total_rig_overs     = sum(over * rigs   for over,   rigs in team_overs[t_id])
+                total_rigs          = sum(rigs          for _,      rigs in team_overs[t_id])
                 weighted_overs      = total_rig_overs / total_rigs if total_rigs > 0 else 0.0
             else: weighted_overs    = 0.0
+
             stats_list.append({
                 "id"        : t_id,
-                "vintage"   : np.mean(team_vintage          [t_id]) if team_vintage             [t_id] else np.nan,
-                "avg"       : np.mean(team_correct_per_song [t_id]) if team_correct_per_song    [t_id] else 0.0,
-                "onlist"    : np.mean(team_onlist_synergy   [t_id]) if team_onlist_synergy      [t_id] else 0.0,
-                "offlist"   : np.mean(team_offlist_synergy  [t_id]) if team_offlist_synergy     [t_id] else 0.0,
-                "shared"    : np.mean(team_shared_rig_pct   [t_id]) if team_shared_rig_pct      [t_id] else 0.0,
-                "solos"     : team_solos                    [t_id],
-                "sweeps"    : team_sweeps                   [t_id],
+                "vintage"   : np.mean(team_vintage          [t_id]),
+                "avg"       : np.mean(team_correct_per_song [t_id])     if team_correct_per_song    [t_id] else 0.0,
+                "onlist"    : np.mean(team_onlist_synergy   [t_id])     if team_onlist_synergy      [t_id] else 0.0,
+                "offlist"   : np.mean(team_offlist_synergy  [t_id])     if team_offlist_synergy     [t_id] else 0.0,
+                "shared"    : np.mean(team_shared_rig_pct   [t_id])     if team_shared_rig_pct      [t_id] else 0.0,
+                "solos"     : team_solos[t_id], 
+                "sweeps"    : team_sweeps[t_id], 
                 "overs"     : weighted_overs
             })
 
         stats_list.sort(key = lambda x: x["avg"], reverse = True)
-        for item in stats_list:
-            row = [
-                t1_lookup.get(item["id"], f"Team {item['id']}"), 
-                format_year(item["vintage"]), 
-                f"{item ['avg']     * 100   :.2f}", 
-                f"{item ['onlist']  * 100   :.2f}", 
-                f"{item ['offlist'] * 100   :.2f}", 
-                f"{item ['shared']  * 100   :.2f}", 
-                item    ['solos'], 
-                item    ['sweeps'],
-                f"{item ['overs']           :.2f}"
-            ]
-            team_stats_content.append(row)
+        team_stats_content = [team_headers] + [
+            [t1_lookup.get(i["id"], f"Team {i['id']}"), 
+            format_year(i["vintage"]), 
+            f"{i['avg']     *100:.2f}", 
+            f"{i['onlist']  *100:.2f}", 
+            f"{i['offlist'] *100:.2f}", 
+            f"{i['shared']  *100:.2f}", 
+            i['solos'], 
+            f"{i['overs']:.2f}"] 
+        for i in stats_list]
+
+        export_df_to_png(
+            pd.DataFrame(team_stats_content[1:], columns = team_stats_content[0]), 
+            png_dir, "Team.png", "Team Statistics"
+        )
 
     if use_teams:
         tier_stats_content  = [["Tier", "Attacker", "Blocker"]]
@@ -752,76 +737,36 @@ def process_files():
         for tr in tiers:
             tier_players    = [n for n, assign in raw_assignments.items() if assign[1] == tr]
             tdf             = df_ps[df_ps["Player"].isin(tier_players)].copy()
-            
             if not tdf.empty:
-                max_pts     = tdf["Points"].max()
-                max_blk     = tdf["Blocks"].max()
-                top_atks    = tdf[tdf["Points"] == max_pts]
-                top_blks    = tdf[tdf["Blocks"] == max_blk]
-                atk_row     = top_atks.sort_values("Guess Rate",    ascending = False).iloc[0]
-                blk_row     = top_blks.sort_values("Blocks",        ascending = False).iloc[0]
-                
-                atk_val     = atk_row['Guess Rate'] if isinstance(atk_row['Guess Rate'], float) else 0.0
-                blk_val     = blk_row['Guess Rate'] if isinstance(blk_row['Guess Rate'], float) else 0.0
-
-                if len(top_atks) > 1    : atk_display = f"{atk_row['Player']} ({atk_row['Points']}, {atk_val * 100:.2f}%)"
-                else                    : atk_display = f"{atk_row['Player']} ({atk_row['Points']})"
-                if len(top_blks) > 1    : blk_display = f"{blk_row['Player']} ({blk_row['Blocks']}, {blk_val * 100:.2f}%)"
-                else                    : blk_display = f"{blk_row['Player']} ({blk_row['Blocks']})"
+                max_pts,    max_blk     = tdf["Points"].max(),              tdf["Blocks"].max()
+                top_atks,   top_blks    = tdf[tdf["Points"] == max_pts],    tdf[tdf["Blocks"] == max_blk]
+                atk_row                 = top_atks.sort_values("Guess Rate",    ascending = False).iloc[0]
+                blk_row                 = top_blks.sort_values("Blocks",        ascending = False).iloc[0]
+                atk_display = f"{atk_row['Player']} ({atk_row['Points']}{', ' + f'{atk_row['Guess Rate']*100:.2f}%' if len(top_atks) > 1 else ''})"
+                blk_display = f"{blk_row['Player']} ({blk_row['Blocks']}{', ' + f'{blk_row['Guess Rate']*100:.2f}%' if len(top_blks) > 1 else ''})"
                 tier_stats_content.append([tr, atk_display, blk_display])
+        export_df_to_png(pd.DataFrame(tier_stats_content[1:], columns = tier_stats_content[0]), png_dir, "Tier.png", "Tier Bests")
 
-    watched_content = []
+    if extra_content: export_df_to_png(pd.DataFrame(extra_content[1:], columns = extra_content[0]), png_dir, "Tour.png", "Tour Statistics")
+
     if watched_only_valid:
         e_list = sorted([(n, np.mean(player_list_correct_counts [n])) for n in plist if player_list_correct_counts  [n]], key = lambda x: x[1], reverse = True) [:3]
         h_list = sorted([(n, np.mean(player_list_correct_counts [n])) for n in plist if player_list_correct_counts  [n]], key = lambda x: x[1])                 [:3]
         z_list = sorted([(n, np.mean(player_list_vintages       [n])) for n in plist if player_list_vintages        [n]], key = lambda x: x[1], reverse = True) [:3]
         b_list = sorted([(n, np.mean(player_list_vintages       [n])) for n in plist if player_list_vintages        [n]], key = lambda x: x[1])                 [:3]
-        watched_content.append(["Rank", "Easiest", "Hardest", "Newest", "Oldest"])
+
+        watched_content = [["Rank", "Easiest", "Hardest", "Newest", "Oldest"]]
         for i in range(3):
             row = [f"{i + 1}"]
-            row.append(f"{e_list[i][0]} ({e_list                [i][1]:.2f})"   if i < len(e_list) else "N/A")
-            row.append(f"{h_list[i][0]} ({h_list                [i][1]:.2f})"   if i < len(h_list) else "N/A")
-            row.append(f"{z_list[i][0]} ({format_year(z_list    [i][1])})"      if i < len(z_list) else "N/A")
-            row.append(f"{b_list[i][0]} ({format_year(b_list    [i][1])})"      if i < len(b_list) else "N/A")
+            row.append(f"{e_list[i][0]} ({e_list[i][1]:.2f})"           if i < len(e_list) else "N/A")
+            row.append(f"{h_list[i][0]} ({h_list[i][1]:.2f})"           if i < len(h_list) else "N/A")
+            row.append(f"{z_list[i][0]} ({format_year(z_list[i][1])})"  if i < len(z_list) else "N/A")
+            row.append(f"{b_list[i][0]} ({format_year(b_list[i][1])})"  if i < len(b_list) else "N/A")
             watched_content.append(row)
-
-    save_as_html_table(player_header + player_data, md_path, "Player Statistics")
-    export_df_to_png(df_display, png_dir, "Player.png", "Player Statistics")
-
-    if team_stats_content:
-        save_as_html_table(team_stats_content, md_path, "Team Statistics")
-        export_df_to_png(
-            pd.DataFrame(team_stats_content[1:], columns = team_stats_content[0]), 
-            png_dir, "Team.png", "Team Statistics"
-        )
-
-    if tier_stats_content:
-        save_as_html_table(tier_stats_content, md_path, "Tier Bests")
-        export_df_to_png(
-            pd.DataFrame(tier_stats_content[1:], columns = tier_stats_content[0]), 
-            png_dir, "Tier.png", "Tier Bests"
-        )
-
-    if extra_content:
-        save_as_html_table(extra_content, md_path, "Tour Statistics")
-        export_df_to_png(
-            pd.DataFrame(extra_content[1:], columns = extra_content[0]), 
-            png_dir, "Tour.png", "Tour Statistics"
-        )
-
-    if watched_content: 
-        save_as_html_table(watched_content, md_path, "Watched Statistics")
-        export_df_to_png(
-            pd.DataFrame(watched_content[1:], columns = watched_content[0]), 
-            png_dir, "Watched.png", "Watched Statistics"
-        )
+        export_df_to_png(pd.DataFrame(watched_content[1:], columns = watched_content[0]), png_dir, "Watched.png", "List Statistics")
     
     fuse_pngs(png_dir)
-
-    if messagebox.askyesno("Success", f"Saved as Markdown and PNGs, click Yes to delete JSONs"):
-        for path in json_paths:
-            try     : os.remove(path)
-            except  : pass
+    messagebox.showinfo("Success", f"Saved PNGs to archive/{timestamp}")
 
 if __name__ == "__main__":
     root = tk.Tk()
