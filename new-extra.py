@@ -88,20 +88,34 @@ def fuse_pngs(png_dir):
     imgs    = {k: Image.open(v) for k, v in files.items() if os.path.exists(v)}
     if not imgs: return
     r_keys  = [k for k in ["Team", "Tier", "Watched"] if k in imgs]
-    tour_w  = imgs["Tour"].width    if "Tour" in imgs else 0
-    tour_h  = imgs["Tour"].height   if "Tour" in imgs else 0
-    r_w     = max([imgs[k].width        for k in r_keys])       if r_keys else 0
-    r_h     = sum([imgs[k].height + 10  for k in r_keys]) - 10  if r_keys else 0
-    c_w     = tour_w + (10 if tour_w and r_w else 0) + r_w
-    c_h     = max(tour_h, r_h)
-    fused   = Image.new("RGB", (c_w, c_h), "white")
+    
+    if len(r_keys) == 1:
+        tour_w  = imgs["Tour"].width    if "Tour" in imgs else 0
+        tour_h  = imgs["Tour"].height   if "Tour" in imgs else 0
+        other_k = r_keys[0]
+        other_w = imgs[other_k].width
+        other_h = imgs[other_k].height
+        c_w     = max(tour_w, other_w)
+        c_h     = tour_h + (10 if tour_h else 0) + other_h
+        fused   = Image.new("RGB", (c_w, c_h), "white")
+        
+        if "Tour" in imgs: fused.paste(imgs["Tour"], (0, 0))
+        fused.paste(imgs[other_k], (0, tour_h + 10 if tour_h else 0))
+    else:
+        tour_w  = imgs["Tour"].width                                if "Tour" in imgs   else 0
+        tour_h  = imgs["Tour"].height                               if "Tour" in imgs   else 0
+        r_w     = max([imgs[k].width        for k in r_keys])       if r_keys           else 0
+        r_h     = sum([imgs[k].height + 10  for k in r_keys]) - 10  if r_keys           else 0
+        c_w     = tour_w + (10 if tour_w and r_w else 0) + r_w
+        c_h     = max(tour_h, r_h)
+        fused   = Image.new("RGB", (c_w, c_h), "white")
 
-    if "Tour" in imgs: fused.paste(imgs["Tour"], (0, 0))
-    curr_x = tour_w + 10 if tour_w else 0
-    curr_y = 0
-    for k in r_keys:
-        fused.paste(imgs[k], (curr_x, curr_y))
-        curr_y += imgs[k].height + 10
+        if "Tour" in imgs: fused.paste(imgs["Tour"], (0, 0))
+        curr_x = tour_w + 10 if tour_w else 0
+        curr_y = 0
+        for k in r_keys:
+            fused.paste(imgs[k], (curr_x, curr_y))
+            curr_y += imgs[k].height + 10
         
     final_path = os.path.join(png_dir, "Extra.png")
     fused.save(final_path)
@@ -553,9 +567,11 @@ def process_files():
             "Solos"         : erigs_counts          [name], 
             "Doubles"       : player_two_eighths    [name], 
             "Sevens"        : player_reverse_erigs  [name], 
-            "Points"        : player_points         [name], 
-            "Blocks"        : player_blocks         [name]
         }
+
+        if use_teams:
+            row["Points"] = player_points[name]
+            row["Blocks"] = player_blocks[name]
 
         for t_id, label in active_types.items():
             seen        = player_type_seen[name][t_id]
@@ -665,13 +681,15 @@ def process_files():
         ["Total Doubles",       total_doubles],
         ["Total Sevens",        total_sevens],
         ["Total Fulls",         total_fulls],
-        ["Total Sweeps",        total_sweeps],
+    ]
+    if use_teams: tour_stats.append(["Total Sweeps", total_sweeps])
+    tour_stats.extend([
         ["Most Popular Genre",  f"{genre_counter    .most_common(1)[0][0]} ({genre_counter  .most_common(1)[0][1]})" if genre_counter   else "N/A"],
         ["Most Popular Tag",    f"{tag_counter      .most_common(1)[0][0]} ({tag_counter    .most_common(1)[0][1]})" if tag_counter     else "N/A"],
         ["Most Solos",          str_solos],
         ["Most Doubles",        str_doubles],
         ["Most Sevens",         str_sevens]
-    ]
+    ])
 
     if best_no_erig     != "N/A": tour_stats.append(["Highest GR without Solos",    f"{best_no_erig} ({100      * (correct_counts[best_no_erig]     / song_participation[best_no_erig])     :.2f})"])
     if worst_with_solos != "N/A": tour_stats.append(["Lowest GR with Solos",        f"{worst_with_solos} ({100  * (correct_counts[worst_with_solos] / song_participation[worst_with_solos]) :.2f}, {erigs_counts[worst_with_solos]})"])
