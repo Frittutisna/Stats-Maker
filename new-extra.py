@@ -356,7 +356,7 @@ def process_files():
         alias_map       = load_aliases(script_dir)
         player_elo_map  = {}
         with open(codes_path, "r", encoding = "utf-8") as f:
-            lines = [l.strip() for l in f.readlines() if "(" in l]
+            lines = [l.strip() for l in f.readlines() if "[" in l and "]" in l]
             if lines:
                 use_teams       = True
                 available       = list(all_known_players)
@@ -628,10 +628,18 @@ def process_files():
     tied_sevens     = [n for n, v in player_reverse_erigs.items()   if v == max_sevens_val  and v > 0]
 
     def format_most_stat(names, value):
-        if not names            : return "N/A"
-        elif len(names) == 2    : return f"{names[0]} and {names[1]} ({value})"
-        elif len(names) >= 3    : return f"{names[0]} and others ({value})"
-        else                    : return f"{names[0]} ({value})"
+        if not names: return "N/A"
+        sorted_names = sorted(names, key = lambda x: (correct_counts[x] / song_participation[x]) if song_participation[x] else 0)
+        
+        def get_display_name(name):
+            if len(names) > 1:
+                gr = (correct_counts[name] / song_participation[name]) * 100 if song_participation[name] else 0
+                return f"{name} ({value}, {gr:.2f})"
+            return f"{name} ({value})"
+
+        if      len(sorted_names) == 2  : return f"{get_display_name(sorted_names[0])} and {get_display_name(sorted_names[1])}"
+        elif    len(sorted_names) >= 3  : return f"{get_display_name(sorted_names[0])} and others"
+        else                            : return get_display_name(sorted_names[0])
 
     str_solos   = format_most_stat(tied_solos,      max_solos_val)
     str_doubles = format_most_stat(tied_doubles,    max_doubles_val)
