@@ -681,7 +681,7 @@ def process_files():
         str_missed                  = "N/A"
 
     tour_stats = [
-        ["Average Vintage",     format_year(round(np.mean(all_song_vintages), 2))],
+        ["Median Vintage",      format_year(round(np.median(all_song_vintages), 2))],
         ["Average Difficulty",  f"{np.mean(all_song_difficulties):.2f}"],
         ["Average GR",          f"{100 * (total_correct_answers_sum / sum(song_participation.values())):.2f}"],
         ["Total Blanks",        total_blanks],
@@ -712,7 +712,7 @@ def process_files():
         stats_list      = []
         team_headers    = [
             "Team", 
-            "Average Vintage", 
+            "Median Vintage", 
             "Average GR", 
             "Rig Synergy", 
             "Off Synergy", 
@@ -730,13 +730,13 @@ def process_files():
 
             stats_list.append({
                 "id"        : t_id,
-                "vintage"   : np.mean(team_vintage          [t_id]),
-                "avg"       : np.mean(team_correct_per_song [t_id])     if team_correct_per_song    [t_id] else 0.0,
-                "onlist"    : np.mean(team_onlist_synergy   [t_id])     if team_onlist_synergy      [t_id] else 0.0,
-                "offlist"   : np.mean(team_offlist_synergy  [t_id])     if team_offlist_synergy     [t_id] else 0.0,
-                "shared"    : np.mean(team_shared_rig_pct   [t_id])     if team_shared_rig_pct      [t_id] else 0.0,
-                "solos"     : team_solos[t_id], 
-                "sweeps"    : team_sweeps[t_id], 
+                "vintage"   : np.median (team_vintage           [t_id]),
+                "avg"       : np.mean   (team_correct_per_song  [t_id])     if team_correct_per_song    [t_id] else 0.0,
+                "onlist"    : np.mean   (team_onlist_synergy    [t_id])     if team_onlist_synergy      [t_id] else 0.0,
+                "offlist"   : np.mean   (team_offlist_synergy   [t_id])     if team_offlist_synergy     [t_id] else 0.0,
+                "shared"    : np.mean   (team_shared_rig_pct    [t_id])     if team_shared_rig_pct      [t_id] else 0.0,
+                "solos"     : team_solos                        [t_id], 
+                "sweeps"    : team_sweeps                       [t_id], 
                 "overs"     : weighted_overs
             })
 
@@ -776,10 +776,10 @@ def process_files():
     if extra_content: export_df_to_png(pd.DataFrame(extra_content[1:], columns = extra_content[0]), png_dir, "Tour.png", "Tour Statistics")
 
     if watched_only_valid:
-        e_list = sorted([(n, np.mean(player_list_correct_counts [n])) for n in plist if player_list_correct_counts  [n]], key = lambda x: x[1], reverse = True) [:3]
-        h_list = sorted([(n, np.mean(player_list_correct_counts [n])) for n in plist if player_list_correct_counts  [n]], key = lambda x: x[1])                 [:3]
-        z_list = sorted([(n, np.mean(player_list_vintages       [n])) for n in plist if player_list_vintages        [n]], key = lambda x: x[1], reverse = True) [:3]
-        b_list = sorted([(n, np.mean(player_list_vintages       [n])) for n in plist if player_list_vintages        [n]], key = lambda x: x[1])                 [:3]
+        e_list = sorted([(n, np.mean    (player_list_correct_counts [n])) for n in plist if player_list_correct_counts  [n]], key = lambda x: x[1], reverse = True) [:3]
+        h_list = sorted([(n, np.mean    (player_list_correct_counts [n])) for n in plist if player_list_correct_counts  [n]], key = lambda x: x[1])                 [:3]
+        z_list = sorted([(n, np.median  (player_list_vintages       [n])) for n in plist if player_list_vintages        [n]], key = lambda x: x[1], reverse = True) [:3]
+        b_list = sorted([(n, np.median  (player_list_vintages       [n])) for n in plist if player_list_vintages        [n]], key = lambda x: x[1])                 [:3]
 
         watched_content = [["Rank", "Easiest", "Hardest", "Newest", "Oldest"]]
         for i in range(3):
