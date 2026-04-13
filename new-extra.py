@@ -629,17 +629,12 @@ def process_files():
 
     def format_most_stat(names, value):
         if not names: return "N/A"
-        sorted_names = sorted(names, key = lambda x: (correct_counts[x] / song_participation[x]) if song_participation[x] else 0)
-        
-        def get_display_name(name):
-            if len(names) > 1:
-                gr = (correct_counts[name] / song_participation[name]) * 100 if song_participation[name] else 0
-                return f"{name} ({value}, {gr:.2f})"
-            return f"{name} ({value})"
-
-        if      len(sorted_names) == 2  : return f"{get_display_name(sorted_names[0])} and {get_display_name(sorted_names[1])}"
-        elif    len(sorted_names) >= 3  : return f"{get_display_name(sorted_names[0])} and others"
-        else                            : return get_display_name(sorted_names[0])
+        sorted_names    = sorted(names, key = lambda x: (correct_counts[x] / song_participation[x]) if song_participation[x] else 0)
+        winner          = sorted_names[0]
+        if len(names) > 1:
+            gr = (correct_counts[winner] / song_participation[winner]) * 100 if song_participation[winner] else 0
+            return f"{winner} ({value}, {gr:.2f})"
+        return f"{winner} ({value})"
 
     str_solos   = format_most_stat(tied_solos,      max_solos_val)
     str_doubles = format_most_stat(tied_doubles,    max_doubles_val)
