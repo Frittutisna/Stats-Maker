@@ -231,6 +231,7 @@ def export_df_to_png(df, path, filename, title):
         "Solos", 
         "Doubles", 
         "Rigs", 
+        "Rig Delta", 
         "Points", 
         "Blocks", 
         "Rig Rate", 
@@ -578,11 +579,12 @@ def process_files():
             row[label]  = player_type_correct[name][t_id] / seen if seen else np.nan
 
         if watched_only_valid: row.update({
-            "Rigs"          : player_rigs[name], 
-            "Rig Rate"      : player_rigs[name] / total                                         if total                            else np.nan,
-            "Rig GR"     : player_rigs_hit[name] / player_rigs[name]                         if player_rigs[name]                else np.nan,
+            "Rigs"      : player_rigs[name], 
+            "Rig Rate"  : player_rigs[name] / total                                         if total                            else np.nan,
+            "Rig Delta" : (correct / total) - (player_rigs[name] / total)                   if total                            else np.nan,
+            "Rig GR"    : player_rigs_hit[name] / player_rigs[name]                         if player_rigs[name]                else np.nan,
             "Off GR"    : (correct - player_rigs_hit[name]) / (total - player_rigs[name])   if (total - player_rigs[name])      else np.nan,
-            "Overs"         : np.mean(player_list_correct_counts[name])                         if player_list_correct_counts[name] else np.nan
+            "Overs"     : np.mean(player_list_correct_counts[name])                         if player_list_correct_counts[name] else np.nan
         })
 
         if use_teams:
@@ -605,7 +607,7 @@ def process_files():
     pct_cols    = ["Guess Rate"] + [c for c in type_cols if c in df_display.columns]
 
     if watched_only_valid: 
-        pct_cols.extend(["Rig Rate", "Rig GR", "Off GR"])
+        pct_cols.extend(["Rig Rate", "Rig Delta", "Rig GR", "Off GR"])
         if "Overs" in df_display.columns:
             df_display["Overs"] = pd.to_numeric(df_display["Overs"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
