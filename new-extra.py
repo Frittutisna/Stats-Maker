@@ -581,7 +581,7 @@ def process_files():
         if watched_only_valid: row.update({
             "Rigs"      : player_rigs[name], 
             "Rig Rate"  : player_rigs[name] / total                                         if total                            else np.nan,
-            "Rig Delta" : (correct / total) - (player_rigs[name] / total)                   if total                            else np.nan,
+            "Rig Delta" : (correct - player_rigs[name]) / correct                           if correct                          else np.nan,
             "Rig GR"    : player_rigs_hit[name] / player_rigs[name]                         if player_rigs[name]                else np.nan,
             "Off GR"    : (correct - player_rigs_hit[name]) / (total - player_rigs[name])   if (total - player_rigs[name])      else np.nan,
             "Overs"     : np.mean(player_list_correct_counts[name])                         if player_list_correct_counts[name] else np.nan
