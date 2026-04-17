@@ -650,32 +650,30 @@ def process_files():
     worst_with_solos    = sorted(solos_pool,    key = lambda x: (correct_counts[x] / song_participation[x]), reverse = False)   [0] if solos_pool   else "N/A"
 
     if list_players_pool:
-        min_missed_val              = min(player_missed_erigs[n] for n in list_players_pool)
-        potential_least_missed      = [n for n in list_players_pool if player_missed_erigs[n] == min_missed_val]
-        if len(potential_least_missed) > 1:
-            max_list_solos_in_pool  = max(player_list_solos[n] for n in potential_least_missed)
-            final_tied_least        = [n for n in potential_least_missed if player_list_solos[n] == max_list_solos_in_pool]
-            winner_names            = format_most_stat(final_tied_least, None).split(" (")[0]
-            list_solos_val          = max_list_solos_in_pool
-        else:
-            winner_names            = potential_least_missed[0]
-            list_solos_val          = player_list_solos[winner_names]
-        str_least_missed            = f"{winner_names} ({min_missed_val}/{list_solos_val})"
+        conv_stats = []
+        for n in list_players_pool:
+            total   = player_list_solos[n]
+            hit     = total - player_missed_erigs[n]
+            conv_stats.append({
+                'name'  : n,
+                'pct'   : 100 * hit / total if total > 0 else 0.0,
+                'hit'   : hit,
+                'total' : total
+            })
 
-        max_missed_val              = max(player_missed_erigs[n] for n in list_players_pool)
-        potential_most_missed       = [n for n in list_players_pool if player_missed_erigs[n] == max_missed_val]
-        if len(potential_most_missed) > 1:
-            min_list_solos_in_pool  = min(player_list_solos[n] for n in potential_most_missed)
-            final_tied_most         = [n for n in potential_most_missed if player_list_solos[n] == min_list_solos_in_pool]
-            winner_names_most       = format_most_stat(final_tied_most, None).split(" (")[0]
-            list_solos_val_most     = min_list_solos_in_pool
-        else:
-            winner_names_most       = potential_most_missed[0]
-            list_solos_val_most     = player_list_solos[winner_names_most]
-        str_missed                  = f"{winner_names_most} ({max_missed_val}/{list_solos_val_most})"
-    else: 
-        str_least_missed            = "N/A"
-        str_missed                  = "N/A"
+        b_sort = sorted(conv_stats, key = lambda x: (x['pct'], x['total']),     reverse = True)
+        w_sort = sorted(conv_stats, key = lambda x: (x['pct'], -x['total']))
+
+        def get_display_str(sort, idx_0, idx_1):
+            p_0 = sort[idx_0]
+            p_1 = sort[idx_1]
+            res = f"{p_0['name']} ({p_0['pct']:.2f}"
+            if p_0['pct'] == p_1['pct']: res += f", {p_0['hit']}/{p_0['total']}"
+            return res + ")"
+
+        str_b_conv      = get_display_str(b_sort, 0, 1)
+        str_w_conv      = get_display_str(w_sort, 0, 1)
+    else: str_b_conv    = str_w_conv = "N/A"
 
     tour_stats = [
         ["Median Vintage",      format_year(round(np.median(all_song_vintages), 2))],
@@ -699,9 +697,9 @@ def process_files():
     if best_no_erig     != "N/A": tour_stats.append(["Highest GR without Solos",    f"{best_no_erig} ({100      * (correct_counts[best_no_erig]     / song_participation[best_no_erig])     :.2f})"])
     if worst_with_solos != "N/A": tour_stats.append(["Lowest GR with Solos",        f"{worst_with_solos} ({100  * (correct_counts[worst_with_solos] / song_participation[worst_with_solos]) :.2f}, {erigs_counts[worst_with_solos]})"])
 
-    if watched_only_valid: 
-        tour_stats.append(["Most Missed Solos",     str_missed])
-        tour_stats.append(["Least Missed Solos",    str_least_missed])
+    if watched_only_valid:
+        tour_stats.append(["Best Solo Rig Converter",   str_b_conv]) 
+        tour_stats.append(["Worst Solo Rig Converter",  str_w_conv])
     
     extra_content       = [["Statistic", "Value"]] + tour_stats
 
@@ -739,15 +737,13 @@ def process_files():
 
         stats_list.sort(key = lambda x: x["avg"], reverse = True)
         team_stats_content = [team_headers] + [
-            [t1_lookup.get(i["id"], f"Team {i['id']}"), 
-            format_year(i["vintage"]), 
-            f"{i['avg']     *100:.2f}", 
-            f"{i['onlist']  *100:.2f}", 
-            f"{i['offlist'] *100:.2f}", 
-            f"{i['shared']  *100:.2f}", 
-            i['solos'], 
-            f"{i['overs']:.2f}"] 
-        for i in stats_list]
+            [t1_lookup.get(i["id"], f"Team {i['id']}"), format_year(i["vintage"]), 
+            f"{i    ['avg']     * 100   :.2f}", 
+            f"{i    ['onlist']  * 100   :.2f}", 
+            f"{i    ['offlist'] * 100   :.2f}", 
+            f"{i    ['shared']  * 100   :.2f}", 
+            i       ['solos'], 
+            f"{i    ['overs']           :.2f}"] for i in stats_list]
 
         export_df_to_png(
             pd.DataFrame(team_stats_content[1:], columns = team_stats_content[0]), 
@@ -756,21 +752,38 @@ def process_files():
 
     if use_teams:
         tier_stats_content  = [["Tier", "Attacker", "Blocker"]]
-        tiers               = sorted({v[1] for v in raw_assignments.values() if v[1] != "N/A"})
+        tiers               = sorted({v[1] for v in raw_assignments.values() if v[1] != "N/A"}, reverse = True)
+        max_pts_from_below  = -1
+        max_blk_from_below  = -1
+        tier_results        = []
+
         for tr in tiers:
             tier_players    = [n for n, assign in raw_assignments.items() if assign[1] == tr]
-            tdf             = df_ps[df_ps["Player"].isin(tier_players)].copy()
+            tdf             = df_ps[df_ps["Player"].isin(tier_players)].copy()            
             if not tdf.empty:
-                max_pts,    max_blk     = tdf["Points"].max(),              tdf["Blocks"].max()
-                top_atks,   top_blks    = tdf[tdf["Points"] == max_pts],    tdf[tdf["Blocks"] == max_blk]
-                atk_row                 = top_atks.sort_values("Guess Rate",    ascending = False).iloc[0]
-                blk_row                 = top_blks.sort_values("Blocks",        ascending = False).iloc[0]
-                atk_display = f"{atk_row['Player']} ({atk_row['Points']}{', ' + f'{atk_row['Guess Rate']*100:.2f}%' if len(top_atks) > 1 else ''})"
-                blk_display = f"{blk_row['Player']} ({blk_row['Blocks']}{', ' + f'{blk_row['Guess Rate']*100:.2f}%' if len(top_blks) > 1 else ''})"
-                tier_stats_content.append([tr, atk_display, blk_display])
-        export_df_to_png(pd.DataFrame(tier_stats_content[1:], columns = tier_stats_content[0]), png_dir, "Tier.png", "Tier Bests")
+                max_pts = tdf["Points"].max()
+                max_blk = tdf["Blocks"].max()
+                top_atk = tdf[tdf["Points"] == max_pts]
+                top_blk = tdf[tdf["Blocks"] == max_blk]
+                atk_row = top_atk.sort_values("Points", ascending = False).iloc[0]
+                blk_row = top_blk.sort_values("Blocks", ascending = False).iloc[0]
+                atk_dis = f"{atk_row['Player']} ({atk_row['Points']}{', ' + f'{atk_row['Guess Rate'] * 100:.2f}' if len(top_atk) > 1 else ''})" if max_pts > max_pts_from_below else "▼"
+                blk_dis = f"{blk_row['Player']} ({blk_row['Blocks']}{', ' + f'{blk_row['Guess Rate'] * 100:.2f}' if len(top_blk) > 1 else ''})" if max_blk > max_blk_from_below else "▼"
 
-    if extra_content: export_df_to_png(pd.DataFrame(extra_content[1:], columns = extra_content[0]), png_dir, "Tour.png", "Tour Statistics")
+                tier_results.append([tr, atk_dis, blk_dis])
+                max_pts_from_below = max(max_pts_from_below, max_pts)
+                max_blk_from_below = max(max_blk_from_below, max_blk)
+        
+        tier_stats_content.extend(sorted(tier_results, key = lambda x: x[0]))
+        export_df_to_png(
+            pd.DataFrame(tier_stats_content[1:], columns = tier_stats_content[0]), 
+            png_dir, "Tier.png", "Tier Bests"
+        )
+
+    if extra_content: export_df_to_png(
+        pd.DataFrame(extra_content[1:], columns = extra_content[0]), 
+        png_dir, "Tour.png", "Tour Statistics"
+    )
 
     if watched_only_valid:
         e_list = sorted([(n, np.mean    (player_list_correct_counts [n])) for n in plist if player_list_correct_counts  [n]], key = lambda x: x[1], reverse = True) [:3]
