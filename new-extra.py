@@ -387,8 +387,8 @@ def process_files():
                                 alias_map[p_in] = match
 
                         if match:
-                            raw_assignments [match] = (t_idx, tier)
-                            player_elo_map  [match] = elo_val
+                            raw_assignments [match.lower()] = (t_idx, tier)
+                            player_elo_map  [match.lower()] = elo_val
                             team_rosters[t_idx].add(match)
                             if      match in available  : available.remove(match)
                             if      explicit_team_name  : t1_lookup[t_idx] = explicit_team_name
@@ -440,7 +440,7 @@ def process_files():
         final_file_members  = set(raw_file_players)
         
         if use_teams:
-            teams_in_file = {raw_assignments[p][0] for p in raw_file_players if p in raw_assignments}
+            teams_in_file = {raw_assignments[p.lower()][0] for p in raw_file_players if p.lower() in raw_assignments}
             for t_id in teams_in_file:
                 roster  = team_rosters[t_id]
                 missing = [p for p in roster if p not in raw_file_players]
@@ -491,7 +491,7 @@ def process_files():
                 if not is_solo: player_missed_erigs[unique_lister] += 1
 
             if use_teams:
-                teams_in_file_list = list({raw_assignments[p][0] for p in raw_file_players if p in raw_assignments})
+                teams_in_file_list = list({raw_assignments[p.lower()][0] for p in raw_file_players if p.lower() in raw_assignments})
                 if len(teams_in_file_list) == 2:
                     tA, tB  = teams_in_file_list[0], teams_in_file_list[1]                    
                     c_teamA = correct & team_rosters[tA]
@@ -534,7 +534,7 @@ def process_files():
                 total_erigs += 1
                 solo_winner = list(correct)[0]
                 erigs_counts[solo_winner] += 1
-                if solo_winner in raw_assignments: team_solos[raw_assignments[solo_winner][0]] += 1
+                if solo_winner.lower() in raw_assignments: team_solos[raw_assignments[solo_winner.lower()][0]] += 1
             elif len(correct) == 0: total_blanks += 1
 
             for name in final_file_members:
@@ -588,7 +588,7 @@ def process_files():
         })
 
         if use_teams:
-            elo = player_elo_map.get(name, "N/A")
+            elo = player_elo_map.get(name.lower(), "N/A")
             row = {"Elo": elo, **row} 
         p_rows.append(row)
 
@@ -758,7 +758,7 @@ def process_files():
         tier_results        = []
 
         for tr in tiers:
-            tier_players    = [n for n, assign in raw_assignments.items() if assign[1] == tr]
+            tier_players    = [n for n in song_participation if n.lower() in raw_assignments and raw_assignments[n.lower()][1] == tr]
             tdf             = df_ps[df_ps["Player"].isin(tier_players)].copy()            
             if not tdf.empty:
                 max_pts = tdf["Points"].max()
