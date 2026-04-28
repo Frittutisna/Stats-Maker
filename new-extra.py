@@ -361,47 +361,51 @@ def process_files():
     if os.path.exists(codes_path):
         alias_map       = load_aliases(script_dir)
         player_elo_map  = {}
-        with open(codes_path, "r", encoding = "utf-8") as f:
-            lines = [l.strip() for l in f.readlines() if "[" in l and "]" in l]
-            sub_section = False
-            for line in f:
-                if "Subs:" in line: sub_section = True
-                if sub_section: lines.append(line.strip())
-            if lines:
-                use_teams       = True
-                available       = list(all_known_players)
+        use_teams       = True
+        available       = list(all_known_players)
 
-                for t_idx, line in enumerate(lines, 1):
-                    team_prefix_match   = re.match(r'^(?:\\s*)?([^:\[\d\(]+)\s*\([\d.-]+\):', line)
-                    explicit_team_name  = team_prefix_match.group(1).strip() if team_prefix_match else None
+        with open(codes_path, "r", encoding = "utf-8") as f: all_lines = f.readlines()
 
-                    if ":" in line  : player_section = line.split(":", 1)[1]
-                    else            : player_section = line
+        for line in all_lines:
+            found_elos = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', line)
+            for p_in, elo_val in found_elos:
+                match = next((n for n in all_known_players if n.lower() == p_in.lower()), None)
 
-                    members = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', player_section)
-                    if not members: continue
+                if not match and p_in in alias_map:
+                    target_name = alias_map[p_in]
+                    match       = next((n for n in all_known_players if n == target_name), None)
+                
+                if not match and ("[" in line or "Subs:" in line):
+                    match = ManualMatchDialog(None, p_in, available).result
+                    if match:
+                        save_alias(script_dir, match, p_in)
+                        alias_map[p_in] = match
+                
+                if match: player_elo_map[match.lower()] = elo_val
 
-                    for i, (p_in, elo_val) in enumerate(members[:4]):
-                        tier    = str(i + 1)
-                        match   = next((n for n in available if n.lower() == p_in.lower()), None)
+        team_idx = 1
 
-                        if not match and p_in in alias_map:
-                            target_name = alias_map[p_in]
-                            match       = next((n for n in available if n == target_name), None)
-                        
-                        if not match:
-                            match = ManualMatchDialog(None, p_in, available).result
-                            if match:
-                                save_alias(script_dir, match, p_in)
-                                alias_map[p_in] = match
+        for line in all_lines:
+            if "[" not in line or "]" not in line: continue
 
-                        if match:
-                            raw_assignments [match.lower()] = (t_idx, tier)
-                            player_elo_map  [match.lower()] = elo_val
-                            team_rosters[t_idx].add(match)
-                            if      match in available  : available.remove(match)
-                            if      explicit_team_name  : t1_lookup[t_idx] = explicit_team_name
-                            elif    tier == "1"         : t1_lookup[t_idx] = match
+            team_prefix_match   = re.match(r'^(?:\\s*)?([^:\[\d\(]+)\s*\([\d.-]+\):', line)
+            explicit_team_name  = team_prefix_match.group(1).strip() if team_prefix_match else None
+            player_section      = line.split(":", 1)[1] if ":" in line else line
+            members             = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', player_section)
+
+            for i, (p_in, _) in enumerate(members[ : 4]):
+                tier    = str(i + 1)
+                match   = next((n for n in all_known_players if n.lower() == p_in.lower() or (p_in in alias_map and n == alias_map[p_in])), None)
+
+                if match:
+                    raw_assignments[match.lower()] = (team_idx, tier)
+                    team_rosters[team_idx].add(match)
+
+                    if      match in available  : available.remove(match)
+                    if      explicit_team_name  : t1_lookup[team_idx] = explicit_team_name
+                    elif    tier == "1"         : t1_lookup[team_idx] = match
+
+            team_idx += 1
 
     song_participation          = defaultdict(int)
     correct_counts              = defaultdict(int)
