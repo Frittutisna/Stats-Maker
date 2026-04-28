@@ -471,11 +471,10 @@ def process_files():
             for t in [1, 2, 3]: p_type_s[name][t] += f_type_totals[t]
 
     watched_valid   = missing_list_count <= 5
-    avg_jsons       = np.mean([len(v) for v in player_json_appearances.values()]) if player_json_appearances else 0
-    stage           = ("Final" if (len(s_part) <= 20 and avg_jsons >= 6) or (len(s_part) > 20 and avg_jsons >= 5) else f"R{int(round(avg_jsons))}")
-    
-    timestamp   = datetime.now().strftime("%y%m%d%H")
-    png_dir     = os.path.join(script_dir, "archive", timestamp)
+    med_jsons       = int(np.median([len(v) for v in player_json_appearances.values()])) if player_json_appearances else 0
+    stage           = ("Final" if (len(s_part) <= 20 and med_jsons >= 6) or (len(s_part) > 20 and med_jsons >= 5) else f"R{int(round(med_jsons))}")
+    timestamp       = datetime.now().strftime("%y%m%d%H")
+    png_dir         = os.path.join(script_dir, "archive", timestamp)
     os.makedirs(png_dir, exist_ok = True)
 
     create_player_report(
@@ -559,13 +558,15 @@ def create_player_report(
         total   = s_part    [name]
         correct = c_counts  [name]
 
-        row                 = {
-            "Player"        : name,
+        row = {"Player": name}
+        if use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
+
+        row.update({
             "Guess Rate"    : correct / total if total else 0,
             "Solos"         : e_counts  [name],
             "Doubles"       : p_two_e   [name],
             "Sevens"        : p_rev_e   [name]
-        }
+        })
 
         if use_teams: row.update({"Points": p_pts[name], "Blocks": p_blks[name]})
 
@@ -573,28 +574,23 @@ def create_player_report(
             seen        = p_type_s[name][t_id]
             row[label]  = p_type_c[name][t_id] / seen if seen else np.nan
 
-        if watched_valid    : row.update({
-            "Rigs"          : p_rigs                [name],
-            "Rig Rate"      : p_rigs                [name]  / total                     if total                    else np.nan,
-            "Rig Delta"     : (correct - p_rigs     [name]) / correct                   if correct                  else np.nan,
-            "Rig GR"        : p_rigs_h              [name]  / p_rigs[name]              if p_rigs           [name]  else np.nan,
-            "Off GR"        : (correct - p_rigs_h   [name]) / (total - p_rigs[name])    if (total - p_rigs  [name]) else np.nan,
-            "Overs"         : np.mean(p_l_corr[name])                                   if p_l_corr         [name]  else np.nan
-        })
+        if watched_valid: 
+            row.update({
+                "Rigs"      : p_rigs                [name],
+                "Rig Rate"  : p_rigs                [name]  / total                     if total                    else np.nan,
+                "Rig Delta" : (correct - p_rigs     [name]) / correct                   if correct                  else np.nan,
+                "Rig GR"    : p_rigs_h              [name]  / p_rigs[name]              if p_rigs           [name]  else np.nan,
+                "Off GR"    : (correct - p_rigs_h   [name]) / (total - p_rigs[name])    if (total - p_rigs  [name]) else np.nan,
+                "Overs"     : np.mean(p_l_corr[name])                                   if p_l_corr         [name]  else np.nan
+            })
 
-        if use_teams: row = {"Elo": elo_map.get(name.lower(), "N/A"), **row}
         p_rows.append(row)
 
-    df = pd.DataFrame(p_rows).sort_values("Guess Rate", ascending = False)
-    if "Elo" in df.columns:
-        df["Elo"]   = pd.to_numeric(df["Elo"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        cols        = list(df.columns); 
-        cols.insert(cols.index("Guess Rate"), cols.pop(cols.index("Elo")))
-        df          = df[cols]
-
-    pct_cols = ["Guess Rate"] + list(active_types.values()) + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched_valid else [])
-    for c in pct_cols   : df[c]         = pd.to_numeric(df[c],          errors = 'coerce').mul(100) .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-    if watched_valid    : df["Overs"]   = pd.to_numeric(df["Overs"],    errors = 'coerce')          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+    df                                      = pd.DataFrame(p_rows).sort_values("Guess Rate", ascending = False)
+    if "Elo" in df.columns  : df["Elo"]     = pd.to_numeric(df["Elo"],      errors = 'coerce')          .map(lambda x: f"{x:.2f}"           if pd.notnull(x) else "N/A")
+    pct_cols                                = ["Guess Rate"] + list(active_types.values()) + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched_valid else [])
+    for c in pct_cols       : df[c]         = pd.to_numeric(df[c],          errors = 'coerce').mul(100) .map(lambda x: f"{x:.2f}"           if pd.notnull(x) else "N/A")
+    if watched_valid        : df["Overs"]   = pd.to_numeric(df["Overs"],    errors = 'coerce')          .map(lambda x: f"{x:.2f}"           if pd.notnull(x) else "N/A")
     
     export_df_to_png(df, png_dir, "Player.png", f"Player Statistics—{stage}")
 
