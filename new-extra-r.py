@@ -650,14 +650,21 @@ def create_tour_report(
     no_erig = sorted([n for n in plist if e_counts[n] == 0 and s_part[n] > 0], key = lambda x: c_counts[x] / s_part[x], reverse = True)
     if no_erig: tour_stats.append(["Highest GR without Solos", f"{no_erig[0]} ({100 * (c_counts[no_erig[0]] / s_part[no_erig[0]]):.2f})"])
     
+    solos_pool = sorted([n for n in plist if e_counts[n] > 0 and s_part[n] > 0], key = lambda x: c_counts[x] / s_part[x])
+    if solos_pool:
+        w_solo = solos_pool[0]
+        tour_stats.append(["Lowest GR with Solos", f"{w_solo} ({100 * (c_counts[w_solo] / s_part[w_solo]):.2f}, {e_counts[w_solo]})"])
+
     if watched_valid:
         conv = []
         for n in [p for p in plist if p_l_solos[p] > 0]:
             h = p_l_solos[n] - p_m_erigs[n]
             conv.append({'n': n, 'p': 100 * h / p_l_solos[n], 'h': h, 't': p_l_solos[n]})
         if conv:
-            b = sorted(conv, key = lambda x: (x['p'], x['t']), reverse = True)[0]
-            tour_stats.append(["Best Solo Rig Converter", f"{b['n']} ({b['p']:.2f}%)"])
+            b = sorted(conv, key = lambda x: (x['p'], x['t']),  reverse = True)     [0]
+            w = sorted(conv, key = lambda x: (x['p'], -x['t']), reverse = False)    [0]
+            tour_stats.append(["Best Solo Rig Converter",   f"{b['n']} ({b['p']:.2f}%, {b['h']}/{b['t']})"])
+            tour_stats.append(["Worst Solo Rig Converter",  f"{w['n']} ({w['p']:.2f}%, {w['h']}/{w['t']})"])
 
     export_df_to_png(pd.DataFrame(tour_stats, columns = ["Statistic", "Value"]), png_dir, "Tour.png", f"Tour Statistics—{stage}")
 
@@ -668,27 +675,43 @@ def create_team_report(t_c_ps, t_vint, t_on_syn, t_off_syn, t_sh_rig, t_solos, t
 
         stats_list.append({
             "Team"              : t1_lookup.get(t_id, f"Team {t_id}"),
-            "Median Vintage"    : format_year(np.median(t_vint[t_id])),
-            "Average GR"        : f"{np.mean(t_c_ps[t_id])      * 100   :.2f}",
-            "Rig Synergy"       : f"{np.mean(t_on_syn[t_id])    * 100   :.2f}",
-            "Off Synergy"       : f"{np.mean(t_off_syn[t_id])   * 100   :.2f}",
-            "Shared Rigs"       : f"{np.mean(t_sh_rig[t_id])    * 100   :.2f}",
+            "Median Vintage"    : format_year(np.median(t_vint  [t_id])),
+            "Average GR"        : f"{np.mean(t_c_ps             [t_id])     * 100   :.2f}",
+            "Rig Synergy"       : f"{np.mean(t_on_syn           [t_id])     * 100   :.2f}",
+            "Off Synergy"       : f"{np.mean(t_off_syn          [t_id])     * 100   :.2f}",
+            "Shared Rigs"       : f"{np.mean(t_sh_rig           [t_id])     * 100   :.2f}",
             "Total Solos"       : t_solos[t_id],
-            "Average Overs"     : f"{w_overs                            :.2f}"
+            "Average Overs"     : f"{w_overs                                        :.2f}"
         })
 
     df = pd.DataFrame(stats_list).sort_values("Average GR", ascending = False)
     export_df_to_png(df, png_dir, "Team.png", "Team Statistics")
 
 def create_tier_report(s_part, raw_assignments, c_counts, p_pts, p_blks, png_dir):
-    tiers   = sorted({v[1] for v in raw_assignments.values() if v[1] != "N/A"})
-    results = []
+    tiers           = sorted({v[1] for v in raw_assignments.values() if v[1] != "N/A"}, reverse = True)
+    results         = []
+    max_pts_seen    = -1
+    max_blk_seen    = -1
+
     for tr in tiers:
-        tp          = [n for n in s_part if n.lower() in raw_assignments and raw_assignments[n.lower()][1] == tr]
+        tp = [n for n in s_part if n.lower() in raw_assignments and raw_assignments[n.lower()][1] == tr]
         if not tp: continue
-        best_atk    = sorted(tp, key = lambda x: (p_pts[x],     c_counts[x] / s_part[x]), reverse = True)[0]
-        best_blk    = sorted(tp, key = lambda x: (p_blks[x],    c_counts[x] / s_part[x]), reverse = True)[0]
-        results.append([tr, f"{best_atk} ({p_pts[best_atk]})", f"{best_blk} ({p_blks[best_blk]})"])
+        
+        best_atk_name = sorted(tp, key = lambda x: (p_pts[x],   c_counts[x] / s_part[x]), reverse = True)[0]
+        best_blk_name = sorted(tp, key = lambda x: (p_blks[x],  c_counts[x] / s_part[x]), reverse = True)[0]
+        
+        cur_pts = p_pts     [best_atk_name]
+        cur_blk = p_blks    [best_blk_name]
+
+        atk_dis = f"{best_atk_name} ({cur_pts})" if cur_pts > max_pts_seen else "▼"
+        blk_dis = f"{best_blk_name} ({cur_blk})" if cur_blk > max_blk_seen else "▼"
+
+        results.append([tr, atk_dis, blk_dis])
+        
+        max_pts_seen = max(max_pts_seen, cur_pts)
+        max_blk_seen = max(max_blk_seen, cur_blk)
+
+    results.sort(key = lambda x: x[0])
     export_df_to_png(pd.DataFrame(results, columns = ["Tier", "Attacker", "Blocker"]), png_dir, "Tier.png", "Tier Bests")
 
 def create_watched_report(s_part, p_l_corr, p_l_vint, png_dir):
