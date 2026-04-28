@@ -337,14 +337,19 @@ def process_files():
             retry = messagebox.askyesno("Missing Files", "jsons folder not found or empty, click Yes to re-run")
             if not retry: return
 
-    all_known_players = set()
+    all_known_players       = set()
+    player_json_appearances = defaultdict(set)
     for path in json_paths:
         try:
             with open(path, encoding = "utf-8") as f:
                 data = json.load(f)
                 for s in data.get("songs", []):
-                    for p   in s.get("correctGuessPlayers", []): all_known_players.add(p)
-                    for ls  in s.get("listStates",          []): all_known_players.add(ls["name"])
+                    for p in s.get("correctGuessPlayers", []): 
+                        all_known_players.add   (p)
+                        player_json_appearances [p].add(path)
+                    for ls in s.get("listStates", []): 
+                        all_known_players.add   (ls["name"])
+                        player_json_appearances [ls["name"]].add(path)
         except: continue
 
     raw_assignments = {}
@@ -358,18 +363,22 @@ def process_files():
         player_elo_map  = {}
         with open(codes_path, "r", encoding = "utf-8") as f:
             lines = [l.strip() for l in f.readlines() if "[" in l and "]" in l]
+            sub_section = False
+            for line in f:
+                if "Subs:" in line: sub_section = True
+                if sub_section: lines.append(line.strip())
             if lines:
                 use_teams       = True
                 available       = list(all_known_players)
 
                 for t_idx, line in enumerate(lines, 1):
-                    team_prefix_match   = re.match(r'^(?:\\s*)?([^:\[\d\(]+)\s*\([\d.]+\):', line)
+                    team_prefix_match   = re.match(r'^(?:\\s*)?([^:\[\d\(]+)\s*\([\d.-]+\):', line)
                     explicit_team_name  = team_prefix_match.group(1).strip() if team_prefix_match else None
 
                     if ":" in line  : player_section = line.split(":", 1)[1]
                     else            : player_section = line
 
-                    members = re.findall(r'([^\s(]+)\s*\((\d+\.\d+)\)', player_section)
+                    members = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', player_section)
                     if not members: continue
 
                     for i, (p_in, elo_val) in enumerate(members[:4]):
@@ -554,6 +563,16 @@ def process_files():
             song_participation[name]                        += max_songs
             for t in [1, 2, 3]: player_type_seen[name][t]   += type_totals_file[t]
 
+    avg_json_count = np.mean([len(v) for v in player_json_appearances.values()]) if player_json_appearances else 0
+    round_val      = int(round(avg_json_count))
+    player_total   = len(song_participation)
+    
+    if      player_total <= 20  : stage_str = "Final" if round_val >= 6 else f"R{round_val}"
+    else                        : stage_str = "Final" if round_val >= 5 else f"R{round_val}"
+    
+    p_title    = f"Player Statistics—{stage_str}"
+    t_title    = f"Tour Statistics—{stage_str}"
+
     p_rows = []
     for name in song_participation:
         total           = song_participation    [name]
@@ -618,7 +637,7 @@ def process_files():
     png_dir     = os.path.join(script_dir, "archive", timestamp)
 
     os.makedirs(png_dir, exist_ok = True)
-    export_df_to_png(df_display, png_dir, "Player.png", "Player Statistics")
+    export_df_to_png(df_display, png_dir, "Player.png", p_title)
 
     plist           = list(song_participation.keys())
     max_solos_val   = max(erigs_counts.values())            if erigs_counts         else 0
@@ -782,7 +801,7 @@ def process_files():
 
     if extra_content: export_df_to_png(
         pd.DataFrame(extra_content[1:], columns = extra_content[0]), 
-        png_dir, "Tour.png", "Tour Statistics"
+        png_dir, "Tour.png", t_title
     )
 
     if watched_only_valid:
