@@ -403,9 +403,11 @@ def process_files():
             st = song.get("songInfo", {}).get("type")
             if st in [1, 2, 3]: f_type_totals[st] += 1
 
+        players_in_this_file = {p for s in songs for p in s.get("correctGuessPlayers", [])} | {ls["name"] for s in songs for ls in s.get("listStates", [])}
         for name in final_members:
-            s_part[name] += max_s
-            for t in [1, 2, 3]: p_type_s[name][t] += f_type_totals[t]
+            if name in players_in_this_file:
+                s_part[name] += max_s
+                for t in [1, 2, 3]: p_type_s[name][t] += f_type_totals[t]
 
         for song in songs:
             si = song.get("songInfo", {}); st = si.get("type")
@@ -565,7 +567,7 @@ def create_player_report(
         total           = s_part    [name]
         correct         = c_counts  [name]
         actual_jsons    = len(player_json_appearances.get(name, []))
-        display_name    = f"{name} ↔" if actual_jsons < med_appear else name
+        display_name    = f"{name} ◀▶" if actual_jsons < med_appear else name
         row             = {"Player": display_name}
         if use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
 
