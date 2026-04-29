@@ -477,9 +477,13 @@ def process_files():
 
     watched_valid   = missing_list_count <= 5
     med_jsons       = int(np.median([len(v) for v in player_json_appearances.values()])) if player_json_appearances else 0
-    stage           = ("Final" if (len(s_part) <= 20 and med_jsons >= 6) or (len(s_part) > 20 and med_jsons >= 5) else f"R{int(round(med_jsons))}")
-    timestamp       = datetime.now().strftime("%y%m%d%H")
-    png_dir         = os.path.join(script_dir, "archive", timestamp)
+
+    if      med_jsons == 3                                                                  : stage = "Mid-Tour"
+    elif    (len(s_part) <= 20 and med_jsons >= 6) or (len(s_part) > 20 and med_jsons >= 5) : stage = "Final"
+    else                                                                                    : stage = f"R{int(round(med_jsons))}"
+
+    timestamp   = datetime.now().strftime("%y%m%d%H")
+    png_dir     = os.path.join(script_dir, "archive", timestamp)
     os.makedirs(png_dir, exist_ok = True)
 
     create_player_report(
