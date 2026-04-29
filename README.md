@@ -1,1 +1,1 @@
-# Stats Maker v0-alpha.4.2 for Tours
+# Stats Maker v0-beta.0.0 for Tours
