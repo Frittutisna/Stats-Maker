@@ -400,8 +400,15 @@ def process_files():
         f_type_totals   = defaultdict(int)
 
         for song in songs:
+            st = song.get("songInfo", {}).get("type")
+            if st in [1, 2, 3]: f_type_totals[st] += 1
+
+        for name in final_members:
+            s_part[name] += max_s
+            for t in [1, 2, 3]: p_type_s[name][t] += f_type_totals[t]
+
+        for song in songs:
             si = song.get("songInfo", {}); st = si.get("type")
-            if st in [1,2,3]                            : f_type_totals[st] += 1
             if isinstance(si.get("animeGenre"), list)   : genre_c   .update(si.get("animeGenre"))
             if isinstance(si.get("animeTags"),  list)   : tag_c     .update([t for t in si.get("animeTags") if t not in EXCLUDED_TAGS])
             
@@ -466,10 +473,6 @@ def process_files():
                     if yr is not None   : p_l_vint[n].append(yr)
                     p_l_corr[n].append(len(correct))
 
-        for name in final_members:
-            s_part[name] += max_s
-            for t in [1, 2, 3]: p_type_s[name][t] += f_type_totals[t]
-
     watched_valid   = missing_list_count <= 5
     med_jsons       = int(np.median([len(v) for v in player_json_appearances.values()])) if player_json_appearances else 0
     stage           = ("Final" if (len(s_part) <= 20 and med_jsons >= 6) or (len(s_part) > 20 and med_jsons >= 5) else f"R{int(round(med_jsons))}")
@@ -494,7 +497,8 @@ def process_files():
         player_elo_map,
         watched_valid,
         stage,
-        png_dir
+        png_dir,
+        player_json_appearances
     )
 
     create_tour_report(
@@ -548,17 +552,21 @@ def create_player_report(
         elo_map,
         watched_valid,
         stage,
-        png_dir
+        png_dir,
+        player_json_appearances
     ):
     p_rows          = []
     type_labels     = {1: "OP GR", 3: "IN GR", 2: "ED GR"}
     active_types    = {t: l for t, l in type_labels.items() if any(p_type_s[p][t] > 0 for p in s_part)} if len(type_labels) > 1 else {}
-    
-    for name in s_part:
-        total   = s_part    [name]
-        correct = c_counts  [name]
+    appear_counts   = [len(v) for v in player_json_appearances.values()]
+    med_appear      = int(np.median(appear_counts)) if appear_counts else 0
 
-        row = {"Player": name}
+    for name in s_part:
+        total           = s_part    [name]
+        correct         = c_counts  [name]
+        actual_jsons    = len(player_json_appearances.get(name, []))
+        display_name    = f"{name} ↔" if actual_jsons < med_appear else name
+        row             = {"Player": display_name}
         if use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
 
         row.update({
