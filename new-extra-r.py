@@ -697,14 +697,30 @@ def create_tier_report(s_part, raw_assignments, c_counts, p_pts, p_blks, png_dir
         tp = [n for n in s_part if n.lower() in raw_assignments and raw_assignments[n.lower()][1] == tr]
         if not tp: continue
         
-        best_atk_name = sorted(tp, key = lambda x: (p_pts[x],   c_counts[x] / s_part[x]), reverse = True)[0]
-        best_blk_name = sorted(tp, key = lambda x: (p_blks[x],  c_counts[x] / s_part[x]), reverse = True)[0]
-        
-        cur_pts = p_pts     [best_atk_name]
-        cur_blk = p_blks    [best_blk_name]
+        def format_best(player_list, stat_dict):
+            sorted_players = sorted(
+                player_list,
+                key     = lambda x: (stat_dict[x], c_counts[x] / s_part[x] if s_part[x] else 0),
+                reverse = True
+            )
 
-        atk_dis = f"{best_atk_name} ({cur_pts})" if cur_pts > max_pts_seen else "▼"
-        blk_dis = f"{best_blk_name} ({cur_blk})" if cur_blk > max_blk_seen else "▼"
+            best_name   = sorted_players[0]
+            val         = stat_dict[best_name]
+            ties        = [p for p in player_list if stat_dict[p] == val]
+            
+            if len(ties) > 1:
+                gr = f"{(c_counts[best_name] / s_part[best_name]) * 100:.2f}" if s_part[best_name] else "N/A"
+                return f"{best_name} ({val}, {gr})"
+            return f"{best_name} ({val})"
+
+        best_atk_str = format_best(tp, p_pts)
+        best_blk_str = format_best(tp, p_blks)
+        
+        cur_pts = p_pts     [sorted(tp, key = lambda x: p_pts[x],   reverse = True)[0]]
+        cur_blk = p_blks    [sorted(tp, key = lambda x: p_blks[x],  reverse = True)[0]]
+
+        atk_dis = best_atk_str if cur_pts > max_pts_seen else "▼"
+        blk_dis = best_blk_str if cur_blk > max_blk_seen else "▼"
 
         results.append([tr, atk_dis, blk_dis])
         
