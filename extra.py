@@ -256,24 +256,49 @@ def export_df_to_png(df, path, filename, title):
                     'show_min'  : counts.get(min_val, 0) <= 3
                 }
 
+    df          = df.reset_index(drop = True)
+    border_rows = []
+
+    if "Guess Rate" in df.columns:
+        gr_vals     = pd.to_numeric(df["Guess Rate"].astype(str).str.replace('%', ''), errors = 'coerce').tolist()
+        is_watched  = "Rigs" in df.columns
+        thresholds  = [28.0, 18.0, 12.0, 6.0] if is_watched else [28.0, 19.0, 8.0]
+        
+        for thresh in thresholds:
+            found_idx = -1
+
+            for idx, val in enumerate(gr_vals):
+                if pd.notnull(val) and val >= thresh: found_idx = idx
+            
+            if found_idx != -1 and found_idx < len(df) - 1: border_rows.append(found_idx)
+
     rows_html = "<thead><tr>" + "".join([f"<th>{str(col).replace(' ', '<br>')}</th>" for col in df.columns]) + "</tr></thead><tbody>"
-    for _, row in df.iterrows():
-        rows_html += "<tr>"
+    
+    for idx, row in df.iterrows():
+        border_style    =   "border-bottom: 3px solid black;" if idx in border_rows else ""
+        rows_html       +=  "<tr>"
+
         for i, (col_name, cell) in enumerate(row.items()):
-            content, style = str(cell), ""
+            content, style_parts = str(cell), []
+            if border_style: style_parts.append(border_style)
+            
             if col_name in stats:
                 val = pd.to_numeric(str(cell).replace('%', ''), errors = 'coerce')
                 if pd.notnull(val):
                     is_max = (val == stats[col_name]['max']) and stats[col_name]['show_max']
                     is_min = (val == stats[col_name]['min']) and stats[col_name]['show_min']
-                    if col_name in descending_metrics:
-                        if      is_max: style = ' style="color: #0056B3; font-weight: bold;"'
-                        elif    is_min: style = ' style="color: #D95400; font-weight: bold;"'
-                    elif col_name in ascending_metrics:
-                        if      is_max: style = ' style="color: #D95400; font-weight: bold;"'
-                        elif    is_min: style = ' style="color: #0056B3; font-weight: bold;"'
-            if i == 0: content = f"<b>{content}</b>"
-            rows_html += f"<td{style}>{content}</td>"
+
+                    if      col_name in descending_metrics:
+                        if      is_max: style_parts.append("color: #0056B3; font-weight: bold;")
+                        elif    is_min: style_parts.append("color: #D95400; font-weight: bold;")
+
+                    elif    col_name in ascending_metrics:
+                        if      is_max: style_parts.append("color: #D95400; font-weight: bold;")
+                        elif    is_min: style_parts.append("color: #0056B3; font-weight: bold;")
+            
+            style_attr          =   f' style="{" ".join(style_parts)}"' if style_parts else ""
+            if i == 0: content  =   f"<b>{content}</b>"
+            rows_html           +=  f"<td{style_attr}>{content}</td>"
         rows_html += "</tr>"
     rows_html += "</tbody>"
 
@@ -561,9 +586,12 @@ def create_player_report(
         png_dir,
         player_json_appearances
     ):
-    p_rows          = []
-    type_labels     = {1: "OP GR", 3: "IN GR", 2: "ED GR"}
-    active_types    = {t: l for t, l in type_labels.items() if any(p_type_s[p][t] > 0 for p in s_part)} if len(type_labels) > 1 else {}
+    p_rows      = []
+    type_labels = {1: "OP GR", 3: "IN GR", 2: "ED GR"}
+    
+    active_types_list   = [t for t in type_labels if any(p_type_s[p][t] > 0 for p in s_part)]
+    active_types        = {t: type_labels[t] for t in active_types_list} if len(active_types_list) > 1 else {}
+
     appear_counts   = [len(v) for v in player_json_appearances.values()]
     med_appear      = int(np.median(appear_counts)) if appear_counts else 0
 
