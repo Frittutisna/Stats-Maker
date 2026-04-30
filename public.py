@@ -423,9 +423,9 @@ def main():
                     except (ValueError, IndexError):
                         print("Please input a valid numeric choice.")
                         continue
-                    player, source_list = options[choice - 1]
-                    playersSeen.append(player)
-                    source_list.remove(player)
+                    # player, source_list = options[choice - 1]
+                    # playersSeen.append(player)
+                    # source_list.remove(player)
 
                     # Remove all the impossible options
                     # Example: Team already full and sub not chosen -> Sub should not be an option anymore
