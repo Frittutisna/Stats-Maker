@@ -393,6 +393,7 @@ def process_files():
     genre_c             = Counter()
     tag_c               = Counter()
     missing_list_count  = 0
+    found_types         = set()
 
     for path in json_paths:
         with open(path, encoding = "utf-8") as f: data = json.load(f)
@@ -426,7 +427,9 @@ def process_files():
 
         for song in songs:
             st = song.get("songInfo", {}).get("type")
-            if st in [1, 2, 3]: f_type_totals[st] += 1
+            if st in [1, 2, 3]: 
+                f_type_totals   [st] += 1
+                found_types.add (st)
 
         players_in_this_file = {p for s in songs for p in s.get("correctGuessPlayers", [])} | {ls["name"] for s in songs for ls in s.get("listStates", [])}
         for name in final_members:
@@ -507,6 +510,16 @@ def process_files():
     elif    (len(s_part) <= 20 and med_jsons >= 6) or (len(s_part) > 20 and med_jsons >= 5) : stage = "Final"
     else                                                                                    : stage = f"R{int(round(med_jsons))}"
 
+    prefix      = ""
+    type_map    = {1: "OP", 3: "IN", 2: "ED"}
+    found_abbrs = sorted([type_map[t] for t in found_types if t in type_map])
+    type_str    = "/".join(found_abbrs) if found_abbrs else ""
+    
+    if watched_valid: prefix = f"Watched {type_str} Tour, "
+    else:
+        if      set(type_map.keys()).issubset(found_types)  : prefix = "Random Tour, "
+        else                                                : prefix = f"Random {type_str} Tour, "
+
     timestamp   = datetime.now().strftime("%y%m%d%H")
     png_dir     = os.path.join(script_dir, "archive", timestamp)
     os.makedirs(png_dir, exist_ok = True)
@@ -529,7 +542,8 @@ def process_files():
         watched_valid,
         stage,
         png_dir,
-        player_json_appearances
+        player_json_appearances,
+        prefix
     )
 
     create_tour_report(
@@ -584,7 +598,8 @@ def create_player_report(
         watched_valid,
         stage,
         png_dir,
-        player_json_appearances
+        player_json_appearances,
+        prefix
     ):
     p_rows      = []
     type_labels = {1: "OP GR", 3: "IN GR", 2: "ED GR"}
@@ -634,7 +649,7 @@ def create_player_report(
     for c in pct_cols       : df[c]         = pd.to_numeric(df[c],          errors = 'coerce').mul(100) .map(lambda x: f"{x:.2f}"           if pd.notnull(x) else "N/A")
     if watched_valid        : df["Overs"]   = pd.to_numeric(df["Overs"],    errors = 'coerce')          .map(lambda x: f"{x:.2f}"           if pd.notnull(x) else "N/A")
     
-    export_df_to_png(df, png_dir, "Player.png", f"Player Statistics—{stage}")
+    export_df_to_png(df, png_dir, "Player.png", f"{prefix}Player Statistics, {stage}")
 
 def create_tour_report(
         all_vint,
@@ -708,7 +723,7 @@ def create_tour_report(
             tour_stats.append(["Best Solo Rig Converter",   f"{b['n']} ({b['p']:.2f}%, {b['h']}/{b['t']})"])
             tour_stats.append(["Worst Solo Rig Converter",  f"{w['n']} ({w['p']:.2f}%, {w['h']}/{w['t']})"])
 
-    export_df_to_png(pd.DataFrame(tour_stats, columns = ["Statistic", "Value"]), png_dir, "Tour.png", f"Tour Statistics—{stage}")
+    export_df_to_png(pd.DataFrame(tour_stats, columns = ["Statistic", "Value"]), png_dir, "Tour.png", "Tour Statistics")
 
 def create_team_report(t_c_ps, t_vint, t_on_syn, t_off_syn, t_sh_rig, t_solos, t_overs, t1_lookup, png_dir):
     stats_list = []
