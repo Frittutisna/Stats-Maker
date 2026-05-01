@@ -577,8 +577,8 @@ def process_files():
         png_dir
     )
     
-    if use_teams and watched_valid:
-        create_team_report(t_c_ps, t_vint, t_on_syn, t_off_syn, t_sh_rig, t_solos, t_overs, t1_lookup, png_dir)
+    if use_teams:
+        if watched_valid: create_team_report(t_c_ps, t_vint, t_on_syn, t_off_syn, t_sh_rig, t_solos, t_overs, t1_lookup, png_dir)
         create_tier_report(s_part, raw_assignments, c_counts, p_pts, p_blks, png_dir)
     
     if watched_valid: create_watched_report(s_part, p_l_corr, p_l_vint, png_dir)
