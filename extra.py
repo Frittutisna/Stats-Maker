@@ -510,15 +510,21 @@ def process_files():
     elif    (len(s_part) <= 20 and med_jsons >= 6) or (len(s_part) > 20 and med_jsons >= 5) : stage = "Final"
     else                                                                                    : stage = f"R{int(round(med_jsons))}"
 
-    prefix      = ""
-    type_map    = {1: "OP", 3: "IN", 2: "ED"}
-    found_abbrs = sorted([type_map[t] for t in found_types if t in type_map])
-    type_str    = "/".join(found_abbrs) if found_abbrs else ""
+    prefix          = ""
+    type_map        = {1: "OP", 3: "IN", 2: "ED"}
+    found_abbrs     = sorted([type_map[t] for t in found_types if t in type_map])
+    all_types_found = set(type_map.keys()).issubset(found_types)
     
-    if watched_valid: prefix = f"Watched {type_str} Tour, "
+    if watched_valid:
+        if all_types_found: prefix  = "Watched Tour, "
+        else:
+            type_str                = "-".join(found_abbrs) if found_abbrs else ""
+            prefix                  = f"Watched {type_str} Tour, "
     else:
-        if      set(type_map.keys()).issubset(found_types)  : prefix = "Random Tour, "
-        else                                                : prefix = f"Random {type_str} Tour, "
+        if all_types_found: prefix  = "Random Tour, "
+        else:
+            type_str                = "/".join(found_abbrs) if found_abbrs else ""
+            prefix                  = f"Random {type_str} Tour, "
 
     timestamp   = datetime.now().strftime("%y%m%d%H")
     png_dir     = os.path.join(script_dir, "archive", timestamp)
