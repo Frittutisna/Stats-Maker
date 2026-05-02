@@ -10,6 +10,18 @@ from    html2image  import  Html2Image
 from    PIL         import  Image, ImageChops, ImageOps
 from    tkinter     import  messagebox, ttk, simpledialog
 
+BROWSER_PATHS = {
+    r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+    r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+    r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+}
+
+DIR_DEPENDENCIES    = "dependencies"
+DIR_JSONS           = "jsons"
+DIR_OUTPUT          = "output"
+FILE_ALIASES        = "aliases.txt"
+FILE_CODES          = "codes.txt"
+
 EXCLUDED_TAGS = {
     "Female Protagonist",
     "Male Protagonist",
@@ -57,18 +69,13 @@ def trim_whitespace(image_path):
             img.save(image_path)
 
 def get_browser():
-    paths = [
-        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
-        r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
-        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-    ]
-    for path in paths:
+    for path in BROWSER_PATHS:
         if os.path.exists(path): return path
     return None
 
 def load_aliases(script_dir):
     alias_map   = {}
-    alias_path  = os.path.join(script_dir, "dependencies", "aliases.txt")
+    alias_path  = os.path.join(script_dir, DIR_DEPENDENCIES, FILE_ALIASES)
     if os.path.exists(alias_path):
         with open(alias_path, "r", encoding = "utf-8") as f:
             for line in f:
@@ -78,18 +85,18 @@ def load_aliases(script_dir):
     return alias_map
 
 def save_alias(script_dir, existing_name, new_name):
-    dep_dir = os.path.join(script_dir, "dependencies")
+    dep_dir     = os.path.join(script_dir,  DIR_DEPENDENCIES)
     os.makedirs(dep_dir, exist_ok = True)
-    alias_path = os.path.join(dep_dir, "aliases.txt")
+    alias_path  = os.path.join(dep_dir,     FILE_ALIASES)
     with open(alias_path, "a", encoding = "utf-8") as f: f.write(f"{existing_name}, {new_name}\n")
 
 def get_json_paths(script_dir):
-    json_dir = os.path.join(script_dir, "jsons")
+    json_dir = os.path.join(script_dir, DIR_JSONS)
     while True:
         if os.path.exists(json_dir) and os.path.isdir(json_dir):
             paths = [os.path.join(json_dir, f) for f in os.listdir(json_dir) if f.endswith(".json")]
             if paths: return paths
-        if not messagebox.askyesno("Missing Files", "jsons folder not found or empty, click Yes to re-run"): return []
+        if not messagebox.askyesno("Missing Files", f"{DIR_JSONS} folder not found or empty, click Yes to re-run"): return []
 
 def get_all_known_players(json_paths):
     all_players = set()
@@ -109,7 +116,7 @@ def get_all_known_players(json_paths):
     return all_players, appearances
 
 def load_team_data(script_dir, all_known_players):
-    codes_path = os.path.join(script_dir, "dependencies", "codes.txt")
+    codes_path = os.path.join(script_dir, DIR_DEPENDENCIES, FILE_CODES)
     if not os.path.exists(codes_path): return False, {}, {}, {}, defaultdict(set)
     alias_map       = load_aliases(script_dir)
     player_elo_map  = {}
@@ -549,7 +556,7 @@ def process_files():
             prefix                  = f"Random {type_str} Tour, "
 
     timestamp   = datetime.now().strftime("%y%m%d%H")
-    png_dir     = os.path.join(script_dir, "archive", timestamp)
+    png_dir     = os.path.join(script_dir, DIR_OUTPUT, timestamp)
     os.makedirs(png_dir, exist_ok = True)
 
     create_player_report(
@@ -609,7 +616,7 @@ def process_files():
     if watched_valid: create_watched_report(s_part, p_l_corr, p_l_vint, png_dir)
 
     fuse_pngs(png_dir)
-    messagebox.showinfo("Success", f"Saved PNGs to archive/{timestamp}")
+    messagebox.showinfo("Success", f"Saved PNGs to {DIR_OUTPUT}/{timestamp}")
 
 def create_player_report(
         s_part,
