@@ -8,7 +8,7 @@ from    collections import  defaultdict, Counter
 from    datetime    import  datetime
 from    html2image  import  Html2Image
 from    PIL         import  Image, ImageChops, ImageOps
-from    tkinter     import  messagebox, ttk
+from    tkinter     import  messagebox, ttk, simpledialog
 
 EXCLUDED_TAGS = {
     "Female Protagonist",
@@ -503,12 +503,29 @@ def process_files():
                     if yr is not None   : p_l_vint[n].append(yr)
                     p_l_corr[n].append(len(correct))
 
-    watched_valid   = missing_list_count <= 5
-    med_jsons       = int(np.median([len(v) for v in player_json_appearances.values()])) if player_json_appearances else 0
+    watched_valid       = missing_list_count <= 5
+    baseline_expected   = simpledialog.askinteger(
+        "Expected Rounds",
+        "Enter the amount of rounds most people were supposed to play:",
+        initialvalue = 6 if len(s_part) <= 20 else 5
+    )
+    if baseline_expected is None: baseline_expected = int(np.median([len(v) for v in player_json_appearances.values()])) if player_json_appearances else 0
 
-    if      med_jsons == 3                                                                  : stage = "Mid-Tour"
-    elif    (len(s_part) <= 20 and med_jsons >= 6) or (len(s_part) > 20 and med_jsons >= 5) : stage = "Final"
-    else                                                                                    : stage = f"R{int(round(med_jsons))}"
+    expected_jsons_map = {}
+    for name in s_part.keys():
+        actual = len(player_json_appearances.get(name, []))
+        if actual != baseline_expected:
+            exp = simpledialog.askinteger(
+                "Expected Rounds",
+                f"{name} appears in {actual} JSONs; how many rounds were they supposed to play?",
+                initialvalue = actual
+            )
+            expected_jsons_map      [name] = exp if exp is not None else actual
+        else: expected_jsons_map    [name] = baseline_expected
+
+    if      baseline_expected == 3                                                                          : stage = "Mid-Tour"
+    elif    (len(s_part) <= 20 and baseline_expected >= 6) or (len(s_part) > 20 and baseline_expected >= 5) : stage = "Final"
+    else                                                                                                    : stage = f"R{int(round(baseline_expected))}"
 
     prefix          = ""
     type_map        = {1: "OP", 3: "IN", 2: "ED"}
@@ -549,7 +566,10 @@ def process_files():
         stage,
         png_dir,
         player_json_appearances,
-        prefix
+        prefix,
+        expected_jsons_map,
+        baseline_expected,
+        raw_assignments
     )
 
     create_tour_report(
@@ -605,23 +625,33 @@ def create_player_report(
         stage,
         png_dir,
         player_json_appearances,
-        prefix
+        prefix,
+        expected_jsons_map,
+        baseline_expected,
+        raw_assignments
     ):
-    p_rows      = []
-    type_labels = {1: "OP GR", 3: "IN GR", 2: "ED GR"}
-    
+    p_rows              = []
+    type_labels         = {1: "OP GR", 3: "IN GR", 2: "ED GR"}
     active_types_list   = [t for t in type_labels if any(p_type_s[p][t] > 0 for p in s_part)]
     active_types        = {t: type_labels[t] for t in active_types_list} if len(active_types_list) > 1 else {}
-
-    appear_counts   = [len(v) for v in player_json_appearances.values()]
-    med_appear      = int(np.median(appear_counts)) if appear_counts else 0
 
     for name in s_part:
         total           = s_part    [name]
         correct         = c_counts  [name]
-        actual_jsons    = len(player_json_appearances.get(name, []))
-        display_name    = f"{name} ◀▶" if actual_jsons < med_appear else name
-        row             = {"Player": display_name}
+        actual_jsons    = len(player_json_appearances.get(name, []))        
+        expected        = expected_jsons_map.get(name, baseline_expected)
+        display_name    = name
+
+        if expected < baseline_expected:
+            if      use_teams and name.lower() in raw_assignments   : display_name += " ▶"
+            else                                                    : display_name += " ◀"
+
+        if actual_jsons < expected:
+            missing_count   = expected - actual_jsons
+            symbols         = ["", "❶", "❷", "❸", "❹", "❺", "❻"]
+            if 0 < missing_count < len(symbols): display_name += f" {symbols[missing_count]}"
+        
+        row = {"Player": display_name}
         if use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
 
         row.update({
