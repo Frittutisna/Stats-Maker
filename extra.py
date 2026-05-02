@@ -4,28 +4,30 @@ import  re
 import  numpy       as      np
 import  pandas      as      pd
 import  tkinter     as      tk
-from    collections import  defaultdict, Counter
+from    collections import  Counter, defaultdict
 from    datetime    import  datetime
 from    html2image  import  Html2Image
+from    pathlib     import  Path
 from    PIL         import  Image, ImageChops, ImageOps
-from    tkinter     import  messagebox, ttk, simpledialog
+from    tkinter     import  messagebox, simpledialog, ttk
 
-BROWSER_PATHS = {
+# Constants and Configuration
+BROWSER_PATHS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
     r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
     r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-}
+]
 
-DIR_DEPENDENCIES    = "dependencies"
-DIR_JSONS           = "jsons"
-DIR_OUTPUT          = "output"
-FILE_ALIASES        = "aliases.txt"
-FILE_CODES          = "codes.txt"
+DIR_DEPS        = "dependencies"
+DIR_JSONS       = "jsons"
+DIR_OUT         = "output"
+FILE_ALIASES    = "aliases.txt"
+FILE_CODES      = "codes.txt"
 
 EXCLUDED_TAGS = {
     "Female Protagonist",
     "Male Protagonist",
-    "Primarily Female Cast", 
+    "Primarily Female Cast",
     "Primarily Male Cast",
     "School",
     "Heterosexual",
@@ -40,21 +42,14 @@ def extract_year(vintage_str):
     year_val    = float(years[0])
     season_map  = {"winter": 0.00, "spring": 0.25, "summer": 0.50, "fall": 0.75}
     v_lower     = str(vintage_str).lower()
-    decimal     = 0.0
-    for season, val in season_map.items():
-        if season in v_lower:
-            decimal = val
-            break
+    decimal     = next((val for s, val in season_map.items() if s in v_lower), 0.0)
     return year_val + decimal
 
 def format_year(val):
     if val is None or val == "N/A": return "N/A"
-    year = int(val)
-    frac = val - year
-    if      frac < 0.25 : season = "Winter"
-    elif    frac < 0.50 : season = "Spring"
-    elif    frac < 0.75 : season = "Summer"
-    else                : season = "Fall"
+    year    = int(val)
+    frac    = val - year
+    season  = "Winter" if frac < 0.25 else "Spring" if frac < 0.50 else "Summer" if frac < 0.75 else "Fall"
     return f"{season} {year}"
 
 def trim_whitespace(image_path):
@@ -63,101 +58,42 @@ def trim_whitespace(image_path):
         bg      = Image.new(img.mode, img.size, "white")
         diff    = ImageChops.difference(img, bg)
         bbox    = diff.getbbox()
-        if bbox: 
+        if bbox:
             img = img.crop(bbox)
             img = ImageOps.expand(img, border = 10, fill = "white")
             img.save(image_path)
 
-def get_browser():
-    for path in BROWSER_PATHS:
-        if os.path.exists(path): return path
-    return None
+class ManualMatchDialog(tk.Toplevel):
+    def __init__(self, parent, unknown_name, available_pool):
+        super().__init__(parent)
+        self.title("Manual Match Required")
+        self.result = None
+        ttk.Label(self, text = f"Match required for: '{unknown_name}'", font = ("Arial", 10, "bold")).pack(pady = 10)
+        self.listbox = tk.Listbox(self, height = 15)
+        self.listbox.pack(padx = 10, fill = tk.BOTH)
+        for name in sorted(available_pool): self.listbox.insert(tk.END, name)
+        ttk.Button(self, text = "Match Selected", command = self.on_match).pack(pady = 10)
+        self.grab_set(); self.wait_window()
 
-def load_aliases(script_dir):
-    alias_map   = {}
-    alias_path  = os.path.join(script_dir, DIR_DEPENDENCIES, FILE_ALIASES)
-    if os.path.exists(alias_path):
-        with open(alias_path, "r", encoding = "utf-8") as f:
-            for line in f:
-                if "," in line:
-                    existing, new   = [x.strip() for x in line.split(",", 1)]
-                    alias_map[new]  = existing
-    return alias_map
+    def on_match(self):
+        sel = self.listbox.curselection()
+        if sel: self.result = self.listbox.get(sel[0]); self.destroy()
 
-def save_alias(script_dir, existing_name, new_name):
-    dep_dir     = os.path.join(script_dir,  DIR_DEPENDENCIES)
-    os.makedirs(dep_dir, exist_ok = True)
-    alias_path  = os.path.join(dep_dir,     FILE_ALIASES)
-    with open(alias_path, "a", encoding = "utf-8") as f: f.write(f"{existing_name}, {new_name}\n")
+class SubSelectionDialog(tk.Toplevel):
+    def __init__(self, parent, missing_roster):
+        super().__init__(parent)
+        self.title("Substitute Resolution")
+        self.result = None
+        tk.Label(self, text="Select the subbed player:").pack(padx = 20, pady = 10)
+        self.listbox = tk.Listbox(self, height = len(missing_roster))
+        self.listbox.pack(padx = 20, pady = 5, fill = tk.X)
+        for m in missing_roster: self.listbox.insert(tk.END, m)
+        ttk.Button(self, text = "Confirm", command = self.on_confirm).pack(pady = 10)
+        self.grab_set(); self.wait_window()
 
-def get_json_paths(script_dir):
-    json_dir = os.path.join(script_dir, DIR_JSONS)
-    while True:
-        if os.path.exists(json_dir) and os.path.isdir(json_dir):
-            paths = [os.path.join(json_dir, f) for f in os.listdir(json_dir) if f.endswith(".json")]
-            if paths: return paths
-        if not messagebox.askyesno("Missing Files", f"{DIR_JSONS} folder not found or empty, click Yes to re-run"): return []
-
-def get_all_known_players(json_paths):
-    all_players = set()
-    appearances = defaultdict(set)
-    for path in json_paths:
-        try:
-            with open(path, encoding = "utf-8") as f:
-                data = json.load(f)
-                for s in data.get("songs", []):
-                    for p in s.get("correctGuessPlayers", []): 
-                        all_players.add (p)
-                        appearances     [p].add(path)
-                    for ls in s.get("listStates", []): 
-                        all_players.add (ls["name"])
-                        appearances     [ls["name"]].add(path)
-        except: continue
-    return all_players, appearances
-
-def load_team_data(script_dir, all_known_players):
-    codes_path = os.path.join(script_dir, DIR_DEPENDENCIES, FILE_CODES)
-    if not os.path.exists(codes_path): return False, {}, {}, {}, defaultdict(set)
-    alias_map       = load_aliases(script_dir)
-    player_elo_map  = {}
-    raw_assignments = {}
-    team_rosters    = defaultdict(set)
-    t1_lookup       = {}
-    available       = list(all_known_players)
-    with open(codes_path, "r", encoding="utf-8") as f: all_lines = f.readlines()
-
-    for line in all_lines:
-        found_elos = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', line)
-        for p_in, elo_val in found_elos:
-            match = next((n for n in all_known_players if n.lower() == p_in.lower()), None)
-            if not match and p_in in alias_map: match = next((n for n in all_known_players if n == alias_map[p_in]), None)
-            if not match and ("[" in line or "Subs:" in line):
-                match = ManualMatchDialog(None, p_in, available).result
-                if match:
-                    save_alias(script_dir, match, p_in)
-                    alias_map[p_in] = match
-            if match: player_elo_map[match.lower()] = elo_val
-
-    team_idx = 1
-    for line in all_lines:
-        if "[" not in line or "]" not in line: continue
-        team_prefix_match   = re.match(r'^(?:\\s*)?([^:\[\d\(]+)\s*\([\d.-]+\):', line)
-        explicit_name       = team_prefix_match.group(1).strip() if team_prefix_match else None
-        player_section      = line.split(":", 1)[1] if ":" in line else line
-        members             = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', player_section)
-
-        for i, (p_in, _) in enumerate(members[:4]):
-            tier    = str(i + 1)
-            match   = next((n for n in all_known_players if n.lower() == p_in.lower() or (p_in in alias_map and n == alias_map[p_in])), None)
-            if match:
-                raw_assignments[match.lower()] = (team_idx, tier)
-                team_rosters[team_idx].add(match)
-                if      match in available  : available.remove(match)
-                if      explicit_name       : t1_lookup[team_idx] = explicit_name
-                elif    tier == "1"         : t1_lookup[team_idx] = match
-        team_idx += 1
-
-    return True, player_elo_map, raw_assignments, t1_lookup, team_rosters
+    def on_confirm(self):
+        sel = self.listbox.curselection()
+        if sel: self.result = self.listbox.get(sel[0]); self.destroy()
 
 class PlayerAdditionDialog(tk.Toplevel):
     def __init__(self, parent, current_members, known_pool):
@@ -167,695 +103,534 @@ class PlayerAdditionDialog(tk.Toplevel):
         self.known_pool     = sorted(list(known_pool - current_members))
         main_frame          = ttk.Frame(self, padding = 10)
         main_frame.pack(fill = tk.BOTH, expand = True)
-        tk.Label(main_frame, text = f"Lobby Count: {len(current_members)}, expected 8", font = ("Arial", 10, "bold")).pack()
-        curr_text = "Detected: " + ", ".join(sorted(list(current_members)))
-        tk.Label(main_frame, text = curr_text, wraplength = 400, fg = "blue")   .pack(pady      = 5)
-        tk.Label(main_frame, text = "Select player to add:")                    .pack(anchor    = tk.W)
+        tk.Label(main_frame, text = f"Lobby Count: {len(current_members)}/8", font = ("Arial", 10, "bold")).pack()
         self.listbox = tk.Listbox(main_frame, height = 10, selectmode = tk.MULTIPLE)
         for name in self.known_pool: self.listbox.insert(tk.END, name)
         self.listbox.pack(fill = tk.BOTH, expand = True, pady = 5)
-        btn_frame = ttk.Frame(main_frame)
-        btn_frame.pack(pady = 10)
-        ttk.Button(btn_frame, text = "Add",     command = self.add_selected)    .pack(side = tk.LEFT, padx = 5)
-        ttk.Button(btn_frame, text = "Finish",  command = self.destroy)         .pack(side = tk.LEFT, padx = 5)
+        ttk.Button(main_frame, text = "Confirm", command = self.add_selected).pack(pady = 10)
         self.grab_set(); self.wait_window()
+
     def add_selected(self):
         selections = self.listbox.curselection()
-        for i in selections:
-            name = self.listbox.get(i)
-            if name not in self.added_players: self.added_players.append(name)
-        messagebox.showinfo("Added", f"Added {len(selections)} players"); self.destroy()
+        self.added_players = [self.listbox.get(i) for i in selections]
+        self.destroy()
 
-class SubSelectionDialog(tk.Toplevel):
-    def __init__(self, parent, missing_roster):
-        super().__init__(parent)
-        self.title("Substitute Resolution")
-        self.result = None
-        tk.Label(self, text="Multiple roster members are missing; which player(s) were subbed?").pack(padx = 20, pady = 10)
-        self.listbox = tk.Listbox(self, height = len(missing_roster))
-        self.listbox.pack(padx = 20, pady = 5, fill=tk.X)
-        for m in missing_roster: self.listbox.insert(tk.END, m)
-        ttk.Button(self, text = "Confirm", command = self.on_confirm).pack(pady = 10)
-        self.grab_set(); self.wait_window()
-    def on_confirm(self):
-        sel = self.listbox.curselection()
-        if sel: self.result = self.listbox.get(sel[0]); self.destroy()
+# Main Processor
+class TourAnalyzer:
+    def __init__(self):
+        self.script_dir                 = Path(__file__).parent.absolute()
+        self.browser_path               = self._find_browser()
+        self.alias_map                  = self._load_aliases()
+        self.s_part                     = defaultdict(int)
+        self.c_counts                   = defaultdict(int)
+        self.e_counts                   = defaultdict(int)
+        self.p_rev_e                    = defaultdict(int)
+        self.p_two_e                    = defaultdict(int)
+        self.p_pts                      = defaultdict(int)
+        self.p_blks                     = defaultdict(int)
+        self.p_type_c                   = defaultdict(lambda: defaultdict(int))
+        self.p_type_s                   = defaultdict(lambda: defaultdict(int))
+        self.p_rigs                     = defaultdict(int)
+        self.p_rigs_h                   = defaultdict(int)
+        self.p_l_vint                   = defaultdict(list)
+        self.p_l_corr                   = defaultdict(list)
+        self.p_m_erigs                  = defaultdict(int)
+        self.p_l_solos                  = defaultdict(int)
+        self.t_vint                     = defaultdict(list)
+        self.t_c_ps                     = defaultdict(list)
+        self.t_on_syn                   = defaultdict(list)
+        self.t_off_syn                  = defaultdict(list)
+        self.t_sh_rig                   = defaultdict(list)
+        self.t_solos                    = defaultdict(int)
+        self.t_sweeps                   = defaultdict(int)
+        self.t_overs                    = defaultdict(list)
+        self.genre_c                    = Counter()
+        self.tag_c                      = Counter()
+        self.all_diff, self.all_vint    = [], []
+        self.global_stats               = Counter()
 
-class ManualMatchDialog(tk.Toplevel):
-    def __init__(self, parent, unknown_name, available_pool):
-        super().__init__(parent)
-        self.title("Manual Match Required")
-        self.result = None
-        ttk.Label(self, text = f"Could not find match for: '{unknown_name}'", font = ("Arial", 10, "bold")).pack(pady = 10)
-        self.listbox = tk.Listbox(self, height = 15)
-        self.listbox.pack(padx = 10, fill = tk.BOTH)
-        for name in sorted(available_pool): self.listbox.insert(tk.END, name)
-        ttk.Button(self, text = "Match Selected", command = self.on_match).pack(pady = 10)
-        self.grab_set(); self.wait_window()
-    def on_match(self):
-        sel = self.listbox.curselection()
-        if sel: self.result = self.listbox.get(sel[0]); self.destroy()
+    def _find_browser(self): return next((p for p in BROWSER_PATHS if os.path.exists(p)), None)
 
-def export_df_to_png(df, path, filename, title, eligibility_mask = None):
-    browser_path = get_browser()
-    if not browser_path: messagebox.showerror("[!] Error: Could not find Edge nor Chrome"); return
+    def _load_aliases(self):
+        amap = {}
+        path = self.script_dir / DIR_DEPS / FILE_ALIASES
+        if path.exists():
+            with open(path, "r", encoding="utf-8") as f:
+                for line in f:
+                    if "," in line:
+                        existing, new   = [x.strip() for x in line.split(",", 1)]
+                        amap[new]       = existing
+        return amap
 
-    descending_metrics  = [
-        "Elo",
-        "Guess Rate",
-        "Solos",
-        "Doubles",
-        "Rigs",
-        "Rig Delta",
-        "Points",
-        "Blocks",
-        "Rig Rate",
-        "OP GR",
-        "IN GR",
-        "ED GR",
-        "Rig GR",
-        "Off GR",
-        "Average GR",
-        "Rig Synergy",
-        "Off Synergy",
-        "Shared Rigs",
-        "Total Solos"
-    ]
+    def _save_alias(self, existing, new):
+        dep_dir = self.script_dir / DIR_DEPS
+        dep_dir.mkdir(exist_ok = True)
+        with open(dep_dir / FILE_ALIASES, "a", encoding = "utf-8") as f: f.write(f"{existing}, {new}\n")
 
-    ascending_metrics   = ["Sevens", "Overs", "Average Overs"]
-    restricted_metrics  = ["Solos", "Doubles", "Sevens", "Points", "Blocks", "Rigs"]
-    stats               = {}
+    def run(self):
+        json_dir = self.script_dir / DIR_JSONS
+        if not json_dir.exists() or not any(json_dir.glob("*.json")):
+            messagebox.showerror("Error", f"{DIR_JSONS} folder not found or empty")
+            return
 
-    for col in df.columns:
-        if col in descending_metrics or col in ascending_metrics:
-            numeric_col = pd.to_numeric(df[col].astype(str).str.replace('%', ''), errors = 'coerce')
-            if      eligibility_mask is not None and col in restricted_metrics  : eligible_numeric = numeric_col[eligibility_mask].dropna()
-            else                                                                : eligible_numeric = numeric_col.dropna()
+        json_paths                                          = list(json_dir.glob("*.json"))
+        all_known, appearances                              = self._scan_players(json_paths)
+        use_teams, elo_map, assignments, t1_lookup, rosters = self._load_team_data(all_known)
+        missing_list_count                                  = 0
+        found_types                                         = set()
+
+        for path in json_paths:
+            with open(path, encoding="utf-8") as f: data = json.load(f)
             
-            all_numeric = numeric_col.dropna()
-            if not all_numeric.empty:
-                max_val         = all_numeric       .max            ()
-                min_val         = eligible_numeric  .min            () if not eligible_numeric.empty    else None
-                counts_max      = all_numeric       .value_counts   ()
-                counts_min      = eligible_numeric  .value_counts   () if min_val is not None           else pd.Series()
-                stats[col]      = {
-                    'max'       : max_val,
-                    'min'       : min_val,
-                    'show_max'  : counts_max.get(max_val, 0) <= 3,
-                    'show_min'  : counts_min.get(min_val, 0) <= 3 if min_val is not None else False
-                }
+            songs = data.get("songs", [])
+            if not songs: continue
 
-    df          = df.reset_index(drop = True)
-    border_rows = []
-
-    if "Guess Rate" in df.columns:
-        gr_vals     = pd.to_numeric(df["Guess Rate"].astype(str).str.replace('%', ''), errors = 'coerce').tolist()
-        is_watched  = "Rigs" in df.columns
-        thresholds  = [28.0, 18.0, 12.0, 6.0] if is_watched else [28.0, 19.0, 8.0]
-        
-        for thresh in thresholds:
-            found_idx = -1
-
-            for idx, val in enumerate(gr_vals):
-                if pd.notnull(val) and val >= thresh: found_idx = idx
-            
-            if found_idx != -1 and found_idx < len(df) - 1: border_rows.append(found_idx)
-
-    rows_html = "<thead><tr>" + "".join([f"<th>{str(col).replace(' ', '<br>')}</th>" for col in df.columns]) + "</tr></thead><tbody>"
-    
-    for idx, row in df.iterrows():
-        border_style    =   "border-bottom: 3px solid black;" if idx in border_rows else ""
-        rows_html       +=  "<tr>"
-
-        for i, (col_name, cell) in enumerate(row.items()):
-            content, style_parts = str(cell), []
-            if border_style: style_parts.append(border_style)
-            
-            if col_name in stats:
-                val = pd.to_numeric(str(cell).replace('%', ''), errors = 'coerce')
-                if pd.notnull(val):
-                    is_max = (val == stats[col_name]['max']) and stats[col_name]['show_max']
-                    is_min = (val == stats[col_name]['min']) and stats[col_name]['show_min']
-                    
-                    is_eligible_for_worst = True
-                    if eligibility_mask is not None and col_name in restricted_metrics: is_eligible_for_worst = eligibility_mask[idx]
-
-                    if      col_name in descending_metrics:
-                        if      is_max                              : style_parts.append("color: #0056B3; font-weight: bold;")
-                        elif    is_min and is_eligible_for_worst    : style_parts.append("color: #D95400; font-weight: bold;")
-
-                    elif    col_name in ascending_metrics:
-                        if      is_max and is_eligible_for_worst    : style_parts.append("color: #D95400; font-weight: bold;")
-                        elif    is_min                              : style_parts.append("color: #0056B3; font-weight: bold;")
-            
-            style_attr          =   f' style="{" ".join(style_parts)}"' if style_parts else ""
-            if i == 0: content  =   f"<b>{content}</b>"
-            rows_html           +=  f"<td{style_attr}>{content}</td>"
-        rows_html += "</tr>"
-    rows_html += "</tbody>"
-
-    hti = Html2Image(
-        size                = (max(2000, len(df.columns) * 120), max(2000, len(df) * 60)),
-        browser_executable  = browser_path,
-        output_path         = path,
-        custom_flags        = ['--log-level=3', '--silent']
-    )
-
-    full_html = f"<html><head><style>body {{font-family: 'Segoe UI', Arial, sans-serif; background: white; display: inline-block; margin: 0;}} h2 {{margin: 10px 0 10px 5px; font-size: 30px; text-align: center;}} table {{margin-left: 10px; border-collapse: collapse; width: auto;}} th {{font-weight: bold; font-size: 20px; text-align: center; padding: 10px; border: 1px solid black;}} td {{font-size: 20px; text-align: center; padding: 10px; border: 1px solid black;}}</style></head><body><h2>{title}</h2><table>{rows_html}</table></body></html>"
-    hti.screenshot(html_str = full_html, save_as = filename)
-
-    try                     : trim_whitespace(os.path.join(path, filename))
-    except Exception as e   : print(f"[!] Error trimming {filename}: {e}")
-
-def fuse_pngs(png_dir):
-    files   = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Watched": "Watched.png"}
-    paths   = {k: os.path.join(png_dir, v)  for k, v in files.items() if os.path.exists(os.path.join(png_dir, v))}
-    imgs    = {k: Image.open(v)             for k, v in paths.items()}
-    if not imgs: return
-    r_keys  = [k for k in ["Team", "Tier", "Watched"] if k in imgs]
-    
-    if len(r_keys) == 1:
-        tw, th  = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
-        ok      = r_keys[0]
-        ow      = imgs[ok].width
-        oh      = imgs[ok].height
-        fused   = Image.new("RGB", (max(tw, ow), th + (10 if th else 0) + oh), "white")
-        if "Tour" in imgs: fused.paste(imgs["Tour"], (0, 0))
-        fused.paste(imgs[ok], (0, th + 10 if th else 0))
-    else:
-        tw, th  = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
-        rw      = max([imgs[k].width        for k in r_keys])       if r_keys else 0
-        rh      = sum([imgs[k].height + 10  for k in r_keys]) - 10  if r_keys else 0
-        fused   = Image.new("RGB", (tw + (10 if tw and rw else 0) + rw, max(th, rh)), "white")
-        if "Tour" in imgs: fused.paste(imgs["Tour"], (0, 0))
-        cx, cy = (tw + 10 if tw else 0), 0
-        for k in r_keys: fused.paste(imgs[k], (cx, cy)); cy += imgs[k].height + 10
-    
-    final_p = os.path.join(png_dir, "Extra.png")
-    fused.save(final_p)
-
-    try     : trim_whitespace(final_p)
-    except  : pass
-
-    for p in paths.values():
-        try     : os.remove(p)
-        except  : pass
-
-def process_files():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    json_paths = get_json_paths(script_dir)
-    if not json_paths: return
-
-    all_known_players, player_json_appearances                          = get_all_known_players (json_paths)
-    use_teams, player_elo_map, raw_assignments, t1_lookup, team_rosters = load_team_data        (script_dir, all_known_players)
-
-    s_part      = defaultdict(int)
-    c_counts    = defaultdict(int)
-    e_counts    = defaultdict(int)
-    p_rev_e     = defaultdict(int)
-    p_two_e     = defaultdict(int)
-    p_pts       = defaultdict(int)
-    p_blks      = defaultdict(int)
-    p_type_c    = defaultdict(lambda: defaultdict(int))
-    p_type_s    = defaultdict(lambda: defaultdict(int))
-    p_rigs      = defaultdict(int)
-    p_rigs_h    = defaultdict(int)
-    p_l_vint    = defaultdict(list)
-    p_l_corr    = defaultdict(list)
-    p_m_erigs   = defaultdict(int)
-    p_l_solos   = defaultdict(int)
-    t_vint      = defaultdict(list)
-    t_c_ps      = defaultdict(list)
-    t_on_syn    = defaultdict(list)
-    t_off_syn   = defaultdict(list)
-    t_sh_rig    = defaultdict(list)
-    t_solos     = defaultdict(int)
-    t_sweeps    = defaultdict(int)
-    t_overs     = defaultdict(list)
-
-    all_diff            = []
-    all_vint            = []
-    tot_c               = 0
-    tot_blanks          = 0
-    tot_erigs           = 0
-    tot_doubles         = 0
-    tot_sevens          = 0
-    tot_fulls           = 0
-    tot_sweeps          = 0
-    genre_c             = Counter()
-    tag_c               = Counter()
-    missing_list_count  = 0
-    found_types         = set()
-
-    for path in json_paths:
-        with open(path, encoding = "utf-8") as f: data = json.load(f)
-        songs = data.get("songs", [])
-        if not songs: continue
-
-        raw_f_players = {p for s in songs for p in s.get("correctGuessPlayers", [])} | {ls["name"] for s in songs for ls in s.get("listStates", [])}
-        final_members = set(raw_f_players)
-
-        if use_teams:
-            t_in_f = {raw_assignments[p.lower()][0] for p in raw_f_players if p.lower() in raw_assignments}
-            for t_id in t_in_f:
-                roster  = team_rosters[t_id]
-                missing = [p for p in roster if p not in raw_f_players]
-                if len([p for p in roster if p in raw_f_players]) == 3 and missing:
-                    res = SubSelectionDialog(None, missing).result if len(missing) > 1 else missing[0]
-                    if res: final_members.add(res)
-            if len(final_members) < 8:
-                for t_id in t_in_f: final_members.update(team_rosters[t_id])
-
-        while len(final_members) < 8:
-            dialog = PlayerAdditionDialog(None, final_members, all_known_players)
-            if not dialog.added_players:
-                if      messagebox.askyesno("Warning", "Still under 8 players, continue anyway?")   : break
-                else                                                                                : continue
-            final_members.update(dialog.added_players)
-
-        apply_rev       = (len(final_members) % 2 == 0)
-        max_s           = max(s.get("songNumber", 0) for s in songs)
-        f_type_totals   = defaultdict(int)
-
-        for song in songs:
-            st = song.get("songInfo", {}).get("type")
-            if st in [1, 2, 3]: 
-                f_type_totals   [st] += 1
-                found_types.add (st)
-
-        players_in_this_file = {p for s in songs for p in s.get("correctGuessPlayers", [])} | {ls["name"] for s in songs for ls in s.get("listStates", [])}
-        for name in final_members:
-            if name in players_in_this_file:
-                s_part[name] += max_s
-                for t in [1, 2, 3]: p_type_s[name][t] += f_type_totals[t]
-
-        for song in songs:
-            si = song.get("songInfo", {}); st = si.get("type")
-            if isinstance(si.get("animeGenre"), list)   : genre_c   .update(si.get("animeGenre"))
-            if isinstance(si.get("animeTags"),  list)   : tag_c     .update([t for t in si.get("animeTags") if t not in EXCLUDED_TAGS])
-            
-            correct =   set(song.get    ("correctGuessPlayers", []))
-            ls      =   song.get        ("listStates",          [])
-            tot_c   +=  len(correct)
-            yr      =   extract_year(si.get("vintage"))
-            dfc     =   si.get("animeDifficulty")
-            if isinstance(dfc, (int, float))    : all_diff.append(dfc)
-            if yr is not None                   : all_vint.append(yr)
-            if not ls                           : missing_list_count += 1
-
-            s_riggers = {p["name"] for p in ls}
-            if len(ls) == 1:
-                u_lister = ls[0]["name"]
-                p_l_solos[u_lister] += 1
-                if not (len(correct) == 1 and list(correct)[0] == u_lister): p_m_erigs[u_lister] += 1
+            raw_f_players = {p for s in songs for p in s.get("correctGuessPlayers", [])} | {ls["name"] for s in songs for ls in s.get("listStates", [])}
+            final_members = set(raw_f_players)
 
             if use_teams:
-                t_in_f_list = list({raw_assignments[p.lower()][0] for p in raw_f_players if p.lower() in raw_assignments})
-                if len(t_in_f_list) == 2:
-                    tA, tB = t_in_f_list[0], t_in_f_list[1]
-                    cA, cB = correct & team_rosters[tA], correct & team_rosters[tB]
-                    if len(cA) == 4 and not cB: t_sweeps[tA] += 1; tot_sweeps += 1
-                    if len(cB) == 4 and not cA: t_sweeps[tB] += 1; tot_sweeps += 1
-                    for cur, opp in [(tA, tB), (tB, tA)]:
-                        cC, oC = correct & team_rosters[cur], correct & team_rosters[opp]
-                        if not oC: 
-                            for p in cC: p_pts[p] += 1
-                        if len(cC) == 1 and len(oC) > 0: p_blks[list(cC)[0]] += 1
-                
-                for t_id in t_in_f_list:
-                    ros     = team_rosters[t_id]
-                    c_on_t  = correct & ros
-                    t_rg    = s_riggers & ros
-                    t_c_ps[t_id].append(len(c_on_t) / 4.0)
-                    if yr is not None: t_vint[t_id].append(yr)
-                    if t_rg:
-                        t_on_syn    [t_id].append(len(c_on_t)       / 4.0)
-                        t_sh_rig    [t_id].append((len(t_rg) - 1)   / 3.0)
-                        t_overs     [t_id].append((len(correct), len(t_rg)))
-                    else: t_off_syn [t_id].append(len(c_on_t)       / 4.0)
+                t_in_f = {assignments[p.lower()][0] for p in raw_f_players if p.lower() in assignments}
+                for tid in t_in_f:
+                    ros     = rosters[tid]
+                    missing = [p for p in ros if p not in raw_f_players]
+                    if len([p for p in ros if p in raw_f_players]) == 3 and missing:
+                        res = SubSelectionDialog(None, missing).result if len(missing) > 1 else missing[0]
+                        if res: final_members.add(res)
+                if len(final_members) < 8:
+                    for tid in t_in_f: final_members.update(rosters[tid])
 
-            if      len(final_members - correct) == 0               : tot_fulls     += 1
-            elif    apply_rev and len(final_members - correct) == 1 : tot_sevens    += 1; p_rev_e[list(final_members - correct)[0]] += 1
-            elif    len(correct) == 2                               : tot_doubles   += 1; [p_two_e.__setitem__(p, p_two_e[p] + 1) for p in correct]
-            elif    len(correct) == 1:
-                tot_erigs       +=  1
-                sw              =   list(correct)[0]
-                e_counts[sw]    +=  1
-                if sw.lower() in raw_assignments: t_solos[raw_assignments[sw.lower()][0]] += 1
-            elif len(correct) == 0: tot_blanks += 1
+            while len(final_members) < 8:
+                added = PlayerAdditionDialog(None, final_members, all_known).added_players
+                if not added:
+                    if messagebox.askyesno("Warning", "Under 8 players, continue?") : break
+                    else                                                            : continue
+                final_members.update(added)
+
+            apply_rev       = (len(final_members) % 2 == 0)
+            max_s           = max(s.get("songNumber", 0) for s in songs)
+            f_type_totals   = defaultdict(int)
+
+            for song in songs:
+                st = song.get("songInfo", {}).get("type")
+                if st in [1, 2, 3]: 
+                    f_type_totals   [st] += 1
+                    found_types.add (st)
 
             for name in final_members:
-                if name in correct:
-                    c_counts[name] += 1
-                    if st in [1, 2, 3]: p_type_c[name][st] += 1
-            if ls:
-                for p in ls:
-                    n = p["name"]; p_rigs[n] += 1
-                    if n in correct     : p_rigs_h[n] += 1
-                    if yr is not None   : p_l_vint[n].append(yr)
-                    p_l_corr[n].append(len(correct))
+                if name in raw_f_players:
+                    self.s_part[name] += max_s
+                    for t in [1, 2, 3]: self.p_type_s[name][t] += f_type_totals[t]
 
-    watched_valid       = missing_list_count <= 5
-    baseline_expected   = simpledialog.askinteger(
-        "Expected Rounds",
-        "Enter the amount of rounds most people were supposed to play:",
-        initialvalue = 6 if len(s_part) <= 20 else 5
-    )
-    if baseline_expected is None: baseline_expected = int(np.median([len(v) for v in player_json_appearances.values()])) if player_json_appearances else 0
+            for song in songs:
+                si = song.get("songInfo", {})
+                st = si.get("type")
+                if isinstance(si.get("animeGenre"), list): self.genre_c .update(si.get("animeGenre"))
+                if isinstance(si.get("animeTags"),  list): self.tag_c   .update([t for t in si.get("animeTags") if t not in EXCLUDED_TAGS])
+                
+                correct                     =   set(song.get("correctGuessPlayers", []))
+                ls                          =   song.get("listStates",              [])
+                self.global_stats["tot_c"]  +=  len(correct)
+                
+                yr = extract_year(si.get("vintage"))
+                if yr is not None                                       : self.all_vint.append(yr)
+                if isinstance(si.get("animeDifficulty"), (int, float))  : self.all_diff.append(si.get("animeDifficulty"))
+                if not ls                                               : missing_list_count += 1
 
-    expected_jsons_map = {}
-    for name in s_part.keys():
-        actual = len(player_json_appearances.get(name, []))
-        if actual != baseline_expected:
-            exp = simpledialog.askinteger(
-                "Expected Rounds",
-                f"{name} appears in {actual} JSONs; how many rounds were they supposed to play?",
-                initialvalue = actual
-            )
-            expected_jsons_map      [name] = exp if exp is not None else actual
-        else: expected_jsons_map    [name] = baseline_expected
+                s_riggers = {p["name"] for p in ls}
+                if len(ls) == 1:
+                    u                   =   ls[0]["name"]
+                    self.p_l_solos[u]   +=  1
+                    if not (len(correct) == 1 and list(correct)[0] == u): self.p_m_erigs[u] += 1
 
-    if      baseline_expected == 3                                                                          : stage = "Mid-Tour"
-    elif    (len(s_part) <= 20 and baseline_expected >= 6) or (len(s_part) > 20 and baseline_expected >= 5) : stage = "Final"
-    else                                                                                                    : stage = f"R{int(round(baseline_expected))}"
+                if use_teams:
+                    t_list = list({assignments[p.lower()][0] for p in raw_f_players if p.lower() in assignments})
+                    if len(t_list) == 2:
+                        tA, tB = t_list[0],             t_list[1]
+                        cA, cB = correct & rosters[tA], correct & rosters[tB]
 
-    prefix          = ""
-    type_map        = {1: "OP", 3: "IN", 2: "ED"}
-    found_abbrs     = sorted([type_map[t] for t in found_types if t in type_map])
-    all_types_found = set(type_map.keys()).issubset(found_types)
-    
-    if watched_valid:
-        if all_types_found: prefix  = "Watched Tour, "
-        else:
-            type_str                = "-".join(found_abbrs) if found_abbrs else ""
-            prefix                  = f"Watched {type_str} Tour, "
-    else:
-        if all_types_found: prefix  = "Random Tour, "
-        else:
-            type_str                = "/".join(found_abbrs) if found_abbrs else ""
-            prefix                  = f"Random {type_str} Tour, "
+                        if len(cA) == 4 and not cB: self.t_sweeps[tA] += 1; self.global_stats["sweeps"] += 1
+                        if len(cB) == 4 and not cA: self.t_sweeps[tB] += 1; self.global_stats["sweeps"] += 1
 
-    timestamp   = datetime.now().strftime("%y%m%d%H")
-    png_dir     = os.path.join(script_dir, DIR_OUTPUT, timestamp)
-    os.makedirs(png_dir, exist_ok = True)
+                        for cur, opp in [(tA, tB), (tB, tA)]:
+                            cC, oC = correct & rosters[cur], correct & rosters[opp]
+                            if not oC: 
+                                for p in cC: self.p_pts[p] += 1
+                            if len(cC) == 1 and len(oC) > 0: self.p_blks[list(cC)[0]] += 1
+                    
+                    for tid in t_list:
+                        ros     = rosters[tid]
+                        c_on_t  = correct & ros
+                        self.t_c_ps[tid].append(len(c_on_t) / 4.0)
+                        if yr is not None: self.t_vint[tid].append(yr)
+                        if s_riggers & ros:
+                            self.t_on_syn       [tid].append(len(c_on_t)                / 4.0)
+                            self.t_sh_rig       [tid].append((len(s_riggers & ros) - 1) / 3.0)
+                            self.t_overs        [tid].append((len(correct), len(s_riggers & ros)))
+                        else: self.t_off_syn    [tid].append(len(c_on_t)                / 4.0)
 
-    create_player_report(
-        s_part,
-        c_counts,
-        e_counts,
-        p_two_e,
-        p_rev_e,
-        p_pts,
-        p_blks,
-        p_type_c,
-        p_type_s,
-        p_rigs,
-        p_rigs_h,
-        p_l_corr,
-        use_teams,
-        player_elo_map,
-        watched_valid,
-        stage,
-        png_dir,
-        player_json_appearances,
-        prefix,
-        expected_jsons_map,
-        baseline_expected,
-        raw_assignments
-    )
+                if len(final_members - correct) == 0: self.global_stats["fulls"] += 1
+                elif apply_rev and len(final_members - correct) == 1:
+                    self.global_stats   ["sevens"]                          += 1
+                    self.p_rev_e        [list(final_members - correct)[0]]  += 1
+                elif len(correct) == 2:
+                    self.global_stats   ["doubles"]     += 1
+                    for p in correct: self.p_two_e[p]   += 1
+                elif len(correct) == 1:
+                    self.global_stats["solos"]                                              +=  1
+                    sw                                                                      =   list(correct)[0]
+                    self.e_counts[sw]                                                       +=  1
+                    if sw.lower() in assignments: self.t_solos[assignments[sw.lower()][0]]  +=  1
+                elif len(correct) == 0: self.global_stats["blanks"] += 1
 
-    create_tour_report(
-        all_vint,
-        all_diff,
-        tot_c,
-        s_part,
-        tot_blanks,
-        tot_erigs,
-        tot_doubles,
-        tot_sevens,
-        tot_fulls,
-        tot_sweeps,
-        use_teams,
-        genre_c,
-        tag_c,
-        e_counts,
-        c_counts,
-        p_two_e,
-        p_rev_e,
-        p_l_solos,
-        p_m_erigs,
-        watched_valid,
-        stage,
-        png_dir
-    )
-    
-    if use_teams:
-        if watched_valid: create_team_report(t_c_ps, t_vint, t_on_syn, t_off_syn, t_sh_rig, t_solos, t_overs, t1_lookup, png_dir)
-        create_tier_report(s_part, raw_assignments, c_counts, p_pts, p_blks, png_dir)
-    
-    if watched_valid: create_watched_report(s_part, p_l_corr, p_l_vint, png_dir)
+                for name in final_members:
+                    if name in correct:
+                        self.c_counts[name]                         += 1
+                        if st in [1, 2, 3]: self.p_type_c[name][st] += 1
+                if ls:
+                    for p in ls:
+                        n = p["name"]       ; self.p_rigs   [n] += 1
+                        if n in correct     : self.p_rigs_h [n] += 1
+                        if yr is not None   : self.p_l_vint [n].append(yr)
+                        self.p_l_corr[n].append(len(correct))
 
-    fuse_pngs(png_dir)
-    messagebox.showinfo("Success", f"Saved PNGs to {DIR_OUTPUT}/{timestamp}")
+        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types)
 
-def create_player_report(
-        s_part,
-        c_counts,
-        e_counts,
-        p_two_e,
-        p_rev_e,
-        p_pts,
-        p_blks,
-        p_type_c,
-        p_type_s,
-        p_rigs,
-        p_rigs_h,
-        p_l_corr,
-        use_teams,
-        elo_map,
-        watched_valid,
-        stage,
-        png_dir,
-        player_json_appearances,
-        prefix,
-        expected_jsons_map,
-        baseline_expected,
-        raw_assignments
-    ):
-    p_rows              = []
-    eligibility_list    = [] 
-    type_labels         = {1: "OP GR", 3: "IN GR", 2: "ED GR"}
-    active_types_list   = [t for t in type_labels if any(p_type_s[p][t] > 0 for p in s_part)]
-    active_types        = {t: type_labels[t] for t in active_types_list} if len(active_types_list) > 1 else {}
+    def _scan_players(self, paths):
+        players = set           ()
+        apps    = defaultdict   (set)
 
-    for name in s_part:
-        total           = s_part    [name]
-        correct         = c_counts  [name]
-        actual_jsons    = len(player_json_appearances.get(name, []))        
-        expected        = expected_jsons_map.get(name, baseline_expected)
-        display_name    = name
+        for p in paths:
+            try:
+                with open(p, encoding = "utf-8") as f:
+                    data = json.load(f)
+                    for s in data.get("songs", []):
+                        for plyr    in s.get("correctGuessPlayers", []): players.add(plyr);         apps[plyr]          .add(str(p))
+                        for ls      in s.get("listStates",          []): players.add(ls["name"]);   apps[ls["name"]]    .add(str(p))
+            except: continue
+        return players, apps
 
-        if expected < baseline_expected:
-            if      use_teams and name.lower() in raw_assignments   : display_name += " ▶"
-            else                                                    : display_name += " ◀"
-
-        is_eligible = not ("▶" in display_name or "◀" in display_name)
-        eligibility_list.append(is_eligible)
-
-        if actual_jsons < expected:
-            missing_count   = expected - actual_jsons
-            symbols         = ["", "❶", "❷", "❸", "❹", "❺", "❻"]
-            if 0 < missing_count < len(symbols): display_name += f" {symbols[missing_count]}"
+    def _load_team_data(self, all_known):
+        codes = self.script_dir / DIR_DEPS / FILE_CODES
+        if not codes.exists(): return False, {}, {}, {}, defaultdict(set)
         
-        row = {"Player": display_name}
-        if use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
+        elo_map, assignments, rosters, t1_lookup    = {}, {}, defaultdict(set), {}
+        avail                                       = list(all_known)
+        with open(codes, "r", encoding = "utf-8") as f: lines = f.readlines()
 
-        row.update({
-            "Guess Rate"    : correct / total if total else 0,
-            "Solos"         : e_counts  [name],
-            "Doubles"       : p_two_e   [name],
-            "Sevens"        : p_rev_e   [name]
-        })
+        for line in lines:
+            matches = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', line)
+            for p_in, val in matches:
+                match = next((n for n in all_known if n.lower() == p_in.lower()), None)
+                if not match and p_in in self.alias_map: match = next((n for n in all_known if n == self.alias_map[p_in]), None)
+                if not match and ("[" in line or "Subs:" in line):
+                    match = ManualMatchDialog(None, p_in, avail).result
+                    if match: self._save_alias(match, p_in); self.alias_map[p_in] = match
+                if match: elo_map[match.lower()] = val
 
-        if use_teams: row.update({"Points": p_pts[name], "Blocks": p_blks[name]})
+        idx = 1
+        for line in lines:
+            if "[" not in line: continue
+            pre     = re.match(r'^(?:\\s*)?([^:\[\d\(]+)\s*\([\d.-]+\):', line)
+            ename   = pre.group(1).strip() if pre else None
+            sec     = line.split(":", 1)[1] if ":" in line else line
+            mems    = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', sec)
 
-        for t_id, label in active_types.items():
-            seen        = p_type_s[name][t_id]
-            row[label]  = p_type_c[name][t_id] / seen if seen else np.nan
+            for i, (p_in, _) in enumerate(mems[:4]):
+                tier    = str(i + 1)
+                match   = next((n for n in all_known if n.lower() == p_in.lower() or (p_in in self.alias_map and n == self.alias_map[p_in])), None)
+                if match:
+                    assignments[match.lower()] = (idx, tier)
+                    rosters[idx].add(match)
+                    if match in avail: avail.remove(match)
+                    t1_lookup[idx] = ename if ename else (match if tier == "1" else t1_lookup.get(idx))
+            idx += 1
+        return True, elo_map, assignments, t1_lookup, rosters
 
-        if watched_valid: 
+    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types):
+        watched_valid       = missing_count <= 5
+        baseline_initial    = 6 if len(self.s_part) <= 20 else 5
+        base_exp            = simpledialog.askinteger("Input", "Enter the expected amount of rounds:", initialvalue = baseline_initial)
+        if base_exp is None: base_exp = baseline_initial
+
+        exp_map = {}
+        for name in self.s_part:
+            act = len(appearances.get(name, []))
+            if act < base_exp:
+                val             = simpledialog.askinteger("Input", f"Only {act} JSON(s) mention {name}; how many rounds were they expected to be in?", initialvalue = act)
+                exp_map[name]   = val if val is not None else act
+            else: exp_map[name] = base_exp
+
+        if      base_exp == 3                   : stage = "Mid-Tour"
+        elif    base_exp >= baseline_initial    : stage = "Final"
+        else                                    : stage = f"R{base_exp}"
+        
+        type_map            = {1: "OP", 3: "IN", 2: "ED"}
+        active_abbrs        = [type_map[t] for t in sorted(found_types) if t in type_map]
+        all_types_present   = set(type_map.keys()).issubset(found_types)
+        
+        if all_types_present    : type_str = ""
+        else                    : type_str = f"{'-'.join(active_abbrs)} " if active_abbrs else ""
+
+        prefix      = f"{'Watched' if watched_valid else 'Random'} {type_str}Tour, "
+        ts          = datetime.now().strftime("%y%m%d%H")
+        out_path    = self.script_dir / DIR_OUT / ts
+        out_path.mkdir(parents = True, exist_ok = True)
+
+        self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments)
+        self._create_tour_png   (use_teams, watched_valid, out_path)
+        if use_teams:
+            if watched_valid: self._create_team_png(t1_lookup, out_path)
+            self._create_tier_png(assignments, out_path)
+        if watched_valid: self._create_watched_png(out_path)
+
+        self._fuse_and_clean(out_path)
+        messagebox.showinfo("Success", f"Saved to {DIR_OUT}/{ts}")
+
+    def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns):
+        rows, eligibility   = [], []
+        t_labels            = {1: "OP GR", 3: "IN GR", 2: "ED GR"}
+        active              = [t for t in t_labels if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
+
+        for name in self.s_part:
+            tot, cor    = self.s_part[name], self.c_counts[name]
+            target      = exp_map.get(name, base_exp)
+            d_name      = name
+            if target < base_exp: d_name += " ▼" if (use_teams and name.lower() in assigns) else " ▲"
+            
+            is_eligible = not ("▼" in d_name or "▲" in d_name)
+            eligibility.append(is_eligible)
+            
+            act = len(apps.get(name, []))
+            if act < target:
+                syms = ["", "❶", "❷", "❸", "❹", "❺", "❻"]
+                if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
+
+            row = {"Player": d_name}
+            if use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
+
             row.update({
-                "Rigs"      : p_rigs                [name],
-                "Rig Rate"  : p_rigs                [name]  / total                     if total                    else np.nan,
-                "Rig Delta" : (correct - p_rigs     [name]) / correct                   if correct                  else np.nan,
-                "Rig GR"    : p_rigs_h              [name]  / p_rigs[name]              if p_rigs           [name]  else np.nan,
-                "Off GR"    : (correct - p_rigs_h   [name]) / (total - p_rigs[name])    if (total - p_rigs  [name]) else np.nan,
-                "Overs"     : np.mean(p_l_corr[name])                                   if p_l_corr         [name]  else np.nan
+                "Guess Rate"    : cor / tot if tot else 0,
+                "Solos"         : self.e_counts [name],
+                "Doubles"       : self.p_two_e  [name],
+                "Sevens"        : self.p_rev_e  [name]
             })
 
-        p_rows.append(row)
+            if use_teams: row.update({"Points": self.p_pts[name], "Blocks": self.p_blks[name]})
+            for tid in active:
+                seen                = self.p_type_s[name][tid]
+                row[t_labels[tid]]  = self.p_type_c[name][tid] / seen if seen else np.nan
+            if watched:
+                row.update({
+                    "Rigs"      : self.p_rigs[name],
+                    "Rig Rate"  : self.p_rigs[name]             / tot                       if tot                          else np.nan,
+                    "Rig Delta" : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
+                    "Rig GR"    : self.p_rigs_h[name]           / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
+                    "Off GR"    : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
+                    "Overs"     : np.mean(self.p_l_corr[name])                              if self.p_l_corr[name]          else np.nan
+                })
+            rows.append(row)
 
-    df                                      = pd.DataFrame(p_rows).sort_values("Guess Rate", ascending = False)
-    sorted_eligibility_mask                 = pd.Series(eligibility_list, index = pd.DataFrame(p_rows).index).reindex(df.index).values
-    if "Elo" in df.columns  : df["Elo"]     = pd.to_numeric(df["Elo"],      errors = 'coerce')          .map(lambda x: f"{x:.2f}"           if pd.notnull(x) else "N/A")
-    pct_cols                                = ["Guess Rate"] + list(active_types.values()) + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched_valid else [])
-    for c in pct_cols       : df[c]         = pd.to_numeric(df[c],          errors = 'coerce').mul(100) .map(lambda x: f"{x:.2f}"           if pd.notnull(x) else "N/A")
-    if watched_valid        : df["Overs"]   = pd.to_numeric(df["Overs"],    errors = 'coerce')          .map(lambda x: f"{x:.2f}"           if pd.notnull(x) else "N/A")
+        df      = pd.DataFrame(rows).sort_values("Guess Rate", ascending = False)
+        mask    = pd.Series(eligibility, index = pd.DataFrame(rows).index).reindex(df.index).values
+        pcts    = ["Guess Rate"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else [])
 
-    export_df_to_png(df, png_dir, "Player.png", f"{prefix}Player Statistics, {stage}", eligibility_mask = sorted_eligibility_mask)
+        if "Elo" in df.columns: df["Elo"] = pd.to_numeric(df["Elo"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        for c in pcts: df[c] = pd.to_numeric(df[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if watched: df["Overs"] = pd.to_numeric(df["Overs"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
-def create_tour_report(
-        all_vint,
-        all_diff,
-        tot_c,
-        s_part,
-        tot_blanks,
-        tot_erigs,
-        tot_doubles,
-        tot_sevens,
-        tot_fulls,
-        tot_sweeps,
-        use_teams,
-        genre_c,
-        tag_c,
-        e_counts,
-        c_counts,
-        p_two_e,
-        p_rev_e,
-        p_l_solos,
-        p_m_erigs,
-        watched_valid,
-        stage,
-        png_dir
-    ):
-    
-    def format_most(names, val):
-        if not names: return "N/A"
-        winner  = sorted(names, key = lambda x: (c_counts[x] / s_part[x])   if s_part[x]        else 0)[0]
-        gr      = (c_counts[winner] / s_part[winner]) * 100                 if s_part[winner]   else 0
-        return f"{winner} ({val}{f', {gr:.2f}'                              if len(names) > 1   else ''})"
+        self._export_png(df, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask)
 
-    tour_stats = [
-        ["Median Vintage",      format_year(round(np.median(all_vint), 2))      if all_vint else "N/A"],
-        ["Average Difficulty",  f"{np.mean(all_diff):.2f}"                      if all_diff else "N/A"],
-        ["Average GR",          f"{100 * (tot_c / sum(s_part.values())):.2f}"   if s_part   else "0.00"],
-        ["Total Blanks",        tot_blanks], 
-        ["Total Solos",         tot_erigs], 
-        ["Total Doubles",       tot_doubles], 
-        ["Total Sevens",        tot_sevens], 
-        ["Total Fulls",         tot_fulls]
-    ]
-    
-    if use_teams: tour_stats.append(["Total Sweeps", tot_sweeps])
+    def _create_tour_png(self, use_teams, watched, path):
+        def fmt_most(names, val):
+            if not names: return "N/A"
+            win = sorted(names, key = lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]
+            gr  = (self.c_counts[win] / self.s_part[win]) * 100 if self.s_part[win] else 0
+            return f"{win} ({val}{f', {gr:.2f}' if len(names) > 1 else ''})"
+
+        stats = [
+            ["Median Vintage",      format_year(round(np.median(self.all_vint), 2))                         if self.all_vint    else "N/A"],
+            ["Average Difficulty",  f"{np.mean(self.all_diff):.2f}"                                         if self.all_diff    else "N/A"],
+            ["Average GR",          f"{100 * (self.global_stats['tot_c'] / sum(self.s_part.values())):.2f}" if self.s_part      else "0.00"],
+            ["Total Blanks",        self.global_stats["blanks"]],
+            ["Total Solos",         self.global_stats["solos"]],
+            ["Total Doubles",       self.global_stats["doubles"]],
+            ["Total Sevens",        self.global_stats["sevens"]],
+            ["Total Fulls",         self.global_stats["fulls"]]
+        ]
+
+        if use_teams: stats.append(["Total Sweeps", self.global_stats["sweeps"]])
+        stats.extend([
+            ["Most Popular Genre",  f"{self.genre_c .most_common(1)[0][0]} ({self.genre_c   .most_common(1)[0][1]})" if self.genre_c else "N/A"],
+            ["Most Popular Tag",    f"{self.tag_c   .most_common(1)[0][0]} ({self.tag_c     .most_common(1)[0][1]})" if self.tag_c else "N/A"],
+            ["Most Solos",          fmt_most([n for n, v in self.e_counts   .items() if v == max(self.e_counts  .values(), default = 0) and v > 0], max(self.e_counts   .values(), default = 0))],
+            ["Most Doubles",        fmt_most([n for n, v in self.p_two_e    .items() if v == max(self.p_two_e   .values(), default = 0) and v > 0], max(self.p_two_e    .values(), default = 0))],
+            ["Most Sevens",         fmt_most([n for n, v in self.p_rev_e    .items() if v == max(self.p_rev_e   .values(), default = 0) and v > 0], max(self.p_rev_e    .values(), default = 0))]
+        ])
         
-    tour_stats.extend([
-        ["Most Popular Genre",  f"{genre_c  .most_common(1)[0][0]} ({genre_c    .most_common(1)[0][1]})" if genre_c else "N/A"],
-        ["Most Popular Tag",    f"{tag_c    .most_common(1)[0][0]} ({tag_c      .most_common(1)[0][1]})" if tag_c   else "N/A"],
-        ["Most Solos",          format_most([n for n, v in e_counts .items() if v == max(e_counts   .values(), default = 0) and v > 0], max(e_counts    .values(), default = 0))],
-        ["Most Doubles",        format_most([n for n, v in p_two_e  .items() if v == max(p_two_e    .values(), default = 0) and v > 0], max(p_two_e     .values(), default = 0))],
-        ["Most Sevens",         format_most([n for n, v in p_rev_e  .items() if v == max(p_rev_e    .values(), default = 0) and v > 0], max(p_rev_e     .values(), default = 0))]
-    ])
+        plist   = list(self.s_part.keys())
+        no_s    = sorted([n for n in plist if self.e_counts[n] ==   0 and self.s_part[n] > 0], key = lambda x: self.c_counts[x] / self.s_part[x], reverse = True)
+        yes_s   = sorted([n for n in plist if self.e_counts[n] >    0 and self.s_part[n] > 0], key = lambda x: self.c_counts[x] / self.s_part[x])
 
-    plist   = list(s_part.keys())
-    no_erig = sorted([n for n in plist if e_counts[n] == 0 and s_part[n] > 0], key = lambda x: c_counts[x] / s_part[x], reverse = True)
-    if no_erig: tour_stats.append(["Highest GR without Solos", f"{no_erig[0]} ({100 * (c_counts[no_erig[0]] / s_part[no_erig[0]]):.2f})"])
-    
-    solos_pool = sorted([n for n in plist if e_counts[n] > 0 and s_part[n] > 0], key = lambda x: c_counts[x] / s_part[x])
-    if solos_pool:
-        w_solo = solos_pool[0]
-        tour_stats.append(["Lowest GR with Solos", f"{w_solo} ({100 * (c_counts[w_solo] / s_part[w_solo]):.2f}, {e_counts[w_solo]})"])
+        if no_s     : stats.append(["Highest GR without Solos", f"{no_s     [0]} ({100 * (self.c_counts[no_s    [0]] / self.s_part[no_s     [0]]):.2f})"])
+        if yes_s    : stats.append(["Lowest GR with Solos",     f"{yes_s    [0]} ({100 * (self.c_counts[yes_s   [0]] / self.s_part[yes_s    [0]]):.2f}, {self.e_counts[yes_s[0]]})"])
 
-    if watched_valid:
-        conv = []
-        for n in [p for p in plist if p_l_solos[p] > 0]:
-            h = p_l_solos[n] - p_m_erigs[n]
-            conv.append({'n': n, 'p': 100 * h / p_l_solos[n], 'h': h, 't': p_l_solos[n]})
-        if conv:
-            b = sorted(conv, key = lambda x: (x['p'], x['t']),  reverse = True)     [0]
-            w = sorted(conv, key = lambda x: (x['p'], -x['t']), reverse = False)    [0]
-            tour_stats.append(["Best Solo Rig Converter",   f"{b['n']} ({b['p']:.2f}, {b['h']}/{b['t']})"])
-            tour_stats.append(["Worst Solo Rig Converter",  f"{w['n']} ({w['p']:.2f}, {w['h']}/{w['t']})"])
+        if watched:
+            conv = []
+            for n in [p for p in plist if self.p_l_solos[p] > 0]:
+                h = self.p_l_solos[n] - self.p_m_erigs[n]
+                conv.append({'n': n, 'p': 100 * h / self.p_l_solos[n], 'h': h, 't': self.p_l_solos[n]})
+            if conv:
+                b = sorted(conv, key = lambda x: (x['p'], x     ['t']), reverse = True) [0]
+                w = sorted(conv, key = lambda x: (x['p'], -x    ['t']))                 [0]
 
-    export_df_to_png(pd.DataFrame(tour_stats, columns = ["Statistic", "Value"]), png_dir, "Tour.png", "Tour Statistics")
+                stats.append(["Best Solo Rig Converter",    f"{b['n']} ({b['p']:.2f}, {b['h']}/{b['t']})"])
+                stats.append(["Worst Solo Rig Converter",   f"{w['n']} ({w['p']:.2f}, {w['h']}/{w['t']})"])
 
-def create_team_report(t_c_ps, t_vint, t_on_syn, t_off_syn, t_sh_rig, t_solos, t_overs, t1_lookup, png_dir):
-    stats_list = []
-    for t_id in t_c_ps.keys():
-        w_overs = sum(o * r for o, r in t_overs[t_id]) / sum(r for _, r in t_overs[t_id]) if sum(r for _, r in t_overs[t_id]) > 0 else 0.0
+        self._export_png(pd.DataFrame(stats, columns = ["Statistic", "Value"]), path, "Tour.png", "Tour Statistics")
 
-        stats_list.append({
-            "Team"              : t1_lookup.get(t_id, f"Team {t_id}"),
-            "Median Vintage"    : format_year(np.median(t_vint  [t_id])),
-            "Average GR"        : f"{np.mean(t_c_ps             [t_id])     * 100   :.2f}",
-            "Rig Synergy"       : f"{np.mean(t_on_syn           [t_id])     * 100   :.2f}",
-            "Off Synergy"       : f"{np.mean(t_off_syn          [t_id])     * 100   :.2f}",
-            "Shared Rigs"       : f"{np.mean(t_sh_rig           [t_id])     * 100   :.2f}",
-            "Total Solos"       : t_solos[t_id],
-            "Average Overs"     : f"{w_overs                                        :.2f}"
-        })
+    def _create_team_png(self, t1_lookup, path):
+        res = []
+        for tid in self.t_c_ps:
+            w_overs = sum(o * r for o, r in self.t_overs[tid])/sum(r for _, r in self.t_overs[tid]) if sum(r for _, r in self.t_overs[tid]) > 0 else 0
+            res.append({
+                "Team Leader"       : t1_lookup.get(tid, f"Team {tid}"),
+                "Median Vintage"    : format_year(np.median(self.t_vint[tid])),
+                "Average GR"        : f"{np.mean(self.t_c_ps    [tid]) * 100:.2f}",
+                "Rig Synergy"       : f"{np.mean(self.t_on_syn  [tid]) * 100:.2f}",
+                "Off Synergy"       : f"{np.mean(self.t_off_syn [tid]) * 100:.2f}",
+                "Shared Rigs"       : f"{np.mean(self.t_sh_rig  [tid]) * 100:.2f}",
+                "Total Solos"       : self.t_solos[tid],
+                "Average Overs"     : f"{w_overs:.2f}"
+            })
+        self._export_png(pd.DataFrame(res).sort_values("Average GR", ascending = False), path, "Team.png", "Team Statistics")
 
-    df = pd.DataFrame(stats_list).sort_values("Average GR", ascending = False)
-    export_df_to_png(df, png_dir, "Team.png", "Team Statistics")
-
-def create_tier_report(s_part, raw_assignments, c_counts, p_pts, p_blks, png_dir):
-    tiers           = sorted({v[1] for v in raw_assignments.values() if v[1] != "N/A"}, reverse = True)
-    results         = []
-    max_pts_seen    = -1
-    max_blk_seen    = -1
-
-    for tr in tiers:
-        tp = [n for n in s_part if n.lower() in raw_assignments and raw_assignments[n.lower()][1] == tr]
-        if not tp: continue
-        
-        def format_best(player_list, stat_dict):
-            sorted_players = sorted(
-                player_list,
-                key     = lambda x: (stat_dict[x], c_counts[x] / s_part[x] if s_part[x] else 0),
-                reverse = True
-            )
-
-            best_name   = sorted_players[0]
-            val         = stat_dict[best_name]
-            ties        = [p for p in player_list if stat_dict[p] == val]
+    def _create_tier_png(self, assigns, path):
+        tiers               = sorted({v[1] for v in assigns.values() if v[1] != "N/A"}, reverse = True)
+        res, m_pts, m_blk   = [], -1, -1
+        for tr in tiers:
+            tp = [n for n in self.s_part if n.lower() in assigns and assigns[n.lower()][1] == tr]
+            if not tp: continue
             
-            if len(ties) > 1:
-                gr = f"{(c_counts[best_name] / s_part[best_name]) * 100:.2f}" if s_part[best_name] else "N/A"
-                return f"{best_name} ({val}, {gr})"
-            return f"{best_name} ({val})"
+            def fmt_b(plist, sdict):
+                sorted_p    = sorted(plist, key = lambda x: (sdict[x], self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0), reverse = True)
+                b, v        = sorted_p[0], sdict[sorted_p[0]]
+                ties        = [p for p in plist if sdict[p] == v]
+                if len(ties) > 1: return f"{b} ({v}, {(self.c_counts[b]/self.s_part[b]) * 100:.2f})"
+                return f"{b} ({v})"
 
-        best_atk_str = format_best(tp, p_pts)
-        best_blk_str = format_best(tp, p_blks)
-        
-        cur_pts = p_pts     [sorted(tp, key = lambda x: p_pts[x],   reverse = True)[0]]
-        cur_blk = p_blks    [sorted(tp, key = lambda x: p_blks[x],  reverse = True)[0]]
+            c_p, c_b = self.p_pts[sorted(tp, key = lambda x: self.p_pts[x], reverse = True)[0]], self.p_blks[sorted(tp, key = lambda x: self.p_blks[x], reverse = True)[0]]
+            res.append([tr, fmt_b(tp, self.p_pts) if c_p > m_pts else "▼", fmt_b(tp, self.p_blks) if c_b > m_blk else "▼"])
+            m_pts, m_blk = max(m_pts, c_p), max(m_blk, c_b)
+        self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = ["Tier", "Attacker", "Blocker"]), path, "Tier.png", "Tier Bests")
 
-        atk_dis = best_atk_str if cur_pts > max_pts_seen else "▼"
-        blk_dis = best_blk_str if cur_blk > max_blk_seen else "▼"
+    def _create_watched_png(self, path):
+        plist   = [n for n in self.s_part if self.p_l_corr[n]]
+        e       = sorted(plist, key = lambda x: np.mean     (self.p_l_corr[x]), reverse = True) [ : 3]
+        h       = sorted(plist, key = lambda x: np.mean     (self.p_l_corr[x]))                 [ : 3]
+        z       = sorted(plist, key = lambda x: np.median   (self.p_l_vint[x]), reverse=True)   [ : 3]
+        b       = sorted(plist, key = lambda x: np.median   (self.p_l_vint[x]))                 [ : 3]
 
-        results.append([tr, atk_dis, blk_dis])
-        
-        max_pts_seen = max(max_pts_seen, cur_pts)
-        max_blk_seen = max(max_blk_seen, cur_blk)
+        rows    = [[
+            f"{i+1}", 
+            f"{e[i]} ({np.mean(self.p_l_corr[e[i]]):.2f})"              if i < len(e) else "N/A",
+            f"{h[i]} ({np.mean(self.p_l_corr[h[i]]):.2f})"              if i < len(h) else "N/A",
+            f"{z[i]} ({format_year(np.median(self.p_l_vint[z[i]]))})"   if i < len(z) else "N/A",
+            f"{b[i]} ({format_year(np.median(self.p_l_vint[b[i]]))})"   if i < len(b) else "N/A"
+        ] for i in range(3)]
 
-    results.sort(key = lambda x: x[0])
-    export_df_to_png(pd.DataFrame(results, columns = ["Tier", "Attacker", "Blocker"]), png_dir, "Tier.png", "Tier Bests")
+        self._export_png(pd.DataFrame(rows, columns = ["Rank", "Easiest", "Hardest", "Newest", "Oldest"]), path, "Watched.png", "List Statistics")
 
-def create_watched_report(s_part, p_l_corr, p_l_vint, png_dir):
-    plist   = [n for n in s_part if p_l_corr[n]]
-    e       = sorted(plist, key = lambda x: np.mean     (p_l_corr[x]), reverse = True)  [: 3]
-    h       = sorted(plist, key = lambda x: np.mean     (p_l_corr[x]), reverse = False) [: 3]
-    z       = sorted(plist, key = lambda x: np.median   (p_l_vint[x]), reverse = True)  [: 3]
-    b       = sorted(plist, key = lambda x: np.median   (p_l_vint[x]), reverse = False) [: 3]
-    
-    rows = []
-    for i in range(3):
-        rows.append([f"{i+1}", 
-            f"{e[i]} ({np.mean(p_l_corr[e[i]]):.2f})"               if i < len(e) else "N/A",
-            f"{h[i]} ({np.mean(p_l_corr[h[i]]):.2f})"               if i < len(h) else "N/A",
-            f"{z[i]} ({format_year(np.median(p_l_vint[z[i]]))})"    if i < len(z) else "N/A",
-            f"{b[i]} ({format_year(np.median(p_l_vint[b[i]]))})"    if i < len(b) else "N/A"])
-    export_df_to_png(pd.DataFrame(rows, columns = ["Rank", "Easiest", "Hardest", "Newest", "Oldest"]), png_dir, "Watched.png", "List Statistics")
+    def _export_png(self, df, path, fname, title, mask = None):
+        if not self.browser_path: return
+
+        desc    = ["Elo", "Guess Rate", "Solos", "Doubles", "Rigs", "Rig Delta", "Points", "Blocks", "Rig Rate", "OP GR", "IN GR", "ED GR", "Rig GR", "Off GR", "Average GR", "Rig Synergy", "Off Synergy", "Shared Rigs", "Total Solos"]
+        asc     = ["Sevens", "Overs", "Average Overs"]
+        rest    = ["Solos", "Doubles", "Sevens", "Points", "Blocks", "Rigs"]
+        stats   = {}
+
+        for col in df.columns:
+            if col in desc or col in asc:
+                num     = pd.to_numeric(df[col].astype(str).str.replace('%',''), errors = 'coerce')
+                el_num  = num[mask].dropna() if mask is not None and col in rest else num.dropna()
+                if not num.dropna().empty:
+                    stats[col] = {
+                        'max'   : num.dropna().max(),
+                        'min'   : el_num.min() if not el_num.empty else None, 
+                        's_max' : num.dropna().value_counts().get(num.dropna().max(), 0) <= 3, 
+                        's_min' : el_num.value_counts().get(el_num.min(), 0) <= 3 if not el_num.empty else False
+                    }
+
+        df      = df.reset_index(drop = True)
+        borders = []
+
+        if "Guess Rate" in df.columns:
+            gv = pd.to_numeric(df["Guess Rate"].astype(str).str.replace('%',''), errors = 'coerce').tolist()
+            th = [28.0, 18.0, 12.0, 6.0] if "Rigs" in df.columns else [28.0, 19.0, 8.0]
+            for t in th:
+                f_idx = -1
+                for i, v in enumerate(gv):
+                    if pd.notnull(v) and v >= t: f_idx = i
+                if f_idx != -1 and f_idx < len(df)-1: borders.append(f_idx)
+
+        html = f"<thead><tr>" + "".join([f"<th>{str(c).replace(' ','<br>')}</th>" for c in df.columns]) + "</tr></thead><tbody>"
+        for idx, row in df.iterrows():
+            b_s     =   "border-bottom: 3px solid black;" if idx in borders else ""
+            html    +=  "<tr>"
+
+            for i, (cname, cell) in enumerate(row.items()):
+                style = [b_s] if b_s else []
+                if cname in stats:
+                    v = pd.to_numeric(str(cell).replace('%',''), errors = 'coerce')
+                    if pd.notnull(v):
+                        is_max, is_min  = (v == stats[cname]['max']) and stats[cname]['s_max'], (v == stats[cname]['min']) and stats[cname]['s_min']
+                        elig            = True if mask is None or cname not in rest else mask[idx]
+                        if cname in desc:
+                            if      is_max          : style.append("color: #0056B3; font-weight: bold;")
+                            elif    is_min and elig : style.append("color: #D95400; font-weight: bold;")
+                        elif cname in asc:
+                            if      is_max and elig : style.append("color: #D95400; font-weight: bold;")
+                            elif    is_min          : style.append("color: #0056B3; font-weight: bold;")
+                s_attr  =   f' style="{" ".join(style)}"' if style else ""
+                cnt     =   f"<b>{cell}</b>" if i==0 else cell
+                html    +=  f"<td{s_attr}>{cnt}</td>"
+            html += "</tr>"
+
+        full    = f"<html><head><style>body {{font-family: 'Segoe UI', Arial, sans-serif; background: white; display: inline-block; margin: 0;}} h2 {{margin: 10px 0 10px 5px; font-size: 30px; text-align: center;}} table {{margin-left: 10px; border-collapse: collapse; width: auto;}} th {{font-weight: bold; font-size: 20px; text-align: center; padding: 10px; border: 1px solid black;}} td {{font-size: 20px; text-align: center; padding: 10px; border: 1px solid black;}}</style></head><body><h2>{title}</h2><table>{html}</table></body></html>"
+        hti     = Html2Image(size = (max(2000, len(df.columns) * 120), max(2000, len(df) * 60)), browser_executable = self.browser_path, output_path = str(path), custom_flags = ['--log-level=3', '--silent'])
+
+        hti.screenshot(html_str = full, save_as = fname)
+        try     : trim_whitespace(path / fname)
+        except  : pass
+
+    def _fuse_and_clean(self, path):
+        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Watched": "Watched.png"}
+        ps      = {k: path / v      for k, v in f   .items() if (path / v).exists()}
+        imgs    = {k: Image.open(v) for k, v in ps  .items()}
+        if not imgs: return
+
+        rk = [k for k in ["Team", "Tier", "Watched"] if k in imgs]
+        if len(rk) == 1:
+            tw, th  = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
+            ok      = rk[0]
+            fused   = Image.new("RGB", (max(tw, imgs[ok].width), th + (10 if th else 0) + imgs[ok].height), "white")
+
+            if "Tour" in imgs: fused.paste(imgs["Tour"], (0, 0))
+            fused.paste(imgs[ok], (0, th + 10 if th else 0))
+        else:
+            tw, th  = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
+            rw, rh  = max([imgs[k].width for k in rk]), sum([imgs[k].height + 10 for k in rk]) - 10
+            fused   = Image.new("RGB", (tw + (10 if tw and rw else 0) + rw, max(th, rh)), "white")
+            if "Tour" in imgs: fused.paste(imgs["Tour"], (0, 0))
+            cx, cy  = (tw + 10 if tw else 0), 0
+            for k in rk: fused.paste(imgs[k], (cx, cy)); cy += imgs[k].height + 10
+        f_p = path / "Extra.png"
+        fused.save(f_p)
+        try     : trim_whitespace(f_p)
+        except  : pass
+        for p in ps.values():
+            try     : os.remove(p)
+            except  : pass
 
 if __name__ == "__main__":
     root = tk.Tk(); root.withdraw()
-    process_files()
+    TourAnalyzer().run()
