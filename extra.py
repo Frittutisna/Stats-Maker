@@ -209,15 +209,9 @@ class ManualMatchDialog(tk.Toplevel):
         sel = self.listbox.curselection()
         if sel: self.result = self.listbox.get(sel[0]); self.destroy()
 
-def export_df_to_png(df, path, filename, title):
+def export_df_to_png(df, path, filename, title, eligibility_mask = None):
     browser_path = get_browser()
     if not browser_path: messagebox.showerror("[!] Error: Could not find Edge nor Chrome"); return
-
-    ascending_metrics = [
-        "Sevens",
-        "Overs",
-        "Average Overs"
-    ]
 
     descending_metrics  = [
         "Elo",
@@ -241,19 +235,27 @@ def export_df_to_png(df, path, filename, title):
         "Total Solos"
     ]
 
-    stats = {}
+    ascending_metrics   = ["Sevens", "Overs", "Average Overs"]
+    restricted_metrics  = ["Solos", "Doubles", "Sevens", "Points", "Blocks", "Rigs"]
+    stats               = {}
+
     for col in df.columns:
         if col in descending_metrics or col in ascending_metrics:
-            numeric_col = pd.to_numeric(df[col].astype(str).str.replace('%', ''), errors = 'coerce').dropna()
-            if not numeric_col.empty:
-                max_val         = numeric_col.max()
-                min_val         = numeric_col.min()
-                counts          = numeric_col.value_counts()
+            numeric_col = pd.to_numeric(df[col].astype(str).str.replace('%', ''), errors = 'coerce')
+            if      eligibility_mask is not None and col in restricted_metrics  : eligible_numeric = numeric_col[eligibility_mask].dropna()
+            else                                                                : eligible_numeric = numeric_col.dropna()
+            
+            all_numeric = numeric_col.dropna()
+            if not all_numeric.empty:
+                max_val         = all_numeric       .max            ()
+                min_val         = eligible_numeric  .min            () if not eligible_numeric.empty    else None
+                counts_max      = all_numeric       .value_counts   ()
+                counts_min      = eligible_numeric  .value_counts   () if min_val is not None           else pd.Series()
                 stats[col]      = {
                     'max'       : max_val,
                     'min'       : min_val,
-                    'show_max'  : counts.get(max_val, 0) <= 3,
-                    'show_min'  : counts.get(min_val, 0) <= 3
+                    'show_max'  : counts_max.get(max_val, 0) <= 3,
+                    'show_min'  : counts_min.get(min_val, 0) <= 3 if min_val is not None else False
                 }
 
     df          = df.reset_index(drop = True)
@@ -287,14 +289,17 @@ def export_df_to_png(df, path, filename, title):
                 if pd.notnull(val):
                     is_max = (val == stats[col_name]['max']) and stats[col_name]['show_max']
                     is_min = (val == stats[col_name]['min']) and stats[col_name]['show_min']
+                    
+                    is_eligible_for_worst = True
+                    if eligibility_mask is not None and col_name in restricted_metrics: is_eligible_for_worst = eligibility_mask[idx]
 
                     if      col_name in descending_metrics:
-                        if      is_max: style_parts.append("color: #0056B3; font-weight: bold;")
-                        elif    is_min: style_parts.append("color: #D95400; font-weight: bold;")
+                        if      is_max                              : style_parts.append("color: #0056B3; font-weight: bold;")
+                        elif    is_min and is_eligible_for_worst    : style_parts.append("color: #D95400; font-weight: bold;")
 
                     elif    col_name in ascending_metrics:
-                        if      is_max: style_parts.append("color: #D95400; font-weight: bold;")
-                        elif    is_min: style_parts.append("color: #0056B3; font-weight: bold;")
+                        if      is_max and is_eligible_for_worst    : style_parts.append("color: #D95400; font-weight: bold;")
+                        elif    is_min                              : style_parts.append("color: #0056B3; font-weight: bold;")
             
             style_attr          =   f' style="{" ".join(style_parts)}"' if style_parts else ""
             if i == 0: content  =   f"<b>{content}</b>"
@@ -631,6 +636,7 @@ def create_player_report(
         raw_assignments
     ):
     p_rows              = []
+    eligibility_list    = [] 
     type_labels         = {1: "OP GR", 3: "IN GR", 2: "ED GR"}
     active_types_list   = [t for t in type_labels if any(p_type_s[p][t] > 0 for p in s_part)]
     active_types        = {t: type_labels[t] for t in active_types_list} if len(active_types_list) > 1 else {}
@@ -645,6 +651,9 @@ def create_player_report(
         if expected < baseline_expected:
             if      use_teams and name.lower() in raw_assignments   : display_name += " ▶"
             else                                                    : display_name += " ◀"
+
+        is_eligible = not ("▶" in display_name or "◀" in display_name)
+        eligibility_list.append(is_eligible)
 
         if actual_jsons < expected:
             missing_count   = expected - actual_jsons
@@ -680,12 +689,13 @@ def create_player_report(
         p_rows.append(row)
 
     df                                      = pd.DataFrame(p_rows).sort_values("Guess Rate", ascending = False)
+    sorted_eligibility_mask                 = pd.Series(eligibility_list, index = pd.DataFrame(p_rows).index).reindex(df.index).values
     if "Elo" in df.columns  : df["Elo"]     = pd.to_numeric(df["Elo"],      errors = 'coerce')          .map(lambda x: f"{x:.2f}"           if pd.notnull(x) else "N/A")
     pct_cols                                = ["Guess Rate"] + list(active_types.values()) + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched_valid else [])
     for c in pct_cols       : df[c]         = pd.to_numeric(df[c],          errors = 'coerce').mul(100) .map(lambda x: f"{x:.2f}"           if pd.notnull(x) else "N/A")
     if watched_valid        : df["Overs"]   = pd.to_numeric(df["Overs"],    errors = 'coerce')          .map(lambda x: f"{x:.2f}"           if pd.notnull(x) else "N/A")
-    
-    export_df_to_png(df, png_dir, "Player.png", f"{prefix}Player Statistics, {stage}")
+
+    export_df_to_png(df, png_dir, "Player.png", f"{prefix}Player Statistics, {stage}", eligibility_mask = sorted_eligibility_mask)
 
 def create_tour_report(
         all_vint,
@@ -756,8 +766,8 @@ def create_tour_report(
         if conv:
             b = sorted(conv, key = lambda x: (x['p'], x['t']),  reverse = True)     [0]
             w = sorted(conv, key = lambda x: (x['p'], -x['t']), reverse = False)    [0]
-            tour_stats.append(["Best Solo Rig Converter",   f"{b['n']} ({b['p']:.2f}%, {b['h']}/{b['t']})"])
-            tour_stats.append(["Worst Solo Rig Converter",  f"{w['n']} ({w['p']:.2f}%, {w['h']}/{w['t']})"])
+            tour_stats.append(["Best Solo Rig Converter",   f"{b['n']} ({b['p']:.2f}, {b['h']}/{b['t']})"])
+            tour_stats.append(["Worst Solo Rig Converter",  f"{w['n']} ({w['p']:.2f}, {w['h']}/{w['t']})"])
 
     export_df_to_png(pd.DataFrame(tour_stats, columns = ["Statistic", "Value"]), png_dir, "Tour.png", "Tour Statistics")
 
