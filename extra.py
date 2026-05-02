@@ -443,12 +443,12 @@ class TourAnalyzer:
                 row[t_labels[tid]]  = self.p_type_c[name][tid] / seen if seen else np.nan
             if watched:
                 row.update({
-                    "Rigs"      : self.p_rigs[name],
-                    "Rig Rate"  : self.p_rigs[name]             / tot                       if tot                          else np.nan,
-                    "Rig Delta" : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
-                    "Rig GR"    : self.p_rigs_h[name]           / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
-                    "Off GR"    : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
-                    "Overs"     : np.mean(self.p_l_corr[name])                              if self.p_l_corr[name]          else np.nan
+                    "Rigs"              : self.p_rigs[name],
+                    "Rig Rate"          : self.p_rigs[name]             / tot                       if tot                          else np.nan,
+                    "Rig Delta"         : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
+                    "Rig GR"            : self.p_rigs_h[name]           / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
+                    "Off GR"            : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
+                    "Average Over-8"    : np.mean(self.p_l_corr[name])                              if self.p_l_corr[name]          else np.nan
                 })
             rows.append(row)
 
@@ -458,7 +458,7 @@ class TourAnalyzer:
 
         if "Elo" in df.columns: df["Elo"] = pd.to_numeric(df["Elo"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         for c in pcts: df[c] = pd.to_numeric(df[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if watched: df["Overs"] = pd.to_numeric(df["Overs"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if watched: df["Average Over-8"] = pd.to_numeric(df["Average Over-8"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
         self._export_png(df, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask)
 
@@ -493,8 +493,8 @@ class TourAnalyzer:
         no_s    = sorted([n for n in plist if self.e_counts[n] ==   0 and self.s_part[n] > 0], key = lambda x: self.c_counts[x] / self.s_part[x], reverse = True)
         yes_s   = sorted([n for n in plist if self.e_counts[n] >    0 and self.s_part[n] > 0], key = lambda x: self.c_counts[x] / self.s_part[x])
 
-        if no_s     : stats.append(["Highest GR without Solos", f"{no_s     [0]} ({100 * (self.c_counts[no_s    [0]] / self.s_part[no_s     [0]]):.2f})"])
-        if yes_s    : stats.append(["Lowest GR with Solos",     f"{yes_s    [0]} ({100 * (self.c_counts[yes_s   [0]] / self.s_part[yes_s    [0]]):.2f}, {self.e_counts[yes_s[0]]})"])
+        if no_s     : stats.append(["Highest GR Without Solos", f"{no_s     [0]} ({100 * (self.c_counts[no_s    [0]] / self.s_part[no_s     [0]]):.2f})"])
+        if yes_s    : stats.append(["Lowest GR With Solos",     f"{yes_s    [0]} ({100 * (self.c_counts[yes_s   [0]] / self.s_part[yes_s    [0]]):.2f}, {self.e_counts[yes_s[0]]})"])
 
         if watched:
             conv = []
@@ -522,7 +522,7 @@ class TourAnalyzer:
                 "Off Synergy"       : f"{np.mean(self.t_off_syn [tid]) * 100:.2f}",
                 "Shared Rigs"       : f"{np.mean(self.t_sh_rig  [tid]) * 100:.2f}",
                 "Total Solos"       : self.t_solos[tid],
-                "Average Overs"     : f"{w_overs:.2f}"
+                "Average Over-8"    : f"{w_overs:.2f}"
             })
         self._export_png(pd.DataFrame(res).sort_values("Average GR", ascending = False), path, "Team.png", "Team Statistics")
 
@@ -566,7 +566,7 @@ class TourAnalyzer:
         if not self.browser_path: return
 
         desc    = ["Elo", "Guess Rate", "Solos", "Doubles", "Rigs", "Rig Delta", "Points", "Blocks", "Rig Rate", "OP GR", "IN GR", "ED GR", "Rig GR", "Off GR", "Average GR", "Rig Synergy", "Off Synergy", "Shared Rigs", "Total Solos"]
-        asc     = ["Sevens", "Overs", "Average Overs"]
+        asc     = ["Sevens", "Average Over-8"]
         rest    = ["Solos", "Doubles", "Sevens", "Points", "Blocks", "Rigs"]
         stats   = {}
 
