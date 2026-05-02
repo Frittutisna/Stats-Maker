@@ -4,12 +4,12 @@ import  re
 import  numpy       as      np
 import  pandas      as      pd
 import  tkinter     as      tk
-from    collections import  Counter, defaultdict
+from    collections import  Counter,    defaultdict
 from    datetime    import  datetime
 from    html2image  import  Html2Image
 from    pathlib     import  Path
-from    PIL         import  Image, ImageChops, ImageOps
-from    tkinter     import  messagebox, simpledialog, ttk
+from    PIL         import  Image,      ImageChops, ImageOps
+from    tkinter     import  messagebox, ttk
 
 # Constants and Configuration
 BROWSER_PATHS = [
@@ -94,6 +94,26 @@ class SubSelectionDialog(tk.Toplevel):
     def on_confirm(self):
         sel = self.listbox.curselection()
         if sel: self.result = self.listbox.get(sel[0]); self.destroy()
+
+class SpinboxDialog(tk.Toplevel):
+    def __init__(self, parent, title, prompt, initialvalue):
+        super().__init__(parent)
+        self.title(title)
+        self.result = initialvalue
+        self.geometry("+%d+%d" % (parent.winfo_rootx() + 50, parent.winfo_rooty() + 50))
+        ttk.Label(self, text = prompt, padding = 10).pack()
+        self.spin = ttk.Spinbox(self, from_ = 1, to = 6, width = 10)
+        self.spin.set(initialvalue)
+        self.spin.pack(padx = 20, pady = 5)
+        ttk.Button(self, text = "OK", command = self.on_ok).pack(pady = 10)
+        self.grab_set()
+        self.bind("<Return>", lambda: self.on_ok())
+        self.wait_window()
+
+    def on_ok(self):
+        try                 : self.result = int(self.spin.get())
+        except ValueError   : self.result = 0
+        self.destroy()
 
 class PlayerAdditionDialog(tk.Toplevel):
     def __init__(self, parent, current_members, known_pool):
@@ -349,14 +369,16 @@ class TourAnalyzer:
     def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types):
         watched_valid       = missing_count <= 5
         baseline_initial    = 6 if len(self.s_part) <= 20 else 5
-        base_exp            = simpledialog.askinteger("Input", "Enter the expected amount of rounds:", initialvalue = baseline_initial)
+        global_dialog       = SpinboxDialog(root, "Input", "Enter the expected amount of rounds:", baseline_initial)
+        base_exp            = global_dialog.result
         if base_exp is None: base_exp = baseline_initial
 
         exp_map = {}
         for name in self.s_part:
             act = len(appearances.get(name, []))
             if act < base_exp:
-                val             = simpledialog.askinteger("Input", f"Only {act} JSON(s) mention {name}; how many rounds were they expected to be in?", initialvalue = act)
+                player_dialog   = SpinboxDialog(root, "Input", f"Only {act} JSON(s) mention {name}; how many rounds were they expected to be in?", act)
+                val             = player_dialog.result
                 exp_map[name]   = val if val is not None else act
             else: exp_map[name] = base_exp
 
