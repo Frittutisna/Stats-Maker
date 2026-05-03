@@ -8,8 +8,8 @@ from    collections import  Counter,    defaultdict
 from    datetime    import  datetime
 from    html2image  import  Html2Image
 from    pathlib     import  Path
-from    PIL         import  Image,      ImageChops, ImageOps
-from    tkinter     import  messagebox, ttk
+from    PIL         import  Image,      ImageChops,     ImageOps
+from    tkinter     import  messagebox, simpledialog,   ttk
 
 # Constants and Configuration
 BROWSER_PATHS = [
@@ -385,9 +385,9 @@ class TourAnalyzer:
         if      base_exp == 3                   : stage = "Mid-Tour"
         elif    base_exp >= baseline_initial    : stage = "Final"
         else                                    : stage = f"R{base_exp}"
-        
-        type_map            = {1: "OP", 3: "IN", 2: "ED"}
-        active_abbrs        = [type_map[t] for t in sorted(found_types) if t in type_map]
+
+        type_map            = {1: "OP", 2: "ED", 3: "IN"}
+        active_abbrs        = [type_map[t] for t in [1, 2, 3] if t in found_types]
         all_types_present   = set(type_map.keys()).issubset(found_types)
         
         if all_types_present    : type_str = ""
@@ -410,8 +410,8 @@ class TourAnalyzer:
 
     def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns):
         rows, eligibility   = [], []
-        t_labels            = {1: "OP GR", 3: "IN GR", 2: "ED GR"}
-        active              = [t for t in t_labels if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
+        t_labels            = {1: "OP GR", 2: "ED GR", 3: "IN GR"}
+        active              = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
 
         for name in self.s_part:
             tot, cor    = self.s_part[name], self.c_counts[name]
@@ -432,15 +432,17 @@ class TourAnalyzer:
 
             row.update({
                 "Guess Rate"    : cor / tot if tot else 0,
-                "Solos"         : self.e_counts [name],
-                "Doubles"       : self.p_two_e  [name],
-                "Sevens"        : self.p_rev_e  [name]
+                "1/8s"          : self.e_counts [name],
+                "2/8s"          : self.p_two_e  [name],
+                "7/8s"          : self.p_rev_e  [name]
             })
 
-            if use_teams: row.update({"Points": self.p_pts[name], "Blocks": self.p_blks[name]})
+            if use_teams: row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
+            
             for tid in active:
                 seen                = self.p_type_s[name][tid]
                 row[t_labels[tid]]  = self.p_type_c[name][tid] / seen if seen else np.nan
+
             if watched:
                 row.update({
                     "Rigs"              : self.p_rigs[name],
@@ -450,6 +452,7 @@ class TourAnalyzer:
                     "Off GR"            : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
                     "Average Over-8"    : np.mean(self.p_l_corr[name])                              if self.p_l_corr[name]          else np.nan
                 })
+
             rows.append(row)
 
         df      = pd.DataFrame(rows).sort_values("Guess Rate", ascending = False)
@@ -473,28 +476,28 @@ class TourAnalyzer:
             ["Median Vintage",      format_year(round(np.median(self.all_vint), 2))                         if self.all_vint    else "N/A"],
             ["Average Difficulty",  f"{np.mean(self.all_diff):.2f}"                                         if self.all_diff    else "N/A"],
             ["Average GR",          f"{100 * (self.global_stats['tot_c'] / sum(self.s_part.values())):.2f}" if self.s_part      else "0.00"],
-            ["Total Blanks",        self.global_stats["blanks"]],
-            ["Total Solos",         self.global_stats["solos"]],
-            ["Total Doubles",       self.global_stats["doubles"]],
-            ["Total Sevens",        self.global_stats["sevens"]],
-            ["Total Fulls",         self.global_stats["fulls"]]
+            ["Total 0/8s",          self.global_stats["blanks"]],
+            ["Total 1/8s",          self.global_stats["solos"]],
+            ["Total 2/8s",          self.global_stats["doubles"]],
+            ["Total 7/8s",          self.global_stats["sevens"]],
+            ["Total 8/8s",          self.global_stats["fulls"]]
         ]
 
-        if use_teams: stats.append(["Total Sweeps", self.global_stats["sweeps"]])
+        if use_teams: stats.append(["Total 4-0s", self.global_stats["sweeps"]])
         stats.extend([
             ["Most Popular Genre",  f"{self.genre_c .most_common(1)[0][0]} ({self.genre_c   .most_common(1)[0][1]})" if self.genre_c else "N/A"],
             ["Most Popular Tag",    f"{self.tag_c   .most_common(1)[0][0]} ({self.tag_c     .most_common(1)[0][1]})" if self.tag_c else "N/A"],
-            ["Most Solos",          fmt_most([n for n, v in self.e_counts   .items() if v == max(self.e_counts  .values(), default = 0) and v > 0], max(self.e_counts   .values(), default = 0))],
-            ["Most Doubles",        fmt_most([n for n, v in self.p_two_e    .items() if v == max(self.p_two_e   .values(), default = 0) and v > 0], max(self.p_two_e    .values(), default = 0))],
-            ["Most Sevens",         fmt_most([n for n, v in self.p_rev_e    .items() if v == max(self.p_rev_e   .values(), default = 0) and v > 0], max(self.p_rev_e    .values(), default = 0))]
+            ["Most 1/8s",           fmt_most([n for n, v in self.e_counts   .items() if v == max(self.e_counts  .values(), default = 0) and v > 0], max(self.e_counts   .values(), default = 0))],
+            ["Most 2/8s",           fmt_most([n for n, v in self.p_two_e    .items() if v == max(self.p_two_e   .values(), default = 0) and v > 0], max(self.p_two_e    .values(), default = 0))],
+            ["Most 7/8s",           fmt_most([n for n, v in self.p_rev_e    .items() if v == max(self.p_rev_e   .values(), default = 0) and v > 0], max(self.p_rev_e    .values(), default = 0))]
         ])
         
         plist   = list(self.s_part.keys())
         no_s    = sorted([n for n in plist if self.e_counts[n] ==   0 and self.s_part[n] > 0], key = lambda x: self.c_counts[x] / self.s_part[x], reverse = True)
         yes_s   = sorted([n for n in plist if self.e_counts[n] >    0 and self.s_part[n] > 0], key = lambda x: self.c_counts[x] / self.s_part[x])
 
-        if no_s     : stats.append(["Highest GR Without Solos", f"{no_s     [0]} ({100 * (self.c_counts[no_s    [0]] / self.s_part[no_s     [0]]):.2f})"])
-        if yes_s    : stats.append(["Lowest GR With Solos",     f"{yes_s    [0]} ({100 * (self.c_counts[yes_s   [0]] / self.s_part[yes_s    [0]]):.2f}, {self.e_counts[yes_s[0]]})"])
+        if no_s     : stats.append(["Highest GR Without 1/8s",  f"{no_s     [0]} ({100 * (self.c_counts[no_s    [0]] / self.s_part[no_s     [0]]):.2f})"])
+        if yes_s    : stats.append(["Lowest GR With 1/8s",      f"{yes_s    [0]} ({100 * (self.c_counts[yes_s   [0]] / self.s_part[yes_s    [0]]):.2f}, {self.e_counts[yes_s[0]]})"])
 
         if watched:
             conv = []
@@ -521,14 +524,15 @@ class TourAnalyzer:
                 "Rig Synergy"       : f"{np.mean(self.t_on_syn  [tid]) * 100:.2f}",
                 "Off Synergy"       : f"{np.mean(self.t_off_syn [tid]) * 100:.2f}",
                 "Shared Rigs"       : f"{np.mean(self.t_sh_rig  [tid]) * 100:.2f}",
-                "Total Solos"       : self.t_solos[tid],
+                "Total 1/8s"        : self.t_solos[tid],
                 "Average Over-8"    : f"{w_overs:.2f}"
             })
         self._export_png(pd.DataFrame(res).sort_values("Average GR", ascending = False), path, "Team.png", "Team Statistics")
 
     def _create_tier_png(self, assigns, path):
-        tiers               = sorted({v[1] for v in assigns.values() if v[1] != "N/A"}, reverse = True)
-        res, m_pts, m_blk   = [], -1, -1
+        tiers   = sorted({v[1] for v in assigns.values() if v[1] != "N/A"}, reverse = True)
+        res     = []
+
         for tr in tiers:
             tp = [n for n in self.s_part if n.lower() in assigns and assigns[n.lower()][1] == tr]
             if not tp: continue
@@ -536,13 +540,10 @@ class TourAnalyzer:
             def fmt_b(plist, sdict):
                 sorted_p    = sorted(plist, key = lambda x: (sdict[x], self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0), reverse = True)
                 b, v        = sorted_p[0], sdict[sorted_p[0]]
-                ties        = [p for p in plist if sdict[p] == v]
-                if len(ties) > 1: return f"{b} ({v}, {(self.c_counts[b]/self.s_part[b]) * 100:.2f})"
                 return f"{b} ({v})"
 
-            c_p, c_b = self.p_pts[sorted(tp, key = lambda x: self.p_pts[x], reverse = True)[0]], self.p_blks[sorted(tp, key = lambda x: self.p_blks[x], reverse = True)[0]]
-            res.append([tr, fmt_b(tp, self.p_pts) if c_p > m_pts else "▼", fmt_b(tp, self.p_blks) if c_b > m_blk else "▼"])
-            m_pts, m_blk = max(m_pts, c_p), max(m_blk, c_b)
+            res.append([tr, fmt_b(tp, self.p_pts), fmt_b(tp, self.p_blks)])
+            
         self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = ["Tier", "Attacker", "Blocker"]), path, "Tier.png", "Tier Bests")
 
     def _create_watched_png(self, path):
@@ -565,9 +566,9 @@ class TourAnalyzer:
     def _export_png(self, df, path, fname, title, mask = None):
         if not self.browser_path: return
 
-        desc    = ["Elo", "Guess Rate", "Solos", "Doubles", "Rigs", "Rig Delta", "Points", "Blocks", "Rig Rate", "OP GR", "IN GR", "ED GR", "Rig GR", "Off GR", "Average GR", "Rig Synergy", "Off Synergy", "Shared Rigs", "Total Solos"]
-        asc     = ["Sevens", "Average Over-8"]
-        rest    = ["Solos", "Doubles", "Sevens", "Points", "Blocks", "Rigs"]
+        desc    = ["Elo", "Guess Rate", "1/8s", "2/8s", "Rigs", "Rig Delta", "Lives Taken", "Lives Saved", "Rig Rate", "OP GR", "ED GR", "IN GR", "Rig GR", "Off GR", "Average GR", "Rig Synergy", "Off Synergy", "Shared Rigs", "Total 1/8s"]
+        asc     = ["7/8s", "Average Over-8"]
+        rest    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]
         stats   = {}
 
         for col in df.columns:
@@ -586,13 +587,19 @@ class TourAnalyzer:
         borders = []
 
         if "Guess Rate" in df.columns:
+            init_val    = "28, 18, 12, 6" if "Rigs" in df.columns else "28, 19, 8"
+            val_str     = simpledialog.askstring("Input", f"Enter the comma-separated threshold values for {title}:", initialvalue = init_val)
+
+            try         : th = [float(x.strip()) for x in val_str.split(",")] if val_str else []
+            except      : th = [28.0, 18.0, 12.0, 6.0]
+            
             gv = pd.to_numeric(df["Guess Rate"].astype(str).str.replace('%',''), errors = 'coerce').tolist()
-            th = [28.0, 18.0, 12.0, 6.0] if "Rigs" in df.columns else [28.0, 19.0, 8.0]
+
             for t in th:
                 f_idx = -1
                 for i, v in enumerate(gv):
                     if pd.notnull(v) and v >= t: f_idx = i
-                if f_idx != -1 and f_idx < len(df)-1: borders.append(f_idx)
+                if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
         html = f"<thead><tr>" + "".join([f"<th>{str(c).replace(' ','<br>')}</th>" for c in df.columns]) + "</tr></thead><tbody>"
         for idx, row in df.iterrows():
