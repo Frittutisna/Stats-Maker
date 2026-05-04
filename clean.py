@@ -2,7 +2,7 @@ import  shutil
 from    pathlib import Path
 
 def clean_workspace():
-    dirs_to_empty = [Path("output"), Path("jsons")]
+    dirs_to_empty = [Path("jsons"), Path("output")]
     file_to_clear = Path("dependencies/codes.txt")
     for folder in dirs_to_empty:
         if folder.exists() and folder.is_dir():
