@@ -135,6 +135,22 @@ class PlayerAdditionDialog(tk.Toplevel):
         self.added_players = [self.listbox.get(i) for i in selections]
         self.destroy()
 
+class NewPlayerDialog(tk.Toplevel):
+    def __init__(self, parent, active_players):
+        super().__init__(parent)
+        self.title("New Player Check")
+        self.selected_new = []
+        ttk.Label(self, text = "Select completely new player(s), if any", font = ("Arial", 10)).pack(padx = 20, pady = 10)
+        self.listbox = tk.Listbox(self, height = 15, selectmode = tk.MULTIPLE)
+        self.listbox.pack(padx = 20, pady = 5, fill = tk.BOTH, expand = True)
+        for name in sorted(active_players): self.listbox.insert(tk.END, name)
+        ttk.Button(self, text = "Confirm", command = self.on_confirm).pack(pady = 10)
+        self.grab_set(); self.wait_window()
+
+    def on_confirm(self):
+        self.selected_new = [self.listbox.get(i) for i in self.listbox.curselection()]
+        self.destroy()
+
 # Main Processor
 class TourAnalyzer:
     def __init__(self):
@@ -386,6 +402,8 @@ class TourAnalyzer:
                 exp_map[name]   = val if val is not None else act
             else: exp_map[name] = base_exp
 
+        new_players = NewPlayerDialog(root, list(self.s_part.keys())).selected_new
+
         if      base_exp == 3                   : stage = "Mid-Tour"
         elif    base_exp >= baseline_initial    : stage = "Final"
         else                                    : stage = f"R{base_exp}"
@@ -402,7 +420,7 @@ class TourAnalyzer:
         out_path    = self.script_dir / DIR_OUT / ts
         out_path.mkdir(parents = True, exist_ok = True)
 
-        self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments)
+        self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players)
         self._create_tour_png   (use_teams, watched_valid, out_path)
         if use_teams:
             if watched_valid: self._create_team_png(t1_lookup, out_path)
@@ -412,7 +430,7 @@ class TourAnalyzer:
         self._fuse_and_clean(out_path)
         messagebox.showinfo("Success", f"Saved to {DIR_OUT}/{ts}")
 
-    def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns):
+    def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players):
         rows, eligibility   = [], []
         t_labels            = {1: "OP GR", 2: "ED GR", 3: "IN GR"}
         active              = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
@@ -421,7 +439,9 @@ class TourAnalyzer:
             tot, cor    = self.s_part[name], self.c_counts[name]
             target      = exp_map.get(name, base_exp)
             d_name      = name
-            if target < base_exp: d_name += " ▼" if (use_teams and name.lower() in assigns) else " ▲"
+
+            if name in new_players  : d_name += " ✪"
+            if target < base_exp    : d_name += " ▼" if (use_teams and name.lower() in assigns) else " ▲"
             
             is_eligible = not ("▼" in d_name or "▲" in d_name)
             eligibility.append(is_eligible)
@@ -454,7 +474,6 @@ class TourAnalyzer:
                     "Rig Delta"         : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
                     "Rig GR"            : self.p_rigs_h[name]           / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
                     "Off GR"            : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
-                    "Average Over-8"    : np.mean(self.p_l_corr[name])                              if self.p_l_corr[name]          else np.nan
                 })
 
             rows.append(row)
@@ -465,8 +484,6 @@ class TourAnalyzer:
 
         if "Elo" in df.columns: df["Elo"] = pd.to_numeric(df["Elo"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         for c in pcts: df[c] = pd.to_numeric(df[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if watched: df["Average Over-8"] = pd.to_numeric(df["Average Over-8"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-
         self._export_png(df, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask)
 
     def _create_tour_png(self, use_teams, watched, path):
@@ -520,7 +537,6 @@ class TourAnalyzer:
     def _create_team_png(self, t1_lookup, path):
         res = []
         for tid in self.t_c_ps:
-            w_overs = sum(o * r for o, r in self.t_overs[tid])/sum(r for _, r in self.t_overs[tid]) if sum(r for _, r in self.t_overs[tid]) > 0 else 0
             res.append({
                 "Team Leader"       : t1_lookup.get(tid, f"Team {tid}"),
                 "Median Vintage"    : format_year(np.median(self.t_vint[tid])),
@@ -529,7 +545,6 @@ class TourAnalyzer:
                 "Off Synergy"       : f"{np.mean(self.t_off_syn [tid]) * 100:.2f}",
                 "Shared Rigs"       : f"{np.mean(self.t_sh_rig  [tid]) * 100:.2f}",
                 "Total 1/8s"        : self.t_solos[tid],
-                "Average Over-8"    : f"{w_overs:.2f}"
             })
         self._export_png(pd.DataFrame(res).sort_values("Average GR", ascending = False), path, "Team.png", "Team Statistics")
 
@@ -571,7 +586,7 @@ class TourAnalyzer:
         if not self.browser_path: return
 
         desc    = ["Elo", "Guess Rate", "1/8s", "2/8s", "Rigs", "Rig Delta", "Lives Taken", "Lives Saved", "Rig Rate", "OP GR", "ED GR", "IN GR", "Rig GR", "Off GR", "Average GR", "Rig Synergy", "Off Synergy", "Shared Rigs", "Total 1/8s"]
-        asc     = ["7/8s", "Average Over-8"]
+        asc     = ["7/8s"]
         rest    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]
         stats   = {}
 
