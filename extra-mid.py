@@ -369,6 +369,10 @@ class TourAnalyzer:
     def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types):
         watched_valid       = missing_count <= 5
         baseline_initial    = 6 if len(self.s_part) <= 20 else 5
+        init_label          = "Watched" if watched_valid else "Random"
+        tour_label          = simpledialog.askstring("Input", f"Enter the Tour name:", initialvalue = f"{init_label} Tour")
+        tour_disp           = tour_label.strip()
+
         global_dialog       = SpinboxDialog(root, "Input", "Enter the expected amount of rounds:", baseline_initial)
         base_exp            = global_dialog.result
         if base_exp is None: base_exp = baseline_initial
@@ -393,7 +397,7 @@ class TourAnalyzer:
         if all_types_present    : type_str = ""
         else                    : type_str = f"{'-'.join(active_abbrs)} " if active_abbrs else ""
 
-        prefix      = f"{'Watched' if watched_valid else 'Random'} {type_str}Tour, "
+        prefix      = f"{tour_disp}, {type_str}"
         ts          = datetime.now().strftime("%y%m%d%H")
         out_path    = self.script_dir / DIR_OUT / ts
         out_path.mkdir(parents = True, exist_ok = True)
