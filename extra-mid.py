@@ -102,7 +102,7 @@ class SpinboxDialog(tk.Toplevel):
         self.result = initialvalue
         self.geometry("+%d+%d" % (parent.winfo_rootx() + 50, parent.winfo_rooty() + 50))
         ttk.Label(self, text = prompt, padding = 10).pack()
-        self.spin = ttk.Spinbox(self, from_ = 1, to = 6, width = 10)
+        self.spin = ttk.Spinbox(self, from_ = 1, to = 20, width = 10)
         self.spin.set(initialvalue)
         self.spin.pack(padx = 20, pady = 5)
         ttk.Button(self, text = "OK", command = self.on_ok).pack(pady = 10)
@@ -115,32 +115,12 @@ class SpinboxDialog(tk.Toplevel):
         except ValueError   : self.result = 0
         self.destroy()
 
-class PlayerAdditionDialog(tk.Toplevel):
-    def __init__(self, parent, current_members, known_pool):
-        super().__init__(parent)
-        self.title("Manual Player Selection")
-        self.added_players  = []
-        self.known_pool     = sorted(list(known_pool - current_members))
-        main_frame          = ttk.Frame(self, padding = 10)
-        main_frame.pack(fill = tk.BOTH, expand = True)
-        tk.Label(main_frame, text = f"Lobby Count: {len(current_members)}/8", font = ("Arial", 10, "bold")).pack()
-        self.listbox = tk.Listbox(main_frame, height = 10, selectmode = tk.MULTIPLE)
-        for name in self.known_pool: self.listbox.insert(tk.END, name)
-        self.listbox.pack(fill = tk.BOTH, expand = True, pady = 5)
-        ttk.Button(main_frame, text = "Confirm", command = self.add_selected).pack(pady = 10)
-        self.grab_set(); self.wait_window()
-
-    def add_selected(self):
-        selections = self.listbox.curselection()
-        self.added_players = [self.listbox.get(i) for i in selections]
-        self.destroy()
-
 class NewPlayerDialog(tk.Toplevel):
     def __init__(self, parent, active_players):
         super().__init__(parent)
         self.title("New Player Check")
         self.selected_new = []
-        ttk.Label(self, text = "Select completely new player(s), if any", font = ("Arial", 10)).pack(padx = 20, pady = 10)
+        ttk.Label(self, text = "Select new player(s), if any", font = ("Arial", 10)).pack(padx = 20, pady = 10)
         self.listbox = tk.Listbox(self, height = 15, selectmode = tk.MULTIPLE)
         self.listbox.pack(padx = 20, pady = 5, fill = tk.BOTH, expand = True)
         for name in sorted(active_players): self.listbox.insert(tk.END, name)
@@ -235,13 +215,6 @@ class TourAnalyzer:
                 if len(final_members) < 8:
                     for tid in t_in_f: final_members.update(rosters[tid])
 
-            while len(final_members) < 8:
-                added = PlayerAdditionDialog(None, final_members, all_known).added_players
-                if not added:
-                    if messagebox.askyesno("Warning", "Under 8 players, continue?") : break
-                    else                                                            : continue
-                final_members.update(added)
-
             apply_rev       = (len(final_members) % 2 == 0)
             max_s           = max(s.get("songNumber", 0) for s in songs)
             f_type_totals   = defaultdict(int)
@@ -329,7 +302,7 @@ class TourAnalyzer:
                         if yr is not None   : self.p_l_vint [n].append(yr)
                         self.p_l_corr[n].append(len(correct))
 
-        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types)
+        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types, json_paths)
 
     def _scan_players(self, paths):
         players = set           ()
@@ -382,24 +355,30 @@ class TourAnalyzer:
             idx += 1
         return True, elo_map, assignments, t1_lookup, rosters
 
-    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types):
+    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types, json_paths):
         watched_valid       = missing_count <= 5
         baseline_initial    = 6 if len(self.s_part) <= 20 else 5
         init_label          = "Watched" if watched_valid else "Random"
-        tour_label          = simpledialog.askstring("Input", f"Enter the Tour name:", initialvalue = f"{init_label} Tour")
-        tour_disp           = tour_label.strip()
-
+        tour_label          = simpledialog.askstring("Input", f"Enter the Tour name:", initialvalue = init_label)
+        tour_disp           = f"{tour_label.strip()} Tour"
         global_dialog       = SpinboxDialog(root, "Input", "Enter the expected amount of rounds:", baseline_initial)
         base_exp            = global_dialog.result
+
         if base_exp is None: base_exp = baseline_initial
 
         exp_map = {}
-        for name in self.s_part:
+        for name in list(self.s_part.keys()):
             act = len(appearances.get(name, []))
             if act < base_exp:
                 player_dialog   = SpinboxDialog(root, "Input", f"Only {act} JSON(s) mention {name}; how many rounds were they expected to be in?", act)
                 val             = player_dialog.result
-                exp_map[name]   = val if val is not None else act
+                target          = val if val is not None else act
+                exp_map[name]   = target
+
+                if target > act:
+                    avg_songs_per_json  =   sum(self.s_part.values()) / sum(len(v) for v in appearances.values())
+                    missing_rounds      =   target - act
+                    self.s_part[name]   +=  int(missing_rounds * avg_songs_per_json)
             else: exp_map[name] = base_exp
 
         new_players = NewPlayerDialog(root, list(self.s_part.keys())).selected_new
@@ -422,10 +401,10 @@ class TourAnalyzer:
 
         self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players)
         self._create_tour_png   (use_teams, watched_valid, out_path)
-        if use_teams:
-            if watched_valid: self._create_team_png(t1_lookup, out_path)
-            self._create_tier_png(assignments, out_path)
-        if watched_valid: self._create_watched_png(out_path)
+
+        if watched_valid and assignments    : self._create_team_png     (t1_lookup,     out_path)
+        if assignments                      : self._create_tier_png     (assignments,   out_path)
+        if watched_valid                    : self._create_watched_png  (out_path)
 
         self._fuse_and_clean(out_path)
         messagebox.showinfo("Success", f"Saved to {DIR_OUT}/{ts}")
