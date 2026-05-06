@@ -557,16 +557,26 @@ class TourAnalyzer:
         if yes_s    : stats.append(["Lowest GR With 1/8s",      f"{yes_s    [0]} ({100 * (self.c_counts[yes_s   [0]] / self.s_part[yes_s    [0]]):.2f}, {self.e_counts[yes_s[0]]})"])
 
         if watched:
-            conv = []
-            for n in [p for p in plist if self.p_l_solos[p] > 0]:
-                h = self.p_l_solos[n] - self.p_m_erigs[n]
-                conv.append({'n': n, 'p': 100 * h / self.p_l_solos[n], 'h': h, 't': self.p_l_solos[n]})
-            if conv:
-                b = sorted(conv, key = lambda x: (x['p'], x     ['t']), reverse = True) [0]
-                w = sorted(conv, key = lambda x: (x['p'], -x    ['t']))                 [0]
+            conv        = []
+            eligible    = [p for p in plist if self.p_l_solos[p] > 0]
+            
+            if eligible:
+                total_hits      = sum((self.p_l_solos[p] - self.p_m_erigs[p]) for p in eligible)
+                total_attempts  = sum(self.p_l_solos[p] for p in eligible)
+                global_avg      = total_hits / total_attempts if total_attempts > 0 else 0
+                constant        = 3
+                
+                for n in eligible:
+                    t               = self.p_l_solos[n]
+                    h               = t - self.p_m_erigs[n]
+                    weighted_score  = (h + constant * global_avg) / (t + constant)
+                    conv.append({'n': n, 'score': weighted_score, 'p': 100 * h / t, 'h': h, 't': t})
 
-                stats.append(["Best Solo Rig Converter",    f"{b['n']} ({b['p']:.2f}, {b['h']}/{b['t']})"])
-                stats.append(["Worst Solo Rig Converter",   f"{w['n']} ({w['p']:.2f}, {w['h']}/{w['t']})"])
+                b = sorted(conv, key = lambda x: x['score'], reverse = True)    [0]
+                w = sorted(conv, key = lambda x: x['score'])                    [0]
+
+                stats.append(["Best Solo Rig Converter",    f"{b['n']} ({b['p']:.2f}%, {b['h']}/{b['t']})"])
+                stats.append(["Worst Solo Rig Converter",   f"{w['n']} ({w['p']:.2f}%, {w['h']}/{w['t']})"])
 
         self._export_png(pd.DataFrame(stats, columns = ["Statistic", "Value"]), path, "Tour.png", "Tour Statistics")
 
