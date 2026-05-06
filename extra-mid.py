@@ -9,9 +9,8 @@ from    datetime    import  datetime
 from    html2image  import  Html2Image
 from    pathlib     import  Path
 from    PIL         import  Image,      ImageChops,     ImageOps
-from    tkinter     import  messagebox, simpledialog,   ttk
+from    tkinter     import  messagebox, ttk
 
-# Constants and Configuration
 BROWSER_PATHS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
     r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
@@ -63,6 +62,84 @@ def trim_whitespace(image_path):
             img = ImageOps.expand(img, border = 10, fill = "white")
             img.save(image_path)
 
+class UnifiedDialog(tk.Toplevel):
+    def __init__(self, parent, title, prompt):
+        super().__init__(parent)
+        self.title(title)
+        self.result = None
+        self.geometry(f"+{parent.winfo_rootx() + 50}+{parent.winfo_rooty() + 50}")
+        main_frame = ttk.Frame(self, padding = 15)
+        main_frame.pack(fill = tk.BOTH, expand = True)
+        ttk.Label(main_frame, text = prompt, font = ("Segoe UI", 10)).pack(pady = (0, 10), anchor = "w")
+        self.container = ttk.Frame(main_frame)
+        self.container.pack(fill = tk.BOTH, expand = True)
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(fill = tk.X, pady = (15, 0))
+        self.confirm_btn = ttk.Button(btn_frame, text = "Confirm", command = self.on_confirm)
+        self.confirm_btn.pack(side = tk.RIGHT, padx = 5)
+        self.bind("<Return>", lambda: self.on_confirm())
+
+    def on_confirm(self): self.destroy()
+
+class StringDialog(UnifiedDialog):
+    def __init__(self, parent, title, prompt, initialvalue = ""):
+        super().__init__(parent, title, prompt)
+        self.entry = ttk.Entry(self.container, width = 40)
+        self.entry.insert(0, initialvalue)
+        self.entry.pack(fill = tk.X)
+        self.entry.focus_set()
+        self.grab_set(); self.wait_window()
+
+    def on_confirm(self):
+        self.result = self.entry.get()
+        super().on_confirm()
+
+class SpinboxDialog(UnifiedDialog):
+    def __init__(self, parent, title, prompt, initialvalue):
+        super().__init__(parent, title, prompt)
+        self.spin = ttk.Spinbox(self.container, from_ = 1, to = 6, width = 10)
+        self.spin.set(initialvalue)
+        self.spin.pack(anchor = "w")
+        self.grab_set(); self.wait_window()
+
+    def on_confirm(self):
+        try                 : self.result = int(self.spin.get())
+        except ValueError   : self.result = None
+        super().on_confirm()
+
+class NewPlayerDialog(UnifiedDialog):
+    def __init__(self, parent, active_players):
+        super().__init__(parent, "New Player Input", "Select new player(s), if any:")
+        self.selected_new   = []
+        self.blue_shade     = "#0056B3"
+        self.vars           = {}
+        player_list         = sorted    (list(active_players), key = str.lower)
+        num_players         = len       (player_list)
+        rows_per_col        = 8 if num_players >= 16 else num_players
+        for i, name in enumerate(player_list):
+            col             = i //  rows_per_col
+            row             = i %   rows_per_col
+            var             = tk.BooleanVar(value = False)
+            self.vars[name] = var
+            item_frame      = ttk.Frame(self.container)
+            item_frame.grid(row = row, column = col, padx = 5, pady = 1, sticky = "w")
+            box = tk.Canvas(item_frame, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
+            box.pack(side = tk.LEFT, padx = (0, 5))
+            lbl = ttk.Label(item_frame, text = name, font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n=name, b=box: self.toggle_custom(n, b))
+        self.grab_set(); self.wait_window()
+
+    def toggle_custom(self, name, box):
+        new_val = not self.vars[name].get()
+        self.vars[name].set(new_val)
+        color = self.blue_shade if new_val else "white"
+        box.configure(bg = color)
+
+    def on_confirm(self):
+        self.selected_new = [name for name, var in self.vars.items() if var.get()]
+        super().on_confirm()
+
 class ManualMatchDialog(tk.Toplevel):
     def __init__(self, parent, unknown_name, available_pool):
         super().__init__(parent)
@@ -94,42 +171,6 @@ class SubSelectionDialog(tk.Toplevel):
     def on_confirm(self):
         sel = self.listbox.curselection()
         if sel: self.result = self.listbox.get(sel[0]); self.destroy()
-
-class SpinboxDialog(tk.Toplevel):
-    def __init__(self, parent, title, prompt, initialvalue):
-        super().__init__(parent)
-        self.title(title)
-        self.result = initialvalue
-        self.geometry("+%d+%d" % (parent.winfo_rootx() + 50, parent.winfo_rooty() + 50))
-        ttk.Label(self, text = prompt, padding = 10).pack()
-        self.spin = ttk.Spinbox(self, from_ = 1, to = 20, width = 10)
-        self.spin.set(initialvalue)
-        self.spin.pack(padx = 20, pady = 5)
-        ttk.Button(self, text = "OK", command = self.on_ok).pack(pady = 10)
-        self.grab_set()
-        self.bind("<Return>", lambda: self.on_ok())
-        self.wait_window()
-
-    def on_ok(self):
-        try                 : self.result = int(self.spin.get())
-        except ValueError   : self.result = 0
-        self.destroy()
-
-class NewPlayerDialog(tk.Toplevel):
-    def __init__(self, parent, active_players):
-        super().__init__(parent)
-        self.title("New Player Input")
-        self.selected_new = []
-        ttk.Label(self, text = "Select new player(s), if any", font = ("Arial", 10)).pack(padx = 20, pady = 10)
-        self.listbox = tk.Listbox(self, height = 15, selectmode = tk.MULTIPLE)
-        self.listbox.pack(padx = 20, pady = 5, fill = tk.BOTH, expand = True)
-        for name in sorted(active_players): self.listbox.insert(tk.END, name)
-        ttk.Button(self, text = "Confirm", command = self.on_confirm).pack(pady = 10)
-        self.grab_set(); self.wait_window()
-
-    def on_confirm(self):
-        self.selected_new = [self.listbox.get(i) for i in self.listbox.curselection()]
-        self.destroy()
 
 # Main Processor
 class TourAnalyzer:
@@ -303,7 +344,7 @@ class TourAnalyzer:
                         if yr is not None   : self.p_l_vint [n].append(yr)
                         self.p_l_corr[n].append(len(correct))
 
-        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types, json_paths)
+        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types)
 
     def _scan_players(self, paths):
         players = set           ()
@@ -356,15 +397,15 @@ class TourAnalyzer:
             idx += 1
         return True, elo_map, assignments, t1_lookup, rosters
 
-    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types, json_paths):
+    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types):
         watched_valid       = missing_count <= 5
         baseline_initial    = 6 if len(self.s_part) <= 20 else 5
         init_label          = "Watched" if watched_valid else "Usual"
-        self.tour_label     = simpledialog.askstring("Tour Name Input", f"Enter the Tour name:", initialvalue = init_label)
+        self.tour_label     = StringDialog(root, "Tour Name Input", "Enter the Tour name:", initialvalue = init_label).result
+        if not self.tour_label: self.tour_label = init_label
         tour_disp           = f"{self.tour_label.strip()} Tour"
         global_dialog       = SpinboxDialog(root, "Round Count Input", "Enter the expected amount of rounds:", baseline_initial)
         base_exp            = global_dialog.result
-
         if base_exp is None: base_exp = baseline_initial
 
         exp_map = {}
@@ -593,7 +634,7 @@ class TourAnalyzer:
             else                                                : init_val = "28, 19, 8"
                 
             trimmed_title   = title.split(" Tour")[0]
-            val_str         = simpledialog.askstring("Input", f"Enter the comma-separated threshold values for {trimmed_title}:", initialvalue = init_val)
+            val_str         = StringDialog(root, "Threshold Input", f"Enter comma-separated thresholds for {trimmed_title}:", initialvalue = init_val).result
 
             try         : th = [float(x.strip()) for x in val_str.split(",")] if val_str else []
             except      : th = [28.0, 18.0, 12.0, 6.0]
