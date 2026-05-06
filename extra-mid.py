@@ -591,15 +591,32 @@ class TourAnalyzer:
         for tr in tiers:
             tp = [n for n in self.s_part if n.lower() in assigns and assigns[n.lower()][1] == tr]
             if not tp: continue
-            
-            def fmt_b(plist, sdict):
-                sorted_p    = sorted(plist, key = lambda x: (sdict[x], self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0), reverse = True)
-                b, v        = sorted_p[0], sdict[sorted_p[0]]
-                return f"{b} ({v})"
 
-            res.append([tr, fmt_b(tp, self.p_pts), fmt_b(tp, self.p_blks)])
+            def get_generalist(plist):
+                sorted_p        = sorted(plist, key = lambda x: (self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0), reverse = True)
+                name, value     = sorted_p[0], 100 * (self.c_counts[sorted_p[0]] / self.s_part[sorted_p[0]]) if self.s_part[sorted_p[0]] else 0
+                return f"{name} ({value:.2f})"
             
-        self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = ["Tier", "Attacker", "Blocker"]), path, "Tier.png", "Tier Bests")
+            def get_attblk(plist, sdict):
+                sorted_p        = sorted(plist, key = lambda x: (sdict[x], self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0), reverse = True)
+                name, value     = sorted_p[0], sdict[sorted_p[0]]
+                return f"{name} ({value})"
+
+            def get_contributor(plist):
+                sorted_p        = sorted(plist, key = lambda x: ((self.p_pts[x] + self.p_blks[x]), (self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0)), reverse = True)
+                name, v1, v2    = sorted_p[0], self.p_pts[sorted_p[0]], self.p_blks[sorted_p[0]]
+                return f"{name} ({v1}, {v2})"
+
+            res.append([
+                tr,
+                get_generalist  (tp),
+                get_attblk      (tp, self.p_pts),
+                get_attblk      (tp, self.p_blks),
+                get_contributor (tp)
+            ])
+            
+        cols = ["Tier", "Generalist", "Attacker", "Blocker", "Contributor"]
+        self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = cols), path, "Tier.png", "Tier Bests")
 
     def _create_watched_png(self, path):
         plist   = [n for n in self.s_part if self.p_l_corr[n]]
