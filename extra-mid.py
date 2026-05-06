@@ -118,7 +118,7 @@ class SpinboxDialog(tk.Toplevel):
 class NewPlayerDialog(tk.Toplevel):
     def __init__(self, parent, active_players):
         super().__init__(parent)
-        self.title("New Player Check")
+        self.title("New Player Input")
         self.selected_new = []
         ttk.Label(self, text = "Select new player(s), if any", font = ("Arial", 10)).pack(padx = 20, pady = 10)
         self.listbox = tk.Listbox(self, height = 15, selectmode = tk.MULTIPLE)
@@ -164,6 +164,7 @@ class TourAnalyzer:
         self.tag_c                      = Counter()
         self.all_diff, self.all_vint    = [], []
         self.global_stats               = Counter()
+        self.tour_label                 = ""
 
     def _find_browser(self): return next((p for p in BROWSER_PATHS if os.path.exists(p)), None)
 
@@ -358,10 +359,10 @@ class TourAnalyzer:
     def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types, json_paths):
         watched_valid       = missing_count <= 5
         baseline_initial    = 6 if len(self.s_part) <= 20 else 5
-        init_label          = "Watched" if watched_valid else "Random"
-        tour_label          = simpledialog.askstring("Input", f"Enter the Tour name:", initialvalue = init_label)
-        tour_disp           = f"{tour_label.strip()} Tour"
-        global_dialog       = SpinboxDialog(root, "Input", "Enter the expected amount of rounds:", baseline_initial)
+        init_label          = "Watched" if watched_valid else "Usual"
+        self.tour_label     = simpledialog.askstring("Tour Name Input", f"Enter the Tour name:", initialvalue = init_label)
+        tour_disp           = f"{self.tour_label.strip()} Tour"
+        global_dialog       = SpinboxDialog(root, "Round Count Input", "Enter the expected amount of rounds:", baseline_initial)
         base_exp            = global_dialog.result
 
         if base_exp is None: base_exp = baseline_initial
@@ -370,7 +371,7 @@ class TourAnalyzer:
         for name in list(self.s_part.keys()):
             act = len(appearances.get(name, []))
             if act < base_exp:
-                player_dialog   = SpinboxDialog(root, "Input", f"Only {act} JSON(s) mention {name}; how many rounds were they expected to be in?", act)
+                player_dialog   = SpinboxDialog(root, "Count Mismatch Warning", f"Only {act} JSON(s) mention {name}; how many rounds were they expected to be in?", act)
                 val             = player_dialog.result
                 target          = val if val is not None else act
                 exp_map[name]   = target
@@ -585,8 +586,14 @@ class TourAnalyzer:
         borders = []
 
         if "Guess Rate" in df.columns:
-            init_val    = "28, 18, 12, 6" if "Rigs" in df.columns else "28, 19, 8"
-            val_str     = simpledialog.askstring("Input", f"Enter the comma-separated threshold values for {title}:", initialvalue = init_val)
+            if      self.tour_label == "Watched 2+8"            : init_val = "25, 20, 15, 10, 5"
+            elif    self.tour_label == "Watched"                : init_val = "28, 18, 12, 6"
+            elif    self.tour_label in ["Usual", "Quagsual"]    : init_val = "28, 19, 8"
+            elif    "Rigs"          in df.columns               : init_val = "28, 18, 12, 6"
+            else                                                : init_val = "28, 19, 8"
+                
+            trimmed_title   = title.split(" Tour")[0]
+            val_str         = simpledialog.askstring("Input", f"Enter the comma-separated threshold values for {trimmed_title}:", initialvalue = init_val)
 
             try         : th = [float(x.strip()) for x in val_str.split(",")] if val_str else []
             except      : th = [28.0, 18.0, 12.0, 6.0]
