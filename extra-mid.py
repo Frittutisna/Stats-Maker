@@ -253,7 +253,12 @@ class TourAnalyzer:
                     missing = [p for p in ros if p not in raw_f_players]
                     if len([p for p in ros if p in raw_f_players]) == 3 and missing:
                         res = SubSelectionDialog(None, missing).result if len(missing) > 1 else missing[0]
-                        if res: final_members.add(res)
+                        if res:
+                            final_members.add(res)
+                            potential_subs = list(raw_f_players - rosters[tid])
+                            for sub_candidate in potential_subs:
+                                if sub_candidate.lower() not in assignments: assignments[sub_candidate.lower()] = assignments[res.lower()]
+
                 if len(final_members) < 8:
                     for tid in t_in_f: final_members.update(rosters[tid])
 
@@ -441,7 +446,7 @@ class TourAnalyzer:
         out_path    = self.script_dir / DIR_OUT / ts
         out_path.mkdir(parents = True, exist_ok = True)
 
-        self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players)
+        self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup)
         self._create_tour_png   (use_teams, watched_valid, out_path)
 
         if watched_valid and assignments    : self._create_team_png     (t1_lookup,     out_path)
@@ -451,7 +456,7 @@ class TourAnalyzer:
         self._fuse_and_clean(out_path)
         messagebox.showinfo("Success", f"Saved to {DIR_OUT}/{ts}")
 
-    def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players):
+    def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup):
         rows, eligibility   = [], []
         t_labels            = {1: "OP GR", 2: "ED GR", 3: "IN GR"}
         active              = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
@@ -473,7 +478,17 @@ class TourAnalyzer:
                 if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
 
             row = {"Player": d_name}
-            if use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
+            
+            if use_teams:
+                team_info = assigns.get(name.lower(), ("N/A", "N/A"))
+                if team_info[0] != "N/A":
+                    leader_name = t1_lookup.get(team_info[0], "")
+                    row["Team"] = leader_name[:3].upper() if leader_name else f"T{team_info[0]}"
+                    row["Tier"] = team_info[1]
+                else:
+                    row["Team"] = "N/A"
+                    row["Tier"] = "N/A"
+                row["Elo"]      = elo_map.get(name.lower(), "N/A")
 
             row.update({
                 "Guess Rate"    : cor / tot if tot else 0,
