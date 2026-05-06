@@ -419,7 +419,7 @@ class TourAnalyzer:
             target      = exp_map.get(name, base_exp)
             d_name      = name
 
-            if name in new_players  : d_name += " ✪"
+            if name in new_players  : d_name += " ☆"
             if target < base_exp    : d_name += " ▼" if (use_teams and name.lower() in assigns) else " ▲"
             
             is_eligible = not ("▼" in d_name or "▲" in d_name)
@@ -427,7 +427,7 @@ class TourAnalyzer:
             
             act = len(apps.get(name, []))
             if act < target:
-                syms = ["", "❶", "❷", "❸", "❹", "❺", "❻"]
+                syms = ["", "①", "②", "③", "④", "⑤", "⑥"]
                 if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
 
             row = {"Player": d_name}
