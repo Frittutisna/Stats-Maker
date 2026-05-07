@@ -248,7 +248,7 @@ class TourAnalyzer:
         found_types                                         = set()
 
         for path in json_paths:
-            with open(path, encoding="utf-8") as f: data = json.load(f)
+            with open(path, encoding = "utf-8") as f: data = json.load(f)
             
             songs = data.get("songs", [])
             if not songs: continue
