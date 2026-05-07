@@ -385,6 +385,7 @@ class TourAnalyzer:
         codes = self.script_dir / DIR_DEPS / FILE_CODES
         if not codes.exists(): return False, {}, {}, {}, defaultdict(set)
         
+        self.main_roster_names = set()
         elo_map, assignments, rosters, t1_lookup    = {}, {}, defaultdict(set), {}
         avail                                       = list(all_known)
         with open(codes, "r", encoding = "utf-8") as f: lines = f.readlines()
@@ -411,6 +412,7 @@ class TourAnalyzer:
                 tier    = str(i + 1)
                 match   = next((n for n in all_known if n.lower() == p_in.lower() or (p_in in self.alias_map and n == self.alias_map[p_in])), None)
                 if match:
+                    self.main_roster_names.add(match.lower())
                     assignments[match.lower()] = (idx, tier)
                     rosters[idx].add(match)
                     if match in avail: avail.remove(match)
@@ -487,8 +489,8 @@ class TourAnalyzer:
             if name in new_players: d_name += " ☆"
 
             if target < base_exp:
-                if name in original_roster  : d_name += " ▼"
-                else                        : d_name += " ▲"
+                if name.lower() in self.main_roster_names   : d_name += " ▼"
+                else                                        : d_name += " ▲"
             
             is_eligible = not ("▼" in d_name or "▲" in d_name)
             eligibility.append(is_eligible)
