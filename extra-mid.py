@@ -209,7 +209,6 @@ class TourAnalyzer:
         self.global_stats               = Counter()
         self.tour_label                 = ""
         self.chanting_ids               = set()
-        self.sub_map                    = {}
 
     def _find_browser(self): return next((p for p in BROWSER_PATHS if os.path.exists(p)), None)
 
@@ -265,11 +264,8 @@ class TourAnalyzer:
                     if len([p for p in ros if p in raw_f_players]) == 3 and missing:
                         res = SubSelectionDialog(None, missing).result if len(missing) > 1 else missing[0]
                         if res:
-                            potential_subs = list(raw_f_players - rosters[tid])
-                            if potential_subs:
-                                sub_in                  = potential_subs[0]
-                                self.sub_map[sub_in]    = res
                             final_members.add(res)
+                            potential_subs = list(raw_f_players - rosters[tid])
                             for sub_candidate in potential_subs:
                                 if sub_candidate.lower() not in assignments: assignments[sub_candidate.lower()] = assignments[res.lower()]
 
@@ -488,11 +484,13 @@ class TourAnalyzer:
             target      = exp_map.get(name, base_exp)
             d_name      = name
 
-            if      name in new_players             : d_name += " ☆"
-            if      name in self.sub_map.values()   : d_name += " ▼"
-            elif    name in self.sub_map            : d_name += " ▲"
+            if name in new_players: d_name += " ☆"
+
+            if target < base_exp:
+                if name in original_roster  : d_name += " ▼"
+                else                        : d_name += " ▲"
             
-            is_eligible = not (name in self.sub_map or name in self.sub_map.values())
+            is_eligible = not ("▼" in d_name or "▲" in d_name)
             eligibility.append(is_eligible)
             
             act = len(apps.get(name, []))
