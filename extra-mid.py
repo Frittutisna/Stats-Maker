@@ -241,11 +241,11 @@ class TourAnalyzer:
             messagebox.showerror("Error", f"{DIR_JSONS} folder not found or empty")
             return
 
-        json_paths                                          = list(json_dir.glob("*.json"))
-        all_known, appearances                              = self._scan_players(json_paths)
-        use_teams, elo_map, assignments, t1_lookup, rosters = self._load_team_data(all_known)
-        missing_list_count                                  = 0
-        found_types                                         = set()
+        json_paths                                                      = list(json_dir.glob("*.json"))
+        all_known, appearances                                          = self._scan_players    (json_paths)
+        use_teams, elo_map, assignments, t1_lookup, rosters, all_known  = self._load_team_data  (all_known)
+        missing_list_count                                              = 0
+        found_types                                                     = set()
 
         for path in json_paths:
             with open(path, encoding = "utf-8") as f: data = json.load(f)
@@ -365,7 +365,7 @@ class TourAnalyzer:
                         if yr is not None   : self.p_l_vint [n].append(yr)
                         self.p_l_corr[n].append(len(correct))
 
-        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types)
+        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types, all_known)
 
     def _scan_players(self, paths):
         players = set           ()
@@ -416,9 +416,9 @@ class TourAnalyzer:
                     if match in avail: avail.remove(match)
                     t1_lookup[idx] = ename if ename else (match if tier == "1" else t1_lookup.get(idx))
             idx += 1
-        return True, elo_map, assignments, t1_lookup, rosters
+        return True, elo_map, assignments, t1_lookup, rosters, all_known
 
-    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types):
+    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types, original_roster):
         watched_valid       = missing_count <= 5
         baseline_initial    = int(np.median([len(appearances.get(name, [])) for name in self.s_part]))
         init_label          = "Watched" if watched_valid else "Usual"
@@ -463,7 +463,7 @@ class TourAnalyzer:
         out_path    = self.script_dir / DIR_OUT / ts
         out_path.mkdir(parents = True, exist_ok = True)
 
-        self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup)
+        self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup, original_roster)
         self._create_tour_png   (use_teams, watched_valid, out_path)
 
         if watched_valid and assignments    : self._create_team_png     (t1_lookup,     out_path)
@@ -474,7 +474,7 @@ class TourAnalyzer:
         self._fuse_and_clean(out_path)
         messagebox.showinfo("Success", f"Saved to {DIR_OUT}/{ts}")
 
-    def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup):
+    def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup, original_roster):
         rows, eligibility   = [], []
         t_labels            = {1: "OP GR", 2: "ED GR", 3: "IN GR"}
         active              = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
@@ -484,8 +484,11 @@ class TourAnalyzer:
             target      = exp_map.get(name, base_exp)
             d_name      = name
 
-            if name in new_players  : d_name += " ☆"
-            if target < base_exp    : d_name += " ▼" if (use_teams and name.lower() in assigns) else " ▲"
+            if name in new_players: d_name += " ☆"
+
+            if target < base_exp:
+                if name in original_roster  : d_name += " ▼"
+                else                        : d_name += " ▲"
             
             is_eligible = not ("▼" in d_name or "▲" in d_name)
             eligibility.append(is_eligible)
