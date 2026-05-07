@@ -193,6 +193,8 @@ class TourAnalyzer:
         self.p_l_corr                   = defaultdict(list)
         self.p_m_erigs                  = defaultdict(int)
         self.p_l_solos                  = defaultdict(int)
+        self.p_chan_c                   = defaultdict(int)
+        self.p_chan_s                   = defaultdict(int)
         self.t_vint                     = defaultdict(list)
         self.t_c_ps                     = defaultdict(list)
         self.t_on_syn                   = defaultdict(list)
@@ -206,6 +208,7 @@ class TourAnalyzer:
         self.all_diff, self.all_vint    = [], []
         self.global_stats               = Counter()
         self.tour_label                 = ""
+        self.chanting_ids               = set()
 
     def _find_browser(self): return next((p for p in BROWSER_PATHS if os.path.exists(p)), None)
 
@@ -226,6 +229,13 @@ class TourAnalyzer:
         with open(dep_dir / FILE_ALIASES, "a", encoding = "utf-8") as f: f.write(f"{existing}, {new}\n")
 
     def run(self):
+        chanting_path = self.script_dir / DIR_DEPS / "chanting" / "chanting.txt"
+        if chanting_path.exists():
+            with open(chanting_path, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line: self.chanting_ids.add(line)
+
         json_dir = self.script_dir / DIR_JSONS
         if not json_dir.exists() or not any(json_dir.glob("*.json")):
             messagebox.showerror("Error", f"{DIR_JSONS} folder not found or empty")
@@ -278,8 +288,11 @@ class TourAnalyzer:
                     for t in [1, 2, 3]: self.p_type_s[name][t] += f_type_totals[t]
 
             for song in songs:
-                si = song.get("songInfo", {})
-                st = si.get("type")
+                si      = song      .get("songInfo", {})
+                st      = si        .get("type")
+                ann_id  = str(si    .get("annSongId"))
+                is_chan = ann_id in self.chanting_ids
+                
                 if isinstance(si.get("animeGenre"), list): self.genre_c .update(si.get("animeGenre"))
                 if isinstance(si.get("animeTags"),  list): self.tag_c   .update([t for t in si.get("animeTags") if t not in EXCLUDED_TAGS])
                 
@@ -340,8 +353,11 @@ class TourAnalyzer:
 
                 for name in final_members:
                     if name in correct:
-                        self.c_counts[name]                         += 1
-                        if st in [1, 2, 3]: self.p_type_c[name][st] += 1
+                        self                        .c_counts[name]     += 1
+                        if st in [1, 2, 3]  : self  .p_type_c[name][st] += 1
+                        if is_chan          : self  .p_chan_c[name]     += 1
+                    if is_chan: self                .p_chan_s[name]     += 1
+
                 if ls:
                     for p in ls:
                         n = p["name"]       ; self.p_rigs   [n] += 1
@@ -452,6 +468,7 @@ class TourAnalyzer:
         if watched_valid and assignments    : self._create_team_png     (t1_lookup,     out_path)
         if assignments                      : self._create_tier_png     (assignments,   out_path)
         if watched_valid                    : self._create_watched_png  (out_path)
+        if self.chanting_ids                : self._create_chanting_png (out_path)
 
         self._fuse_and_clean(out_path)
         messagebox.showinfo("Success", f"Saved to {DIR_OUT}/{ts}")
@@ -607,6 +624,13 @@ class TourAnalyzer:
                 name, value     = sorted_p[0], 100 * (self.c_counts[sorted_p[0]] / self.s_part[sorted_p[0]]) if self.s_part[sorted_p[0]] else 0
                 return f"{name} ({value:.2f})"
             
+            def get_chanter(plist):
+                pool            = [n for n in plist if self.p_chan_s[n] > 0]
+                if not pool: return "N/A"
+                sorted_p        = sorted(pool, key = lambda x: (self.p_chan_c[x] / self.p_chan_s[x], -(self.c_counts[x] / self.s_part[x])), reverse = True)
+                name, value     = sorted_p[0], 100 * (self.p_chan_c[sorted_p[0]] / self.p_chan_s[sorted_p[0]])
+                return f"{name} ({value:.2f})"
+
             def get_attblk(plist, sdict):
                 sorted_p        = sorted(plist, key = lambda x: (sdict[x], self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0), reverse = True)
                 name, value     = sorted_p[0], sdict[sorted_p[0]]
@@ -620,12 +644,13 @@ class TourAnalyzer:
             res.append([
                 tr,
                 get_generalist  (tp),
+                get_chanter     (tp),
                 get_attblk      (tp, self.p_pts),
                 get_attblk      (tp, self.p_blks),
                 get_contributor (tp)
             ])
             
-        cols = ["Tier", "Generalist", "Attacker", "Blocker", "Contributor"]
+        cols = ["Tier", "Generalist", "Chanter", "Attacker", "Blocker", "Contributor"]
         self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = cols), path, "Tier.png", "Tier Bests")
 
     def _create_watched_png(self, path):
@@ -644,6 +669,29 @@ class TourAnalyzer:
         ] for i in range(3)]
 
         self._export_png(pd.DataFrame(rows, columns = ["Rank", "Easiest", "Hardest", "Newest", "Oldest"]), path, "Watched.png", "List Statistics")
+
+    def _create_chanting_png(self, path):
+        plist = [n for n in self.s_part if self.p_chan_s[n] > 0]
+        if not plist: return
+
+        best    = sorted(plist, key = lambda x: (self.p_chan_c[x] / self.p_chan_s[x], -(self.c_counts[x]/self.s_part[x])), reverse = True)  [ : 3]
+        worst   = sorted(plist, key = lambda x: (self.p_chan_c[x] / self.p_chan_s[x], -(self.c_counts[x]/self.s_part[x])))                  [ : 3]
+        rows    = []
+
+        for i in range(3):
+            b_cell = "N/A"
+            if i < len(best):
+                p       = best[i]
+                b_cell  = f"{p} ({100 * (self.p_chan_c[p]/self.p_chan_s[p]):.2f})"
+            
+            w_cell = "N/A"
+            if i < len(worst):
+                p       = worst[i]
+                w_cell  = f"{p} ({100 * (self.p_chan_c[p]/self.p_chan_s[p]):.2f})"
+            
+            rows.append([f"{i + 1}", b_cell, w_cell])
+
+        self._export_png(pd.DataFrame(rows, columns = ["Rank", "Best", "Worst"]), path, "Chanting.png", "Chanting Statistics")
 
     def _export_png(self, df, path, fname, title, mask = None):
         if not self.browser_path: return
@@ -720,12 +768,12 @@ class TourAnalyzer:
         except  : pass
 
     def _fuse_and_clean(self, path):
-        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Watched": "Watched.png"}
+        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Watched": "Watched.png", "Chanting": "Chanting.png"}
         ps      = {k: path / v      for k, v in f   .items() if (path / v).exists()}
         imgs    = {k: Image.open(v) for k, v in ps  .items()}
         if not imgs: return
 
-        rk = [k for k in ["Team", "Tier", "Watched"] if k in imgs]
+        rk = [k for k in ["Team", "Tier", "Watched", "Chanting"] if k in imgs]
         if len(rk) == 1:
             tw, th  = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
             ok      = rk[0]
