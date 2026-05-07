@@ -468,10 +468,10 @@ class TourAnalyzer:
         self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup, original_roster)
         self._create_tour_png   (use_teams, watched_valid, out_path)
 
-        if watched_valid and assignments    : self._create_team_png     (t1_lookup,     out_path)
-        if assignments                      : self._create_tier_png     (assignments,   out_path)
-        if watched_valid                    : self._create_watched_png  (out_path)
-        if self.chanting_ids                : self._create_chanting_png (out_path)
+        if watched_valid and assignments        : self._create_team_png     (t1_lookup,     out_path)
+        if assignments                          : self._create_tier_png     (assignments,   out_path,   watched_valid)
+        if watched_valid                        : self._create_watched_png  (out_path)
+        if watched_valid and self.chanting_ids  : self._create_chanting_png (out_path)
 
         self._fuse_and_clean(out_path)
         messagebox.showinfo("Success", f"Saved to {DIR_OUT}/{ts}")
@@ -617,7 +617,7 @@ class TourAnalyzer:
             })
         self._export_png(pd.DataFrame(res).sort_values("Average GR", ascending = False), path, "Team.png", "Team Statistics")
 
-    def _create_tier_png(self, assigns, path):
+    def _create_tier_png(self, assigns, path, watched_valid):
         tiers   = sorted({v[1] for v in assigns.values() if v[1] != "N/A"}, reverse = True)
         res     = []
 
@@ -647,16 +647,19 @@ class TourAnalyzer:
                 name, v1, v2    = sorted_p[0], self.p_pts[sorted_p[0]], self.p_blks[sorted_p[0]]
                 return f"{name} ({v1}, {v2})"
 
-            res.append([
-                tr,
+            row_data = [tr]
+            if watched_valid: row_data.append(get_chanter(tp))
+            row_data.extend([
                 get_generalist  (tp),
-                get_chanter     (tp),
                 get_attblk      (tp, self.p_pts),
                 get_attblk      (tp, self.p_blks),
                 get_contributor (tp)
             ])
+            res.append(row_data)
             
-        cols = ["Tier", "Generalist", "Chanter", "Attacker", "Blocker", "Contributor"]
+        cols = ["Tier"]
+        if watched_valid: cols.append("Chanter")
+        cols.extend(["Generalist", "Attacker", "Blocker", "Contributor"])
         self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = cols), path, "Tier.png", "Tier Bests")
 
     def _create_watched_png(self, path):
