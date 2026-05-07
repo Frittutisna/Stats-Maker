@@ -420,7 +420,7 @@ class TourAnalyzer:
 
     def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types):
         watched_valid       = missing_count <= 5
-        baseline_initial    = 6 if len(self.s_part) <= 20 else 5
+        baseline_initial    = int(np.median([len(appearances.get(name, [])) for name in self.s_part]))
         init_label          = "Watched" if watched_valid else "Usual"
         self.tour_label     = StringDialog(root, "Tour Name Input", "Enter the Tour name:", initialvalue = init_label).result
         if not self.tour_label: self.tour_label = init_label
@@ -773,12 +773,24 @@ class TourAnalyzer:
         imgs    = {k: Image.open(v) for k, v in ps  .items()}
         if not imgs: return
 
+        if "Team" in imgs and "Chanting" in imgs:
+            t_img, c_img    = imgs["Team"], imgs["Chanting"]
+            combined_w      = t_img.width + 10 + c_img.width
+            combined_h      = max(t_img.height, c_img.height)
+            combined        = Image.new("RGB", (combined_w, combined_h), "white")
+
+            combined.paste(t_img, (0, 0))
+            combined.paste(c_img, (t_img.width + 10, 0))
+            
+            imgs["Team"] = combined
+            del imgs["Chanting"]
+
         rk = [k for k in ["Team", "Tier", "Watched", "Chanting"] if k in imgs]
-        if len(rk) == 1:
+        if not rk: fused = imgs.get("Tour")
+        elif len(rk) == 1:
             tw, th  = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
             ok      = rk[0]
             fused   = Image.new("RGB", (max(tw, imgs[ok].width), th + (10 if th else 0) + imgs[ok].height), "white")
-
             if "Tour" in imgs: fused.paste(imgs["Tour"], (0, 0))
             fused.paste(imgs[ok], (0, th + 10 if th else 0))
         else:
@@ -788,10 +800,13 @@ class TourAnalyzer:
             if "Tour" in imgs: fused.paste(imgs["Tour"], (0, 0))
             cx, cy  = (tw + 10 if tw else 0), 0
             for k in rk: fused.paste(imgs[k], (cx, cy)); cy += imgs[k].height + 10
-        f_p = path / "Extra.png"
-        fused.save(f_p)
-        try     : trim_whitespace(f_p)
-        except  : pass
+            
+        if fused:
+            f_p = path / "Extra.png"
+            fused.save(f_p)
+            try     : trim_whitespace(f_p)
+            except  : pass
+            
         for p in ps.values():
             try     : os.remove(p)
             except  : pass
