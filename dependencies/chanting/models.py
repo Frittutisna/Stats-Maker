@@ -1,9 +1,10 @@
-import logging
-from    collections import  UserList
-from    dataclasses import  _MISSING_TYPE, dataclass, field
-from    enum        import  Enum
-from    pathlib     import  Path
-from    typing      import  List
+import  annotationlib
+import  logging
+from    collections     import  UserList
+from    dataclasses     import  MISSING, dataclass, field
+from    enum            import  Enum
+from    pathlib         import  Path
+from    typing          import  List
 
 property_map = {
     'aniListId'                         : "anilist_id",
@@ -28,14 +29,19 @@ property_map = {
 
 class Base:
     def __init__(self, options = {}):
-        for field in self.__dataclass_fields__.values():
-            if isinstance(field.default, _MISSING_TYPE): setattr(self, field.name, field.default_factory())
+        annotations = annotationlib.get_annotations(type(self))
+
+        for field_def in self.__dataclass_fields__.values():
+            if field_def.default is MISSING: setattr(self, field_def.name, field_def.default_factory())
 
         for key, value in options.items():
             if key in property_map                  : key = property_map[key]
             if key not in self.__dataclass_fields__ : continue
-            try                                     : setattr(self, key, self.__annotations__[key](value))
-            except Exception as e                   : logging.warning(f"Could not find attribute: {e}")
+
+            try:
+                target_type = annotations.get(key)
+                if target_type: setattr(self, key, target_type(value))
+            except Exception as e: logging.warning(f"Could not find attribute or cast value: {e}")
 
 class LogLevel(Enum):
     DEBUG       = "debug"

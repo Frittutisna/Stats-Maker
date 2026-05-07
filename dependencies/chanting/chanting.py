@@ -22,7 +22,7 @@ def main():
     results     = []
 
     for song_link in song_links:
-        if song_link.song.category == SongCategory.CHANTING: results.append(str(song_link.ann_song_id))
+        if song_link.song.category == SongCategory.CHANTING: results.append(song_link.ann_song_id)
 
     results.sort()
     with open("chanting.txt", 'w') as f: f.write('\n'.join(map(str, results)))
