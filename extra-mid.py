@@ -444,10 +444,11 @@ class TourAnalyzer:
                     self.s_part[name]   +=  int(missing_rounds * avg_songs_per_json)
             else: exp_map[name] = base_exp
 
-        new_players = NewPlayerDialog(root, list(self.s_part.keys())).selected_new
+        new_players     = NewPlayerDialog(root, list(self.s_part.keys())).selected_new
+        final_threshold = 6 if len(self.s_part) <= 20 else 5
 
-        if      base_exp == 3                   : stage = "Mid-Tour"
-        elif    base_exp >= baseline_initial    : stage = "Final"
+        if      base_exp >= final_threshold     : stage = "Final"
+        elif    base_exp == 3                   : stage = "Mid-Tour"
         else                                    : stage = f"R{base_exp}"
 
         type_map            = {1: "OP", 2: "ED", 3: "IN"}
