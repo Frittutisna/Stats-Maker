@@ -71,7 +71,15 @@ def process_files():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     json_dir = os.path.join(script_dir, "jsons")
     
-    # 1. Robust JSON Discovery with Retry Loop
+    # Load Chanting IDs
+    chanting_ids = set()
+    chanting_path = os.path.join(script_dir, "dependencies", "chanting", "chanting.txt")
+    if os.path.exists(chanting_path):
+        with open(chanting_path, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line: chanting_ids.add(line)
+
     json_paths = []
     while True:
         if os.path.exists(json_dir) and os.path.isdir(json_dir):
@@ -134,7 +142,6 @@ def process_files():
                         if match in available: available.remove(match)
                         if tier == "T1": t1_lookup[t_idx] = match
 
-    # Statistical Counters
     correct_counts, song_participation = defaultdict(int), defaultdict(int)
     erigs_counts, player_reverse_erigs = defaultdict(int), defaultdict(int)
     player_two_eighths, player_points, player_blocks = defaultdict(int), defaultdict(int), defaultdict(int)
@@ -147,6 +154,12 @@ def process_files():
     player_missed_erigs, watched_only_valid = defaultdict(int), False
     team_correct_per_song = defaultdict(list)
     team_onlist_synergy, team_offlist_synergy, team_shared_rig_pct = defaultdict(list), defaultdict(list), defaultdict(list)
+    
+    total_songs_played = 0
+    total_chanting_songs = 0
+    player_chanting_correct = defaultdict(int)
+    player_chanting_seen = defaultdict(int)
+    chanting_correct_sum = 0
 
     for path in json_paths:
         with open(path, encoding="utf-8") as f: data = json.load(f); songs = data.get("songs", [])
@@ -174,7 +187,15 @@ def process_files():
         type_totals_this_file = defaultdict(int)
 
         for song in songs:
+            total_songs_played += 1
             si = song.get("songInfo", {}); st = si.get("type")
+            
+            # Using annSongId for chanting matching
+            ann_song_id = str(si.get("annSongId"))
+            
+            is_chanting = ann_song_id in chanting_ids
+            if is_chanting: total_chanting_songs += 1
+
             if st in [1, 2, 3]: type_totals_this_file[st] += 1
             if isinstance(si.get("animeGenre"), list): genre_counter.update(si.get("animeGenre"))
             if isinstance(si.get("animeTags"), list):
@@ -182,6 +203,8 @@ def process_files():
 
             correct = set(song.get("correctGuessPlayers", []))
             ls = song.get("listStates", []); total_correct_answers_sum += len(correct)
+            if is_chanting: chanting_correct_sum += len(correct)
+
             year, diff = extract_year(si.get("vintage")), si.get("animeDifficulty")
             if isinstance(diff, (int, float)): all_song_difficulties.append(diff)
             if year is not None: all_song_vintages.append(year)
@@ -221,6 +244,9 @@ def process_files():
                 if name in correct:
                     correct_counts[name] += 1
                     if st in [1, 2, 3]: player_type_correct[name][st] += 1
+                    if is_chanting: player_chanting_correct[name] += 1
+                if is_chanting: player_chanting_seen[name] += 1
+
             if ls:
                 watched_only_valid = True
                 for p in ls:
@@ -234,7 +260,6 @@ def process_files():
             song_participation[name] += max_songs
             for t in [1, 2, 3]: player_type_seen[name][t] += type_totals_this_file[t]
 
-    # --- DATAFRAME GENERATION ---
     p_rows = []
     for name in song_participation:
         total, correct = song_participation[name], correct_counts[name]
@@ -265,7 +290,6 @@ def process_files():
         ["Most Popular Tag", f"{tag_counter.most_common(1)[0][0]} ({tag_counter.most_common(1)[0][1]})" if tag_counter else "N/A"],
     ], columns=["TOUR STATS", ""])
 
-    # --- FIX: Only process team stats if teams were assigned ---
     team_stat_rows, team_meta = [], []
     if use_teams:
         for t_id in sorted(team_correct_per_song.keys()):
@@ -288,7 +312,6 @@ def process_files():
                 tier_hero_rows.append([tier, f"{bp} ({player_points[bp]})", f"{bb} ({player_blocks[bb]})"])
     df_tier_heroes = pd.DataFrame(tier_hero_rows, columns=["Tier", "Top Attacker", "Top Blocker"])
 
-    # --- EXPORT ---
     timestamp = datetime.now().strftime("%m%d%H%M")
     out_name = f"export_{timestamp}.xlsx"
     out_path = os.path.join(script_dir, out_name)
@@ -301,7 +324,7 @@ def process_files():
         df_display.to_excel(writer, sheet_name="Player Stats", index=False)
         df_tour.to_excel(writer, sheet_name="Extra Stats", index=False)
         
-        # Only write team sections if they exist
+        erig_r = 0 
         if use_teams and not df_team_stats.empty:
             df_team_display = df_team_stats.copy()
             pct_cols_t = ["Avg. Correct", "Onlist Synergy", "Offlist Synergy", "Shared Rigs"]
@@ -327,6 +350,26 @@ def process_files():
             
             if not df_tier_heroes.empty:
                 df_tier_heroes.to_excel(writer, sheet_name="Extra Stats", index=False, startrow=erig_r + 6, startcol=3)
+
+        chan_base_r = erig_r + 12 if use_teams else len(df_tour) + 3
+        if chanting_ids:
+            pd.DataFrame([["CHANTING STATS"]]).to_excel(writer, sheet_name="Extra Stats", index=False, header=False, startrow=chan_base_r, startcol=3)
+            chan_pct = total_chanting_songs / total_songs_played if total_songs_played else 0
+            avg_chan_gr = (chanting_correct_sum / (total_chanting_songs * len(song_participation))) if (total_chanting_songs and song_participation) else 0
+            
+            df_chan_sum = pd.DataFrame([
+                ["Total chanting songs played", f"{total_chanting_songs} ({chan_pct:.2%})"],
+                ["Average chanting guess rate", f"{avg_chan_gr:.2%}"]
+            ])
+            df_chan_sum.to_excel(writer, sheet_name="Extra Stats", index=False, header=False, startrow=chan_base_r + 1, startcol=3)
+
+            chan_plist = [n for n in song_participation.keys() if player_chanting_seen[n] > 0]
+            chan_rates = [(n, player_chanting_correct[n]/player_chanting_seen[n]) for n in chan_plist]
+            high_chan = [[f"{['🥇','🥈','🥉'][i]} {p} ({v:.2%})"] for i, (p, v) in enumerate(sorted(chan_rates, key=lambda x: x[1], reverse=True)[:3])]
+            low_chan = [[f"{['🥇','🥈','🥉'][i]} {p} ({v:.2%})"] for i, (p, v) in enumerate(sorted(chan_rates, key=lambda x: x[1])[:3])]
+            
+            pd.DataFrame([["Top 3 Chanting Lovers"]] + high_chan).to_excel(writer, sheet_name="Extra Stats", index=False, header=False, startrow=chan_base_r + 4, startcol=3)
+            pd.DataFrame([["Top 3 Chanting Haters"]] + low_chan).to_excel(writer, sheet_name="Extra Stats", index=False, header=False, startrow=chan_base_r + 4, startcol=4)
 
         base_r = len(df_tour) + 2
         pd.DataFrame([["WATCHED STATS"]]).to_excel(writer, sheet_name="Extra Stats", index=False, header=False, startrow=base_r)
@@ -360,7 +403,6 @@ def process_files():
                 ["Top reverse erig collector", f"{m_rev} ({player_reverse_erigs.get(m_rev, 0)})"]
             ]).to_excel(writer, sheet_name="Extra Stats", index=False, header=False, startrow=base_r+14, startcol=0)
 
-    # --- STYLING ---
     wb = load_workbook(out_path); ws_ps = wb["Player Stats"]; ws_extra = wb["Extra Stats"]
     bold, thin = Font(bold=True), Side(style='thin')
     outline = Border(left=thin, right=thin, top=thin, bottom=thin)
@@ -368,9 +410,6 @@ def process_files():
 
     for row in ws_extra.iter_rows():
         for cell in row: cell.alignment = Alignment(horizontal='left')
-
-    for row_offset in [12, 13]:
-        ws_extra.cell(row=base_r+row_offset, column=1).alignment = Alignment(wrapText=True, horizontal='left', vertical='center')
 
     for col_name in pct_cols_p:
         col_idx = list(df_ps.columns).index(col_name) + 1
@@ -386,7 +425,16 @@ def process_files():
     ws_extra.cell(row=base_r+1, column=1).font = bold
     ws_extra.cell(row=base_r+1, column=1).border, ws_extra.cell(row=base_r+1, column=2).border = outline, outline
 
-    bold_targets = ["Top 3 Easiest Lists", "Top 3 Hardest Lists", "Top 3 Zoomer Lists", "Top 3 Boomer Lists", "Most 2/8s", "Highest GR with no erig", "Top erig misser", "Top reverse erig collector", "Team with the most erigs", "Most zoomer team", "Most boomer team", "Team with the easiest lists", "Team with the hardest lists", "T1", "T2", "T3", "T4"]
+    if chanting_ids:
+        # Added border around Chanting header cell and cell to the right
+        ws_extra.cell(row=chan_base_r+1, column=4).font = bold
+        ws_extra.cell(row=chan_base_r+1, column=4).border = outline
+        ws_extra.cell(row=chan_base_r+1, column=5).border = outline
+        
+        ws_extra.cell(row=chan_base_r+5, column=4).font = bold
+        ws_extra.cell(row=chan_base_r+5, column=5).font = bold
+
+    bold_targets = ["Top 3 Easiest Lists", "Top 3 Hardest Lists", "Top 3 Zoomer Lists", "Top 3 Boomer Lists", "Most 2/8s", "Highest GR with no erig", "Top erig misser", "Top reverse erig collector", "Team with the most erigs", "Most zoomer team", "Most boomer team", "Team with the easiest lists", "Team with the hardest lists", "T1", "T2", "T3", "T4", "CHANTING STATS", "Top 3 High Chanting GR", "Top 3 Low Chanting GR"]
     for row in ws_extra.iter_rows():
         for cell in row:
             if any(target in str(cell.value) for target in bold_targets): cell.font = bold
@@ -396,7 +444,8 @@ def process_files():
         ws_ps.column_dimensions[col[0].column_letter].width = max_l + 2
     
     ws_extra.column_dimensions['A'].width = 25
-    for col in ['B', 'D', 'E', 'F']:
+    ws_extra.column_dimensions['C'].width = 4.2
+    for col in ['B', 'D', 'E', 'F', 'G', 'H']:
         max_l = max([len(str(cell.value)) for cell in ws_extra[col]] + [15])
         ws_extra.column_dimensions[col].width = max_l + 2
 
