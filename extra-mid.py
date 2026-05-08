@@ -506,7 +506,8 @@ class TourAnalyzer:
                 team_info = assigns.get(name.lower(), ("N/A", "N/A"))
                 if team_info[0] != "N/A":
                     leader_name = t1_lookup.get(team_info[0], "")
-                    row["Team"] = leader_name[:3].upper() if leader_name else f"T{team_info[0]}"
+                    clean_name  = "".join(filter(str.isalnum, leader_name))
+                    row["Team"] = clean_name[:3].upper() if leader_name else f"T{team_info[0]}"
                     row["Tier"] = team_info[1]
                 else:
                     row["Team"] = "N/A"
