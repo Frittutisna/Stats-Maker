@@ -644,9 +644,9 @@ class TourAnalyzer:
             def get_chanter(plist):
                 pool = [n for n in plist if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
                 if not pool: return "N/A"
-                sorted_p    = sorted(pool, key = lambda x: (self.p_chan_c[x] / self.p_chan_s[x]) / (self.c_counts[x] / self.s_part[x]), reverse = True)
+                sorted_p    = sorted(pool, key = lambda x: 100 * self.p_chan_c[x] / self.p_chan_s[x], reverse = True)
                 name        = sorted_p[0]                
-                ratio       = (self.p_chan_c[name] / self.p_chan_s[name]) / (self.c_counts[name] / self.s_part[name])
+                ratio       = 100 * self.p_chan_c[name] / self.p_chan_s[name]
                 return f"{name} ({ratio:.2f})"
 
             row_data = [tr, get_generalist(tp), get_attblk(tp, self.p_pts), get_attblk(tp, self.p_blks), get_contributor (tp)]
@@ -678,11 +678,7 @@ class TourAnalyzer:
         plist = [n for n in self.s_part if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
         if not plist: return
 
-        def get_ratio(p):
-            chan_gr     = self.p_chan_c[p] / self.p_chan_s  [p]
-            total_gr    = self.c_counts[p] / self.s_part    [p]
-            return chan_gr / total_gr
-
+        def get_ratio(p): return 100 * self.p_chan_c[p] / self.p_chan_s[p]
         best    = sorted(plist, key = get_ratio, reverse = True)    [ : 3]
         worst   = sorted(plist, key = get_ratio)                    [ : 3]
         rows    = []
