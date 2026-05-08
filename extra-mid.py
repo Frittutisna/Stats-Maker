@@ -630,13 +630,6 @@ class TourAnalyzer:
                 sorted_p        = sorted(plist, key = lambda x: (self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0), reverse = True)
                 name, value     = sorted_p[0], 100 * (self.c_counts[sorted_p[0]] / self.s_part[sorted_p[0]]) if self.s_part[sorted_p[0]] else 0
                 return f"{name} ({value:.2f})"
-            
-            def get_chanter(plist):
-                pool            = [n for n in plist if self.p_chan_s[n] > 0]
-                if not pool: return "N/A"
-                sorted_p        = sorted(pool, key = lambda x: (self.p_chan_c[x] / self.p_chan_s[x], -(self.c_counts[x] / self.s_part[x])), reverse = True)
-                name, value     = sorted_p[0], 100 * (self.p_chan_c[sorted_p[0]] / self.p_chan_s[sorted_p[0]])
-                return f"{name} ({value:.2f})"
 
             def get_attblk(plist, sdict):
                 sorted_p        = sorted(plist, key = lambda x: (sdict[x], self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0), reverse = True)
@@ -648,19 +641,20 @@ class TourAnalyzer:
                 name, v1, v2    = sorted_p[0], self.p_pts[sorted_p[0]], self.p_blks[sorted_p[0]]
                 return f"{name} ({v1}, {v2})"
 
-            row_data = [tr]
+            def get_chanter(plist):
+                pool = [n for n in plist if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
+                if not pool: return "N/A"
+                sorted_p    = sorted(pool, key = lambda x: (self.p_chan_c[x] / self.p_chan_s[x]) / (self.c_counts[x] / self.s_part[x]), reverse = True)
+                name        = sorted_p[0]                
+                ratio       = (self.p_chan_c[name] / self.p_chan_s[name]) / (self.c_counts[name] / self.s_part[name])
+                return f"{name} ({ratio:.2f})"
+
+            row_data = [tr, get_generalist(tp), get_attblk(tp, self.p_pts), get_attblk(tp, self.p_blks), get_contributor (tp)]
             if watched_valid: row_data.append(get_chanter(tp))
-            row_data.extend([
-                get_generalist  (tp),
-                get_attblk      (tp, self.p_pts),
-                get_attblk      (tp, self.p_blks),
-                get_contributor (tp)
-            ])
             res.append(row_data)
             
-        cols = ["Tier"]
+        cols = ["Tier", "Generalist", "Attacker", "Blocker", "Contributor"]
         if watched_valid: cols.append("Chanter")
-        cols.extend(["Generalist", "Attacker", "Blocker", "Contributor"])
         self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = cols), path, "Tier.png", "Tier Bests")
 
     def _create_watched_png(self, path):
@@ -681,23 +675,28 @@ class TourAnalyzer:
         self._export_png(pd.DataFrame(rows, columns = ["Rank", "Easiest", "Hardest", "Newest", "Oldest"]), path, "Watched.png", "List Statistics")
 
     def _create_chanting_png(self, path):
-        plist = [n for n in self.s_part if self.p_chan_s[n] > 0]
+        plist = [n for n in self.s_part if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
         if not plist: return
 
-        best    = sorted(plist, key = lambda x: (self.p_chan_c[x] / self.p_chan_s[x], -(self.c_counts[x]/self.s_part[x])), reverse = True)  [ : 3]
-        worst   = sorted(plist, key = lambda x: (self.p_chan_c[x] / self.p_chan_s[x], -(self.c_counts[x]/self.s_part[x])))                  [ : 3]
+        def get_ratio(p):
+            chan_gr     = self.p_chan_c[p] / self.p_chan_s  [p]
+            total_gr    = self.c_counts[p] / self.s_part    [p]
+            return chan_gr / total_gr
+
+        best    = sorted(plist, key = get_ratio, reverse = True)    [ : 3]
+        worst   = sorted(plist, key = get_ratio)                    [ : 3]
         rows    = []
 
         for i in range(3):
             b_cell = "N/A"
             if i < len(best):
                 p       = best[i]
-                b_cell  = f"{p} ({100 * (self.p_chan_c[p]/self.p_chan_s[p]):.2f})"
+                b_cell  = f"{p} ({get_ratio(p):.2f})"
             
             w_cell = "N/A"
             if i < len(worst):
                 p       = worst[i]
-                w_cell  = f"{p} ({100 * (self.p_chan_c[p]/self.p_chan_s[p]):.2f})"
+                w_cell  = f"{p} ({get_ratio(p):.2f})"
             
             rows.append([f"{i + 1}", b_cell, w_cell])
 
