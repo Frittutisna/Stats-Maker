@@ -244,7 +244,16 @@ class TourAnalyzer:
     def _save_alias(self, existing, new):
         dep_dir = self.script_dir / DIR_DEPS
         dep_dir.mkdir(exist_ok = True)
-        with open(dep_dir / FILE_ALIASES, "a", encoding = "utf-8") as f: f.write(f"{existing}, {new}\n")
+        file_path = dep_dir / FILE_ALIASES
+        
+        pair_exists = False
+        if file_path.exists():
+            with open(file_path, "r", encoding = "utf-8") as f:
+                content = f.read()
+                if f"{existing}, {new}" in content: pair_exists = True
+        
+        if not pair_exists:
+            with open(file_path, "a", encoding = "utf-8") as f: f.write(f"{existing}, {new}\n")
 
     def run(self):
         chanting_path = self.script_dir / DIR_DEPS / "chanting" / "chanting.txt"
@@ -403,19 +412,27 @@ class TourAnalyzer:
         codes = self.tour_dir / FILE_CODES
         if not codes.exists(): return False, {}, {}, {}, defaultdict(set)
         
-        self.main_roster_names = set()
+        self.main_roster_names                      = set()
         elo_map, assignments, rosters, t1_lookup    = {}, {}, defaultdict(set), {}
-        avail                                       = list(all_known)
+        avail                                       = sorted(list(all_known)) 
+        
         with open(codes, "r", encoding = "utf-8") as f: lines = f.readlines()
 
         for line in lines:
             matches = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', line)
             for p_in, val in matches:
                 match = next((n for n in all_known if n.lower() == p_in.lower()), None)
-                if not match and p_in in self.alias_map: match = next((n for n in all_known if n == self.alias_map[p_in]), None)
+                
+                if not match:
+                    alias_target = self.alias_map.get(p_in)
+                    if alias_target: match = next((n for n in all_known if n == alias_target), None)
+
                 if not match and ("[" in line or "Subs:" in line):
                     match = ManualMatchDialog(None, p_in, avail).result
-                    if match: self._save_alias(match, p_in); self.alias_map[p_in] = match
+                    if match: 
+                        self._save_alias(match, p_in)
+                        self.alias_map[p_in] = match
+                
                 if match: elo_map[match.lower()] = val
 
         idx = 1
@@ -442,10 +459,10 @@ class TourAnalyzer:
         watched_valid       = missing_count <= 5
         baseline_initial    = int(np.median([len(appearances.get(name, [])) for name in self.s_part]))
         init_label          = "Watched" if watched_valid else "Usual"
-        self.tour_label     = StringDialog(root, f"Name Input for Tour {self.tour_id}", "Enter the Tour name:", initialvalue = init_label).result
+        self.tour_label     = StringDialog(root, "Name Input", f"Enter the name of Tour {self.tour_id}:", initialvalue = init_label).result
         if not self.tour_label: self.tour_label = init_label
         tour_disp           = f"{self.tour_label.strip()} Tour"
-        global_dialog       = SpinboxDialog(root, f"Round Count for Tour {self.tour_id}", "Enter the expected amount of rounds:", baseline_initial)
+        global_dialog       = SpinboxDialog(root, "Round Count", f"Enter the expected amount of rounds for Tour {self.tour_id}:", baseline_initial)
         base_exp            = global_dialog.result
         if base_exp is None: base_exp = baseline_initial
 
@@ -748,7 +765,7 @@ class TourAnalyzer:
             else                                                : init_val = "28, 19, 8"
                 
             trimmed_title   = title.split(" Tour")[0]
-            val_str         = StringDialog(root, f"Threshold Input for Tour {self.tour_id}", f"Enter comma-separated thresholds for {trimmed_title}:", initialvalue = init_val).result
+            val_str         = StringDialog(root, "Threshold Input", f"Enter comma-separated thresholds for {trimmed_title}:", initialvalue = init_val).result
 
             try         : th = [float(x.strip()) for x in val_str.split(",")] if val_str else []
             except      : th = [28.0, 18.0, 12.0, 6.0]
