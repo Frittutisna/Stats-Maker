@@ -2,7 +2,6 @@ import os, json, re, gspread
 from dependencies.TourClasses import *
 from dependencies.TourFunctions import *
 from bs4 import BeautifulSoup
-from datetime import datetime
 import pandas as pd
 
 def main():
