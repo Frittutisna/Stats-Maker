@@ -728,7 +728,7 @@ def main():
 
     # Song statistics
     songDB.post_process()
-    saveSongStats(songDB=songDB, path=OUTPUT, filename="final-3.png")
+    saveSongStats(songDB=songDB, path=OUTPUT, filename="Final-3.png")
 
     # Save to sheet
     wks_send = sheet.get_worksheet_by_id(sendToSheet)
@@ -744,15 +744,15 @@ def main():
     separators = ["Player name", "Usefulness", "# 3/8s or below", "Lives saved", "Avg vintage played", "Total songs"]
     exclude_columns = ["Rank", "Guess rate", "0/8s", "7/8s"]
 
-    path = os.path.join(OUTPUT, "final-0.png")
-    df_to_png(df=final_df1, path=OUTPUT, filename="final-0.png", reverse_cols=reverse_columns, exclude_columns=exclude_columns, separators=separators)
+    path = os.path.join(OUTPUT, "Final-0.png")
+    df_to_png(df=final_df1, path=OUTPUT, filename="Final-0.png", reverse_cols=reverse_columns, exclude_columns=exclude_columns, separators=separators)
     print(f"Stats about GR saved at {path}")
 
     exclude_columns = ["Rank", "Guess rate"]
     separators = ["Player name", "ΔUF", "# OPs played", "# EDs played"]
 
-    path2 = os.path.join(OUTPUT, "final-1.png")
-    df_to_png(df=final_df2, path=OUTPUT, filename="final-1.png", reverse_cols=None, exclude_columns=exclude_columns, separators=separators)
+    path2 = os.path.join(OUTPUT, "Final-1.png")
+    df_to_png(df=final_df2, path=OUTPUT, filename="Final-1.png", reverse_cols=None, exclude_columns=exclude_columns, separators=separators)
     print(f"Stats about Δ saved at {path2}")
 
     if is_list:
@@ -760,8 +760,8 @@ def main():
         separators = ["Player name", "Offlist", "Rigs Missed", "Offlist erigs"]
         additional_reverse = ["avg/8 of your rigs"]
         reverse_columns.extend(additional_reverse)
-        path3 = os.path.join(OUTPUT, "final-2.png")
-        df_to_png(df=final_df3, path=OUTPUT, filename="final-2.png", reverse_cols=reverse_columns, exclude_columns=exclude_columns, separators=separators)
+        path3 = os.path.join(OUTPUT, "Final-2.png")
+        df_to_png(df=final_df3, path=OUTPUT, filename="Final-2.png", reverse_cols=reverse_columns, exclude_columns=exclude_columns, separators=separators)
         print(f"Stats about watched saved at {path3}")
 
     print(f"{wks_send.url}?range={len_send + 2}:{len_send + 2}")
