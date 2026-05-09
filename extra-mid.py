@@ -257,7 +257,7 @@ class TourAnalyzer:
         amap = {}
         path = self.script_dir / DIR_TOURS / FILE_ALIASES
         if path.exists():
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, "r", encoding = "utf-8") as f:
                 for line in f:
                     if "," in line:
                         existing, new   = [x.strip() for x in line.split(",", 1)]
@@ -605,7 +605,7 @@ class TourAnalyzer:
 
         if "Elo" in df.columns: df["Elo"] = pd.to_numeric(df["Elo"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         for c in pcts: df[c] = pd.to_numeric(df[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        self._export_png(df, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask)
+        self._export_png(df, path, "Player.png", "Player Statistics, {stage}", mask)
 
     def _create_tour_png(self, use_teams, watched, path):
         def fmt_most(names, val):
