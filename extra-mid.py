@@ -255,7 +255,7 @@ class TourAnalyzer:
 
     def _load_aliases(self):
         amap = {}
-        path = self.script_dir / DIR_DEPS / FILE_ALIASES
+        path = self.script_dir / DIR_TOURS / FILE_ALIASES
         if path.exists():
             with open(path, "r", encoding="utf-8") as f:
                 for line in f:
@@ -265,9 +265,9 @@ class TourAnalyzer:
         return amap
 
     def _save_alias(self, existing, new):
-        dep_dir = self.script_dir / DIR_DEPS
-        dep_dir.mkdir(exist_ok = True)
-        file_path = dep_dir / FILE_ALIASES
+        tour_dir = self.script_dir / DIR_TOURS
+        tour_dir.mkdir(exist_ok = True)
+        file_path = tour_dir / FILE_ALIASES
         
         pair_exists = False
         if file_path.exists():
