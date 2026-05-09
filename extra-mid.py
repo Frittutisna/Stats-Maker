@@ -109,8 +109,8 @@ class SpinboxDialog(UnifiedDialog):
         super().on_confirm()
 
 class NewPlayerDialog(UnifiedDialog):
-    def __init__(self, parent, active_players):
-        super().__init__(parent, "New Player Input", "Select new player(s), if any:")
+    def __init__(self, parent, active_players, tour_name):
+        super().__init__(parent, "New Players", f"Select new player(s) for the {tour_name} tour, if any exists:")
         self.selected_new   = []
         self.blue_shade     = "#0056B3"
         self.vars           = {}
@@ -143,7 +143,7 @@ class NewPlayerDialog(UnifiedDialog):
 
 class TourSelectionDialog(UnifiedDialog):
     def __init__(self, parent, tour_ids):
-        super().__init__(parent, "Tour Selection", "Select tours to process:")
+        super().__init__(parent, "Tour Selection", "Select tour(s) to process the data for:")
         self.selected_tours = []
         self.vars           = {}
         for _, tid in enumerate(tour_ids):
@@ -459,18 +459,22 @@ class TourAnalyzer:
         watched_valid       = missing_count <= 5
         baseline_initial    = int(np.median([len(appearances.get(name, [])) for name in self.s_part]))
         init_label          = "Watched" if watched_valid else "Usual"
-        self.tour_label     = StringDialog(root, "Name Input", f"Enter the name of Tour {self.tour_id}:", initialvalue = init_label).result
+        self.tour_label     = StringDialog(root, "Tour Name", f"Enter the name for Tour {self.tour_id}:", initialvalue = init_label).result
+
         if not self.tour_label: self.tour_label = init_label
-        tour_disp           = f"{self.tour_label.strip()} Tour"
-        global_dialog       = SpinboxDialog(root, "Round Count", f"Enter the expected amount of rounds for Tour {self.tour_id}:", baseline_initial)
-        base_exp            = global_dialog.result
+
+        t_name          = self.tour_label.strip()
+        tour_disp       = f"{t_name} Tour"    
+        global_dialog   = SpinboxDialog(root, "Round Count", f"Enter the current round count for the {t_name} tour:", baseline_initial)
+        base_exp        = global_dialog.result
+
         if base_exp is None: base_exp = baseline_initial
 
         exp_map = {}
         for name in list(self.s_part.keys()):
             act = len(appearances.get(name, []))
             if act < base_exp:
-                player_dialog   = SpinboxDialog(root, f"Count Mismatch Warning for Tour {self.tour_id}", f"Only {act} JSON(s) mention {name}; how many rounds were they expected to be in?", act)
+                player_dialog   = SpinboxDialog(root, "Count Mismatch", f"In the {t_name} tour, only {act} JSON(s) mention {name}; how many rounds were they expected to be in?", act)
                 val             = player_dialog.result
                 target          = val if val is not None else act
                 exp_map[name]   = target
@@ -481,7 +485,7 @@ class TourAnalyzer:
                     self.s_part[name]   +=  int(missing_rounds * avg_songs_per_json)
             else: exp_map[name] = base_exp
 
-        new_players     = NewPlayerDialog(root, list(self.s_part.keys())).selected_new
+        new_players     = NewPlayerDialog(root, list(self.s_part.keys()), t_name).selected_new
         final_threshold = 6 if len(self.s_part) <= 20 else 5
 
         if      base_exp >= final_threshold     : stage = "Final"
@@ -508,7 +512,7 @@ class TourAnalyzer:
         if watched_valid and self.chanting_ids  : self._create_chanting_png (out_path)
 
         self._fuse_and_clean(out_path)
-        messagebox.showinfo("Success", f"Saved Tour {self.tour_id} to {DIR_OUT}/{self.tour_id}")
+        messagebox.showinfo("Success", f"Saved the PNGs for the {t_name} tour to {DIR_OUT}/{self.tour_id}")
 
     def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup, original_roster):
         rows, eligibility   = [], []
@@ -765,7 +769,7 @@ class TourAnalyzer:
             else                                                : init_val = "28, 19, 8"
                 
             trimmed_title   = title.split(" Tour")[0]
-            val_str         = StringDialog(root, "Threshold Input", f"Enter comma-separated thresholds for {trimmed_title}:", initialvalue = init_val).result
+            val_str         = StringDialog(root, "Guess Rate Threshold", f"Enter the comma-separated guess rate thresholds for the {trimmed_title} tour:", initialvalue = init_val).result
 
             try         : th = [float(x.strip()) for x in val_str.split(",")] if val_str else []
             except      : th = [28.0, 18.0, 12.0, 6.0]
