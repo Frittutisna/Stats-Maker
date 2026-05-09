@@ -1,11 +1,11 @@
 import  json
 import  os
 import  re
+import  shutil
 import  numpy       as      np
 import  pandas      as      pd
 import  tkinter     as      tk
 from    collections import  Counter,    defaultdict
-from    datetime    import  datetime
 from    html2image  import  Html2Image
 from    pathlib     import  Path
 from    PIL         import  Image,      ImageChops,     ImageOps
@@ -20,6 +20,7 @@ BROWSER_PATHS = [
 DIR_DEPS        = "dependencies"
 DIR_JSONS       = "jsons"
 DIR_OUT         = "output"
+DIR_TOURS       = "tours"
 FILE_ALIASES    = "aliases.txt"
 FILE_CODES      = "codes.txt"
 
@@ -140,6 +141,21 @@ class NewPlayerDialog(UnifiedDialog):
         self.selected_new = [name for name, var in self.vars.items() if var.get()]
         super().on_confirm()
 
+class TourSelectionDialog(UnifiedDialog):
+    def __init__(self, parent, tour_ids):
+        super().__init__(parent, "Tour Selection", "Select tours to process:")
+        self.selected_tours = []
+        self.vars           = {}
+        for _, tid in enumerate(tour_ids):
+            var             = tk.BooleanVar(value = False)
+            self.vars[tid]  = var
+            ttk.Checkbutton(self.container, text = f"Tour {tid}", variable = var).pack(anchor = "w", pady = 2)
+        self.grab_set(); self.wait_window()
+
+    def on_confirm(self):
+        self.selected_tours = [tid for tid, var in self.vars.items() if var.get()]
+        super().on_confirm()
+
 class ManualMatchDialog(tk.Toplevel):
     def __init__(self, parent, unknown_name, available_pool):
         super().__init__(parent)
@@ -174,8 +190,10 @@ class SubSelectionDialog(tk.Toplevel):
 
 # Main Processor
 class TourAnalyzer:
-    def __init__(self):
+    def __init__(self, tour_id):
+        self.tour_id                    = str(tour_id)
         self.script_dir                 = Path(__file__).parent.absolute()
+        self.tour_dir                   = self.script_dir / DIR_TOURS / self.tour_id
         self.browser_path               = self._find_browser()
         self.alias_map                  = self._load_aliases()
         self.s_part                     = defaultdict(int)
@@ -236,9 +254,9 @@ class TourAnalyzer:
                     line = line.strip()
                     if line: self.chanting_ids.add(line)
 
-        json_dir = self.script_dir / DIR_JSONS
+        json_dir = self.tour_dir / DIR_JSONS
         if not json_dir.exists() or not any(json_dir.glob("*.json")):
-            messagebox.showerror("Error", f"{DIR_JSONS} folder not found or empty")
+            messagebox.showerror("Error", f"Folder not found or empty: {json_dir}")
             return
 
         json_paths                                                      = list(json_dir.glob("*.json"))
@@ -382,7 +400,7 @@ class TourAnalyzer:
         return players, apps
 
     def _load_team_data(self, all_known):
-        codes = self.script_dir / DIR_DEPS / FILE_CODES
+        codes = self.tour_dir / FILE_CODES
         if not codes.exists(): return False, {}, {}, {}, defaultdict(set)
         
         self.main_roster_names = set()
@@ -424,10 +442,10 @@ class TourAnalyzer:
         watched_valid       = missing_count <= 5
         baseline_initial    = int(np.median([len(appearances.get(name, [])) for name in self.s_part]))
         init_label          = "Watched" if watched_valid else "Usual"
-        self.tour_label     = StringDialog(root, "Tour Name Input", "Enter the Tour name:", initialvalue = init_label).result
+        self.tour_label     = StringDialog(root, f"Name Input for Tour {self.tour_id}", "Enter the Tour name:", initialvalue = init_label).result
         if not self.tour_label: self.tour_label = init_label
         tour_disp           = f"{self.tour_label.strip()} Tour"
-        global_dialog       = SpinboxDialog(root, "Round Count Input", "Enter the expected amount of rounds:", baseline_initial)
+        global_dialog       = SpinboxDialog(root, f"Round Count for Tour {self.tour_id}", "Enter the expected amount of rounds:", baseline_initial)
         base_exp            = global_dialog.result
         if base_exp is None: base_exp = baseline_initial
 
@@ -435,7 +453,7 @@ class TourAnalyzer:
         for name in list(self.s_part.keys()):
             act = len(appearances.get(name, []))
             if act < base_exp:
-                player_dialog   = SpinboxDialog(root, "Count Mismatch Warning", f"Only {act} JSON(s) mention {name}; how many rounds were they expected to be in?", act)
+                player_dialog   = SpinboxDialog(root, f"Count Mismatch Warning for Tour {self.tour_id}", f"Only {act} JSON(s) mention {name}; how many rounds were they expected to be in?", act)
                 val             = player_dialog.result
                 target          = val if val is not None else act
                 exp_map[name]   = target
@@ -461,8 +479,7 @@ class TourAnalyzer:
         else                    : type_str = f"{'-'.join(active_abbrs)} " if active_abbrs else ""
 
         prefix      = f"{tour_disp}, {type_str}"
-        ts          = datetime.now().strftime("%y%m%d%H")
-        out_path    = self.script_dir / DIR_OUT / ts
+        out_path    = self.script_dir / DIR_OUT / self.tour_id
         out_path.mkdir(parents = True, exist_ok = True)
 
         self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup, original_roster)
@@ -474,7 +491,7 @@ class TourAnalyzer:
         if watched_valid and self.chanting_ids  : self._create_chanting_png (out_path)
 
         self._fuse_and_clean(out_path)
-        messagebox.showinfo("Success", f"Saved to {DIR_OUT}/{ts}")
+        messagebox.showinfo("Success", f"Saved Tour {self.tour_id} to {DIR_OUT}/{self.tour_id}")
 
     def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup, original_roster):
         rows, eligibility   = [], []
@@ -731,7 +748,7 @@ class TourAnalyzer:
             else                                                : init_val = "28, 19, 8"
                 
             trimmed_title   = title.split(" Tour")[0]
-            val_str         = StringDialog(root, "Threshold Input", f"Enter comma-separated thresholds for {trimmed_title}:", initialvalue = init_val).result
+            val_str         = StringDialog(root, f"Threshold Input for Tour {self.tour_id}", f"Enter comma-separated thresholds for {trimmed_title}:", initialvalue = init_val).result
 
             try         : th = [float(x.strip()) for x in val_str.split(",")] if val_str else []
             except      : th = [28.0, 18.0, 12.0, 6.0]
@@ -819,5 +836,9 @@ class TourAnalyzer:
             except  : pass
 
 if __name__ == "__main__":
-    root = tk.Tk(); root.withdraw()
-    TourAnalyzer().run()
+    root                = tk.Tk(); root.withdraw()
+    selection_dialog    = TourSelectionDialog(root, ["0", "1", "2"])
+    selected_tours      = selection_dialog.selected_tours
+    
+    if selected_tours:
+        for tour_id in selected_tours: TourAnalyzer(tour_id).run()
