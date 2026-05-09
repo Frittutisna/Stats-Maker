@@ -1,8 +1,8 @@
 from pathlib import Path
 
 def clean_workspace():
-    dirs_to_empty = [Path("jsons"), Path("output")]
-    file_to_clear = Path("dependencies/codes.txt")
+    dirs_to_empty = [Path(f"tours/{i}/jsons")       for i in range(3)] + [Path("output")]
+    file_to_clear = [Path(f"tours/{i}/codes.txt")   for i in range(3)]
 
     for folder in dirs_to_empty:
         if folder.exists() and folder.is_dir():
