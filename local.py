@@ -1,15 +1,53 @@
-import os, json, re, gspread
-from dependencies.TourClasses import *
-from dependencies.TourFunctions import *
-from bs4 import BeautifulSoup
-import pandas as pd
+import  os, json, re, gspread
+import  pandas                      as      pd
+import  tkinter                     as      tk
+from    bs4                         import  BeautifulSoup
+from    dependencies.TourClasses    import  *
+from    dependencies.TourFunctions  import  *
+from    tkinter                     import  ttk
+
+class TourSelectionDialog(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Tour Selection")
+        self.result = None
+
+        tk.Label(self, text = "Select a tour to process the data for:", font = ("Arial", 10), padx = 20, pady = 15).pack()
+        
+        btn_frame = tk.Frame(self)
+        btn_frame.pack(pady = 10, padx = 20)
+        
+        for tour in ["Tour 0", "Tour 1", "Tour 2"]:
+            ttk.Button(btn_frame, text = tour, command = lambda t = tour[-1]: self.set_result(t)).pack(side = tk.LEFT, padx = 5)
+        
+        self.protocol("WM_DELETE_WINDOW", self.on_cancel)
+        self.grab_set()
+        self.wait_window()
+
+    def set_result(self, tour_id):
+        self.result = tour_id
+        self.destroy()
+
+    def on_cancel(self):
+        self.result = None
+        self.destroy()
 
 def main():
-    DIRECTORY = os.path.dirname(os.path.abspath(__file__))
-    JSONS = os.path.join(DIRECTORY, "jsons")
-    TEAMS = os.path.join(DIRECTORY, "dependencies", "codes.txt")
-    TEAMS_RE = r"(\S+)\s*\((-?[\d.]+)\)"
-    REGEX = r"\D*(\d{1,2})\s*(\(.*?\))?\.json$"
+    root = tk.Tk()
+    root.withdraw()
+    selector = TourSelectionDialog(root)
+    
+    if selector.result is None:
+        print("Selection cancelled")
+        return
+        
+    tour_id     = selector.result
+    DIRECTORY   = os.path.dirname(os.path.abspath(__file__))
+    JSONS       = os.path.join(DIRECTORY, "tours",  tour_id, "jsons")
+    TEAMS       = os.path.join(DIRECTORY, "tours",  tour_id, "codes.txt")
+    OUTPUT      = os.path.join(DIRECTORY, "output", tour_id)
+    TEAMS_RE    = r"(\S+)\s*\((-?[\d.]+)\)"
+    REGEX       = r"\D*(\d{1,2})\s*(\(.*?\))?\.json$"
     
     MAIN_SHEET_RANDOM=0
     MAIN_SHEET_WATCHED=1719516221
@@ -690,7 +728,7 @@ def main():
 
     # Song statistics
     songDB.post_process()
-    saveSongStats(songDB=songDB, path=DIRECTORY, filename="Stats Songs.png")
+    saveSongStats(songDB=songDB, path=OUTPUT, filename="final-3.png")
 
     # Save to sheet - DISABLED
     # wks_send = sheet.get_worksheet_by_id(sendToSheet)
@@ -706,15 +744,15 @@ def main():
     separators = ["Player name", "Usefulness", "# 3/8s or below", "Lives saved", "Avg vintage played", "Total songs"]
     exclude_columns = ["Rank", "Guess rate", "0/8s", "7/8s"]
 
-    path = os.path.join(DIRECTORY, "Stats.png")
-    df_to_png(df=final_df1, path=DIRECTORY, filename="Stats.png", reverse_cols=reverse_columns, exclude_columns=exclude_columns, separators=separators)
+    path = os.path.join(OUTPUT, "final-0.png")
+    df_to_png(df=final_df1, path=OUTPUT, filename="final-0.png", reverse_cols=reverse_columns, exclude_columns=exclude_columns, separators=separators)
     print(f"Stats about GR saved at {path}")
 
     exclude_columns = ["Rank", "Guess rate"]
     separators = ["Player name", "ΔUF", "# OPs played", "# EDs played"]
 
-    path2 = os.path.join(DIRECTORY, "Stats2.png")
-    df_to_png(df=final_df2, path=DIRECTORY, filename="Stats2.png", reverse_cols=None, exclude_columns=exclude_columns, separators=separators)
+    path2 = os.path.join(OUTPUT, "final-1.png")
+    df_to_png(df=final_df2, path=OUTPUT, filename="final-1.png", reverse_cols=None, exclude_columns=exclude_columns, separators=separators)
     print(f"Stats about Δ saved at {path2}")
 
     if is_list:
@@ -722,13 +760,12 @@ def main():
         separators = ["Player name", "Offlist", "Rigs Missed", "Offlist erigs"]
         additional_reverse = ["avg/8 of your rigs"]
         reverse_columns.extend(additional_reverse)
-        path3 = os.path.join(DIRECTORY, "Stats3 - Watched Exclusive.png")
-        df_to_png(df=final_df3, path=DIRECTORY, filename="Stats3 - Watched Exclusive.png", reverse_cols=reverse_columns, exclude_columns=exclude_columns, separators=separators)
+        path3 = os.path.join(OUTPUT, "final-2.png")
+        df_to_png(df=final_df3, path=OUTPUT, filename="final-2.png", reverse_cols=reverse_columns, exclude_columns=exclude_columns, separators=separators)
         print(f"Stats about watched saved at {path3}")
 
     # print(f"{wks_send.url}?range={len_send + 2}:{len_send + 2}")
     print("Writing to Google Sheets is currently disabled.")
     _ = input('\npress enter to close')
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__": main()
