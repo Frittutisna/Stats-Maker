@@ -1,14 +1,13 @@
 import json
 import pandas as pd
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+from tkinter import messagebox, ttk
 from collections import defaultdict, Counter
 from openpyxl import load_workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 import numpy as np
 import re
 import os
-from datetime import datetime
 
 # --- Configuration ---
 EXCLUDED_TAGS = {
@@ -32,6 +31,32 @@ def extract_year(vintage_str):
     return year_val + decimal
 
 # --- UI COMPONENTS ---
+
+class TourSelectionDialog(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Tour Selection")
+        self.result = None
+
+        tk.Label(self, text = "Select a tour to process the data for:", font = ("Arial", 10), padx = 20, pady = 15).pack()
+        
+        btn_frame = tk.Frame(self)
+        btn_frame.pack(pady = 10, padx = 20)
+        
+        for tour in ["Tour 0", "Tour 1", "Tour 2"]:
+            ttk.Button(btn_frame, text = tour, command = lambda t = tour[-1]: self.set_result(t)).pack(side = tk.LEFT, padx = 5)
+        
+        self.protocol("WM_DELETE_WINDOW", self.on_cancel)
+        self.grab_set()
+        self.wait_window()
+
+    def set_result(self, tour_id):
+        self.result = tour_id
+        self.destroy()
+
+    def on_cancel(self):
+        self.result = None
+        self.destroy()
 
 class SubSelectionDialog(tk.Toplevel):
     def __init__(self, parent, missing_roster):
@@ -67,9 +92,14 @@ class ManualMatchDialog(tk.Toplevel):
 
 # --- CORE LOGIC ---
 
-def process_files():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    json_dir = os.path.join(script_dir, "jsons")
+def process_files(tour_id):
+    script_dir  = os.path.dirname(os.path.abspath(__file__))
+    json_dir    = os.path.join(script_dir,  "tours",        tour_id, "jsons")
+    codes_path  = os.path.join(script_dir,  "tours",        tour_id, "codes.txt")
+    out_dir     = os.path.join(script_dir,  "output",       tour_id)
+    out_path    = os.path.join(out_dir,     "final.xlsx")
+
+    if not os.path.exists(out_dir): os.makedirs(out_dir)
     
     # Load Chanting IDs
     chanting_ids = set()
@@ -81,16 +111,11 @@ def process_files():
                 if line: chanting_ids.add(line)
 
     json_paths = []
-    while True:
-        if os.path.exists(json_dir) and os.path.isdir(json_dir):
-            json_paths = [os.path.join(json_dir, f) for f in os.listdir(json_dir) if f.endswith(".json")]
-        
-        if json_paths:
-            break
-        else:
-            retry = messagebox.askyesno("Missing Files", "There is no jsons folder detected or there are no JSON files in the folder. Lock in and press yes to re-run the script")
-            if not retry:
-                return
+    if os.path.exists(json_dir) and os.path.isdir(json_dir): json_paths = [os.path.join(json_dir, f) for f in os.listdir(json_dir) if f.endswith(".json")]
+    
+    if not json_paths:
+        messagebox.showerror("Error", f"No JSON files found in {json_dir}")
+        return
 
     all_known_players = set()
     for path in json_paths:
@@ -107,8 +132,6 @@ def process_files():
     t1_lookup = {}
     use_teams = False
 
-    # 2. Team Assignment with Empty/Missing Check
-    codes_path = os.path.join(script_dir, "dependencies", "codes.txt")
     codes_valid = False
     if os.path.exists(codes_path):
         with open(codes_path, "r", encoding="utf-8") as f:
@@ -116,8 +139,7 @@ def process_files():
                 codes_valid = True
 
     if not codes_valid:
-        if not messagebox.askyesno("Codes Missing", "codes.txt is missing or empty, skip team assignment phase?"):
-            return
+        if not messagebox.askyesno("Codes Missing", f"codes.txt is missing or empty in tours/{tour_id}/, skip team assignment phase?"): return
     else:
         with open(codes_path, "r", encoding="utf-8") as f:
             content = f.read()
@@ -190,9 +212,7 @@ def process_files():
             total_songs_played += 1
             si = song.get("songInfo", {}); st = si.get("type")
             
-            # Using annSongId for chanting matching
             ann_song_id = str(si.get("annSongId"))
-            
             is_chanting = ann_song_id in chanting_ids
             if is_chanting: total_chanting_songs += 1
 
@@ -311,10 +331,6 @@ def process_files():
                 bp = max(tp, key=lambda x: player_points[x]); bb = max(tp, key=lambda x: player_blocks[x])
                 tier_hero_rows.append([tier, f"{bp} ({player_points[bp]})", f"{bb} ({player_blocks[bb]})"])
     df_tier_heroes = pd.DataFrame(tier_hero_rows, columns=["Tier", "Top Attacker", "Top Blocker"])
-
-    timestamp = datetime.now().strftime("%m%d%H%M")
-    out_name = f"export_{timestamp}.xlsx"
-    out_path = os.path.join(script_dir, out_name)
     
     df_display = df_ps.copy()
     pct_cols_p = ["Guess Rate", "OP GR", "ED GR", "IN GR", "Onlist GR", "Offlist GR"]
@@ -426,7 +442,6 @@ def process_files():
     ws_extra.cell(row=base_r+1, column=1).border, ws_extra.cell(row=base_r+1, column=2).border = outline, outline
 
     if chanting_ids:
-        # Added border around Chanting header cell and cell to the right
         ws_extra.cell(row=chan_base_r+1, column=4).font = bold
         ws_extra.cell(row=chan_base_r+1, column=4).border = outline
         ws_extra.cell(row=chan_base_r+1, column=5).border = outline
@@ -450,13 +465,11 @@ def process_files():
         ws_extra.column_dimensions[col].width = max_l + 2
 
     wb.save(out_path)
-    
-    if messagebox.askyesno("Success", f"Exported to {out_name}.\nDo you want to delete all processed JSON files?"):
-        for path in json_paths:
-            try: os.remove(path)
-            except: pass
-        messagebox.showinfo("Cleanup", "JSON files deleted.")
+    messagebox.showinfo("Success", f"Saved to output/{tour_id}/final.xlsx")
 
 if __name__ == "__main__":
-    root = tk.Tk(); root.withdraw()
-    process_files()
+    root        = tk.Tk(); root.withdraw()
+    selector    = TourSelectionDialog(root)
+
+    if selector.result is not None  : process_files (selector.result)
+    else                            : print         ("Selection cancelled")

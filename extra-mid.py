@@ -1,7 +1,6 @@
 import  json
 import  os
 import  re
-import  shutil
 import  numpy       as      np
 import  pandas      as      pd
 import  tkinter     as      tk
