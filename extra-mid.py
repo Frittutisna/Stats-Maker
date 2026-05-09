@@ -146,11 +146,35 @@ class TourSelectionDialog(UnifiedDialog):
         super().__init__(parent, "Tour Selection", "Select tour(s) to process the data for:")
         self.selected_tours = []
         self.vars           = {}
-        for _, tid in enumerate(tour_ids):
-            var             = tk.BooleanVar(value = False)
+        script_dir          = Path(__file__).parent.absolute()
+
+        for tid in tour_ids:
+            t_path          = script_dir    / DIR_TOURS     / str(tid)
+            json_dir        = t_path        / DIR_JSONS
+            codes_file      = t_path        / FILE_CODES
+            is_recommended  = False
+            
+            if codes_file.exists() and json_dir.exists():
+                json_count = len(list(json_dir.glob("*.json")))
+                
+                if json_count > 0:
+                    with open(codes_file, "r", encoding="utf-8") as f:
+                        content     = f.read()
+                        main_part   = re.split      (r'https://challonge\.com/\S+', content)    [0]
+                        players     = re.findall    (r'[^\s(]+\s*\([-]?\d+\.\d+\)', main_part)
+                        p           = len(players)
+                        
+                        if p > 0:
+                            divisor = p // 8
+                            if divisor > 0 and json_count % divisor == 0: is_recommended = True
+
+            var             = tk.BooleanVar(value = is_recommended)
             self.vars[tid]  = var
-            ttk.Checkbutton(self.container, text = f"Tour {tid}", variable = var).pack(anchor = "w", pady = 2)
-        self.grab_set(); self.wait_window()
+            label_text      = f"Tour {tid}"
+            ttk.Checkbutton(self.container, text = label_text, variable = var).pack(anchor = "w", pady = 2)
+            
+        self.grab_set()
+        self.wait_window()
 
     def on_confirm(self):
         self.selected_tours = [tid for tid, var in self.vars.items() if var.get()]
@@ -177,7 +201,7 @@ class SubSelectionDialog(tk.Toplevel):
         super().__init__(parent)
         self.title("Substitute Resolution")
         self.result = None
-        tk.Label(self, text="Select the subbed player:").pack(padx = 20, pady = 10)
+        tk.Label(self, text = "Select the subbed player:").pack(padx = 20, pady = 10)
         self.listbox = tk.Listbox(self, height = len(missing_roster))
         self.listbox.pack(padx = 20, pady = 5, fill = tk.X)
         for m in missing_roster: self.listbox.insert(tk.END, m)
