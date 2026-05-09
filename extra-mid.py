@@ -295,7 +295,6 @@ class TourAnalyzer:
         all_known, appearances                                          = self._scan_players    (json_paths)
         use_teams, elo_map, assignments, t1_lookup, rosters, all_known  = self._load_team_data  (all_known)
         missing_list_count                                              = 0
-        found_types                                                     = set()
 
         for path in json_paths:
             with open(path, encoding = "utf-8") as f: data = json.load(f)
@@ -328,9 +327,7 @@ class TourAnalyzer:
 
             for song in songs:
                 st = song.get("songInfo", {}).get("type")
-                if st in [1, 2, 3]: 
-                    f_type_totals   [st] += 1
-                    found_types.add (st)
+                if st in [1, 2, 3]: f_type_totals[st] += 1
 
             for name in final_members:
                 if name in raw_f_players:
@@ -415,7 +412,7 @@ class TourAnalyzer:
                         if yr is not None   : self.p_l_vint [n].append(yr)
                         self.p_l_corr[n].append(len(correct))
 
-        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types, all_known)
+        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, all_known)
 
     def _scan_players(self, paths):
         players = set           ()
@@ -478,7 +475,7 @@ class TourAnalyzer:
             idx += 1
         return True, elo_map, assignments, t1_lookup, rosters, all_known
 
-    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, found_types, original_roster):
+    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, original_roster):
         watched_valid       = missing_count <= 5
         baseline_initial    = int(np.median([len(appearances.get(name, [])) for name in self.s_part]))
         init_label          = "Watched" if watched_valid else "Usual"
@@ -515,14 +512,7 @@ class TourAnalyzer:
         elif    base_exp == 3                   : stage = "Mid-Tour"
         else                                    : stage = f"R{base_exp}"
 
-        type_map            = {1: "OP", 2: "ED", 3: "IN"}
-        active_abbrs        = [type_map[t] for t in [1, 2, 3] if t in found_types]
-        all_types_present   = set(type_map.keys()).issubset(found_types)
-        
-        if all_types_present    : type_str = ""
-        else                    : type_str = f"{'-'.join(active_abbrs)} " if active_abbrs else ""
-
-        prefix      = f"{tour_disp}, {type_str}"
+        prefix      = f"{tour_disp}, " 
         out_path    = self.script_dir / DIR_OUT / self.tour_id
         out_path.mkdir(parents = True, exist_ok = True)
 
