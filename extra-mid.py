@@ -513,7 +513,7 @@ class TourAnalyzer:
         else                                    : stage = f"R{base_exp}"
 
         prefix      = f"{tour_disp}, " 
-        out_path    = self.script_dir / DIR_OUT / self.tour_id
+        out_path    = self.tour_dir / DIR_OUT
         out_path.mkdir(parents = True, exist_ok = True)
 
         self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup, original_roster)

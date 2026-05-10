@@ -43,9 +43,9 @@ def main():
         
     tour_id     = selector.result
     DIRECTORY   = os.path.dirname(os.path.abspath(__file__))
-    JSONS       = os.path.join(DIRECTORY, "tours",  tour_id, "jsons")
-    TEAMS       = os.path.join(DIRECTORY, "tours",  tour_id, "codes.txt")
-    OUTPUT      = os.path.join(DIRECTORY, "output", tour_id)
+    JSONS       = os.path.join(DIRECTORY, "tours", tour_id, "jsons")
+    TEAMS       = os.path.join(DIRECTORY, "tours", tour_id, "codes.txt")
+    OUTPUT      = os.path.join(DIRECTORY, "tours", tour_id, "output")
     TEAMS_RE    = r"(\S+)\s*\((-?[\d.]+)\)"
     REGEX       = r"\D*(\d{1,2})\s*(\(.*?\))?\.json$"
     

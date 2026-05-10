@@ -96,7 +96,7 @@ def process_files(tour_id):
     script_dir  = os.path.dirname(os.path.abspath(__file__))
     json_dir    = os.path.join(script_dir,  "tours",        tour_id, "jsons")
     codes_path  = os.path.join(script_dir,  "tours",        tour_id, "codes.txt")
-    out_dir     = os.path.join(script_dir,  "output",       tour_id)
+    out_dir     = os.path.join(script_dir,  "tours",        tour_id, "output")
     out_path    = os.path.join(out_dir,     "final.xlsx")
 
     if not os.path.exists(out_dir): os.makedirs(out_dir)

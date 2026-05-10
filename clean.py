@@ -2,7 +2,7 @@ from pathlib import Path
 
 def clean_workspace():
     indices         = range(3)
-    dirs_to_empty   = [Path(f"tours/{i}/jsons")     for i in indices] + [Path(f"output/{i}") for i in indices]
+    dirs_to_empty   = [Path(f"tours/{i}/jsons")     for i in indices] + [Path(f"tours/{i}/output") for i in indices]
     files_to_clear  = [Path(f"tours/{i}/codes.txt") for i in indices]
 
     for folder in dirs_to_empty:
