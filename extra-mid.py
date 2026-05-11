@@ -114,18 +114,21 @@ class NewPlayerDialog(UnifiedDialog):
         player_list         = sorted    (list(active_players), key = str.lower)
         num_players         = len       (player_list)
         rows_per_col        = 8 if num_players >= 16 else num_players
+
         for i, name in enumerate(player_list):
             col             = i //  rows_per_col
             row             = i %   rows_per_col
             var             = tk.BooleanVar(value = False)
             self.vars[name] = var
             item_frame      = ttk.Frame(self.container)
+
             item_frame.grid(row = row, column = col, padx = 5, pady = 1, sticky = "w")
             box = tk.Canvas(item_frame, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
             box.pack(side = tk.LEFT, padx = (0, 5))
             lbl = ttk.Label(item_frame, text = name, font = ("Segoe UI", 10))
             lbl.pack(side = tk.LEFT)
             for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n=name, b=box: self.toggle_custom(n, b))
+
         self.grab_set(); self.wait_window()
 
     def toggle_custom(self, name, box):
@@ -143,40 +146,59 @@ class TourSelectionDialog(UnifiedDialog):
         super().__init__(parent, "Tour Selection", "Select tour(s) to process the data for:")
         self.selected_tours = []
         self.vars           = {}
+        self.fill_color     = "#000000"
         script_dir          = Path(__file__).parent.absolute()
+        states              = {}
         any_recommended     = False
 
         for tid in tour_ids:
-            t_path          = script_dir    / DIR_TOURS     / str(tid)
-            json_dir        = t_path        / DIR_JSONS
-            codes_file      = t_path        / FILE_CODES
+            t_path          = script_dir / DIR_TOURS / str(tid)
+            json_dir        = t_path / DIR_JSONS
+            codes_file      = t_path / FILE_CODES
             is_recommended  = False
             
             if codes_file.exists() and json_dir.exists():
                 json_count = len(list(json_dir.glob("*.json")))
-                
+
                 if json_count > 0:
-                    with open(codes_file, "r", encoding="utf-8") as f:
+                    with open(codes_file, "r", encoding = "utf-8") as f:
                         content     = f.read()
-                        main_part   = re.split      (r'https://challonge\.com/\S+', content)    [0]
-                        players     = re.findall    (r'[^\s(]+\s*\([-]?\d+\.\d+\)', main_part)
+                        main_part   = re.split(r'https://challonge\.com/\S+', content)[0]
+                        players     = re.findall(r'[^\s(]+\s*\([-]?\d+\.\d+\)', main_part)
                         p           = len(players)
-                        
+
                         if p > 0:
                             divisor = p // 8
+
                             if divisor > 0 and json_count % divisor == 0: 
                                 is_recommended  = True
                                 any_recommended = True
 
-            var             = tk.BooleanVar(value = is_recommended)
+            states[tid] = is_recommended
+
+        if not any_recommended and "0" in states: states["0"] = True
+
+        for tid in tour_ids:
+            is_active       = states[tid]
+            var             = tk.BooleanVar(value = is_active)
             self.vars[tid]  = var
-            label_text      = f"Tour {tid}"
-            ttk.Checkbutton(self.container, text = label_text, variable = var).pack(anchor = "w", pady = 2)
-        
-        if not any_recommended and "0" in self.vars: self.vars["0"].set(True)
+            item_frame      = ttk.Frame(self.container)
+            item_frame.pack(anchor = "w", pady = 2)
+            initial_bg = self.fill_color if is_active else "white"
+            box = tk.Canvas(item_frame, width = 10, height = 10, bg = initial_bg, highlightthickness = 1, highlightbackground = "black")
+            box.pack(side = tk.LEFT, padx = (0, 5))
+            lbl = ttk.Label(item_frame, text = f"Tour {tid}", font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, t = tid, b = box: self.toggle_custom(t, b))
             
         self.grab_set()
         self.wait_window()
+
+    def toggle_custom(self, tid, box):
+        new_val = not self.vars[tid].get()
+        self.vars[tid].set(new_val)
+        color = self.fill_color if new_val else "white"
+        box.configure(bg = color)
 
     def on_confirm(self):
         self.selected_tours = [tid for tid, var in self.vars.items() if var.get()]
