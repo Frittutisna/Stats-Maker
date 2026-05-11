@@ -1,14 +1,12 @@
-import  json
-import  os
-import  re
-import  numpy       as      np
-import  pandas      as      pd
-import  tkinter     as      tk
-from    collections import  Counter,    defaultdict
-from    html2image  import  Html2Image
-from    pathlib     import  Path
-from    PIL         import  Image,      ImageChops,     ImageOps
-from    tkinter     import  messagebox, ttk
+import  json, os, re
+import  numpy           as      np
+import  pandas          as      pd
+import  tkinter         as      tk
+from    collections     import  Counter,    defaultdict
+from    html2image      import  Html2Image
+from    pathlib         import  Path
+from    PIL             import  Image,      ImageChops,     ImageOps
+from    tkinter         import  messagebox, ttk
 
 BROWSER_PATHS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -146,6 +144,7 @@ class TourSelectionDialog(UnifiedDialog):
         self.selected_tours = []
         self.vars           = {}
         script_dir          = Path(__file__).parent.absolute()
+        any_recommended     = False
 
         for tid in tour_ids:
             t_path          = script_dir    / DIR_TOURS     / str(tid)
@@ -165,12 +164,16 @@ class TourSelectionDialog(UnifiedDialog):
                         
                         if p > 0:
                             divisor = p // 8
-                            if divisor > 0 and json_count % divisor == 0: is_recommended = True
+                            if divisor > 0 and json_count % divisor == 0: 
+                                is_recommended  = True
+                                any_recommended = True
 
             var             = tk.BooleanVar(value = is_recommended)
             self.vars[tid]  = var
             label_text      = f"Tour {tid}"
             ttk.Checkbutton(self.container, text = label_text, variable = var).pack(anchor = "w", pady = 2)
+        
+        if not any_recommended and "0" in self.vars: self.vars["0"].set(True)
             
         self.grab_set()
         self.wait_window()
@@ -285,6 +288,7 @@ class TourAnalyzer:
         all_known, appearances                                          = self._scan_players    (json_paths)
         use_teams, elo_map, assignments, t1_lookup, rosters, all_known  = self._load_team_data  (all_known)
         missing_list_count                                              = 0
+        tour_types                                                      = set()
 
         for path in json_paths:
             with open(path, encoding = "utf-8") as f: data = json.load(f)
@@ -317,7 +321,9 @@ class TourAnalyzer:
 
             for song in songs:
                 st = song.get("songInfo", {}).get("type")
-                if st in [1, 2, 3]: f_type_totals[st] += 1
+                if st in [1, 2, 3]: 
+                    f_type_totals[st] += 1
+                    tour_types.add(st)
 
             for name in final_members:
                 if name in raw_f_players:
@@ -402,7 +408,7 @@ class TourAnalyzer:
                         if yr is not None   : self.p_l_vint [n].append(yr)
                         self.p_l_corr[n].append(len(correct))
 
-        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, all_known)
+        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, all_known, tour_types)
 
     def _scan_players(self, paths):
         players = set           ()
@@ -469,10 +475,16 @@ class TourAnalyzer:
 
         return True, elo_map, assignments, t1_lookup, rosters, all_known
 
-    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, original_roster):
+    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, original_roster, tour_types):
         watched_valid       = missing_count <= 5
         baseline_initial    = int(np.median([len(appearances.get(name, [])) for name in self.s_part]))
-        init_label          = "Watched" if watched_valid else "Usual"
+        
+        if len(tour_types) == 1:
+            t_map           = {1: "OP", 2: "ED", 3: "IN"}
+            t_str           = t_map.get(list(tour_types)[0], "")
+            init_label      = f"Watched {t_str}" if watched_valid else f"Random {t_str}"
+        else: init_label    = "Watched" if watched_valid else "Usual"
+
         self.tour_label     = StringDialog(root, "Tour Name", f"Enter the name for Tour {self.tour_id}:", initialvalue = init_label).result
 
         if not self.tour_label: self.tour_label = init_label
