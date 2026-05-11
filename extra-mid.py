@@ -20,8 +20,8 @@ DIR_DEPS        = "dependencies"
 DIR_JSONS       = "jsons"
 DIR_OUT         = "output"
 DIR_TOURS       = "tours"
-FILE_ALIASES    = "aliases.txt"
 FILE_CODES      = "codes.txt"
+URL_ALIAS       = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
 
 EXCLUDED_TAGS = {
     "Female Protagonist",
@@ -218,7 +218,6 @@ class TourAnalyzer:
         self.script_dir                 = Path(__file__).parent.absolute()
         self.tour_dir                   = self.script_dir / DIR_TOURS / self.tour_id
         self.browser_path               = self._find_browser()
-        self.alias_map                  = self._load_aliases()
         self.s_part                     = defaultdict(int)
         self.c_counts                   = defaultdict(int)
         self.e_counts                   = defaultdict(int)
@@ -250,33 +249,24 @@ class TourAnalyzer:
         self.global_stats               = Counter()
         self.tour_label                 = ""
         self.chanting_ids               = set()
+        self.id_database                = self._load_player_ids()
 
     def _find_browser(self): return next((p for p in BROWSER_PATHS if os.path.exists(p)), None)
 
-    def _load_aliases(self):
-        amap = {}
-        path = self.script_dir / DIR_TOURS / FILE_ALIASES
-        if path.exists():
-            with open(path, "r", encoding = "utf-8") as f:
-                for line in f:
-                    if "," in line:
-                        existing, new   = [x.strip() for x in line.split(",", 1)]
-                        amap[new]       = existing
-        return amap
+    def _load_player_ids(self):
+        id_map = {}
 
-    def _save_alias(self, existing, new):
-        tour_dir = self.script_dir / DIR_TOURS
-        tour_dir.mkdir(exist_ok = True)
-        file_path = tour_dir / FILE_ALIASES
-        
-        pair_exists = False
-        if file_path.exists():
-            with open(file_path, "r", encoding = "utf-8") as f:
-                content = f.read()
-                if f"{existing}, {new}" in content: pair_exists = True
-        
-        if not pair_exists:
-            with open(file_path, "a", encoding = "utf-8") as f: f.write(f"{existing}, {new}\n")
+        try:
+            df = pd.read_csv(URL_ALIAS)
+
+            for _, row in df.iterrows():
+                name    = str(row.get('Player Name',    '')).strip().lower()
+                pid     = str(row.get('Player ID',      '')).strip()
+
+                if name and pid: id_map[name] = pid
+        except: pass
+
+        return id_map
 
     def run(self):
         chanting_path = self.script_dir / DIR_DEPS / "chanting" / "chanting.txt"
@@ -441,21 +431,18 @@ class TourAnalyzer:
         for line in lines:
             matches = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', line)
             for p_in, val in matches:
-                match = next((n for n in all_known if n.lower() == p_in.lower()), None)
+                p_in_low    = p_in.lower()
+                match       = next((n for n in all_known if n.lower() == p_in_low), None)
                 
-                if not match:
-                    alias_target = self.alias_map.get(p_in)
-                    if alias_target: match = next((n for n in all_known if n == alias_target), None)
+                if not match and p_in_low in self.id_database:
+                    target_id   = self.id_database[p_in_low]
+                    match       = next((n for n in all_known if self.id_database.get(n.lower()) == target_id), None)
 
-                if not match and ("[" in line or "Subs:" in line):
-                    match = ManualMatchDialog(None, p_in, avail).result
-                    if match: 
-                        self._save_alias(match, p_in)
-                        self.alias_map[p_in] = match
-                
-                if match: elo_map[match.lower()] = val
+                if not match and ("[" in line or "Subs:" in line)   : match = ManualMatchDialog(None, p_in, avail).result
+                if match                                            : elo_map[match.lower()] = val
 
         idx = 1
+
         for line in lines:
             if "[" not in line: continue
             pre     = re.match(r'^(?:\\s*)?([^:\[\d\(]+)\s*\([\d.-]+\):', line)
@@ -464,8 +451,14 @@ class TourAnalyzer:
             mems    = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', sec)
 
             for i, (p_in, _) in enumerate(mems[:4]):
-                tier    = str(i + 1)
-                match   = next((n for n in all_known if n.lower() == p_in.lower() or (p_in in self.alias_map and n == self.alias_map[p_in])), None)
+                tier        = str(i + 1)
+                p_in_low    = p_in.lower()
+                match       = next((n for n in all_known if n.lower() == p_in_low), None)
+
+                if not match and p_in_low in self.id_database:
+                    target_id   = self.id_database[p_in_low]
+                    match       = next((n for n in all_known if self.id_database.get(n.lower()) == target_id), None)
+                
                 if match:
                     self.main_roster_names.add(match.lower())
                     assignments[match.lower()] = (idx, tier)
@@ -473,6 +466,7 @@ class TourAnalyzer:
                     if match in avail: avail.remove(match)
                     t1_lookup[idx] = ename if ename else (match if tier == "1" else t1_lookup.get(idx))
             idx += 1
+
         return True, elo_map, assignments, t1_lookup, rosters, all_known
 
     def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, original_roster):
