@@ -111,7 +111,7 @@ class NewPlayerDialog(UnifiedDialog):
     def __init__(self, parent, active_players, tour_name):
         super().__init__(parent, "New Players", f"Select new player(s) for the {tour_name} tour, if any exists:")
         self.selected_new   = []
-        self.blue_shade     = "#0056B3"
+        self.fill_color     = "#000000"
         self.vars           = {}
         player_list         = sorted    (list(active_players), key = str.lower)
         num_players         = len       (player_list)
@@ -133,7 +133,7 @@ class NewPlayerDialog(UnifiedDialog):
     def toggle_custom(self, name, box):
         new_val = not self.vars[name].get()
         self.vars[name].set(new_val)
-        color = self.blue_shade if new_val else "white"
+        color = self.fill_color if new_val else "white"
         box.configure(bg = color)
 
     def on_confirm(self):
