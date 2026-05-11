@@ -19,6 +19,7 @@ DIR_JSONS       = "jsons"
 DIR_OUT         = "output"
 DIR_TOURS       = "tours"
 FILE_CODES      = "codes.txt"
+FILE_ALIASES    = "aliases.txt"
 URL_ALIAS       = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
 
 EXCLUDED_TAGS = {
@@ -270,11 +271,11 @@ class TourAnalyzer:
         self.t_overs                    = defaultdict(list)
         self.genre_c                    = Counter()
         self.tag_c                      = Counter()
-        self.all_diff, self.all_vint    = [], []
         self.global_stats               = Counter()
-        self.tour_label                 = ""
+        self.all_diff, self.all_vint    = [], []
         self.chanting_ids               = set()
-        self.id_database                = self._load_player_ids()
+        self.tour_label                 = ""
+        self.id_database                = {}
 
     def _find_browser(self): return next((p for p in BROWSER_PATHS if os.path.exists(p)), None)
 
@@ -453,26 +454,52 @@ class TourAnalyzer:
         self.main_roster_names                      = set()
         elo_map, assignments, rosters, t1_lookup    = {}, {}, defaultdict(set), {}
         avail                                       = sorted(list(all_known)) 
+        alias_path                                  = self.script_dir / DIR_TOURS / FILE_ALIASES
+        local_aliases                               = {}
+
+        if alias_path.exists():
+            with open(alias_path, "r", encoding = "utf-8") as f:
+                for line in f:
+                    if "," in line:
+                        k, v = line.strip().split(",", 1)
+                        local_aliases[k.strip().lower()] = v.strip()
         
+        new_aliases = {}
+
+        def find_best_match(p_in, allow_manual = False, line_text = ""):
+            p_low = p_in.lower()
+
+            if p_low in local_aliases:
+                m = local_aliases[p_low]
+                if m in all_known: return m
+
+            match = next((n for n in all_known if n.lower() == p_low), None)
+
+            if not match:
+                if not self.id_database: self.id_database = self._load_player_ids()
+
+                if p_low in self.id_database:
+                    target_id   = self.id_database[p_low]
+                    match       = next((n for n in all_known if self.id_database.get(n.lower()) == target_id), None)
+
+            if not match and allow_manual and ("[" in line_text or "Subs:" in line_text)    : match = ManualMatchDialog(None, p_in, avail).result
+            if match                                                                        : new_aliases[p_in] = match
+
+            return match
+
         with open(codes, "r", encoding = "utf-8") as f: lines = f.readlines()
 
         for line in lines:
             matches = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', line)
             for p_in, val in matches:
-                p_in_low    = p_in.lower()
-                match       = next((n for n in all_known if n.lower() == p_in_low), None)
-                
-                if not match and p_in_low in self.id_database:
-                    target_id   = self.id_database[p_in_low]
-                    match       = next((n for n in all_known if self.id_database.get(n.lower()) == target_id), None)
-
-                if not match and ("[" in line or "Subs:" in line)   : match = ManualMatchDialog(None, p_in, avail).result
-                if match                                            : elo_map[match.lower()] = val
+                match = find_best_match(p_in, allow_manual = True, line_text = line)
+                if match: elo_map[match.lower()] = val
 
         idx = 1
 
         for line in lines:
             if "[" not in line: continue
+
             pre     = re.match(r'^(?:\\s*)?([^:\[\d\(]+)\s*\([\d.-]+\):', line)
             ename   = pre.group(1).strip() if pre else None
             sec     = line.split(":", 1)[1] if ":" in line else line
@@ -480,20 +507,30 @@ class TourAnalyzer:
 
             for i, (p_in, _) in enumerate(mems[:4]):
                 tier        = str(i + 1)
-                p_in_low    = p_in.lower()
-                match       = next((n for n in all_known if n.lower() == p_in_low), None)
+                match       = find_best_match(p_in)
 
-                if not match and p_in_low in self.id_database:
-                    target_id   = self.id_database[p_in_low]
-                    match       = next((n for n in all_known if self.id_database.get(n.lower()) == target_id), None)
-                
                 if match:
                     self.main_roster_names.add(match.lower())
                     assignments[match.lower()] = (idx, tier)
                     rosters[idx].add(match)
                     if match in avail: avail.remove(match)
                     t1_lookup[idx] = ename if ename else (match if tier == "1" else t1_lookup.get(idx))
+
             idx += 1
+
+        if new_aliases:
+            existing_entries = []
+
+            if alias_path.exists():
+                with open(alias_path, "r", encoding = "utf-8") as f: existing_entries = [l.strip().lower() for l in f.readlines()]
+
+            with open(alias_path, "a", encoding = "utf-8") as f:
+                for k, v in new_aliases.items():
+                    entry = f"{k}, {v}".lower()
+
+                    if entry not in existing_entries:
+                        f.write(f"{k}, {v}\n")
+                        existing_entries.append(entry)
 
         return True, elo_map, assignments, t1_lookup, rosters, all_known
 
