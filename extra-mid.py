@@ -550,7 +550,7 @@ class TourAnalyzer:
 
         if not self.tour_label: self.tour_label = init_label
 
-        if "Eru Mode" in self.tour_label and use_teams:
+        if "Eru" in self.tour_label and use_teams:
             self.p_pts  .clear()
             self.p_blks .clear()
 
@@ -868,7 +868,7 @@ class TourAnalyzer:
         borders = []
 
         if "Guess Rate" in df.columns:
-            if "Eru Mode" in self.tour_label: th = []
+            if "Eru" in self.tour_label: th = []
             else:
                 if      self.tour_label == "Watched 2+8"            : init_val = "25, 20, 15, 10, 5"
                 elif    self.tour_label == "Watched"                : init_val = "28, 18, 12, 6"
