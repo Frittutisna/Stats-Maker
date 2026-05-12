@@ -276,6 +276,7 @@ class TourAnalyzer:
         self.chanting_ids               = set()
         self.tour_label                 = ""
         self.id_database                = {}
+        self.song_history               = []
 
     def _find_browser(self): return next((p for p in BROWSER_PATHS if os.path.exists(p)), None)
 
@@ -362,8 +363,9 @@ class TourAnalyzer:
                 if isinstance(si.get("animeGenre"), list): self.genre_c .update(si.get("animeGenre"))
                 if isinstance(si.get("animeTags"),  list): self.tag_c   .update([t for t in si.get("animeTags") if t not in EXCLUDED_TAGS])
                 
-                correct                     =   set(song.get("correctGuessPlayers", []))
-                ls                          =   song.get("listStates",              [])
+                correct = set(song.get("correctGuessPlayers", []))
+                self.song_history.append((correct, raw_f_players))
+                ls                          =   song.get("listStates", [])
                 self.global_stats["tot_c"]  +=  len(correct)
                 
                 yr = extract_year(si.get("vintage"))
@@ -547,6 +549,31 @@ class TourAnalyzer:
         self.tour_label     = StringDialog(root, "Tour Name", f"Enter the name for Tour {self.tour_id}:", initialvalue = init_label).result
 
         if not self.tour_label: self.tour_label = init_label
+
+        if "Eru Mode" in self.tour_label and use_teams:
+            self.p_pts  .clear()
+            self.p_blks .clear()
+
+            for cor, raw_p in self.song_history:
+                t_list = list({assignments[p.lower()][0] for p in raw_p if p.lower() in assignments})
+
+                if len(t_list) == 2:
+                    tA, tB  = t_list[0], t_list[1]
+                    cA      = {assignments[p.lower()][1]: p for p in raw_p if p.lower() in assignments and assignments[p.lower()][0] == tA}
+                    cB      = {assignments[p.lower()][1]: p for p in raw_p if p.lower() in assignments and assignments[p.lower()][0] == tB}
+
+                    for tr in ["1", "2", "3", "4"]:
+                        pA, pB = cA.get(tr), cB.get(tr)
+
+                        if pA and pB:
+                            rA, rB = pA in cor, pB in cor
+
+                            if rA and not rB: self.p_pts[pA] += 1
+                            if rB and not rA: self.p_pts[pB] += 1
+
+                            if rA and rB:
+                                self.p_blks[pA] += 0.50
+                                self.p_blks[pB] += 0.50
 
         t_name          = self.tour_label.strip()
         tour_disp       = f"{t_name} Tour"    
@@ -841,17 +868,19 @@ class TourAnalyzer:
         borders = []
 
         if "Guess Rate" in df.columns:
-            if      self.tour_label == "Watched 2+8"            : init_val = "25, 20, 15, 10, 5"
-            elif    self.tour_label == "Watched"                : init_val = "28, 18, 12, 6"
-            elif    self.tour_label in ["Usual", "Quagsual"]    : init_val = "28, 19, 8"
-            elif    "Rigs"          in df.columns               : init_val = "28, 18, 12, 6"
-            else                                                : init_val = "28, 19, 8"
-                
-            trimmed_title   = title.split(" Tour")[0]
-            val_str         = StringDialog(root, "Guess Rate Threshold", f"Enter the comma-separated guess rate thresholds for the {trimmed_title} tour:", initialvalue = init_val).result
+            if "Eru Mode" in self.tour_label: th = []
+            else:
+                if      self.tour_label == "Watched 2+8"            : init_val = "25, 20, 15, 10, 5"
+                elif    self.tour_label == "Watched"                : init_val = "28, 18, 12, 6"
+                elif    self.tour_label in ["Usual", "Quagsual"]    : init_val = "28, 19, 8"
+                elif    "Rigs"          in df.columns               : init_val = "28, 18, 12, 6"
+                else                                                : init_val = "28, 19, 8"
+                    
+                trimmed_title   = title.split(" Tour")[0]
+                val_str         = StringDialog(root, "Guess Rate Threshold", f"Enter the comma-separated guess rate thresholds for the {trimmed_title} tour:", initialvalue = init_val).result
 
-            try         : th = [float(x.strip()) for x in val_str.split(",")] if val_str else []
-            except      : th = [28.0, 18.0, 12.0, 6.0]
+                try         : th = [float(x.strip()) for x in val_str.split(",")] if val_str else []
+                except      : th = [28.0, 18.0, 12.0, 6.0]
             
             gv = pd.to_numeric(df["Guess Rate"].astype(str).str.replace('%',''), errors = 'coerce').tolist()
 
