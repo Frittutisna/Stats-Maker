@@ -93,7 +93,7 @@ class ManualMatchDialog(tk.Toplevel):
 # --- CORE LOGIC ---
 
 def process_files(tour_id):
-    script_dir  = os.path.dirname(os.path.abspath(__file__))
+    script_dir  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     json_dir    = os.path.join(script_dir,  "tours",        tour_id, "jsons")
     codes_path  = os.path.join(script_dir,  "tours",        tour_id, "codes.txt")
     out_dir     = os.path.join(script_dir,  "tours",        tour_id, "output")

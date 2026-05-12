@@ -1,4 +1,7 @@
-import  os, json, re, gspread
+import  os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import  gspread, json, re
 import  pandas                      as      pd
 import  tkinter                     as      tk
 from    bs4                         import  BeautifulSoup
@@ -42,7 +45,7 @@ def main():
         return
         
     tour_id     = selector.result
-    DIRECTORY   = os.path.dirname(os.path.abspath(__file__))
+    DIRECTORY   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     JSONS       = os.path.join(DIRECTORY, "tours", tour_id, "jsons")
     TEAMS       = os.path.join(DIRECTORY, "tours", tour_id, "codes.txt")
     OUTPUT      = os.path.join(DIRECTORY, "tours", tour_id, "output")
