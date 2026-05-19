@@ -16,13 +16,14 @@ BROWSER_PATHS = [
     r"C:\Program Files\Google\Chrome\Application\chrome.exe",
 ]
 
-DIR_DEPS        = "dependencies"
-DIR_JSONS       = "jsons"
-DIR_OUT         = "output"
-DIR_TOURS       = "tours"
-FILE_CODES      = "codes.txt"
-FILE_ALIASES    = "aliases.txt"
-URL_ALIAS       = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
+DIR_DEPS            = "dependencies"
+DIR_JSONS           = "jsons"
+DIR_OUT             = "output"
+DIR_TOURS           = "tours"
+FILE_CODES          = "codes.txt"
+FILE_ALIASES        = "aliases.txt"
+RIG_GR_THRESHOLD    = 0.8
+URL_ALIAS           = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
 
 EXCLUDED_TAGS = {
     "Female Protagonist",
@@ -805,7 +806,7 @@ class TourAnalyzer:
             
         cols = ["Tier", "Generalist", "Attacker", "Blocker", "Contributor"]
         if watched_valid: cols.append("Chanter")
-        self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = cols), path, "Tier.png", "Tier Bests")
+        self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = cols), path, "Tier.png", "Tier Statistics")
 
     def _create_watched_png(self, path, assigns, t1_lookup):
         plist = [n for n in self.s_part if self.p_l_corr[n]]
@@ -826,9 +827,9 @@ class TourAnalyzer:
         rig_grs     = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
 
         fig, ax         = plt.subplots(figsize = (10, 10))
-        cmap            = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", ["#D95400", "#FFFFFF", "#0056B3"])
+        cmap            = cmap = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (RIG_GR_THRESHOLD, "#FFFFFF"), (1.0, "#0056B3")])
         sizes           = [50 + rate * 1500 for rate in rig_rates]
-        sc              = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.60, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
+        sc              = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
         x_min, x_max    = math.floor(min(x_vals)), math.ceil(max(x_vals))
         
         y_floor = math.floor    (min(y_vals))
@@ -853,7 +854,7 @@ class TourAnalyzer:
                 r       = cur_max   - cur_min
 
                 if is_composite(r):
-                    valid_k = [k for k in [2, 3, 4, 5] if r % k == 0]
+                    valid_k = [k for k in [2, 3, 4] if r % k == 0]
                     if not valid_k and r % 1 == 0: valid_k = [1]
                     if valid_k:
                         best_k  = max(valid_k)
@@ -975,18 +976,18 @@ class TourAnalyzer:
                 textcoords          = 'offset points'
             )
 
-        ax          .set_title              ("List Statistics", fontsize = 15, pad = 15, weight = 'bold')
-        ax          .set_xlabel             ("Average Over-8", fontsize = 10, labelpad = 10)
-        ax          .set_ylabel             ("List Vintage",   fontsize = 10, labelpad = 10)
+        ax          .set_title              ("List Statistics", fontsize = 15, weight = 'bold', fontname = "Segoe UI", pad      = 7.5)
+        ax          .set_xlabel             ("Average Over-8",  fontsize = 10, weight = 'bold', fontname = "Segoe UI", labelpad = 2.5)
+        ax          .set_ylabel             ("List Vintage",    fontsize = 10, weight = 'bold', fontname = "Segoe UI", labelpad = 2.5)
         ax.yaxis    .set_major_formatter    (plt.FuncFormatter(lambda val, _: str(int(val))))
         plt         .setp                   (ax.get_yticklabels(), rotation = 90, horizontalalignment = 'center', verticalalignment = 'center')
         ax          .tick_params            (axis = 'x', which = 'both', length = 0, pad = 5)
         ax          .tick_params            (axis = 'y', which = 'both', length = 0, pad = 7.5)
         
-        cbar = fig.colorbar(sc, ax = ax, pad = 0.025, ticks = [0.60, 0.80, 1.00])
+        cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = [0.0, RIG_GR_THRESHOLD, 1.0])
 
-        cbar        .set_label          ("Rig GR", fontsize = 10, labelpad = 2.5)
-        cbar.ax     .set_yticklabels    (['60', '80', '100'])
+        cbar        .set_label          ("Rig GR", fontsize = 10, weight = 'bold', fontname = "Segoe UI", labelpad = -17.5)
+        cbar.ax     .set_yticklabels    (['0', f'{int(RIG_GR_THRESHOLD * 100)}', '100'])
         cbar.ax     .tick_params        (labelsize = 10, length = 0)
 
         ax  .grid           (False)
