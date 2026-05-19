@@ -843,7 +843,7 @@ class TourAnalyzer:
 
         fig, ax         = plt.subplots(figsize = (10, 10))
         cmap            = cmap = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (RIG_GR_THRESHOLD, "#FFFFFF"), (1.0, "#0056B3")])
-        sizes           = [50 + rate * 1500 for rate in rig_rates]
+        sizes           = [rate ** 2 * 10000 for rate in rig_rates]
         sc              = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
         x_min, x_max    = math.floor(min(x_vals)), math.ceil(max(x_vals))
         
@@ -881,18 +881,10 @@ class TourAnalyzer:
 
             if found: break
 
-        def is_prime(num):
-            if num < 2: return False
-            for i in range(2, int(math.sqrt(num)) + 1):
-                if num % i == 0: return False
-            return True
-
-        if is_prime(x_max - x_min): x_max += 1
-
-        ax          .set_xlim           (x_min, x_max)
-        ax          .set_ylim           (y_min, y_max)
-        ax.xaxis    .set_major_locator  (plt.MaxNLocator(integer = True, nbins = 5, steps = [1, 2, 5, 10]))
-        ax          .set_yticks         (range(y_min, y_max + 1, step))
+        ax.set_xlim     (x_min, x_max)
+        ax.set_ylim     (y_min, y_max)
+        ax.set_xticks   (range(x_min, x_max + 1, 1))
+        ax.set_yticks   (range(y_min, y_max + 1, step))
 
         pt_x = (x_max - x_min) / 500.0
         pt_y = (y_max - y_min) / 500.0
