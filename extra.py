@@ -993,7 +993,7 @@ class TourAnalyzer:
 
         ax          .set_title              ("List Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad      = 12.5)
         ax          .set_xlabel             ("Average Over-8",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad = 2.5)
-        ax          .set_ylabel             ("List Vintage",    weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad = 2.5)
+        ax          .set_ylabel             ("Median Vintage",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad = 2.5)
         ax.yaxis    .set_major_formatter    (plt.FuncFormatter(lambda val, _: str(int(val))))
         plt         .setp                   (ax.get_yticklabels(), rotation = 90, horizontalalignment = 'center', verticalalignment = 'center')
         ax          .tick_params            (axis = 'x', which = 'both', length = 0, pad = 5)
