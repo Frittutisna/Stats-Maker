@@ -1,15 +1,14 @@
-import  json, os, re
-import  numpy           as      np
-import  pandas          as      pd
-import  tkinter         as      tk
-from    collections     import  Counter,    defaultdict
-from    html2image      import  Html2Image
-from    pathlib         import  Path
-from    PIL             import  Image,      ImageChops,     ImageOps
-from    tkinter         import  messagebox, ttk
-import  matplotlib.pyplot as    plt
-import  matplotlib.colors as    mcolors
-import  math
+import  json, os, re, math
+import  matplotlib.pyplot   as    plt
+import  matplotlib.colors   as    mcolors
+import  numpy               as      np
+import  pandas              as      pd
+import  tkinter             as      tk
+from    collections         import  Counter,    defaultdict
+from    html2image          import  Html2Image
+from    pathlib             import  Path
+from    PIL                 import  Image,      ImageChops,     ImageOps
+from    tkinter             import  messagebox, ttk
 
 BROWSER_PATHS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -59,6 +58,7 @@ def trim_whitespace(image_path):
         bg      = Image.new(img.mode, img.size, "white")
         diff    = ImageChops.difference(img, bg)
         bbox    = diff.getbbox()
+
         if bbox:
             img = img.crop(bbox)
             img = ImageOps.expand(img, border = 10, fill = "white")
@@ -187,6 +187,7 @@ class TourSelectionDialog(UnifiedDialog):
             var             = tk.BooleanVar(value = is_active)
             self.vars[tid]  = var
             item_frame      = ttk.Frame(self.container)
+
             item_frame.pack(anchor = "w", pady = 2)
             initial_bg = self.fill_color if is_active else "white"
             box = tk.Canvas(item_frame, width = 10, height = 10, bg = initial_bg, highlightthickness = 1, highlightbackground = "black")
@@ -300,6 +301,7 @@ class TourAnalyzer:
 
     def run(self):
         chanting_path = self.script_dir / DIR_DEPS / "chanting" / "chanting.txt"
+
         if chanting_path.exists():
             with open(chanting_path, "r") as f:
                 for line in f:
@@ -307,6 +309,7 @@ class TourAnalyzer:
                     if line: self.chanting_ids.add(line)
 
         json_dir = self.tour_dir / DIR_JSONS
+
         if not json_dir.exists() or not any(json_dir.glob("*.json")):
             messagebox.showerror("Error", f"Folder not found or empty: {json_dir}")
             return
@@ -814,24 +817,22 @@ class TourAnalyzer:
         valid_data = [(p, x, y) for p, x, y in zip(plist, x_vals, y_vals) if not np.isnan(y)]
         if not valid_data: return
 
-        plist, x_vals, y_vals = zip(*valid_data)
-        plist = list(plist)
-        x_vals = list(x_vals)
-        y_vals = list(y_vals)
+        plist, x_vals, y_vals   = zip   (*valid_data)
+        plist                   = list  (plist)
+        x_vals                  = list  (x_vals)
+        y_vals                  = list  (y_vals)
 
-        rig_rates = [self.p_rigs[name] / self.s_part[name] if self.s_part[name] else 0 for name in plist]
-        rig_grs = [self.p_rigs_h[name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
+        rig_rates   = [self.p_rigs      [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist]
+        rig_grs     = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
 
-        fig, ax = plt.subplots(figsize=(10, 8))
-        cmap = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", ["#D95400", "#FFFFFF", "#0056B3"])
-        sizes = [50 + rate * 1500 for rate in rig_rates]
-
-        sc = ax.scatter(x_vals, y_vals, s=sizes, c=rig_grs, cmap=cmap, vmin=0.60, vmax=1.0, edgecolors='black', alpha=0.9, linewidths=1)
-
-        x_min, x_max = math.floor(min(x_vals)), math.ceil(max(x_vals))
+        fig, ax         = plt.subplots(figsize = (10, 10))
+        cmap            = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", ["#D95400", "#FFFFFF", "#0056B3"])
+        sizes           = [50 + rate * 1500 for rate in rig_rates]
+        sc              = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.60, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
+        x_min, x_max    = math.floor(min(x_vals)), math.ceil(max(x_vals))
         
-        y_floor = math.floor(min(y_vals))
-        y_ceil = math.ceil(max(y_vals))
+        y_floor = math.floor    (min(y_vals))
+        y_ceil  = math.ceil     (max(y_vals))
         
         def is_composite(n):
             if n <= 3: return False
@@ -839,28 +840,29 @@ class TourAnalyzer:
                 if n % i == 0: return True
             return False
 
-        y_min = y_floor - 1
-        y_max = y_ceil + 1
-        step = 1
-        
-        found = False
+        y_min   = y_floor   - 1
+        y_max   = y_ceil    + 1
+        step    = 1
+        found   = False
+
         for delta in range(0, 30):
             for d_min in range(delta + 1):
-                d_max = delta - d_min
-                cur_min = (y_floor - 1) - d_min
-                cur_max = (y_ceil + 1) + d_max
-                r = cur_max - cur_min
+                d_max   = delta     - d_min
+                cur_min = y_floor   - 1         - d_min
+                cur_max = y_ceil    + 1         + d_max
+                r       = cur_max   - cur_min
+
                 if is_composite(r):
                     valid_k = [k for k in [2, 3, 4, 5] if r % k == 0]
-                    if not valid_k and r % 1 == 0:
-                        valid_k = [1]
+                    if not valid_k and r % 1 == 0: valid_k = [1]
                     if valid_k:
-                        best_k = max(valid_k)
-                        y_min = cur_min
-                        y_max = cur_max
-                        step = r // best_k
-                        found = True
+                        best_k  = max(valid_k)
+                        y_min   = cur_min
+                        y_max   = cur_max
+                        step    = r // best_k
+                        found   = True
                         break
+
             if found: break
 
         def is_prime(num):
@@ -871,14 +873,13 @@ class TourAnalyzer:
 
         if is_prime(x_max - x_min): x_max += 1
 
-        ax.set_xlim(x_min, x_max)
-        ax.set_ylim(y_min, y_max)
+        ax          .set_xlim           (x_min, x_max)
+        ax          .set_ylim           (y_min, y_max)
+        ax.xaxis    .set_major_locator  (plt.MaxNLocator(integer = True, nbins = 5, steps = [1, 2, 5, 10]))
+        ax          .set_yticks         (range(y_min, y_max + 1, step))
 
-        ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True, nbins=5, steps=[1, 2, 5, 10]))
-        ax.set_yticks(range(y_min, y_max + 1, step))
-
-        pt_x = (x_max - x_min) / (6.5 * 72.0)
-        pt_y = (y_max - y_min) / (5.5 * 72.0)
+        pt_x = (x_max - x_min) / 500.0
+        pt_y = (y_max - y_min) / 500.0
 
         obstacles = []
         for x, y, s in zip(x_vals, y_vals, sizes):
@@ -886,39 +887,39 @@ class TourAnalyzer:
             obstacles.append((x - r_pt * pt_x, x + r_pt * pt_x, y - r_pt * pt_y, y + r_pt * pt_y))
 
         dirs = [
-            ('R', 'left', 'center', 1.0, 0.0),
-            ('T', 'center', 'bottom', 0.0, 1.0),
-            ('TR', 'left', 'bottom', 0.707, 0.707),
-            ('TL', 'right', 'bottom', -0.707, 0.707),
-            ('L', 'right', 'center', -1.0, 0.0),
-            ('B', 'center', 'top', 0.0, -1.0),
-            ('BR', 'left', 'top', 0.707, -0.707),
-            ('BL', 'right', 'top', -0.707, -0.707)
+            ('R',   'left',     'center',   1.00, 0.00),
+            ('T',   'center',   'bottom',   0.00, 1.00),
+            ('TR',  'left',     'bottom',   0.70, 0.70),
+            ('TL',  'right',    'bottom',   -0.7, 0.70),
+            ('L',   'right',    'center',   -1.0, 0.00),
+            ('B',   'center',   'top',      0.00, -1.0),
+            ('BR',  'left',     'top',      0.70, -0.7),
+            ('BL',  'right',    'top',      -0.7, -0.7)
         ]
 
         for name, x, y, s in zip(plist, x_vals, y_vals, sizes):
-            label = ""
-            team_info = assigns.get(name.lower(), ("N/A", "N/A"))
+            label       = ""
+            team_info   = assigns.get(name.lower(), ("N/A", "N/A"))
+
             if team_info[0] != "N/A":
                 leader_name = t1_lookup.get(team_info[0], "")
-                clean_name = "".join(filter(str.isalnum, leader_name))
-                t_lbl = clean_name[:3].upper() if leader_name else f"T{team_info[0]}"
-                label = f"{t_lbl}-{team_info[1]}"
+                clean_name  = "".join(filter(str.isalnum, leader_name))
+                t_lbl       = clean_name[ : 3].upper() if leader_name else f"T{team_info[0]}"
+                label       = f"{t_lbl}-{team_info[1]}"
             
             if not label: continue
                 
-            r_pt = math.sqrt(s) / 2.0
-            lbl_w_pt = len(label) * 6.0
-            lbl_h_pt = 9.0
-            
-            best_pos = None
-            min_overlap_score = float('inf')
+            r_pt                = math.sqrt(s) / 2.0
+            lbl_w_pt            = len(label) * 5.0
+            lbl_h_pt            = 10.0
+            best_pos            = None
+            min_overlap_score   = float('inf')
             
             for extra_pad in [0.0, 1.0, 2.0, 3.0]:
-                for d_name, ha, va, cx, sy in dirs:
+                for _, ha, va, cx, sy in dirs:
                     offset_dist = r_pt + 0.5 + extra_pad
-                    ox = offset_dist * cx
-                    oy = offset_dist * sy
+                    ox          = offset_dist * cx
+                    oy          = offset_dist * sy
                     
                     if ha == 'left':
                         bx_min = ox
@@ -940,61 +941,58 @@ class TourAnalyzer:
                         by_min = oy - lbl_h_pt / 2.0
                         by_max = oy + lbl_h_pt / 2.0
                         
-                    lbl_box = (
-                        x + bx_min * pt_x,
-                        x + bx_max * pt_x,
-                        y + by_min * pt_y,
-                        y + by_max * pt_y
-                    )
-                    
-                    overlap_score = 0
-                    buffer_x = 0.05 * pt_x
-                    buffer_y = 0.05 * pt_y
+                    lbl_box         = (x + bx_min * pt_x, x + bx_max * pt_x, y + by_min * pt_y, y + by_max * pt_y)
+                    overlap_score   = 0
+                    buffer_x        = 0.05 * pt_x
+                    buffer_y        = 0.05 * pt_y
                     
                     for obs in obstacles:
-                        if not (lbl_box[1] + buffer_x < obs[0] or obs[1] + buffer_x < lbl_box[0] or
-                                lbl_box[3] + buffer_y < obs[2] or obs[3] + buffer_y < lbl_box[2]):
-                            overlap_score += 1
+                        if not (
+                            lbl_box[1] + buffer_x < obs[0] or 
+                            obs[1] + buffer_x < lbl_box[0] or 
+                            lbl_box[3] + buffer_y < obs[2] or 
+                            obs[3] + buffer_y < lbl_box[2]
+                        ): overlap_score += 1
                     
                     if overlap_score == 0:
                         best_pos = (ha, va, ox, oy, lbl_box)
                         break
-                    else:
-                        if overlap_score < min_overlap_score:
-                            min_overlap_score = overlap_score
-                            best_pos = (ha, va, ox, oy, lbl_box)
-                if best_pos and min_overlap_score == 0:
-                    break
+                    elif overlap_score < min_overlap_score:
+                        min_overlap_score   = overlap_score
+                        best_pos            = (ha, va, ox, oy, lbl_box)
+
+                if best_pos and min_overlap_score == 0: break
                     
             ha, va, ox, oy, lbl_box = best_pos
             obstacles.append(lbl_box)
             
             ax.annotate(
-                label, (x, y), fontsize=10,
-                verticalalignment=va, horizontalalignment=ha,
-                weight='normal', xytext=(ox, oy),
-                textcoords='offset points'
+                label, (x, y), 
+                fontsize            = 10,
+                verticalalignment   = va, 
+                horizontalalignment = ha,
+                xytext              = (ox, oy),
+                textcoords          = 'offset points'
             )
 
-        ax.set_title("List Statistics", fontsize=16, pad=15, weight='bold')
-        ax.set_xlabel("Average Over 8 (Easiest ->)", fontsize=12, labelpad=10)
-        ax.set_ylabel("List Vintage", fontsize=12, labelpad=10)
-
-        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, pos: str(int(val))))
-        plt.setp(ax.get_yticklabels(), rotation=90, horizontalalignment='center', verticalalignment='center')
+        ax          .set_title              ("List Statistics", fontsize = 15, pad = 15, weight = 'bold')
+        ax          .set_xlabel             ("Average Over-8", fontsize = 10, labelpad = 10)
+        ax          .set_ylabel             ("List Vintage",   fontsize = 10, labelpad = 10)
+        ax.yaxis    .set_major_formatter    (plt.FuncFormatter(lambda val, _: str(int(val))))
+        plt         .setp                   (ax.get_yticklabels(), rotation = 90, horizontalalignment = 'center', verticalalignment = 'center')
+        ax          .tick_params            (axis = 'x', which = 'both', length = 0, pad = 5)
+        ax          .tick_params            (axis = 'y', which = 'both', length = 0, pad = 7.5)
         
-        ax.tick_params(axis='x', which='both', length=0, pad=6)
-        ax.tick_params(axis='y', which='both', length=0, pad=8)
-        
-        cbar = fig.colorbar(sc, ax=ax, pad=0.02, ticks=[0.60, 0.80, 1.0])
-        cbar.set_label("Rig Guess Rate (Rig GR)", fontsize=11, labelpad=2)
-        cbar.ax.set_yticklabels(['60', '80', '100'])
-        cbar.ax.tick_params(labelsize=10, length=0)
+        cbar = fig.colorbar(sc, ax = ax, pad = 0.025, ticks = [0.60, 0.80, 1.00])
 
-        ax.grid(False)
-        plt.tight_layout()
-        plt.savefig(path / "List.png", dpi=150)
-        plt.close(fig)
+        cbar        .set_label          ("Rig GR", fontsize = 10, labelpad = 2.5)
+        cbar.ax     .set_yticklabels    (['60', '80', '100'])
+        cbar.ax     .tick_params        (labelsize = 10, length = 0)
+
+        ax  .grid           (False)
+        plt .tight_layout   ()
+        plt .savefig        (path / "List.png", dpi = 500)
+        plt .close          (fig)
 
         try     : trim_whitespace(path / "List.png")
         except  : pass
@@ -1037,6 +1035,7 @@ class TourAnalyzer:
             if col in desc or col in asc:
                 num     = pd.to_numeric(df[col].astype(str).str.replace('%',''), errors = 'coerce')
                 el_num  = num[mask].dropna() if mask is not None and col in rest else num.dropna()
+
                 if not num.dropna().empty:
                     stats[col] = {
                         'max'   : num.dropna().max(),
@@ -1078,26 +1077,32 @@ class TourAnalyzer:
 
             for i, (cname, cell) in enumerate(row.items()):
                 style = [b_s] if b_s else []
+
                 if cname in stats:
                     v = pd.to_numeric(str(cell).replace('%',''), errors = 'coerce')
+
                     if pd.notnull(v):
                         is_max, is_min  = (v == stats[cname]['max']) and stats[cname]['s_max'], (v == stats[cname]['min']) and stats[cname]['s_min']
                         elig            = True if mask is None or cname not in rest else mask[idx]
+
                         if cname in desc:
                             if      is_max          : style.append("color: #0056B3; font-weight: bold;")
                             elif    is_min and elig : style.append("color: #D95400; font-weight: bold;")
                         elif cname in asc:
                             if      is_max and elig : style.append("color: #D95400; font-weight: bold;")
                             elif    is_min          : style.append("color: #0056B3; font-weight: bold;")
+
                 s_attr  =   f' style="{" ".join(style)}"' if style else ""
                 cnt     =   f"<b>{cell}</b>" if i==0 else cell
                 html    +=  f"<td{s_attr}>{cnt}</td>"
+
             html += "</tr>"
 
         full = f"<html><head><style>body {{font-family: 'Segoe UI', Arial, sans-serif; background: white; display: inline-block; margin: 0;}} h2 {{margin: 10px 0 10px 5px; font-size: 30px; text-align: center;}} table {{margin-left: 10px; border-collapse: collapse; width: auto;}} th {{font-weight: bold; font-size: 20px; text-align: center; padding: 10px; border: 1px solid black;}} td {{font-size: 20px; text-align: center; padding: 10px; border: 1px solid black;}}</style></head><body><h2>{title}</h2><table>{html}</table></body></html>"
         hti  = Html2Image(size = (max(2000, len(df.columns) * 120), max(2000, len(df) * 60)), browser_executable = self.browser_path, output_path = str(path), custom_flags = ['--log-level=3', '--silent'])
 
         hti.screenshot(html_str = full, save_as = fname)
+
         try     : trim_whitespace(path / fname)
         except  : pass
 
@@ -1105,66 +1110,69 @@ class TourAnalyzer:
         f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "List": "List.png", "Chanting": "Chanting.png"}
         ps      = {k: path / v      for k, v in f   .items() if (path / v).exists()}
         imgs    = {k: Image.open(v) for k, v in ps  .items()}
+
         if not imgs: return
 
-        rk = [k for k in ["Team", "Tier", "Chanting"] if k in imgs]
-        tw, th = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
+        rk      = [k for k in ["Team", "Tier", "Chanting"] if k in imgs]
+        tw, th  = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
         
-        rw = 0
-        rh = 0
+        rw, rh = 0, 0
+
         if rk:
             if "Team" in imgs:
-                rw = max(rw, imgs["Team"].width)
-                rh += imgs["Team"].height + 10
+                rw  =   max(rw, imgs["Team"].width)
+                rh  +=  imgs["Team"].height + 10
+
             if "Tier" in imgs:
-                rw = max(rw, imgs["Tier"].width)
-                rh += imgs["Tier"].height + 10
+                rw  =   max(rw, imgs["Tier"].width)
+                rh  +=  imgs["Tier"].height + 10
+
             if "Chanting" in imgs:
-                rw = max(rw, imgs["Chanting"].width)
-                rh += imgs["Chanting"].height + 10
+                rw  =   max(rw, imgs["Chanting"].width)
+                rh  +=  imgs["Chanting"].height + 10
+
             rh -= 10
 
         grid_w = tw + (10 if tw and rw else 0) + rw
         grid_h = max(th, rh)
         
         if "List" in imgs:
-            img_list = imgs["List"]
-            lw, lh = img_list.width, img_list.height
-            scale_f = grid_w / float(lw)
-            new_lh = int(lh * scale_f)
-            img_list = img_list.resize((grid_w, new_lh), Image.Resampling.LANCZOS)
-            imgs["List"] = img_list
-            lh = new_lh
-        else:
-            lh = 0
+            img_list        = imgs["List"]
+            lw, lh          = img_list.width, img_list.height
+            scale_f         = grid_w / float(lw)
+            new_lh          = int(lh * scale_f)
+            img_list        = img_list.resize((grid_w, new_lh), Image.Resampling.LANCZOS)
+            imgs["List"]    = img_list
+            lh              = new_lh
+        else: lh            = 0
         
         total_w = grid_w
         total_h = grid_h + (10 if grid_h and lh else 0) + lh
-        
-        fused = Image.new("RGB", (total_w, total_h), "white")
-        
-        cx = 0
+        fused   = Image.new("RGB", (total_w, total_h), "white")
+        cx, cy  = 0, 0
+
         if "Tour" in imgs:
             fused.paste(imgs["Tour"], (cx, 0))
             cx += tw + 10
-            
-        cy = 0
+
         if "Team" in imgs:
             fused.paste(imgs["Team"], (cx, cy))
             cy += imgs["Team"].height + 10
+
         if "Tier" in imgs:
             fused.paste(imgs["Tier"], (cx, cy))
             cy += imgs["Tier"].height + 10
+
         if "Chanting" in imgs:
             fused.paste(imgs["Chanting"], (cx, cy))
             cy += imgs["Chanting"].height + 10
             
-        if "List" in imgs:
-            fused.paste(imgs["List"], (0, grid_h + 10))
+        if "List" in imgs: fused.paste(imgs["List"], (0, grid_h + 10))
             
         if fused:
             f_p = path / "Extra.png"
             fused.save(f_p)
+
             try     : trim_whitespace(f_p)
             except  : pass
             
