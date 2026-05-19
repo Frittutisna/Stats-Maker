@@ -767,9 +767,14 @@ class TourAnalyzer:
 
     def _create_team_png(self, t1_lookup, path):
         res = []
+
         for tid in self.t_c_ps:
+            leader_name = t1_lookup.get(tid, "")
+            clean_name  = "".join(filter(str.isalnum, leader_name))
+            t_lbl       = clean_name[:3].upper() if leader_name else f"T{tid}"
+            
             res.append({
-                "Team Leader"       : t1_lookup.get(tid, f"Team {tid}"),
+                "Team"              : t_lbl,
                 "Median Vintage"    : format_year(np.median(self.t_vint[tid])),
                 "Average GR"        : f"{np.mean(self.t_c_ps    [tid]) * 100:.2f}",
                 "Rig Synergy"       : f"{np.mean(self.t_on_syn  [tid]) * 100:.2f}",
@@ -800,7 +805,7 @@ class TourAnalyzer:
             def get_contributor(plist):
                 sorted_p        = sorted(plist, key = lambda x: ((self.p_pts[x] + self.p_blks[x]), (self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0)), reverse = True)
                 name, v1, v2    = sorted_p[0], self.p_pts[sorted_p[0]], self.p_blks[sorted_p[0]]
-                return f"{name} ({v1}, {v2})"
+                return f"{name} ({v1 + v2})"
 
             def get_chanter(plist):
                 pool = [n for n in plist if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
