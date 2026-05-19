@@ -4,13 +4,13 @@ import  matplotlib.colors                       as      mcolors
 import  numpy                                   as      np
 import  pandas                                  as      pd
 import  tkinter                                 as      tk
-from    collections                             import  Counter,            defaultdict
+from    collections                             import  Counter,        defaultdict
 from    html2image                              import  Html2Image
-from    mpl_toolkits.axes_grid1.inset_locator   import  zoomed_inset_axes
+from    mpl_toolkits.axes_grid1.inset_locator   import  inset_axes
 from    pathlib                                 import  Path
-from    PIL                                     import  Image,              ImageChops,         ImageOps
+from    PIL                                     import  Image,          ImageChops,     ImageOps
 from    scipy.stats                             import  gaussian_kde
-from    tkinter                                 import  messagebox,         ttk
+from    tkinter                                 import  messagebox,     ttk
 
 BROWSER_PATHS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -909,13 +909,13 @@ class TourAnalyzer:
                 inset_y_buffer  = max(1.0, (max(y_vals) - min(y_vals)) * 0.1)
                 xlim_inset      = (blob_x - inset_x_buffer, blob_x + inset_x_buffer)
                 ylim_inset      = (blob_y - inset_y_buffer, blob_y + inset_y_buffer)
-                axins           = zoomed_inset_axes(ax, zoom = 2.0, loc = 4, borderpad = 1)
+                axins           = inset_axes(ax, width = "40%", height = "40%", loc = 'lower right', borderpad = 0.25)
 
                 axins.scatter       (x_vals, y_vals, s = [s * 0.75 for s in sizes], c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)                
                 axins.set_xlim      (xlim_inset)
                 axins.set_ylim      (ylim_inset)
                 axins.set_xticks    ([])
-                axins.set_yticks    ([])                
+                axins.set_yticks    ([])
             except: axins = None
         else: axins = None
 
