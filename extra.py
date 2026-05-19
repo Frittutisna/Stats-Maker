@@ -1130,7 +1130,7 @@ class TourAnalyzer:
         cmap            = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (RIG_GR_THRESHOLD, "#FFFFFF"), (1.0, "#0056B3")])
         sizes           = [rate ** 2 * 10000 for rate in rig_rates]
         sc              = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
-        x_min, x_max    = math.floor(min(x_vals)), math.ceil(max(x_vals))
+        x_min, x_max    = math.floor(min(x_vals) - 0.25), math.ceil(max(x_vals) + 0.25)
         
         y_floor = math.floor    (min(y_vals))
         y_ceil  = math.ceil     (max(y_vals))
@@ -1179,19 +1179,43 @@ class TourAnalyzer:
             r_pt = math.sqrt(s) / 2.0
             obstacles.append((x - r_pt * pt_x, x + r_pt * pt_x, y - r_pt * pt_y, y + r_pt * pt_y))
 
-        dirs = [
-            ('R',   'left',     'center',   1.00, 0.00),
-            ('T',   'center',   'bottom',   0.00, 1.00),
-            ('TR',  'left',     'bottom',   0.70, 0.70),
-            ('TL',  'right',    'bottom',   -0.7, 0.70),
-            ('L',   'right',    'center',   -1.0, 0.00),
-            ('B',   'center',   'top',      0.00, -1.0),
-            ('BR',  'left',     'top',      0.70, -0.7),
-            ('BL',  'right',    'top',      -0.7, -0.7)
+        base_dirs = [
+            ('R',   'left',     'center',   1.00,  0.00),
+            ('T',   'center',   'bottom',   0.00,  1.00),
+            ('TR',  'left',     'bottom',   0.70,  0.70),
+            ('TL',  'right',    'bottom',  -0.70,  0.70),
+            ('L',   'right',    'center',  -1.00,  0.00),
+            ('B',   'center',   'top',      0.00, -1.00),
+            ('BR',  'left',     'top',      0.70, -0.70),
+            ('BL',  'right',    'top',     -0.70, -0.70)
         ]
 
         for name, x, y, s in zip(plist, x_vals, y_vals, sizes):
             label       = ""
+            team_info   = assigns.get(name.lower(), ("N/A", "N/A"))
+
+            if team_info[0] != "N/A":
+                leader_name = t1_lookup.get(team_info[0], "")
+                clean_name  = "".join(filter(str.isalnum, leader_name))
+                t_lbl       = clean_name[ : 3].upper() if leader_name else f"T{team_info[0]}"
+                label       = f"{t_lbl}-{team_info[1]}"
+            
+            if not label: continue
+
+            dirs        = []
+            x_buffer    = (x_max - x_min) * 0.25
+            y_buffer    = (y_max - y_min) * 0.05
+
+            for d_name, ha, va, cx, sy in base_dirs:
+                if x - x_min < x_buffer and cx < 0: continue
+                if x_max - x < x_buffer and cx > 0: continue
+                if y - y_min < y_buffer and sy < 0: continue
+                if y_max - y < y_buffer and sy > 0: continue
+                dirs.append((d_name, ha, va, cx, sy))
+
+            if not dirs: dirs = base_dirs
+                
+            r_pt        = math.sqrt(s) / 2.0
             team_info   = assigns.get(name.lower(), ("N/A", "N/A"))
 
             if team_info[0] != "N/A":
