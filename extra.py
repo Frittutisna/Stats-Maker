@@ -7,6 +7,8 @@ from    html2image      import  Html2Image
 from    pathlib         import  Path
 from    PIL             import  Image,      ImageChops,     ImageOps
 from    tkinter         import  messagebox, ttk
+import  matplotlib.pyplot as    plt
+import  matplotlib.colors as    mcolors
 
 BROWSER_PATHS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -433,7 +435,7 @@ class TourAnalyzer:
                         if yr is not None   : self.p_l_vint [n].append(yr)
                         self.p_l_corr[n].append(len(correct))
 
-        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, all_known, tour_types)
+        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, tour_types)
 
     def _scan_players(self, paths):
         players = set           ()
@@ -536,7 +538,7 @@ class TourAnalyzer:
 
         return True, elo_map, assignments, t1_lookup, rosters, all_known
 
-    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, original_roster, tour_types):
+    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, tour_types):
         watched_valid       = missing_count <= 5
         baseline_initial    = int(np.median([len(appearances.get(name, [])) for name in self.s_part]))
         
@@ -608,18 +610,18 @@ class TourAnalyzer:
         out_path    = self.tour_dir / DIR_OUT
         out_path.mkdir(parents = True, exist_ok = True)
 
-        self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup, original_roster)
+        self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup)
         self._create_tour_png   (use_teams, watched_valid, out_path)
 
         if watched_valid and assignments        : self._create_team_png     (t1_lookup,     out_path)
         if assignments                          : self._create_tier_png     (assignments,   out_path,   watched_valid)
-        if watched_valid                        : self._create_watched_png  (out_path)
+        if watched_valid                        : self._create_watched_png  (out_path, assignments, t1_lookup)
         if watched_valid and self.chanting_ids  : self._create_chanting_png (out_path)
 
         self._fuse_and_clean(out_path)
         messagebox.showinfo("Success", f"Saved the PNGs for the {t_name} tour to {DIR_OUT}/{self.tour_id}")
 
-    def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup, original_roster):
+    def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup):
         rows, eligibility   = [], []
         t_labels            = {1: "OP GR", 2: "ED GR", 3: "IN GR"}
         active              = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
@@ -801,22 +803,58 @@ class TourAnalyzer:
         if watched_valid: cols.append("Chanter")
         self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = cols), path, "Tier.png", "Tier Bests")
 
-    def _create_watched_png(self, path):
-        plist   = [n for n in self.s_part if self.p_l_corr[n]]
-        e       = sorted(plist, key = lambda x: np.mean     (self.p_l_corr[x]), reverse = True) [ : 3]
-        h       = sorted(plist, key = lambda x: np.mean     (self.p_l_corr[x]))                 [ : 3]
-        z       = sorted(plist, key = lambda x: np.median   (self.p_l_vint[x]), reverse=True)   [ : 3]
-        b       = sorted(plist, key = lambda x: np.median   (self.p_l_vint[x]))                 [ : 3]
+    def _create_watched_png(self, path, assigns, t1_lookup):
+        plist = [n for n in self.s_part if self.p_l_corr[n]]
+        if not plist: return
 
-        rows    = [[
-            f"{i+1}", 
-            f"{e[i]} ({np.mean(self.p_l_corr[e[i]]):.2f})"              if i < len(e) else "N/A",
-            f"{h[i]} ({np.mean(self.p_l_corr[h[i]]):.2f})"              if i < len(h) else "N/A",
-            f"{z[i]} ({format_year(np.median(self.p_l_vint[z[i]]))})"   if i < len(z) else "N/A",
-            f"{b[i]} ({format_year(np.median(self.p_l_vint[b[i]]))})"   if i < len(b) else "N/A"
-        ] for i in range(3)]
+        x_vals = [np.mean(self.p_l_corr[name]) for name in plist]
+        y_vals = [np.median(self.p_l_vint[name]) if self.p_l_vint[name] else np.nan for name in plist]
 
-        self._export_png(pd.DataFrame(rows, columns = ["Rank", "Easiest", "Hardest", "Newest", "Oldest"]), path, "Watched.png", "List Statistics")
+        valid_data = [(p, x, y) for p, x, y in zip(plist, x_vals, y_vals) if not np.isnan(y)]
+        if not valid_data: return
+
+        plist, x_vals, y_vals = zip(*valid_data)
+        plist = list(plist)
+        x_vals = list(x_vals)
+        y_vals = list(y_vals)
+
+        rig_rates = [self.p_rigs[name] / self.s_part[name] if self.s_part[name] else 0 for name in plist]
+        rig_grs = [self.p_rigs_h[name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
+
+        fig, ax = plt.subplots(figsize=(10, 8))
+        cmap = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", ["#D95400", "#FFFFFF", "#0056B3"])
+        sizes = [50 + rate * 1500 for rate in rig_rates]
+
+        sc = ax.scatter(x_vals, y_vals, s=sizes, c=rig_grs, cmap=cmap, vmin=0.0, vmax=1.0, edgecolors='black', alpha=0.9)
+
+        for name, x, y in zip(plist, x_vals, y_vals):
+            label = name
+            team_info = assigns.get(name.lower(), ("N/A", "N/A"))
+            if team_info[0] != "N/A":
+                leader_name = t1_lookup.get(team_info[0], "")
+                clean_name = "".join(filter(str.isalnum, leader_name))
+                t_lbl = clean_name[:3].upper() if leader_name else f"T{team_info[0]}"
+                label += f" ({t_lbl}-{team_info[1]})"
+            
+            ax.text(x, y, f" {label}", fontsize=10, verticalalignment='center', horizontalalignment='left', weight='bold')
+
+        ax.set_title("List Statistics", fontsize=16, pad=15, weight='bold')
+        ax.set_xlabel("Average Over 8 (Easiest ->)", fontsize=12, labelpad=10)
+        ax.set_ylabel("List Vintage", fontsize=12, labelpad=10)
+
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, pos: format_year(val)))
+        
+        cbar = fig.colorbar(sc, ax=ax, pad=0.05)
+        cbar.set_label("Rig Guess Rate (Rig GR)", fontsize=11, labelpad=10)
+        cbar.ax.tick_params(labelsize=10)
+
+        ax.grid(True, linestyle='--', alpha=0.5)
+        plt.tight_layout()
+        plt.savefig(path / "Watched.png", dpi=150)
+        plt.close(fig)
+
+        try     : trim_whitespace(path / "Watched.png")
+        except  : pass
 
     def _create_chanting_png(self, path):
         plist = [n for n in self.s_part if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
@@ -938,21 +976,30 @@ class TourAnalyzer:
             imgs["Team"] = combined
             del imgs["Chanting"]
 
-        rk = [k for k in ["Team", "Tier", "Watched", "Chanting"] if k in imgs]
-        if not rk: fused = imgs.get("Tour")
-        elif len(rk) == 1:
-            tw, th  = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
-            ok      = rk[0]
-            fused   = Image.new("RGB", (max(tw, imgs[ok].width), th + (10 if th else 0) + imgs[ok].height), "white")
-            if "Tour" in imgs: fused.paste(imgs["Tour"], (0, 0))
-            fused.paste(imgs[ok], (0, th + 10 if th else 0))
-        else:
-            tw, th  = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
-            rw, rh  = max([imgs[k].width for k in rk]), sum([imgs[k].height + 10 for k in rk]) - 10
-            fused   = Image.new("RGB", (tw + (10 if tw and rw else 0) + rw, max(th, rh)), "white")
-            if "Tour" in imgs: fused.paste(imgs["Tour"], (0, 0))
-            cx, cy  = (tw + 10 if tw else 0), 0
-            for k in rk: fused.paste(imgs[k], (cx, cy)); cy += imgs[k].height + 10
+        rk = [k for k in ["Team", "Tier", "Chanting"] if k in imgs]
+        
+        ww, wh = (imgs["Watched"].width, imgs["Watched"].height) if "Watched" in imgs else (0, 0)
+        tw, th = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
+        rw, rh = max([imgs[k].width for k in rk]) if rk else 0, sum([imgs[k].height + 10 for k in rk]) - 10 if rk else 0
+        
+        total_w = ww + (10 if ww and tw else 0) + tw + (10 if (ww or tw) and rw else 0) + rw
+        total_h = max(wh, th, rh)
+        
+        fused = Image.new("RGB", (total_w, total_h), "white")
+        
+        cx = 0
+        if "Watched" in imgs:
+            fused.paste(imgs["Watched"], (cx, 0))
+            cx += ww + 10
+            
+        if "Tour" in imgs:
+            fused.paste(imgs["Tour"], (cx, 0))
+            cx += tw + 10
+            
+        cy = 0
+        for k in rk:
+            fused.paste(imgs[k], (cx, cy))
+            cy += imgs[k].height + 10
             
         if fused:
             f_p = path / "Extra.png"
