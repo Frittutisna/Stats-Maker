@@ -896,6 +896,8 @@ class TourAnalyzer:
         ax.xaxis    .set_major_locator  (plt.MaxNLocator(integer = True, nbins = 5, steps = [1, 2, 5, 10]))
         ax          .set_yticks         (range(y_min, y_max + 1, step))
 
+        axins = None
+
         if len(valid_data) >= 3:
             xy = np.vstack([x_vals, y_vals])
 
@@ -917,113 +919,117 @@ class TourAnalyzer:
                 axins.set_xticks    ([])
                 axins.set_yticks    ([])
             except: axins = None
-        else: axins = None
 
-        pt_x = (x_max - x_min) / 500.0
-        pt_y = (y_max - y_min) / 500.0
-
-        obstacles = []
-        for x, y, s in zip(x_vals, y_vals, sizes):
-            r_pt = math.sqrt(s) / 2.0
-            obstacles.append((x - r_pt * pt_x, x + r_pt * pt_x, y - r_pt * pt_y, y + r_pt * pt_y))
-
-        dirs = [
-            ('R',   'left',     'center',   1.00, 0.00),
-            ('T',   'center',   'bottom',   0.00, 1.00),
-            ('TR',  'left',     'bottom',   0.70, 0.70),
-            ('TL',  'right',    'bottom',   -0.7, 0.70),
-            ('L',   'right',    'center',   -1.0, 0.00),
-            ('B',   'center',   'top',      0.00, -1.0),
-            ('BR',  'left',     'top',      0.70, -0.7),
-            ('BL',  'right',    'top',      -0.7, -0.7)
-        ]
-
-        for name, x, y, s in zip(plist, x_vals, y_vals, sizes):
-            label       = ""
-            team_info   = assigns.get(name.lower(), ("N/A", "N/A"))
-
-            if team_info[0] != "N/A":
-                leader_name = t1_lookup.get(team_info[0], "")
-                clean_name  = "".join(filter(str.isalnum, leader_name))
-                t_lbl       = clean_name[ : 3].upper() if leader_name else f"T{team_info[0]}"
-                label       = f"{t_lbl}-{team_info[1]}"
+        def annotate_axes(target_ax, current_xlim, current_ylim):
+            if target_ax is None: return
             
-            if not label: continue
+            x_range     = current_xlim[1]   - current_xlim[0]
+            y_range     = current_ylim[1]   - current_ylim[0]
+            pt_x        = x_range           / 500.0
+            pt_y        = y_range           / 500.0
+            obstacles   = []
+
+            for x, y, s in zip(x_vals, y_vals, sizes):
+                if (
+                    current_xlim[0] - x_range * 0.1 <= x <= current_xlim[1] + x_range * 0.1 and 
+                    current_ylim[0] - y_range * 0.1 <= y <= current_ylim[1] + y_range * 0.1
+                ):
+                    r_pt = math.sqrt(s) / 2.0
+                    obstacles.append((x - r_pt * pt_x, x + r_pt * pt_x, y - r_pt * pt_y, y + r_pt * pt_y))
+
+            dirs = [
+                ('R',   'left',     'center',   1.00, 0.00),
+                ('T',   'center',   'bottom',   0.00, 1.00),
+                ('TR',  'left',     'bottom',   0.70, 0.70),
+                ('TL',  'right',    'bottom',   -0.7, 0.70),
+                ('L',   'right',    'center',   -1.0, 0.00),
+                ('B',   'center',   'top',      0.00, -1.0),
+                ('BR',  'left',     'top',      0.70, -0.7),
+                ('BL',  'right',    'top',      -0.7, -0.7)
+            ]
+
+            for name, x, y, s in zip(plist, x_vals, y_vals, sizes):
+                if not (current_xlim[0] <= x <= current_xlim[1] and current_ylim[0] <= y <= current_ylim[1]): continue
+
+                label       = ""
+                team_info   = assigns.get(name.lower(), ("N/A", "N/A"))
+
+                if team_info[0] != "N/A":
+                    leader_name = t1_lookup.get(team_info[0], "")
+                    clean_name  = "".join(filter(str.isalnum, leader_name))
+                    t_lbl       = clean_name[ : 3].upper() if leader_name else f"T{team_info[0]}"
+                    label       = f"{t_lbl}-{team_info[1]}"
                 
-            r_pt                = math.sqrt(s) / 2.0
-            lbl_w_pt            = len(label) * 5.0
-            lbl_h_pt            = 10.0
-            best_pos            = None
-            min_overlap_score   = float('inf')
-            
-            for extra_pad in [0.0, 1.0, 2.0, 3.0]:
-                for _, ha, va, cx, sy in dirs:
-                    offset_dist = r_pt + 0.5 + extra_pad
-                    ox          = offset_dist * cx
-                    oy          = offset_dist * sy
+                if not label: continue
                     
-                    if ha == 'left':
-                        bx_min = ox
-                        bx_max = ox + lbl_w_pt
-                    elif ha == 'right':
-                        bx_min = ox - lbl_w_pt
-                        bx_max = ox
-                    else:
-                        bx_min = ox - lbl_w_pt / 2.0
-                        bx_max = ox + lbl_w_pt / 2.0
+                r_pt                = math.sqrt(s) / 2.0
+                lbl_w_pt            = len(label) * 5.0
+                lbl_h_pt            = 10.0
+                best_pos            = None
+                min_overlap_score   = float('inf')
+                
+                for extra_pad in [0.0, 1.0, 2.0, 3.0]:
+                    for _, ha, va, cx, sy in dirs:
+                        offset_dist = r_pt + 0.5 + extra_pad
+                        ox          = offset_dist * cx
+                        oy          = offset_dist * sy
                         
-                    if va == 'bottom':
-                        by_min = oy
-                        by_max = oy + lbl_h_pt
-                    elif va == 'top':
-                        by_min = oy - lbl_h_pt
-                        by_max = oy
-                    else:
-                        by_min = oy - lbl_h_pt / 2.0
-                        by_max = oy + lbl_h_pt / 2.0
+                        if ha == 'left':
+                            bx_min = ox
+                            bx_max = ox + lbl_w_pt
+                        elif ha == 'right':
+                            bx_min = ox - lbl_w_pt
+                            bx_max = ox
+                        else:
+                            bx_min = ox - lbl_w_pt / 2.0
+                            bx_max = ox + lbl_w_pt / 2.0
+                            
+                        if va == 'bottom':
+                            by_min = oy
+                            by_max = oy + lbl_h_pt
+                        elif va == 'top':
+                            by_min = oy - lbl_h_pt
+                            by_max = oy
+                        else:
+                            by_min = oy - lbl_h_pt / 2.0
+                            by_max = oy + lbl_h_pt / 2.0
+                            
+                        lbl_box         = (x + bx_min * pt_x, x + bx_max * pt_x, y + by_min * pt_y, y + by_max * pt_y)
+                        overlap_score   = 0
+                        buffer_x        = 0.05 * pt_x
+                        buffer_y        = 0.05 * pt_y
                         
-                    lbl_box         = (x + bx_min * pt_x, x + bx_max * pt_x, y + by_min * pt_y, y + by_max * pt_y)
-                    overlap_score   = 0
-                    buffer_x        = 0.05 * pt_x
-                    buffer_y        = 0.05 * pt_y
-                    
-                    for obs in obstacles:
-                        if not (
-                            lbl_box[1] + buffer_x < obs[0] or 
-                            obs[1] + buffer_x < lbl_box[0] or 
-                            lbl_box[3] + buffer_y < obs[2] or 
-                            obs[3] + buffer_y < lbl_box[2]
-                        ): overlap_score += 1
-                    
-                    if overlap_score == 0:
-                        best_pos = (ha, va, ox, oy, lbl_box)
-                        break
-                    elif overlap_score < min_overlap_score:
-                        min_overlap_score   = overlap_score
-                        best_pos            = (ha, va, ox, oy, lbl_box)
+                        for obs in obstacles:
+                            if not (
+                                lbl_box[1] + buffer_x < obs[0] or 
+                                obs[1] + buffer_x < lbl_box[0] or 
+                                lbl_box[3] + buffer_y < obs[2] or 
+                                obs[3] + buffer_y < lbl_box[2]
+                            ): overlap_score += 1
+                        
+                        if overlap_score == 0:
+                            best_pos = (ha, va, ox, oy, lbl_box)
+                            break
+                        elif overlap_score < min_overlap_score:
+                            min_overlap_score   = overlap_score
+                            best_pos            = (ha, va, ox, oy, lbl_box)
 
-                if best_pos and min_overlap_score == 0: break
-                    
-            ha, va, ox, oy, lbl_box = best_pos
-            obstacles.append(lbl_box)
-            
-            ax.annotate(
-                label, (x, y), 
-                fontsize            = 10,
-                verticalalignment   = va, 
-                horizontalalignment = ha,
-                xytext              = (ox, oy),
-                textcoords          = 'offset points'
-            )
+                    if best_pos and min_overlap_score == 0: break
+                        
+                ha, va, ox, oy, lbl_box = best_pos
+                obstacles.append(lbl_box)
+                
+                target_ax.annotate(
+                    label, (x, y), 
+                    fontsize            = 10,
+                    verticalalignment   = va, 
+                    horizontalalignment = ha,
+                    xytext              = (ox, oy),
+                    textcoords          = 'offset points'
+                )
 
-            if axins is not None: axins.annotate(
-                label, (x, y), 
-                fontsize            = 10,
-                verticalalignment   = va, 
-                horizontalalignment = ha,
-                xytext              = (ox, oy),
-                textcoords          = 'offset points'
-            )
+        annotate_axes(ax, (x_min, x_max), (y_min, y_max))
+        if axins is not None: annotate_axes(axins, axins.get_xlim(), axins.get_ylim())
 
         ax          .set_title              ("List Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad      = 12.5)
         ax          .set_xlabel             ("Average Over-8",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad = 2.5)
