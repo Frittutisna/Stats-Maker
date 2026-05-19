@@ -9,6 +9,7 @@ from    PIL             import  Image,      ImageChops,     ImageOps
 from    tkinter         import  messagebox, ttk
 import  matplotlib.pyplot as    plt
 import  matplotlib.colors as    mcolors
+import  math
 
 BROWSER_PATHS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -825,30 +826,141 @@ class TourAnalyzer:
         cmap = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", ["#D95400", "#FFFFFF", "#0056B3"])
         sizes = [50 + rate * 1500 for rate in rig_rates]
 
-        sc = ax.scatter(x_vals, y_vals, s=sizes, c=rig_grs, cmap=cmap, vmin=0.0, vmax=1.0, edgecolors='black', alpha=0.9)
+        sc = ax.scatter(x_vals, y_vals, s=sizes, c=rig_grs, cmap=cmap, vmin=0.50, vmax=1.0, edgecolors='black', alpha=0.9, linewidths=1)
 
-        for name, x, y in zip(plist, x_vals, y_vals):
-            label = name
+        x_min, x_max = math.floor(min(x_vals)), math.ceil(max(x_vals))
+        y_min, y_max = math.floor(min(y_vals)), math.ceil(max(y_vals))
+
+        def is_prime(num):
+            if num < 2: return False
+            for i in range(2, int(math.sqrt(num)) + 1):
+                if num % i == 0: return False
+            return True
+
+        if is_prime(x_max - x_min): x_max += 1
+        if is_prime(y_max - y_min): y_max += 1
+
+        ax.set_xlim(x_min, x_max)
+        ax.set_ylim(y_min, y_max)
+
+        ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True, nbins=5, steps=[1, 2, 5, 10]))
+        ax.yaxis.set_major_locator(plt.MaxNLocator(integer=True, nbins=5, steps=[1, 2, 5, 10]))
+
+        pt_x = (x_max - x_min) / (6.5 * 72.0)
+        pt_y = (y_max - y_min) / (5.5 * 72.0)
+
+        obstacles = []
+        for x, y, s in zip(x_vals, y_vals, sizes):
+            r_pt = math.sqrt(s) / 2.0
+            obstacles.append((x - r_pt * pt_x, x + r_pt * pt_x, y - r_pt * pt_y, y + r_pt * pt_y))
+
+        dirs = [
+            ('R', 'left', 'center', 1.0, 0.0),
+            ('T', 'center', 'bottom', 0.0, 1.0),
+            ('TR', 'left', 'bottom', 0.707, 0.707),
+            ('TL', 'right', 'bottom', -0.707, 0.707),
+            ('L', 'right', 'center', -1.0, 0.0),
+            ('B', 'center', 'top', 0.0, -1.0),
+            ('BR', 'left', 'top', 0.707, -0.707),
+            ('BL', 'right', 'top', -0.707, -0.707)
+        ]
+
+        for name, x, y, s in zip(plist, x_vals, y_vals, sizes):
+            label = ""
             team_info = assigns.get(name.lower(), ("N/A", "N/A"))
             if team_info[0] != "N/A":
                 leader_name = t1_lookup.get(team_info[0], "")
                 clean_name = "".join(filter(str.isalnum, leader_name))
                 t_lbl = clean_name[:3].upper() if leader_name else f"T{team_info[0]}"
-                label += f" ({t_lbl}-{team_info[1]})"
+                label = f"{t_lbl}-{team_info[1]}"
             
-            ax.text(x, y, f" {label}", fontsize=10, verticalalignment='center', horizontalalignment='left', weight='bold')
+            if not label: continue
+                
+            r_pt = math.sqrt(s) / 2.0
+            lbl_w_pt = len(label) * 6.0
+            lbl_h_pt = 9.0
+            
+            best_pos = None
+            min_overlap_score = float('inf')
+            
+            for extra_pad in [0.0, 4.0, 8.0, 12.0]:
+                for d_name, ha, va, cx, sy in dirs:
+                    offset_dist = r_pt + 3.0 + extra_pad
+                    ox = offset_dist * cx
+                    oy = offset_dist * sy
+                    
+                    if ha == 'left':
+                        bx_min = ox
+                        bx_max = ox + lbl_w_pt
+                    elif ha == 'right':
+                        bx_min = ox - lbl_w_pt
+                        bx_max = ox
+                    else:
+                        bx_min = ox - lbl_w_pt / 2.0
+                        bx_max = ox + lbl_w_pt / 2.0
+                        
+                    if va == 'bottom':
+                        by_min = oy
+                        by_max = oy + lbl_h_pt
+                    elif va == 'top':
+                        by_min = oy - lbl_h_pt
+                        by_max = oy
+                    else:
+                        by_min = oy - lbl_h_pt / 2.0
+                        by_max = oy + lbl_h_pt / 2.0
+                        
+                    lbl_box = (
+                        x + bx_min * pt_x,
+                        x + bx_max * pt_x,
+                        y + by_min * pt_y,
+                        y + by_max * pt_y
+                    )
+                    
+                    overlap_score = 0
+                    buffer_x = 0.5 * pt_x
+                    buffer_y = 0.5 * pt_y
+                    
+                    for obs in obstacles:
+                        if not (lbl_box[1] + buffer_x < obs[0] or obs[1] + buffer_x < lbl_box[0] or
+                                lbl_box[3] + buffer_y < obs[2] or obs[3] + buffer_y < lbl_box[2]):
+                            overlap_score += 1
+                    
+                    if overlap_score == 0:
+                        best_pos = (ha, va, ox, oy, lbl_box)
+                        break
+                    else:
+                        if overlap_score < min_overlap_score:
+                            min_overlap_score = overlap_score
+                            best_pos = (ha, va, ox, oy, lbl_box)
+                if best_pos and min_overlap_score == 0:
+                    break
+                    
+            ha, va, ox, oy, lbl_box = best_pos
+            obstacles.append(lbl_box)
+            
+            ax.annotate(
+                label, (x, y), fontsize=10,
+                verticalalignment=va, horizontalalignment=ha,
+                weight='normal', xytext=(ox, oy),
+                textcoords='offset points'
+            )
 
         ax.set_title("List Statistics", fontsize=16, pad=15, weight='bold')
         ax.set_xlabel("Average Over 8 (Easiest ->)", fontsize=12, labelpad=10)
         ax.set_ylabel("List Vintage", fontsize=12, labelpad=10)
 
-        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, pos: format_year(val)))
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, pos: str(int(val))))
+        plt.setp(ax.get_yticklabels(), rotation=90, horizontalalignment='center', verticalalignment='center')
         
-        cbar = fig.colorbar(sc, ax=ax, pad=0.05)
+        ax.tick_params(axis='x', which='both', length=0, pad=6)
+        ax.tick_params(axis='y', which='both', length=0, pad=12)
+        
+        cbar = fig.colorbar(sc, ax=ax, pad=0.02, ticks=[0.50, 0.75, 1.0])
         cbar.set_label("Rig Guess Rate (Rig GR)", fontsize=11, labelpad=10)
-        cbar.ax.tick_params(labelsize=10)
+        cbar.ax.set_yticklabels(['50', '75', '100'])
+        cbar.ax.tick_params(labelsize=10, length=0)
 
-        ax.grid(True, linestyle='--', alpha=0.5)
+        ax.grid(False)
         plt.tight_layout()
         plt.savefig(path / "Watched.png", dpi=150)
         plt.close(fig)
@@ -951,8 +1063,8 @@ class TourAnalyzer:
                 html    +=  f"<td{s_attr}>{cnt}</td>"
             html += "</tr>"
 
-        full    = f"<html><head><style>body {{font-family: 'Segoe UI', Arial, sans-serif; background: white; display: inline-block; margin: 0;}} h2 {{margin: 10px 0 10px 5px; font-size: 30px; text-align: center;}} table {{margin-left: 10px; border-collapse: collapse; width: auto;}} th {{font-weight: bold; font-size: 20px; text-align: center; padding: 10px; border: 1px solid black;}} td {{font-size: 20px; text-align: center; padding: 10px; border: 1px solid black;}}</style></head><body><h2>{title}</h2><table>{html}</table></body></html>"
-        hti     = Html2Image(size = (max(2000, len(df.columns) * 120), max(2000, len(df) * 60)), browser_executable = self.browser_path, output_path = str(path), custom_flags = ['--log-level=3', '--silent'])
+        full = f"<html><head><style>body {{font-family: 'Segoe UI', Arial, sans-serif; background: white; display: inline-block; margin: 0;}} h2 {{margin: 10px 0 10px 5px; font-size: 30px; text-align: center;}} table {{margin-left: 10px; border-collapse: collapse; width: auto;}} th {{font-weight: bold; font-size: 20px; text-align: center; padding: 10px; border: 1px solid black;}} td {{font-size: 20px; text-align: center; padding: 10px; border: 1px solid black;}}</style></head><body><h2>{title}</h2><table>{html}</table></body></html>"
+        hti  = Html2Image(size = (max(2000, len(df.columns) * 120), max(2000, len(df) * 60)), browser_executable = self.browser_path, output_path = str(path), custom_flags = ['--log-level=3', '--silent'])
 
         hti.screenshot(html_str = full, save_as = fname)
         try     : trim_whitespace(path / fname)
@@ -964,24 +1076,25 @@ class TourAnalyzer:
         imgs    = {k: Image.open(v) for k, v in ps  .items()}
         if not imgs: return
 
-        if "Team" in imgs and "Chanting" in imgs:
-            t_img, c_img    = imgs["Team"], imgs["Chanting"]
-            combined_w      = t_img.width + 10 + c_img.width
-            combined_h      = max(t_img.height, c_img.height)
-            combined        = Image.new("RGB", (combined_w, combined_h), "white")
-
-            combined.paste(t_img, (0, 0))
-            combined.paste(c_img, (t_img.width + 10, 0))
-            
-            imgs["Team"] = combined
-            del imgs["Chanting"]
-
         rk = [k for k in ["Team", "Tier", "Chanting"] if k in imgs]
         
         ww, wh = (imgs["Watched"].width, imgs["Watched"].height) if "Watched" in imgs else (0, 0)
         tw, th = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
-        rw, rh = max([imgs[k].width for k in rk]) if rk else 0, sum([imgs[k].height + 10 for k in rk]) - 10 if rk else 0
         
+        rw = 0
+        rh = 0
+        if rk:
+            if "Team" in imgs:
+                rw = max(rw, imgs["Team"].width)
+                rh += imgs["Team"].height + 10
+            if "Tier" in imgs:
+                rw = max(rw, imgs["Tier"].width)
+                rh += imgs["Tier"].height + 10
+            if "Chanting" in imgs:
+                rw = max(rw, imgs["Chanting"].width)
+                rh += imgs["Chanting"].height + 10
+            rh -= 10
+
         total_w = ww + (10 if ww and tw else 0) + tw + (10 if (ww or tw) and rw else 0) + rw
         total_h = max(wh, th, rh)
         
@@ -997,9 +1110,15 @@ class TourAnalyzer:
             cx += tw + 10
             
         cy = 0
-        for k in rk:
-            fused.paste(imgs[k], (cx, cy))
-            cy += imgs[k].height + 10
+        if "Team" in imgs:
+            fused.paste(imgs["Team"], (cx, cy))
+            cy += imgs["Team"].height + 10
+        if "Tier" in imgs:
+            fused.paste(imgs["Tier"], (cx, cy))
+            cy += imgs["Tier"].height + 10
+        if "Chanting" in imgs:
+            fused.paste(imgs["Chanting"], (cx, cy))
+            cy += imgs["Chanting"].height + 10
             
         if fused:
             f_p = path / "Extra.png"
