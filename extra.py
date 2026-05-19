@@ -553,7 +553,7 @@ class TourAnalyzer:
             init_label      = f"Watched {t_str}" if watched_valid else f"Random {t_str}"
         else: init_label    = "Watched" if watched_valid else "Usual"
 
-        self.tour_label     = StringDialog(root, "Tour Name", f"Enter the name for Tour {self.tour_id}:", initialvalue = init_label).result
+        self.tour_label     = StringDialog(root, "Tour Name", f"Enter the name of the Tour {self.tour_id}:", initialvalue = init_label).result
 
         if not self.tour_label: self.tour_label = init_label
 
