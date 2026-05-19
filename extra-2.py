@@ -909,36 +909,15 @@ class TourAnalyzer:
                 inset_y_buffer  = max(1.0, (max(y_vals) - min(y_vals)) * 0.1)
                 xlim_inset      = (blob_x - inset_x_buffer, blob_x + inset_x_buffer)
                 ylim_inset      = (blob_y - inset_y_buffer, blob_y + inset_y_buffer)
-                x_mid, y_mid    = (x_min + x_max) / 2, (y_min + y_max) / 2
+                axins           = zoomed_inset_axes(ax, zoom = 2.0, loc = 4, borderpad = 1)
 
-                corners = {
-                    1: (4, "upper right"),
-                    2: (2, "upper left"),
-                    3: (3, "lower left"),
-                    4: (1, "lower right")
-                }
-                
-                quadrant_counts = [0, 0, 0, 0]
-
-                for x, y in zip(x_vals, y_vals):
-                    if      x >=    x_mid and y >=  y_mid   : quadrant_counts[0] += 1
-                    elif    x <     x_mid and y >=  y_mid   : quadrant_counts[1] += 1
-                    elif    x <     x_mid and y <   y_mid   : quadrant_counts[2] += 1
-                    else                                    : quadrant_counts[3] += 1
-                    
-                best_quadrant_idx   = np.argmin(quadrant_counts)
-                loc_id, _           = corners[best_quadrant_idx + 1]
-
-                axins = zoomed_inset_axes(ax, zoom = 2.0, loc = loc_id, borderpad = 1)
-                axins.scatter(x_vals, y_vals, s = [s * 0.75 for s in sizes], c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
-                
+                axins.scatter       (x_vals, y_vals, s = [s * 0.75 for s in sizes], c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)                
                 axins.set_xlim      (xlim_inset)
                 axins.set_ylim      (ylim_inset)
                 axins.set_xticks    ([])
                 axins.set_yticks    ([])                
-            except:
-                pass # Fallback smoothly to original execution if KDE calculation hits a singularity
-        # -------------------------------------
+            except: axins = None
+        else: axins = None
 
         pt_x = (x_max - x_min) / 500.0
         pt_y = (y_max - y_min) / 500.0
@@ -1029,6 +1008,15 @@ class TourAnalyzer:
             obstacles.append(lbl_box)
             
             ax.annotate(
+                label, (x, y), 
+                fontsize            = 10,
+                verticalalignment   = va, 
+                horizontalalignment = ha,
+                xytext              = (ox, oy),
+                textcoords          = 'offset points'
+            )
+
+            if axins is not None: axins.annotate(
                 label, (x, y), 
                 fontsize            = 10,
                 verticalalignment   = va, 
