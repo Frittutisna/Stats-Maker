@@ -826,10 +826,42 @@ class TourAnalyzer:
         cmap = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", ["#D95400", "#FFFFFF", "#0056B3"])
         sizes = [50 + rate * 1500 for rate in rig_rates]
 
-        sc = ax.scatter(x_vals, y_vals, s=sizes, c=rig_grs, cmap=cmap, vmin=0.50, vmax=1.0, edgecolors='black', alpha=0.9, linewidths=1)
+        sc = ax.scatter(x_vals, y_vals, s=sizes, c=rig_grs, cmap=cmap, vmin=0.60, vmax=1.0, edgecolors='black', alpha=0.9, linewidths=1)
 
         x_min, x_max = math.floor(min(x_vals)), math.ceil(max(x_vals))
-        y_min, y_max = math.floor(min(y_vals)), math.ceil(max(y_vals))
+        
+        y_floor = math.floor(min(y_vals))
+        y_ceil = math.ceil(max(y_vals))
+        
+        def is_composite(n):
+            if n <= 3: return False
+            for i in range(2, int(math.sqrt(n)) + 1):
+                if n % i == 0: return True
+            return False
+
+        y_min = y_floor - 1
+        y_max = y_ceil + 1
+        step = 1
+        
+        found = False
+        for delta in range(0, 30):
+            for d_min in range(delta + 1):
+                d_max = delta - d_min
+                cur_min = (y_floor - 1) - d_min
+                cur_max = (y_ceil + 1) + d_max
+                r = cur_max - cur_min
+                if is_composite(r):
+                    valid_k = [k for k in [2, 3, 4, 5] if r % k == 0]
+                    if not valid_k and r % 1 == 0:
+                        valid_k = [1]
+                    if valid_k:
+                        best_k = max(valid_k)
+                        y_min = cur_min
+                        y_max = cur_max
+                        step = r // best_k
+                        found = True
+                        break
+            if found: break
 
         def is_prime(num):
             if num < 2: return False
@@ -838,13 +870,12 @@ class TourAnalyzer:
             return True
 
         if is_prime(x_max - x_min): x_max += 1
-        if is_prime(y_max - y_min): y_max += 1
 
         ax.set_xlim(x_min, x_max)
         ax.set_ylim(y_min, y_max)
 
         ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True, nbins=5, steps=[1, 2, 5, 10]))
-        ax.yaxis.set_major_locator(plt.MaxNLocator(integer=True, nbins=5, steps=[1, 2, 5, 10]))
+        ax.set_yticks(range(y_min, y_max + 1, step))
 
         pt_x = (x_max - x_min) / (6.5 * 72.0)
         pt_y = (y_max - y_min) / (5.5 * 72.0)
@@ -883,9 +914,9 @@ class TourAnalyzer:
             best_pos = None
             min_overlap_score = float('inf')
             
-            for extra_pad in [0.0, 4.0, 8.0, 12.0]:
+            for extra_pad in [0.0, 1.0, 2.0, 3.0]:
                 for d_name, ha, va, cx, sy in dirs:
-                    offset_dist = r_pt + 3.0 + extra_pad
+                    offset_dist = r_pt + 0.5 + extra_pad
                     ox = offset_dist * cx
                     oy = offset_dist * sy
                     
@@ -917,8 +948,8 @@ class TourAnalyzer:
                     )
                     
                     overlap_score = 0
-                    buffer_x = 0.5 * pt_x
-                    buffer_y = 0.5 * pt_y
+                    buffer_x = 0.05 * pt_x
+                    buffer_y = 0.05 * pt_y
                     
                     for obs in obstacles:
                         if not (lbl_box[1] + buffer_x < obs[0] or obs[1] + buffer_x < lbl_box[0] or
@@ -953,19 +984,19 @@ class TourAnalyzer:
         plt.setp(ax.get_yticklabels(), rotation=90, horizontalalignment='center', verticalalignment='center')
         
         ax.tick_params(axis='x', which='both', length=0, pad=6)
-        ax.tick_params(axis='y', which='both', length=0, pad=12)
+        ax.tick_params(axis='y', which='both', length=0, pad=8)
         
-        cbar = fig.colorbar(sc, ax=ax, pad=0.02, ticks=[0.50, 0.75, 1.0])
-        cbar.set_label("Rig Guess Rate (Rig GR)", fontsize=11, labelpad=10)
-        cbar.ax.set_yticklabels(['50', '75', '100'])
+        cbar = fig.colorbar(sc, ax=ax, pad=0.02, ticks=[0.60, 0.80, 1.0])
+        cbar.set_label("Rig Guess Rate (Rig GR)", fontsize=11, labelpad=2)
+        cbar.ax.set_yticklabels(['60', '80', '100'])
         cbar.ax.tick_params(labelsize=10, length=0)
 
         ax.grid(False)
         plt.tight_layout()
-        plt.savefig(path / "Watched.png", dpi=150)
+        plt.savefig(path / "List.png", dpi=150)
         plt.close(fig)
 
-        try     : trim_whitespace(path / "Watched.png")
+        try     : trim_whitespace(path / "List.png")
         except  : pass
 
     def _create_chanting_png(self, path):
@@ -1071,14 +1102,12 @@ class TourAnalyzer:
         except  : pass
 
     def _fuse_and_clean(self, path):
-        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Watched": "Watched.png", "Chanting": "Chanting.png"}
+        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "List": "List.png", "Chanting": "Chanting.png"}
         ps      = {k: path / v      for k, v in f   .items() if (path / v).exists()}
         imgs    = {k: Image.open(v) for k, v in ps  .items()}
         if not imgs: return
 
         rk = [k for k in ["Team", "Tier", "Chanting"] if k in imgs]
-        
-        ww, wh = (imgs["Watched"].width, imgs["Watched"].height) if "Watched" in imgs else (0, 0)
         tw, th = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
         
         rw = 0
@@ -1095,16 +1124,26 @@ class TourAnalyzer:
                 rh += imgs["Chanting"].height + 10
             rh -= 10
 
-        total_w = ww + (10 if ww and tw else 0) + tw + (10 if (ww or tw) and rw else 0) + rw
-        total_h = max(wh, th, rh)
+        grid_w = tw + (10 if tw and rw else 0) + rw
+        grid_h = max(th, rh)
+        
+        if "List" in imgs:
+            img_list = imgs["List"]
+            lw, lh = img_list.width, img_list.height
+            scale_f = grid_w / float(lw)
+            new_lh = int(lh * scale_f)
+            img_list = img_list.resize((grid_w, new_lh), Image.Resampling.LANCZOS)
+            imgs["List"] = img_list
+            lh = new_lh
+        else:
+            lh = 0
+        
+        total_w = grid_w
+        total_h = grid_h + (10 if grid_h and lh else 0) + lh
         
         fused = Image.new("RGB", (total_w, total_h), "white")
         
         cx = 0
-        if "Watched" in imgs:
-            fused.paste(imgs["Watched"], (cx, 0))
-            cx += ww + 10
-            
         if "Tour" in imgs:
             fused.paste(imgs["Tour"], (cx, 0))
             cx += tw + 10
@@ -1119,6 +1158,9 @@ class TourAnalyzer:
         if "Chanting" in imgs:
             fused.paste(imgs["Chanting"], (cx, cy))
             cy += imgs["Chanting"].height + 10
+            
+        if "List" in imgs:
+            fused.paste(imgs["List"], (0, grid_h + 10))
             
         if fused:
             f_p = path / "Extra.png"
