@@ -22,7 +22,7 @@ DIR_OUT             = "output"
 DIR_TOURS           = "tours"
 FILE_CODES          = "codes.txt"
 FILE_ALIASES        = "aliases.txt"
-RIG_GR_THRESHOLD    = 0.8
+RIG_GR_THRESHOLD    = 0.85
 URL_ALIAS           = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
 
 EXCLUDED_TAGS = {
