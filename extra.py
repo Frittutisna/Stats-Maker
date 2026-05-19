@@ -623,7 +623,17 @@ class TourAnalyzer:
         if watched_valid                        : self._create_watched_png  (out_path, assignments, t1_lookup)
         if watched_valid and self.chanting_ids  : self._create_chanting_png (out_path)
 
-        self._fuse_and_clean(out_path)
+        if watched_valid: self._fuse_and_clean(out_path)
+        else:
+            f = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "List": "List.png", "Chanting": "Chanting.png"}
+
+            for v in f.values():
+                p = out_path / v
+
+                if p.exists():
+                    try     : os.remove(p)
+                    except  : pass
+
         messagebox.showinfo("Success", f"Saved the PNGs for the {t_name} tour to {DIR_OUT}/{self.tour_id}")
 
     def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup):
@@ -976,9 +986,9 @@ class TourAnalyzer:
                 textcoords          = 'offset points'
             )
 
-        ax          .set_title              ("List Statistics", fontsize = 15, weight = 'bold', fontname = "Segoe UI", pad      = 7.5)
-        ax          .set_xlabel             ("Average Over-8",  fontsize = 10, weight = 'bold', fontname = "Segoe UI", labelpad = 2.5)
-        ax          .set_ylabel             ("List Vintage",    fontsize = 10, weight = 'bold', fontname = "Segoe UI", labelpad = 2.5)
+        ax          .set_title              ("List Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad      = 12.5)
+        ax          .set_xlabel             ("Average Over-8",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad = 2.5)
+        ax          .set_ylabel             ("List Vintage",    weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad = 2.5)
         ax.yaxis    .set_major_formatter    (plt.FuncFormatter(lambda val, _: str(int(val))))
         plt         .setp                   (ax.get_yticklabels(), rotation = 90, horizontalalignment = 'center', verticalalignment = 'center')
         ax          .tick_params            (axis = 'x', which = 'both', length = 0, pad = 5)
@@ -986,7 +996,7 @@ class TourAnalyzer:
         
         cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = [0.0, RIG_GR_THRESHOLD, 1.0])
 
-        cbar        .set_label          ("Rig GR", fontsize = 10, weight = 'bold', fontname = "Segoe UI", labelpad = -17.5)
+        cbar        .set_label          ("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -17.5)
         cbar.ax     .set_yticklabels    (['0', f'{int(RIG_GR_THRESHOLD * 100)}', '100'])
         cbar.ax     .tick_params        (labelsize = 10, length = 0)
 
@@ -1117,6 +1127,16 @@ class TourAnalyzer:
         rk      = [k for k in ["Team", "Tier", "Chanting"] if k in imgs]
         tw, th  = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
         
+        if "List" in imgs:
+            img_list        = imgs["List"]
+            lw, lh          = img_list.width, img_list.height
+            scale_f         = th / float(lh) if th else 1.0
+            new_lw          = int(lw * scale_f)
+            img_list        = img_list.resize((new_lw, th), Image.Resampling.LANCZOS)
+            imgs["List"]    = img_list
+            lw              = new_lw
+        else: lw            = 0
+
         rw, rh = 0, 0
 
         if rk:
@@ -1134,23 +1154,16 @@ class TourAnalyzer:
 
             rh -= 10
 
-        grid_w = tw + (10 if tw and rw else 0) + rw
-        grid_h = max(th, rh)
-        
-        if "List" in imgs:
-            img_list        = imgs["List"]
-            lw, lh          = img_list.width, img_list.height
-            scale_f         = grid_w / float(lw)
-            new_lh          = int(lh * scale_f)
-            img_list        = img_list.resize((grid_w, new_lh), Image.Resampling.LANCZOS)
-            imgs["List"]    = img_list
-            lh              = new_lh
-        else: lh            = 0
-        
+        grid_w  = lw + (10 if lw and tw else 0) + tw + (10 if tw and rw else 0) + rw
+        grid_h  = max(th, rh)
         total_w = grid_w
-        total_h = grid_h + (10 if grid_h and lh else 0) + lh
+        total_h = grid_h
         fused   = Image.new("RGB", (total_w, total_h), "white")
         cx, cy  = 0, 0
+
+        if "List" in imgs:
+            fused.paste(imgs["List"], (cx, 0))
+            cx += lw + 10
 
         if "Tour" in imgs:
             fused.paste(imgs["Tour"], (cx, 0))
@@ -1167,8 +1180,6 @@ class TourAnalyzer:
         if "Chanting" in imgs:
             fused.paste(imgs["Chanting"], (cx, cy))
             cy += imgs["Chanting"].height + 10
-            
-        if "List" in imgs: fused.paste(imgs["List"], (0, grid_h + 10))
             
         if fused:
             f_p = path / "Extra.png"
