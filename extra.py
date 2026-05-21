@@ -1,9 +1,10 @@
 import  json, os, re, math
-import  matplotlib.pyplot   as    plt
-import  matplotlib.colors   as    mcolors
+import  matplotlib.pyplot   as      plt
+import  matplotlib.colors   as      mcolors
 import  numpy               as      np
 import  pandas              as      pd
 import  tkinter             as      tk
+from    adjustText          import  adjust_text
 from    collections         import  Counter,    defaultdict
 from    html2image          import  Html2Image
 from    pathlib             import  Path
@@ -1112,8 +1113,8 @@ class TourAnalyzer:
         plist = [n for n in self.s_part if self.p_l_corr[n]]
         if not plist: return
 
-        x_vals = [np.mean(self.p_l_corr[name]) for name in plist]
-        y_vals = [np.median(self.p_l_vint[name]) if self.p_l_vint[name] else np.nan for name in plist]
+        x_vals = [np.mean   (self.p_l_corr[name]) for name in plist]
+        y_vals = [np.median (self.p_l_vint[name]) if self.p_l_vint[name] else np.nan for name in plist]
 
         valid_data = [(p, x, y) for p, x, y in zip(plist, x_vals, y_vals) if not np.isnan(y)]
         if not valid_data: return
@@ -1130,10 +1131,11 @@ class TourAnalyzer:
         cmap        = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR_THRESHOLD, "#FFFFFF"), (1.0, "#0056B3")])
         sizes       = [rate ** 2 * 10000 for rate in rig_rates]
         sc          = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
-        x_min       = math.floor    ((min   (x_vals) - 0.25) * 2) / 2
-        x_max       = math.ceil     ((max   (x_vals) + 0.25) * 2) / 2
-        y_min       = math.floor    (min    (y_vals) - 0.50)
-        y_max       = math.ceil     (max    (y_vals) + 0.50)
+
+        x_min       = math.floor    ((min   (x_vals) - 0.50) * 2) / 2
+        x_max       = math.ceil     ((max   (x_vals) + 0.50) * 2) / 2
+        y_min       = math.floor    (min    (y_vals) - 1.00)
+        y_max       = math.ceil     (max    (y_vals) + 1.00)
 
         while True:
             r = y_max - y_min
@@ -1141,13 +1143,12 @@ class TourAnalyzer:
             if r % 4 == 0:
                 step = r // 4
                 break
-
             elif r % 3 == 0:
                 step = r // 3
                 break
 
-            if r % 2 != 0   : y_min -= 1
-            else            : y_max += 1
+            if r % 2 != 0 or y_max >= 2026  : y_min -= 1
+            else                            : y_max += 1
 
         ax.set_xlim     (x_min, x_max)
         ax.set_ylim     (y_min, y_max)
@@ -1155,26 +1156,9 @@ class TourAnalyzer:
         ax.set_xticks   (np.arange  (x_min, x_max + 0.5,    0.5))
         ax.set_yticks   (range      (y_min, y_max + 1,      step))
 
-        pt_x = (x_max - x_min) / 500.0
-        pt_y = (y_max - y_min) / 500.0
+        texts = []
 
-        obstacles = []
-        for x, y, s in zip(x_vals, y_vals, sizes):
-            r_pt = math.sqrt(s) / 2.0
-            obstacles.append((x - r_pt * pt_x, x + r_pt * pt_x, y - r_pt * pt_y, y + r_pt * pt_y))
-
-        base_dirs = [
-            ('R',   'left',     'center',   1.00,  0.00),
-            ('T',   'center',   'bottom',   0.00,  1.00),
-            ('TR',  'left',     'bottom',   0.70,  0.70),
-            ('TL',  'right',    'bottom',  -0.70,  0.70),
-            ('L',   'right',    'center',  -1.00,  0.00),
-            ('B',   'center',   'top',      0.00, -1.00),
-            ('BR',  'left',     'top',      0.70, -0.70),
-            ('BL',  'right',    'top',     -0.70, -0.70)
-        ]
-
-        for name, x, y, s in zip(plist, x_vals, y_vals, sizes):
+        for name, x, y in zip(plist, x_vals, y_vals):
             label       = ""
             team_info   = assigns.get(name.lower(), ("N/A", "N/A"))
 
@@ -1185,96 +1169,18 @@ class TourAnalyzer:
                 label       = f"{t_lbl}{team_info[1]}"
             
             if not label: continue
+            t = ax.text(x, y, label, fontsize = 10, fontname = "Segoe UI")
+            texts.append(t)
 
-            dirs        = []
-            x_buffer    = (x_max - x_min) * 0.25
-            y_buffer    = (y_max - y_min) * 0.05
-
-            for d_name, ha, va, cx, sy in base_dirs:
-                if x - x_min < x_buffer and cx < 0: continue
-                if x_max - x < x_buffer and cx > 0: continue
-                if y - y_min < y_buffer and sy < 0: continue
-                if y_max - y < y_buffer and sy > 0: continue
-                dirs.append((d_name, ha, va, cx, sy))
-
-            if not dirs: dirs = base_dirs
-                
-            r_pt        = math.sqrt(s) / 2.0
-            team_info   = assigns.get(name.lower(), ("N/A", "N/A"))
-
-            if team_info[0] != "N/A":
-                leader_name = t1_lookup.get(team_info[0], "")
-                clean_name  = "".join(filter(str.isalnum, leader_name))
-                t_lbl       = clean_name[ : 3].upper() if leader_name else f"T{team_info[0]}"
-                label       = f"{t_lbl}{team_info[1]}"
-            
-            if not label: continue
-                
-            r_pt                = math.sqrt(s) / 2.0
-            lbl_w_pt            = len(label) * 5.0
-            lbl_h_pt            = 10.0
-            best_pos            = None
-            min_overlap_score   = float('inf')
-            
-            for extra_pad in [0.0, 1.0, 2.0, 3.0]:
-                for _, ha, va, cx, sy in dirs:
-                    offset_dist = r_pt + 0.5 + extra_pad
-                    ox          = offset_dist * cx
-                    oy          = offset_dist * sy
-                    
-                    if ha == 'left':
-                        bx_min = ox
-                        bx_max = ox + lbl_w_pt
-                    elif ha == 'right':
-                        bx_min = ox - lbl_w_pt
-                        bx_max = ox
-                    else:
-                        bx_min = ox - lbl_w_pt / 2.0
-                        bx_max = ox + lbl_w_pt / 2.0
-                        
-                    if va == 'bottom':
-                        by_min = oy
-                        by_max = oy + lbl_h_pt
-                    elif va == 'top':
-                        by_min = oy - lbl_h_pt
-                        by_max = oy
-                    else:
-                        by_min = oy - lbl_h_pt / 2.0
-                        by_max = oy + lbl_h_pt / 2.0
-                        
-                    lbl_box         = (x + bx_min * pt_x, x + bx_max * pt_x, y + by_min * pt_y, y + by_max * pt_y)
-                    overlap_score   = 0
-                    buffer_x        = 0.05 * pt_x
-                    buffer_y        = 0.05 * pt_y
-                    
-                    for obs in obstacles:
-                        if not (
-                            lbl_box[1] + buffer_x < obs[0] or 
-                            obs[1] + buffer_x < lbl_box[0] or 
-                            lbl_box[3] + buffer_y < obs[2] or 
-                            obs[3] + buffer_y < lbl_box[2]
-                        ): overlap_score += 1
-                    
-                    if overlap_score == 0:
-                        best_pos = (ha, va, ox, oy, lbl_box)
-                        break
-                    elif overlap_score < min_overlap_score:
-                        min_overlap_score   = overlap_score
-                        best_pos            = (ha, va, ox, oy, lbl_box)
-
-                if best_pos and min_overlap_score == 0: break
-                    
-            ha, va, ox, oy, lbl_box = best_pos
-            obstacles.append(lbl_box)
-            
-            ax.annotate(
-                label, (x, y), 
-                fontsize            = 10,
-                verticalalignment   = va, 
-                horizontalalignment = ha,
-                xytext              = (ox, oy),
-                textcoords          = 'offset points'
-            )
+        if texts: adjust_text(
+            texts, 
+            ax              = ax, 
+            objects         = sc, 
+            force_text      = (0.25, 0.25), 
+            force_objects   = (0.25, 0.25), 
+            expand          = (1.25, 1.25), 
+            arrowprops      = dict(arrowstyle = "-", color = 'black', shrinkA = 10)
+        )
 
         ax          .set_title              ("List Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad      = 12.5)
         ax          .set_xlabel             ("Average Over-8",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad = 2.5)
