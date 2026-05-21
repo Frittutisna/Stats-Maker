@@ -1127,7 +1127,7 @@ class TourAnalyzer:
         rig_grs     = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
 
         fig, ax         = plt.subplots(figsize = (10, 10))
-        cmap            = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (RIG_GR_THRESHOLD, "#FFFFFF"), (1.0, "#0056B3")])
+        cmap            = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR_THRESHOLD, "#FFFFFF"), (1.0, "#0056B3")])
         sizes           = [rate ** 2 * 10000 for rate in rig_rates]
         sc              = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
         x_min, x_max    = math.floor(min(x_vals) - 0.25), math.ceil(max(x_vals) + 0.25)
@@ -1198,7 +1198,7 @@ class TourAnalyzer:
                 leader_name = t1_lookup.get(team_info[0], "")
                 clean_name  = "".join(filter(str.isalnum, leader_name))
                 t_lbl       = clean_name[ : 3].upper() if leader_name else f"T{team_info[0]}"
-                label       = f"{t_lbl}-{team_info[1]}"
+                label       = f"{t_lbl}{team_info[1]}"
             
             if not label: continue
 
@@ -1222,7 +1222,7 @@ class TourAnalyzer:
                 leader_name = t1_lookup.get(team_info[0], "")
                 clean_name  = "".join(filter(str.isalnum, leader_name))
                 t_lbl       = clean_name[ : 3].upper() if leader_name else f"T{team_info[0]}"
-                label       = f"{t_lbl}-{team_info[1]}"
+                label       = f"{t_lbl}{team_info[1]}"
             
             if not label: continue
                 
@@ -1296,14 +1296,14 @@ class TourAnalyzer:
         ax          .set_xlabel             ("Average Over-8",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad = 2.5)
         ax          .set_ylabel             ("Median Vintage",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad = 2.5)
         ax.yaxis    .set_major_formatter    (plt.FuncFormatter(lambda val, _: str(int(val))))
-        plt         .setp                   (ax.get_yticklabels(), rotation = 90, horizontalalignment = 'center', verticalalignment = 'center')
+        plt         .setp                   (ax.get_yticklabels(), horizontalalignment = 'center', verticalalignment = 'center')
         ax          .tick_params            (axis = 'x', which = 'both', length = 0, pad = 5)
-        ax          .tick_params            (axis = 'y', which = 'both', length = 0, pad = 7.5)
+        ax          .tick_params            (axis = 'y', which = 'both', length = 0, pad = 15)
         
-        cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = [0.0, RIG_GR_THRESHOLD, 1.0])
+        cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = [0.0, 0.5, RIG_GR_THRESHOLD, 1.0])
 
-        cbar        .set_label          ("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -17.5)
-        cbar.ax     .set_yticklabels    (['0', f'{int(RIG_GR_THRESHOLD * 100)}', '100'])
+        cbar        .set_label          ("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -5)
+        cbar.ax     .set_yticklabels    (['0', '50', f'{int(RIG_GR_THRESHOLD * 100)}', '100'])
         cbar.ax     .tick_params        (labelsize = 10, length = 0)
 
         ax  .grid           (False)
