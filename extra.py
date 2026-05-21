@@ -1129,7 +1129,8 @@ class TourAnalyzer:
 
         fig, ax     = plt.subplots(figsize = (10, 10))
         cmap        = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR_THRESHOLD, "#FFFFFF"), (1.0, "#0056B3")])
-        sizes       = [rate ** 2 * 10000 for rate in rig_rates]
+        scale       = 1.00 if len(plist) <= 20 else (0.75 if len(plist) <= 28 else 0.50)
+        sizes       = [rate ** 2 * 10000 * scale for rate in rig_rates]
         sc          = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
 
         x_min       = math.floor    ((min   (x_vals) - 0.50) * 2) / 2
