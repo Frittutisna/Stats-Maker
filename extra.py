@@ -1126,50 +1126,34 @@ class TourAnalyzer:
         rig_rates   = [self.p_rigs      [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist]
         rig_grs     = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
 
-        fig, ax         = plt.subplots(figsize = (10, 10))
-        cmap            = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR_THRESHOLD, "#FFFFFF"), (1.0, "#0056B3")])
-        sizes           = [rate ** 2 * 10000 for rate in rig_rates]
-        sc              = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
-        x_min, x_max    = math.floor(min(x_vals) - 0.25), math.ceil(max(x_vals) + 0.25)
-        
-        y_floor = math.floor    (min(y_vals))
-        y_ceil  = math.ceil     (max(y_vals))
-        
-        def is_composite(n):
-            if n <= 3: return False
-            for i in range(2, int(math.sqrt(n)) + 1):
-                if n % i == 0: return True
-            return False
+        fig, ax     = plt.subplots(figsize = (10, 10))
+        cmap        = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR_THRESHOLD, "#FFFFFF"), (1.0, "#0056B3")])
+        sizes       = [rate ** 2 * 10000 for rate in rig_rates]
+        sc          = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
+        x_min       = math.floor    ((min   (x_vals) - 0.25) * 2) / 2
+        x_max       = math.ceil     ((max   (x_vals) + 0.25) * 2) / 2
+        y_min       = math.floor    (min    (y_vals) - 0.50)
+        y_max       = math.ceil     (max    (y_vals) + 0.50)
 
-        y_min   = y_floor   - 1
-        y_max   = y_ceil    + 1
-        step    = 1
-        found   = False
+        while True:
+            r = y_max - y_min
 
-        for delta in range(0, 30):
-            for d_min in range(delta + 1):
-                d_max   = delta     - d_min
-                cur_min = y_floor   - 1         - d_min
-                cur_max = y_ceil    + 1         + d_max
-                r       = cur_max   - cur_min
+            if r % 4 == 0:
+                step = r // 4
+                break
 
-                if is_composite(r):
-                    valid_k = [k for k in [2, 3, 4] if r % k == 0]
-                    if not valid_k and r % 1 == 0: valid_k = [1]
-                    if valid_k:
-                        best_k  = max(valid_k)
-                        y_min   = cur_min
-                        y_max   = cur_max
-                        step    = r // best_k
-                        found   = True
-                        break
+            elif r % 3 == 0:
+                step = r // 3
+                break
 
-            if found: break
+            if r % 2 != 0   : y_min -= 1
+            else            : y_max += 1
 
         ax.set_xlim     (x_min, x_max)
         ax.set_ylim     (y_min, y_max)
-        ax.set_xticks   (range(x_min, x_max + 1, 1))
-        ax.set_yticks   (range(y_min, y_max + 1, step))
+
+        ax.set_xticks   (np.arange  (x_min, x_max + 0.5,    0.5))
+        ax.set_yticks   (range      (y_min, y_max + 1,      step))
 
         pt_x = (x_max - x_min) / 500.0
         pt_y = (y_max - y_min) / 500.0
@@ -1305,6 +1289,11 @@ class TourAnalyzer:
         cbar        .set_label          ("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -5)
         cbar.ax     .set_yticklabels    (['0', '50', f'{int(RIG_GR_THRESHOLD * 100)}', '100'])
         cbar.ax     .tick_params        (labelsize = 10, length = 0)
+
+        ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "left",    weight = "bold", alpha = 0.75)
+        ax.text(0.99, 0.99, "New\nEasy", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "right",   weight = "bold", alpha = 0.75)
+        ax.text(0.01, 0.01, "Old\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "bottom",    ha = "left",    weight = "bold", alpha = 0.75)
+        ax.text(0.99, 0.01, "Old\nEasy", transform = ax.transAxes, color = "grey", fontsize = 10, va = "bottom",    ha = "right",   weight = "bold", alpha = 0.75)
 
         ax  .grid           (False)
         plt .tight_layout   ()
