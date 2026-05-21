@@ -1156,7 +1156,9 @@ class TourAnalyzer:
         ax.set_xticks   (np.arange  (x_min, x_max + 0.5,    0.5))
         ax.set_yticks   (range      (y_min, y_max + 1,      step))
 
-        texts = []
+        x_center    = (x_min + x_max) / 2
+        y_center    = (y_min + y_max) / 2
+        texts       = []
 
         for name, x, y in zip(plist, x_vals, y_vals):
             label       = ""
@@ -1169,7 +1171,11 @@ class TourAnalyzer:
                 label       = f"{t_lbl}-{team_info[1]}"
             
             if not label: continue
-            t = ax.text(x, y, label, fontsize = 10, fontname = "Segoe UI")
+
+            ha_align = "left"   if x >= x_center else "right"
+            va_align = "bottom" if y >= y_center else "top"
+
+            t = ax.text(x, y, label, fontsize = 10, fontname = "Segoe UI", ha = ha_align, va = va_align)
             texts.append(t)
 
         if texts: adjust_text(
