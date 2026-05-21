@@ -1174,12 +1174,14 @@ class TourAnalyzer:
 
         if texts: adjust_text(
             texts, 
-            ax              = ax, 
-            objects         = sc, 
-            force_text      = (0.25, 0.25), 
-            force_objects   = (0.25, 0.25), 
-            expand          = (1.25, 1.25), 
-            arrowprops      = dict(arrowstyle = "-", color = 'black', shrinkA = 10)
+            ax                      = ax, 
+            objects                 = sc, 
+            avoid_self              = True, 
+            add_objects_to_edges    = True, 
+            force_text              = (1.00, 1.00), 
+            force_objects           = (1.00, 1.00), 
+            expand                  = (2.00, 2.00), 
+            arrowprops              = dict(arrowstyle = "-", color = 'black', shrinkA = 10)
         )
 
         ax          .set_title              ("List Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad      = 12.5)
