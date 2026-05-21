@@ -1166,7 +1166,7 @@ class TourAnalyzer:
                 leader_name = t1_lookup.get(team_info[0], "")
                 clean_name  = "".join(filter(str.isalnum, leader_name))
                 t_lbl       = clean_name[ : 3].upper() if leader_name else f"T{team_info[0]}"
-                label       = f"{t_lbl}{team_info[1]}"
+                label       = f"{t_lbl}-{team_info[1]}"
             
             if not label: continue
             t = ax.text(x, y, label, fontsize = 10, fontname = "Segoe UI")
