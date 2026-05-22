@@ -1418,7 +1418,9 @@ class TourAnalyzer:
             try     : trim_whitespace(f_p)
             except  : pass
             
-        for p in ps.values():
+        for k, p in ps.items():
+            if k == "List": continue
+
             try     : os.remove(p)
             except  : pass
 

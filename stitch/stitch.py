@@ -1,5 +1,4 @@
-import  glob, json, os
-from    datetime        import  datetime
+import glob, json, os
 
 all_json_files  = glob.glob("*.json")
 files_to_stitch = sorted([f for f in all_json_files if not f.startswith("stitch-")])
@@ -28,9 +27,7 @@ else:
         "songs"     : combined_songs
     }
 
-    timestamp   = datetime.now().strftime("%y%m%d%H%M")
-    output_name = f"stitch-{timestamp}.json"
-
+    output_name = f"stitch.json"
     with open(output_name, 'w', encoding = "utf-8") as f: json.dump(stitched_data, f, indent = 2)
     print(f"Stitched {len(combined_songs)} songs from {len(files_to_stitch)} files into {output_name}")
 
