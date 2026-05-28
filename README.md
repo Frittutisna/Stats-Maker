@@ -1,1 +1,0 @@
-# Stats Maker v0-beta.0.0 for Tours

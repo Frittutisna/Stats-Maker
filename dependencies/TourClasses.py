@@ -1,9 +1,11 @@
-from __future__ import annotations
-from dataclasses import *
-from typing import List, Optional, Dict, Any
-from math import comb
-from collections import Counter
+from __future__                 import annotations
+from collections                import Counter
+from dataclasses                import *
 from dependencies.TourFunctions import *
+from math                       import comb
+from typing                     import List, Optional, Dict, Any
+
+import os
 
 @dataclass
 class Player:
@@ -231,6 +233,7 @@ class TeamDB:
 class Song:
     data: Any
 
+    ann_song_id: int = 0
     anime_name: str = ""
     anime_id: int = 0
     video_id: str = ""
@@ -261,6 +264,7 @@ class Song:
             2: "ED",
             3: "IN"
         }
+        self.ann_song_id = self.data["songInfo"]["annSongId"]
         self.anime_name = self.data["songInfo"]["animeNames"]["english"]
         self.anime_id = (
             self.data["songInfo"]["siteIds"]["malId"]
@@ -314,6 +318,7 @@ class SongDB:
     topAnimeID: List[Song] = field(default_factory=list)
     topVideoID: List[Song] = field(default_factory=list)
     songsAmount: int = 0
+    chantings: List[Song] = field(default_factory=list)
 
     def build_lookups(self):
         self._songs_by_id = {s.video_id: s for s in self.songs}
@@ -327,6 +332,10 @@ class SongDB:
     
     def post_process(self):
         self.songsAmount = len(self.songs)
+        current_file_dir = os.path.dirname(os.path.abspath(__file__))
+        chanting_file_path = os.path.join(current_file_dir, "chanting.txt")
+        with open(chanting_file_path, "r", encoding="utf-8") as f: chantingSongsIDs = [int(songID) for songID in f if songID.strip()]
+
         for song in self.songs:
             vintage = song.vintage
             decade = int((vintage // 10) * 10)
@@ -344,6 +353,9 @@ class SongDB:
 
             if song.rebroadcast:
                 self.rbs.append(song)
+            
+            if song.ann_song_id in chantingSongsIDs:
+                self.chantings.append(song)
 
             songtype = song.song_type
             key = f"{songtype}"

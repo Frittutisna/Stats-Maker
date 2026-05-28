@@ -1,12 +1,12 @@
-from curl_cffi import requests
-from shutil import which
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-import pandas as pd
-from html2image import Html2Image
-from PIL import Image
-import numpy as np
 import os
+import numpy    as np
+import pandas   as pd
+
+from curl_cffi              import requests
+from datetime               import datetime
+from dateutil.relativedelta import relativedelta
+from html2image             import Html2Image
+from PIL                    import Image
 
 def internal_clean_data(idtable, statstable, isWatched):
     # Load alias table
@@ -284,6 +284,7 @@ def render_songdb_summary_html(songDB) -> str:
     <div class="section-title">Overview</div>
     <div class="line">Total Songs: <b>{songDB.songsAmount}</b></div>
     <div class="line">Rebroadcasts: <b>{len(songDB.rbs)}</b></div>
+    <div class="line">Chantings: <b>{round(((len(songDB.chantings)/songDB.songsAmount)*100), 2)} %</b></div>
 </div>
 """
 
