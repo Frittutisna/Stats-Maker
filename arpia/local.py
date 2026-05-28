@@ -272,6 +272,21 @@ def main():
     playerDB.build_lookups()
     USEFULNESS = Usefulness(TEAM_SIZE, TEAM_AVG)
 
+    if teamDB.subs:
+        print("Subs have been found. Please assign to correct team:")
+        for sub in teamDB.subs:
+            print(f"Which of the following teams did {sub.name} sub for?")
+            options = (teamDB.teams)
+            for i, team in enumerate(options, start=1):
+                print(f"[{i}] {team.team_string}")
+            while True:
+                try:
+                    num_choice = int(input("Choice: "))
+                except (ValueError, IndexError):
+                    print("Please input a valid choice")
+                options[num_choice-1].add_sub(sub)
+                break
+
     # Parse the jsons
     for file_name in os.listdir(JSONS):
         if file_name.startswith('amq_song_expoert'):
