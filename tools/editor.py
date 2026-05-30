@@ -255,7 +255,7 @@ class JSONEditor(tk.Tk):
             box.pack(side = tk.LEFT, padx = (0, 5))
             lbl = ttk.Label(item_frame, text = name, font = ("Segoe UI", 10))
             lbl.pack(side = tk.LEFT)
-            for widget in (box, lbl): widget.bind("<Button-1>", lambda n = name, b = box: self.toggle_custom_player(n, b))
+            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n = name, b = box: self.toggle_custom_player(n, b))
 
     def on_confirm(self):
         if not self.data or "songs" not in self.data or not self.data["songs"]: return

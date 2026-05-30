@@ -834,6 +834,9 @@ class TourAnalyzer:
             elif    "Rigs" in self.s_part                       : default_th = "28, 18, 12, 6"
             else                                                : default_th = "28, 19, 8"
 
+        has_chanting_songs = any(self.p_chan_s.values())
+        if not has_chanting_songs: init_label += " -Chanting"
+
         meta_dialog     = TourMetadataDialog(root, self.tour_id, init_label, default_th, baseline_initial, list(self.s_part.keys()))
         meta_res        = meta_dialog.result if meta_dialog.result else {"tour_label": init_label, "th_str": "default", "base_exp": baseline_initial, "selected_new": []}
         self.tour_label = meta_res["tour_label"]
@@ -907,9 +910,9 @@ class TourAnalyzer:
         self._create_tour_png   (use_teams, watched_valid, out_path)
 
         if watched_valid and assignments        : self._create_team_png     (t1_lookup,     out_path)
-        if assignments                          : self._create_tier_png     (assignments,   out_path,   watched_valid)
-        if watched_valid                        : self._create_watched_png  (out_path, assignments, t1_lookup)
-        if watched_valid and self.chanting_ids  : self._create_chanting_png (out_path)
+        if assignments                          : self._create_tier_png     (assignments,   out_path,       has_chanting_songs)
+        if watched_valid                        : self._create_watched_png  (out_path,      assignments,    t1_lookup)
+        if watched_valid and has_chanting_songs : self._create_chanting_png (out_path)
 
         if watched_valid: self._fuse_and_clean(out_path)
         else:
@@ -1072,7 +1075,7 @@ class TourAnalyzer:
             })
         self._export_png(pd.DataFrame(res).sort_values("Average GR", ascending = False), path, "Team.png", "Team Statistics")
 
-    def _create_tier_png(self, assigns, path, watched_valid):
+    def _create_tier_png(self, assigns, path, has_chanting_songs):
         tiers   = sorted({v[1] for v in assigns.values() if v[1] != "N/A"}, reverse = True)
         res     = []
 
@@ -1104,11 +1107,11 @@ class TourAnalyzer:
                 return f"{name} ({ratio:.2f})"
 
             row_data = [tr, get_generalist(tp), get_attblk(tp, self.p_pts), get_attblk(tp, self.p_blks), get_contributor (tp)]
-            if watched_valid: row_data.append(get_chanter(tp))
+            if has_chanting_songs: row_data.append(get_chanter(tp))
             res.append(row_data)
             
         cols = ["Tier", "Generalist", "Attacker", "Blocker", "Contributor"]
-        if watched_valid: cols.append("Chanter")
+        if has_chanting_songs: cols.append("Chanter")
         self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = cols), path, "Tier.png", "Tier Statistics")
 
     def _create_watched_png(self, path, assigns, t1_lookup):
