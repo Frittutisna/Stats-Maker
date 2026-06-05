@@ -1,11 +1,10 @@
-import json, os, re, math
+import gspread, json, math, os, re
 
-import matplotlib.pyplot    as plt
-import matplotlib.colors    as mcolors
-import numpy                as np
-import pandas               as pd
-import tkinter              as tk
-import gspread
+import matplotlib.pyplot        as plt
+import matplotlib.colors        as mc
+import numpy                    as np
+import pandas                   as pd
+import tkinter                  as tk
 
 from adjustText     import  adjust_text
 from collections    import  Counter, defaultdict
@@ -1237,7 +1236,7 @@ class TourAnalyzer:
         rig_grs     = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
 
         fig, ax     = plt.subplots(figsize = (10, 10))
-        cmap        = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR, "#FFFFFF"), (1.0, "#0056B3")])
+        cmap        = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR, "#FFFFFF"), (1.0, "#0056B3")])
         scale       = 1.00 if len(plist) <= 20 else (0.75 if len(plist) <= 28 else 0.50)
         sizes       = [rate ** 2 * 10000 * scale for rate in rig_rates]
         sc          = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
@@ -1532,6 +1531,36 @@ class TourAnalyzer:
             try     : trim_whitespace(f_p)
             except  : pass
             
+        p_path = path / "Player.png"
+
+        if p_path.exists():
+            img_player = Image.open(p_path)
+            
+            if img_player.width < total_w:
+                scale_factor        = total_w / float(img_player.width)
+                new_h               = int(img_player.height * scale_factor)
+                img_player          = img_player.resize((total_w, new_h), Image.Resampling.LANCZOS)
+
+            elif total_w < img_player.width:
+                scale_factor        = img_player.width / float(total_w)
+                new_w               = img_player.width
+                new_h               = int(total_h * scale_factor)
+                fused               = fused.resize((new_w, new_h), Image.Resampling.LANCZOS)
+                total_w, total_h    = new_w, new_h
+
+            gen_w       = total_w
+            gen_h       = img_player.height + 10 + total_h
+            general_img = Image.new("RGB", (gen_w, gen_h), "white")
+
+            general_img.paste(img_player, (0, 0))
+            general_img.paste(fused, (0, img_player.height + 10))
+            
+            gen_out_p = path / "General.png"
+            general_img.save(gen_out_p)
+
+            try     : trim_whitespace(gen_out_p)
+            except  : pass
+
         for k, p in ps.items():
             if k == "List": continue
 
