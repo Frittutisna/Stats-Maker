@@ -24,7 +24,7 @@ class CustomSpinbox(tk.Frame):
             cursor              = "hand2",
         )
 
-        self.btn_dec.create_polygon(7, 9, 17, 9, 12, 15, fill = "white")
+        self.dec_arrow = self.btn_dec.create_polygon(7, 9, 17, 9, 12, 15, fill = "white")
         self.btn_dec.grid(row = 0, column = 0, sticky = "nsew")
         self.btn_dec.bind("<Button-1>", lambda _: self._adjust_value(-1))
 
@@ -55,9 +55,28 @@ class CustomSpinbox(tk.Frame):
             borderwidth         = 0,
             cursor              = "hand2",
         )
-        self.btn_inc.create_polygon(12, 9, 7, 15, 17, 15, fill = "white")
+        self.inc_arrow = self.btn_inc.create_polygon(12, 9, 7, 15, 17, 15, fill = "white")
         self.btn_inc.grid(row = 0, column = 2, sticky = "nsew")
         self.btn_inc.bind("<Button-1>", lambda _: self._adjust_value(1))
+
+        self._update_button_states(initial_val)
+
+    def _update_button_states(self, current_val):
+        if current_val <= self.from_:
+            self.btn_dec.configure(bg = "#f0f0f0", cursor = "arrow")
+            self.btn_dec.itemconfig(self.dec_arrow, fill = "gray50")
+
+        else:
+            self.btn_dec.configure(bg = "black", cursor = "hand2")
+            self.btn_dec.itemconfig(self.dec_arrow, fill = "white")
+
+        if current_val >= self.to:
+            self.btn_inc.configure(bg = "#f0f0f0", cursor = "arrow")
+            self.btn_inc.itemconfig(self.inc_arrow, fill = "gray50")
+
+        else:
+            self.btn_inc.configure(bg = "black", cursor = "hand2")
+            self.btn_inc.itemconfig(self.inc_arrow, fill = "white")
 
     def _validate_input(self, current_text):
         if current_text == "": return True
@@ -66,6 +85,7 @@ class CustomSpinbox(tk.Frame):
             val = int(current_text)
 
             if self.from_ <= val <= self.to:
+                self._update_button_states(val)
                 if self.command: self.after(10, lambda: self.command(val))
                 return True
 
@@ -75,8 +95,12 @@ class CustomSpinbox(tk.Frame):
         try                 : curr = int(self.var.get())
         except ValueError   : curr = self.from_
 
+        if delta == -1  and curr <= self.from_  : return
+        if delta == 1   and curr >= self.to     : return
+
         new_val = max(self.from_, min(self.to, curr + delta))
         self.var.set(str(new_val))
+        self._update_button_states(new_val)
         if self.command: self.command(new_val)
 
     def get(self):
@@ -86,6 +110,7 @@ class CustomSpinbox(tk.Frame):
     def set(self, val):
         bounded_val = max(self.from_, min(self.to, int(val)))
         self.var.set(str(bounded_val))
+        self._update_button_states(bounded_val)
         if self.command: self.command(bounded_val)
 
 class JSONEditor(tk.Tk):
