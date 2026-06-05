@@ -188,7 +188,7 @@ class TourSelectionDialog(UnifiedDialog):
                 if json_count > 0:
                     with open(codes_file, "r", encoding = "utf-8") as f:
                         content     = f.read()
-                        main_part   = re.split(r'https://challonge\.com/\S+', content)[0]
+                        main_part   = re.split(r'https://challonge.com/S+', content)[0]
                         players     = re.findall(r'[^\s(]+\s*\([-]?\d+\.\d+\)', main_part)
                         p           = len(players)
 
@@ -509,6 +509,26 @@ class SubSelectionDialog(tk.Toplevel):
         sel = self.listbox.curselection()
         if sel: self.result = self.listbox.get(sel[0]); self.destroy()
 
+class SubstitutePromptDialog(UnifiedDialog):
+    def __init__(self, parent, sub_name, suggested_team, suggested_tier, all_teams):
+        super().__init__(parent, "Substitute Setup", f"Configure Team and Tier for Sub: {sub_name}")
+        self.result = None
+        ttk.Label(self.container, text = "Team:", font = ("Segoe UI", 10)).grid(row = 0, column = 0, padx = 5, pady = 5, sticky = "w")
+        self.team_combobox = ttk.Combobox(self.container, values = sorted(list(all_teams)))
+        self.team_combobox.grid(row = 0, column = 1, padx = 5, pady = 5)
+        if suggested_team in all_teams: self.team_combobox.set(suggested_team)
+        elif all_teams: self.team_combobox.set(sorted(list(all_teams))[0])
+        ttk.Label(self.container, text = "Tier:", font = ("Segoe UI", 10)).grid(row = 1, column = 0, padx = 5, pady = 5, sticky = "w")
+        self.tier_combobox = ttk.Combobox(self.container, values = ["1", "2", "3", "4"])
+        self.tier_combobox.grid(row = 1, column = 1, padx = 5, pady = 5)
+        self.tier_combobox.set(suggested_tier if suggested_tier in ["1", "2", "3", "4"] else "1")
+        self.grab_set()
+        self.wait_window()
+
+    def on_confirm(self):
+        self.result = (self.team_combobox.get(), self.tier_combobox.get())
+        super().on_confirm()
+
 # Main Processor
 class TourAnalyzer:
     def __init__(self, tour_id):
@@ -550,6 +570,7 @@ class TourAnalyzer:
         self.subbed_players_set         = set()
         self.tour_label                 = ""
         self.id_database                = {}
+        self.player_acronyms            = {}
 
     def _find_browser(self): return next((p for p in BROWSER_PATHS if os.path.exists(p)), None)
 
@@ -568,6 +589,43 @@ class TourAnalyzer:
 
         return id_map
 
+    def _generate_acronyms(self, active_names):
+        acronyms = {}
+
+        for name in active_names:
+            clean   = "".join(filter(str.isalnum, name))
+            length  = 3
+            acr     = clean[:length].upper() if len(clean) >= length else clean.upper().ljust(length, 'X')
+
+            acronyms[name.lower()] = acr
+
+        while True:
+            counts      = Counter(acronyms.values())
+            duplicates  = {acr for acr, count in counts.items() if count > 1}
+
+            if not duplicates: break
+
+            for name in active_names:
+                n_low = name.lower()
+
+                if acronyms[n_low] in duplicates:
+                    clean       = "".join(filter(str.isalnum, name))
+                    curr_len    = len(acronyms[n_low])
+                    next_len    = curr_len + 1
+
+                    if next_len <= len(clean)   : acronyms[n_low] = clean[:next_len].upper()
+                    else                        : acronyms[n_low] = clean.upper() + str(next_len - len(clean))
+        self.player_acronyms = acronyms
+
+    def _get_player_acronym(self, name): return self.player_acronyms.get(name.lower(), name[ : 3].upper())
+
+    def _get_team_acronym(self, leader_name, tid):
+        if leader_name:
+            clean = "".join(filter(str.isalnum, leader_name))
+            return clean[ : 3].upper()
+
+        return f"T{tid}"
+
     def run(self):
         chanting_path = self.script_dir / DIR_TOURS / FILE_CHANT
 
@@ -585,6 +643,9 @@ class TourAnalyzer:
 
         json_paths                                                      = list(json_dir.glob("*.json"))
         all_known, appearances                                          = self._scan_players    (json_paths)
+        
+        self._generate_acronyms(all_known)
+        
         use_teams, elo_map, assignments, t1_lookup, rosters, all_known  = self._load_team_data  (all_known)
         missing_list_count                                              = 0
         tour_types                                                      = set()
@@ -772,7 +833,8 @@ class TourAnalyzer:
                 match = find_best_match(p_in, allow_manual = True, line_text = line)
                 if match: elo_map[match.lower()] = val
 
-        idx = 1
+        idx                 = 1
+        sub_candidates_raw  = []
 
         for line in lines:
             if "Subs:" in line or "subs:" in line:
@@ -780,27 +842,61 @@ class TourAnalyzer:
 
                 for p_sub, _ in mems_subs:
                     m_sub = find_best_match(p_sub)
-                    if m_sub: self.subbed_players_set.add(m_sub.lower())
 
-            if "[" not in line: continue
+                    if m_sub:
+                        self.subbed_players_set.add(m_sub.lower())
+                        sub_candidates_raw.append(m_sub)
 
-            pre     = re.match(r'^(?:\\s*)?([^:\[\d\(]+)\s*\([\d.-]+\):', line)
-            ename   = pre.group(1).strip() if pre else None
-            sec     = line.split(":", 1)[1] if ":" in line else line
-            mems    = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', sec)
+                continue
+
+            if "|" in line  : sec = line.split("|")[0]
+            else            : sec = line
+
+            mems = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', sec)
+            if not mems: continue
+
+            p_captain, _    = mems[0]
+            c_match         = find_best_match(p_captain)
+            ename           = c_match if c_match else p_captain
+            t1_lookup[idx]  = ename
 
             for i, (p_in, _) in enumerate(mems[:4]):
-                tier        = str(i + 1)
-                match       = find_best_match(p_in)
+                tier    = str(i + 1)
+                match   = find_best_match(p_in)
 
                 if match:
                     self.main_roster_names.add(match.lower())
                     assignments[match.lower()] = (idx, tier)
                     rosters[idx].add(match)
                     if match in avail: avail.remove(match)
-                    t1_lookup[idx] = ename if ename else (match if tier == "1" else t1_lookup.get(idx))
 
             idx += 1
+
+        all_team_ids = set(t1_lookup.keys())
+
+        for sub_player in sub_candidates_raw:
+            s_low = sub_player.lower()
+            if s_low in assignments: continue
+
+            s_match = next((m for m in assignments if m in s_low or s_low in m), None)
+
+            if s_match  : s_team, s_tier = assignments[s_match]
+            else        : s_team, s_tier = (list(all_team_ids)[0] if all_team_ids else 1), "1"
+                
+            s_team_name         = self._get_team_acronym(t1_lookup.get(s_team, ""), s_team)
+            all_team_names_map  = {self._get_team_acronym(t1_lookup.get(tid, ""), tid): tid for tid in all_team_ids}
+            dialog              = SubstitutePromptDialog(None, sub_player, s_team_name, s_tier, all_team_names_map.keys())
+
+            if dialog.result:
+                chosen_team_name, chosen_tier   = dialog.result
+                chosen_team_id                  = all_team_names_map.get(chosen_team_name, s_team)
+                assignments[s_low]              = (chosen_team_id, chosen_tier)
+
+                rosters[chosen_team_id].add(sub_player)
+
+            else:
+                assignments[s_low] = (s_team, s_tier)
+                rosters[s_team].add(sub_player)
 
         if new_aliases:
             existing_entries = []
@@ -913,7 +1009,7 @@ class TourAnalyzer:
 
         if watched_valid and assignments        : self._create_team_png     (t1_lookup,     out_path)
         if assignments                          : self._create_tier_png     (assignments,   out_path,       has_chanting_songs)
-        if watched_valid                        : self._create_watched_png  (out_path,      assignments,    t1_lookup)
+        if watched_valid                        : self._create_watched_png  (out_path)
         if watched_valid and has_chanting_songs : self._create_chanting_png (out_path)
 
         if watched_valid: self._fuse_and_clean(out_path)
@@ -956,14 +1052,16 @@ class TourAnalyzer:
             
             if use_teams:
                 team_info = assigns.get(name.lower(), ("N/A", "N/A"))
+
                 if team_info[0] != "N/A":
                     leader_name = t1_lookup.get(team_info[0], "")
-                    clean_name  = "".join(filter(str.isalnum, leader_name))
-                    row["Team"] = clean_name[:3].upper() if leader_name else f"T{team_info[0]}"
+                    row["Team"] = self._get_team_acronym(leader_name, team_info[0])
                     row["Tier"] = team_info[1]
+
                 else:
                     row["Team"] = "N/A"
                     row["Tier"] = "N/A"
+
                 row["Elo"]      = elo_map.get(name.lower(), "N/A")
 
             row.update({
@@ -1001,9 +1099,11 @@ class TourAnalyzer:
     def _create_tour_png(self, use_teams, watched, path):
         def fmt_most(names, val):
             if not names: return "N/A"
+
             win = sorted(names, key = lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]
             gr  = (self.c_counts[win] / self.s_part[win]) * 100 if self.s_part[win] else 0
-            return f"{win} ({val}{f', {gr:.2f}' if len(names) > 1 else ''})"
+
+            return f"{self._get_player_acronym(win)} ({val}{f', {gr:.2f}' if len(names) > 1 else ''})"
 
         stats = [
             ["Median Vintage",      format_year(round(np.median(self.all_vint), 2))                         if self.all_vint    else "N/A"],
@@ -1029,8 +1129,8 @@ class TourAnalyzer:
         no_s    = sorted([n for n in plist if self.e_counts[n] ==   0 and self.s_part[n] > 0], key = lambda x: self.c_counts[x] / self.s_part[x], reverse = True)
         yes_s   = sorted([n for n in plist if self.e_counts[n] >    0 and self.s_part[n] > 0], key = lambda x: self.c_counts[x] / self.s_part[x])
 
-        if no_s     : stats.append(["Highest GR Without 1/8s",  f"{no_s     [0]} ({100 * (self.c_counts[no_s    [0]] / self.s_part[no_s     [0]]):.2f})"])
-        if yes_s    : stats.append(["Lowest GR With 1/8s",      f"{yes_s    [0]} ({100 * (self.c_counts[yes_s   [0]] / self.s_part[yes_s    [0]]):.2f}, {self.e_counts[yes_s[0]]})"])
+        if no_s     : stats.append(["Highest GR Without 1/8s",  f"{self._get_player_acronym(no_s[0])} ({100 * (self.c_counts[no_s[0]] / self.s_part[no_s[0]]):.2f})"])
+        if yes_s    : stats.append(["Lowest GR With 1/8s",      f"{self._get_player_acronym(yes_s[0])} ({100 * (self.c_counts[yes_s[0]] / self.s_part[yes_s[0]]):.2f}, {self.e_counts[yes_s[0]]})"])
 
         if watched:
             conv        = []
@@ -1051,8 +1151,8 @@ class TourAnalyzer:
                 b = sorted(conv, key = lambda x: x['score'], reverse = True)    [0]
                 w = sorted(conv, key = lambda x: x['score'])                    [0]
 
-                stats.append(["Best Solo Rig Converter",    f"{b['n']} ({b['p']:.2f}%, {b['h']}/{b['t']})"])
-                stats.append(["Worst Solo Rig Converter",   f"{w['n']} ({w['p']:.2f}%, {w['h']}/{w['t']})"])
+                stats.append(["Best Solo Rig Converter",    f"{self._get_player_acronym(b['n'])} ({b['p']:.2f}%, {b['h']}/{b['t']})"])
+                stats.append(["Worst Solo Rig Converter",   f"{self._get_player_acronym(w['n'])} ({w['p']:.2f}%, {w['h']}/{w['t']})"])
 
         self._export_png(pd.DataFrame(stats, columns = ["Statistic", "Value"]), path, "Tour.png", "Tour Statistics")
 
@@ -1061,8 +1161,7 @@ class TourAnalyzer:
 
         for tid in self.t_c_ps:
             leader_name = t1_lookup.get(tid, "")
-            clean_name  = "".join(filter(str.isalnum, leader_name))
-            t_lbl       = clean_name[:3].upper() if leader_name else f"T{tid}"
+            t_lbl       = self._get_team_acronym(leader_name, tid)
             
             res.append({
                 "Team"              : t_lbl,
@@ -1086,25 +1185,30 @@ class TourAnalyzer:
             def get_generalist(plist):
                 sorted_p        = sorted(plist, key = lambda x: (self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0), reverse = True)
                 name, value     = sorted_p[0], 100 * (self.c_counts[sorted_p[0]] / self.s_part[sorted_p[0]]) if self.s_part[sorted_p[0]] else 0
-                return f"{name} ({value:.2f})"
+
+                return f"{self._get_player_acronym(name)} ({value:.2f})"
 
             def get_attblk(plist, sdict):
                 sorted_p        = sorted(plist, key = lambda x: (sdict[x], self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0), reverse = True)
                 name, value     = sorted_p[0], sdict[sorted_p[0]]
-                return f"{name} ({value})"
+
+                return f"{self._get_player_acronym(name)} ({value})"
 
             def get_contributor(plist):
                 sorted_p        = sorted(plist, key = lambda x: ((self.p_pts[x] + self.p_blks[x]), (self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0)), reverse = True)
                 name, v1, v2    = sorted_p[0], self.p_pts[sorted_p[0]], self.p_blks[sorted_p[0]]
-                return f"{name} ({v1 + v2})"
+
+                return f"{self._get_player_acronym(name)} ({v1 + v2})"
 
             def get_chanter(plist):
                 pool = [n for n in plist if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
                 if not pool: return "N/A"
+
                 sorted_p    = sorted(pool, key = lambda x: (100 * self.p_chan_c[x] / self.p_chan_s[x], -(100 * self.c_counts[x] / self.s_part[x])), reverse = True)
                 name        = sorted_p[0]                
                 ratio       = 100 * self.p_chan_c[name] / self.p_chan_s[name]
-                return f"{name} ({ratio:.2f})"
+
+                return f"{self._get_player_acronym(name)} ({ratio:.2f})"
 
             row_data = [tr, get_generalist(tp), get_attblk(tp, self.p_pts), get_attblk(tp, self.p_blks), get_contributor (tp)]
             if has_chanting_songs: row_data.append(get_chanter(tp))
@@ -1114,7 +1218,7 @@ class TourAnalyzer:
         if has_chanting_songs: cols.append("Chanter")
         self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = cols), path, "Tier.png", "Tier Statistics")
 
-    def _create_watched_png(self, path, assigns, t1_lookup):
+    def _create_watched_png(self, path):
         plist = [n for n in self.s_part if self.p_l_corr[n]]
         if not plist: return
 
@@ -1167,15 +1271,7 @@ class TourAnalyzer:
         texts       = []
 
         for name, x, y in zip(plist, x_vals, y_vals):
-            label       = ""
-            team_info   = assigns.get(name.lower(), ("N/A", "N/A"))
-
-            if team_info[0] != "N/A":
-                leader_name = t1_lookup.get(team_info[0], "")
-                clean_name  = "".join(filter(str.isalnum, leader_name))
-                t_lbl       = clean_name[ : 3].upper() if leader_name else f"T{team_info[0]}"
-                label       = f"{t_lbl}-{team_info[1]}"
-            
+            label = self._get_player_acronym(name)
             if not label: continue
 
             ha_align = "left"   if x >= x_center else "right"
@@ -1220,8 +1316,20 @@ class TourAnalyzer:
         plt .savefig        (path / "List.png", dpi = 500)
         plt .close          (fig)
 
-        try     : trim_whitespace(path / "List.png")
-        except  : pass
+        try:
+            with Image.open(path / "List.png") as img:
+                img     = img.convert("RGB")
+                bg      = Image.new(img.mode, img.size, "white")
+                diff    = ImageChops.difference(img, bg)
+                bbox    = diff.getbbox()
+
+                if bbox:
+                    img = img.crop(bbox)
+                    img = ImageOps.expand(img, border = 30, fill = "white")
+
+                    img.save(path / "List.png")
+
+        except: pass
 
     def _create_chanting_png(self, path):
         plist = [n for n in self.s_part if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
@@ -1236,14 +1344,15 @@ class TourAnalyzer:
 
         for i in range(3):
             b_cell = "N/A"
+            w_cell = "N/A"
+
             if i < len(best):
                 p       = best[i]
-                b_cell  = f"{p} ({get_ratio(p):.2f})"
-            
-            w_cell = "N/A"
+                b_cell  = f"{self._get_player_acronym(p)} ({get_ratio(p):.2f})"
+
             if i < len(worst):
                 p       = worst[i]
-                w_cell  = f"{p} ({get_ratio(p):.2f})"
+                w_cell  = f"{self._get_player_acronym(p)} ({get_ratio(p):.2f})"
             
             rows.append([f"{i + 1}", b_cell, w_cell])
 
