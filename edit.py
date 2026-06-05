@@ -99,6 +99,7 @@ class JSONEditor(tk.Tk):
         self.data           = None
         self.all_players    = set()
         self.player_vars    = {}
+        self.list_vars      = {}
         self.manual_entries = []
         self.fill_color     = "#000000"
         self.style          = ttk.Style(self)
@@ -168,10 +169,12 @@ class JSONEditor(tk.Tk):
         self.lbl_songname.pack(anchor = "w")
         self.lbl_artist = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
         self.lbl_artist.pack(anchor = "w")
-
         ttk.Label(main_frame, text = "Who got this song right?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 5))
         self.player_frame = ttk.Frame(main_frame)
-        self.player_frame.pack(side = "top", fill = "x")
+        self.player_frame.pack(side = "top", fill = "x", pady = (0, 10))
+        ttk.Label(main_frame, text = "Who has this song on their list?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 5))
+        self.list_frame = ttk.Frame(main_frame)
+        self.list_frame.pack(side = "top", fill = "x", pady = (0, 10))
         self.manual_container = ttk.Frame(main_frame)
         self.manual_container.pack(fill = "x", anchor = "w")
         self.build_manual_slots()
@@ -227,13 +230,15 @@ class JSONEditor(tk.Tk):
         self.delete_var.set(opt)
         for k, box in self.del_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
 
-    def toggle_custom_player(self, name, box):
-        new_val = not self.player_vars[name].get()
-        self.player_vars[name].set(new_val)
+    def toggle_custom_player(self, name, box, var_dict):
+        new_val = not var_dict[name].get()
+        var_dict[name].set(new_val)
         box.configure(bg = self.fill_color if new_val else "white")
 
     def on_song_changed(self, song_num):
-        for widget in self.player_frame.winfo_children(): widget.destroy()
+        for widget in self.player_frame .winfo_children(): widget.destroy()
+        for widget in self.list_frame   .winfo_children(): widget.destroy()
+
         if not self.data or "songs" not in self.data or not self.data["songs"]: return
 
         idx = song_num - 1
@@ -257,9 +262,13 @@ class JSONEditor(tk.Tk):
         else                    : self.lbl_type.configure(text = "Insert")
 
         correct_guessers    = set(target_song.get("correctGuessPlayers", []))
-        self.player_vars.clear()
-        sorted_players      = sorted(list(self.all_players), key = str.lower)
-        rows_per_col        = 8
+        list_state_players  = set(state["name"] for state in target_song.get("listStates", []) if "name" in state)
+
+        self.player_vars    .clear()
+        self.list_vars      .clear()
+
+        sorted_players  = sorted(list(self.all_players), key = str.lower)
+        rows_per_col    = 8
 
         for i, name in enumerate(sorted_players):
             col                     = i //  rows_per_col
@@ -284,7 +293,32 @@ class JSONEditor(tk.Tk):
             box.pack(side = tk.LEFT, padx = (0, 5))
             lbl = ttk.Label(item_frame, text = name, font = ("Segoe UI", 10))
             lbl.pack(side = tk.LEFT)
-            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n = name, b = box: self.toggle_custom_player(n, b))
+            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n = name, b = box: self.toggle_custom_player(n, b, self.player_vars))
+
+        for i, name in enumerate(sorted_players):
+            col                     = i // rows_per_col
+            row                     = i % rows_per_col
+            has_list                = name in list_state_players
+            var                     = tk.BooleanVar(value = has_list)
+            self.list_vars[name]    = var
+            item_frame              = ttk.Frame(self.list_frame)
+
+            item_frame.grid(row = row, column = col, pady = 1, sticky = "w")
+            initial_bg = self.fill_color if has_list else "white"
+
+            box = tk.Canvas(
+                item_frame,
+                width               = 10,
+                height              = 10,
+                bg                  = initial_bg,
+                highlightthickness  = 1,
+                highlightbackground = "black",
+            )
+
+            box.pack(side = tk.LEFT, padx = (0, 5))
+            lbl = ttk.Label(item_frame, text = name, font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n = name, b = box: self.toggle_custom_player(n, b, self.list_vars))
 
     def on_confirm(self):
         if not self.data or "songs" not in self.data or not self.data["songs"]: return
@@ -316,6 +350,22 @@ class JSONEditor(tk.Tk):
 
         if      diff > 0: song["wrongCount"] = max(0, song.get("wrongCount", 0) - diff)
         elif    diff < 0: song["wrongCount"] = song.get("wrongCount", 0) + abs(diff)
+
+        current_list_states = song.get("listStates", [])
+        existing_list_names = {state["name"] for state in current_list_states if "name" in state}
+        new_list_states     = []
+
+        for state in current_list_states:
+            if "name" in state and self.list_vars.get(state["name"], tk.BooleanVar(value = True)).get(): new_list_states.append(state)
+
+        for name, var in self.list_vars.items():
+            if var.get() and name not in existing_list_names: new_list_states.append({
+                "name"      : name,
+                "status"    : 2,
+                "score"     : None
+            })
+
+        song["listStates"] = new_list_states
 
         self.save_and_reload("Updated song records")
 
