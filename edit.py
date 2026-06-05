@@ -153,11 +153,22 @@ class JSONEditor(tk.Tk):
     def create_widgets(self):
         main_frame = ttk.Frame(self, padding = 20)
         main_frame.pack(fill = tk.BOTH, expand = True)
-        ttk.Label(main_frame, text = f"Editing {self.file_path.name}",      font = ("Segoe UI", 10, "italic"), foreground = "gray50",)  .pack(anchor = "w", pady = (0, 5))
+        ttk.Label(main_frame, text = f"Editing {self.file_path.name}",      font = ("Segoe UI", 10, "italic"), foreground = "gray50")   .pack(anchor = "w", pady = (0, 5))
         ttk.Label(main_frame, text = "Which song would you like to edit?",  font = ("Segoe UI", 10, "bold"))                            .pack(anchor = "w", pady = (0, 5))
         max_songs = len(self.data.get("songs", []))
         self.song_spinbox = CustomSpinbox(main_frame, from_ = 1, to = max_songs if max_songs > 0 else 1, initial_val = 1, command = self.on_song_changed)
         self.song_spinbox.pack(anchor = "w", pady = (0, 10))
+        self.info_frame = ttk.Frame(main_frame)
+        self.info_frame.pack(anchor = "w", pady = (0, 10))
+        self.lbl_anime = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
+        self.lbl_anime.pack(anchor = "w")
+        self.lbl_type = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
+        self.lbl_type.pack(anchor = "w")
+        self.lbl_songname = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
+        self.lbl_songname.pack(anchor = "w")
+        self.lbl_artist = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
+        self.lbl_artist.pack(anchor = "w")
+
         ttk.Label(main_frame, text = "Who got this song right?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 5))
         self.player_frame = ttk.Frame(main_frame)
         self.player_frame.pack(side = "top", fill = "x")
@@ -224,9 +235,27 @@ class JSONEditor(tk.Tk):
     def on_song_changed(self, song_num):
         for widget in self.player_frame.winfo_children(): widget.destroy()
         if not self.data or "songs" not in self.data or not self.data["songs"]: return
+
         idx = song_num - 1
         if idx >= len(self.data["songs"]): return
-        target_song         = self.data["songs"][idx]
+
+        target_song = self.data["songs"][idx]
+        song_info   = target_song.get("songInfo", {})
+
+        anime_romaji    = song_info.get("animeNames",   {}).get("romaji", "Unknown")
+        song_type       = song_info.get("type",         3)
+        type_num        = song_info.get("typeNumber",   0)
+        song_name       = song_info.get("songName",     "Unknown")
+        artist_name     = song_info.get("artist",       "Unknown")
+
+        self.lbl_anime      .configure(text = anime_romaji)
+        self.lbl_songname   .configure(text = song_name)
+        self.lbl_artist     .configure(text = artist_name)
+
+        if      song_type == 1  : self.lbl_type.configure(text = f"Opening {type_num}")
+        elif    song_type == 2  : self.lbl_type.configure(text = f"Ending {type_num}")
+        else                    : self.lbl_type.configure(text = "Insert")
+
         correct_guessers    = set(target_song.get("correctGuessPlayers", []))
         self.player_vars.clear()
         sorted_players      = sorted(list(self.all_players), key = str.lower)
