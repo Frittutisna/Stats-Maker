@@ -11,6 +11,7 @@ from collections    import  Counter, defaultdict
 from html2image     import  Html2Image
 from pathlib        import  Path
 from PIL            import  Image, ImageChops, ImageOps
+from scipy.spatial  import  ConvexHull
 from tkinter        import  messagebox, ttk
 
 BROWSER_PATHS = [
@@ -786,7 +787,7 @@ class TourAnalyzer:
 
     def _load_team_data(self, all_known):
         codes = self.tour_dir / FILE_CODES
-        if not codes.exists(): return False, {}, {}, {}, defaultdict(set)
+        if not codes.exists() or os.path.getsize(codes) == 0: return False, {}, {}, {}, defaultdict(set), all_known
         
         self.main_roster_names                      = set()
         elo_map, assignments, rosters, t1_lookup    = {}, {}, defaultdict(set), {}
@@ -1061,7 +1062,7 @@ class TourAnalyzer:
                     row["Team"] = "N/A"
                     row["Tier"] = "N/A"
 
-                row["Elo"]      = elo_map.get(name.lower(), "N/A")
+                row["Elo"] = elo_map.get(name.lower(), "N/A")
 
             row.update({
                 "Guess Rate"    : cor / tot if tot else 0,
@@ -1150,8 +1151,8 @@ class TourAnalyzer:
                 b = sorted(conv, key = lambda x: x['score'], reverse = True)    [0]
                 w = sorted(conv, key = lambda x: x['score'])                    [0]
 
-                stats.append(["Best Solo Rig Converter",    f"{self._get_player_acronym(b['n'])} ({b['p']:.2f}%, {b['h']}/{b['t']})"])
-                stats.append(["Worst Solo Rig Converter",   f"{self._get_player_acronym(w['n'])} ({w['p']:.2f}%, {w['h']}/{w['t']})"])
+                stats.append(["Best Solo Rig Converter",    f"{self._get_player_acronym(b['n'])} ({b['p']:.2f}, {b['h']}/{b['t']})"])
+                stats.append(["Worst Solo Rig Converter",   f"{self._get_player_acronym(w['n'])} ({w['p']:.2f}, {w['h']}/{w['t']})"])
 
         self._export_png(pd.DataFrame(stats, columns = ["Statistic", "Value"]), path, "Tour.png", "Tour Statistics")
 
@@ -1232,14 +1233,34 @@ class TourAnalyzer:
         x_vals                  = list  (x_vals)
         y_vals                  = list  (y_vals)
 
-        rig_rates   = [self.p_rigs      [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist]
-        rig_grs     = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
+        rig_rates               = [self.p_rigs      [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist]
+        rig_grs                 = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
 
-        fig, ax     = plt.subplots(figsize = (10, 10))
-        cmap        = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR, "#FFFFFF"), (1.0, "#0056B3")])
-        scale       = 1.00 if len(plist) <= 20 else (0.75 if len(plist) <= 28 else 0.50)
-        sizes       = [rate ** 2 * 10000 * scale for rate in rig_rates]
-        sc          = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
+        fig, ax                 = plt.subplots(figsize = (10, 10))
+        cmap                    = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR, "#FFFFFF"), (1.0, "#0056B3")])
+        scale                   = 1.00 if len(plist) <= 20 else (0.75 if len(plist) <= 28 else 0.50)
+        sizes                   = [rate ** 2 * 10000 * scale for rate in rig_rates]
+        sc                      = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
+
+        points                  = np.column_stack((x_vals, y_vals))
+        x_range                 = max(x_vals) - min(x_vals) if max(x_vals) != min(x_vals) else 1
+        y_range                 = max(y_vals) - min(y_vals) if max(y_vals) != min(y_vals) else 1
+        norm_points             = np.column_stack((points[:, 0] / x_range, points[:, 1] / y_range))
+        center_of_mass          = np.median(norm_points, axis = 0)
+        distances               = np.linalg.norm(norm_points - center_of_mass, axis = 1)
+        pack_mask               = distances < np.percentile(distances, 90)
+        pack_points             = points[pack_mask]
+
+        if len(pack_points) >= 3:
+            try:
+                hull        = ConvexHull(pack_points)
+                hull_points = pack_points[hull.vertices]
+                hull_points = np.vstack([hull_points, hull_points[0]])
+                
+                ax.plot(hull_points[:, 0], hull_points[:, 1], color = 'black', zorder = 1, alpha = 0.5, linestyle = '--')
+                ax.fill(hull_points[:, 0], hull_points[:, 1], color = 'black', zorder = 0, alpha = 0.1)                
+
+            except Exception: pass
 
         x_min       = math.floor    ((min   (x_vals) - 0.50) * 2) / 2
         x_max       = math.ceil     ((max   (x_vals) + 0.50) * 2) / 2
