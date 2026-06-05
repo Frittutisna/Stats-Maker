@@ -19,14 +19,13 @@ BROWSER_PATHS = [
     r"C:\Program Files\Google\Chrome\Application\chrome.exe",
 ]
 
-DIR_DEPS            = "dependencies"
-DIR_JSONS           = "jsons"
-DIR_OUT             = "hakohoka"
-DIR_TOURS           = "tours"
-FILE_CODES          = "codes.txt"
-FILE_ALIASES        = "aliases.txt"
-RIG_GR_THRESHOLD    = 0.85
-URL_ALIAS           = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
+DIR_JSONS   = "json"
+DIR_OUT     = "output"
+DIR_TOURS   = "tour"
+FILE_CODES  = "code.txt"
+FILE_ALIAS  = "alias.txt"
+RIG_GR      = 0.85
+URL_ALIAS   = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
 
 EXCLUDED_TAGS = {
     "Female Protagonist",
@@ -175,7 +174,7 @@ class TourSelectionDialog(UnifiedDialog):
         any_recommended     = False
 
         for tid in tour_ids:
-            t_path          = script_dir.parent / DIR_TOURS / str(tid)
+            t_path          = script_dir / DIR_TOURS / str(tid)
             json_dir        = t_path / DIR_JSONS
             codes_file      = t_path / FILE_CODES
             is_recommended  = False
@@ -512,7 +511,7 @@ class TourAnalyzer:
     def __init__(self, tour_id):
         self.tour_id                    = str(tour_id)
         self.script_dir                 = Path(__file__).parent.absolute()
-        self.tour_dir                   = self.script_dir.parent / DIR_TOURS / self.tour_id
+        self.tour_dir                   = self.script_dir / DIR_TOURS / self.tour_id
         self.browser_path               = self._find_browser()
         self.s_part                     = defaultdict(int)
         self.c_counts                   = defaultdict(int)
@@ -567,7 +566,7 @@ class TourAnalyzer:
         return id_map
 
     def run(self):
-        chanting_path = self.script_dir.parent / DIR_DEPS / "chanting.txt"
+        chanting_path = self.script_dir / DIR_TOURS / "chant.txt"
 
         if chanting_path.exists():
             with open(chanting_path, "r") as f:
@@ -729,7 +728,7 @@ class TourAnalyzer:
         self.main_roster_names                      = set()
         elo_map, assignments, rosters, t1_lookup    = {}, {}, defaultdict(set), {}
         avail                                       = sorted(list(all_known)) 
-        alias_path                                  = self.script_dir.parent / DIR_TOURS / FILE_ALIASES
+        alias_path                                  = self.script_dir / DIR_TOURS / FILE_ALIAS
         local_aliases                               = {}
 
         if alias_path.exists():
@@ -1133,7 +1132,7 @@ class TourAnalyzer:
         rig_grs     = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
 
         fig, ax     = plt.subplots(figsize = (10, 10))
-        cmap        = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR_THRESHOLD, "#FFFFFF"), (1.0, "#0056B3")])
+        cmap        = mcolors.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR, "#FFFFFF"), (1.0, "#0056B3")])
         scale       = 1.00 if len(plist) <= 20 else (0.75 if len(plist) <= 28 else 0.50)
         sizes       = [rate ** 2 * 10000 * scale for rate in rig_rates]
         sc          = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
@@ -1204,10 +1203,10 @@ class TourAnalyzer:
         ax          .tick_params            (axis = 'x', which = 'both', length = 0, pad = 5)
         ax          .tick_params            (axis = 'y', which = 'both', length = 0, pad = 15)
         
-        cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = [0.0, 0.5, RIG_GR_THRESHOLD, 1.0])
+        cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = [0.0, 0.5, RIG_GR, 1.0])
 
         cbar        .set_label          ("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -5)
-        cbar.ax     .set_yticklabels    (['0', '50', f'{int(RIG_GR_THRESHOLD * 100)}', '100'])
+        cbar.ax     .set_yticklabels    (['0', '50', f'{int(RIG_GR * 100)}', '100'])
         cbar.ax     .tick_params        (labelsize = 10, length = 0)
 
         ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "left",    weight = "bold", alpha = 0.75)
