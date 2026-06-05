@@ -5,6 +5,7 @@ import matplotlib.colors    as mcolors
 import numpy                as np
 import pandas               as pd
 import tkinter              as tk
+import gspread
 
 from adjustText     import  adjust_text
 from collections    import  Counter, defaultdict
@@ -19,9 +20,11 @@ BROWSER_PATHS = [
     r"C:\Program Files\Google\Chrome\Application\chrome.exe",
 ]
 
+DIR_CREDS   = "cred"
 DIR_JSONS   = "json"
 DIR_OUT     = "output"
 DIR_TOURS   = "tour"
+FILE_CHANT  = "chant.txt"
 FILE_CODES  = "code.txt"
 FILE_ALIAS  = "alias.txt"
 RIG_GR      = 0.85
@@ -566,7 +569,7 @@ class TourAnalyzer:
         return id_map
 
     def run(self):
-        chanting_path = self.script_dir / DIR_TOURS / "chant.txt"
+        chanting_path = self.script_dir / DIR_TOURS / FILE_CHANT
 
         if chanting_path.exists():
             with open(chanting_path, "r") as f:
@@ -850,13 +853,13 @@ class TourAnalyzer:
             self.p_pts  .clear()
             self.p_blks .clear()
 
-            for cor, raw_p in self.song_history:
-                t_list = list({assignments[p.lower()][0] for p in raw_p if p.lower() in assignments})
+            for cor, raw_f_players in self.song_history:
+                t_list = list({assignments[p.lower()][0] for p in raw_f_players if p.lower() in assignments})
 
                 if len(t_list) == 2:
                     tA, tB  = t_list[0], t_list[1]
-                    cA      = {assignments[p.lower()][1]: p for p in raw_p if p.lower() in assignments and assignments[p.lower()][0] == tA}
-                    cB      = {assignments[p.lower()][1]: p for p in raw_p if p.lower() in assignments and assignments[p.lower()][0] == tB}
+                    cA      = {assignments[p.lower()][1]: p for p in raw_f_players if p.lower() in assignments and assignments[p.lower()][0] == tA}
+                    cB      = {assignments[p.lower()][1]: p for p in raw_f_players if p.lower() in assignments and assignments[p.lower()][0] == tB}
 
                     for tr in ["1", "2", "3", "4"]:
                         pA, pB = cA.get(tr), cB.get(tr)
@@ -923,8 +926,6 @@ class TourAnalyzer:
                 if p.exists():
                     try     : os.remove(p)
                     except  : pass
-
-        messagebox.showinfo("Success", f"Saved the PNGs for the {t_name} tour to tour/{self.tour_id}/{DIR_OUT}")
 
     def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup, val_str):
         rows, eligibility   = [], []
@@ -1428,10 +1429,40 @@ class TourAnalyzer:
             try     : os.remove(p)
             except  : pass
 
+def sync_chanting(tour_dir_path):
+    cred_file   = os.path.join(DIR_CREDS, "credentials.json")
+    auth_file   = os.path.join(DIR_CREDS, "authorized_user.json")
+    sheet_name  = "NGM Stats Export v2"
+
+    try:
+        gc = gspread.oauth(
+            credentials_filename        = cred_file,
+            authorized_user_filename    = auth_file
+        )
+
+        sheet           = gc.open(sheet_name)
+        rows            = sheet.worksheet("MiscData").get_all_values()
+        chanting_ids    = set()
+
+        for row in rows[1:]:
+            if not row: continue
+            value = str(row[0]).strip()
+            if value: chanting_ids.add(value)
+
+        tour_dir_path.mkdir(parents = True, exist_ok = True)
+        chant_file_path = tour_dir_path / FILE_CHANT
+        with open(chant_file_path, "w", encoding="utf-8") as f: f.write("\n".join(sorted(list(chanting_ids), key=lambda x: int(x) if x.isdigit() else x)))
+    except Exception as e: print(f"Failed to download chanting song IDs: {e}")
+
 if __name__ == "__main__":
     root                = tk.Tk(); root.withdraw()
+    script_directory    = Path(__file__).parent.absolute()
+    tour_folder_path    = script_directory / DIR_TOURS
+    chant_txt_file      = tour_folder_path / FILE_CHANT    
     selection_dialog    = TourSelectionDialog(root, ["0", "1", "2"])
     selected_tours      = selection_dialog.selected_tours
+
+    if not chant_txt_file.exists() or os.path.getsize(chant_txt_file) == 0 : sync_chanting(tour_folder_path)
     
     if selected_tours:
         for tour_id in selected_tours: TourAnalyzer(tour_id).run()
