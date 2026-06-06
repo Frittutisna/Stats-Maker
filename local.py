@@ -1693,11 +1693,11 @@ class TourAnalyzer:
             cy += imgs["Tier"].height + 10
 
         if "Chanting" in imgs or "Time" in imgs:
-            if "Chanting" in imgs:
-                fused.paste(imgs["Chanting"], (cx, cy))
-                if "Time" in imgs: fused.paste(imgs["Time"], (cx + imgs["Chanting"].width + 10, cy))
+            if "Time" in imgs:
+                fused.paste(imgs["Time"], (cx, cy))
+                if "Chanting" in imgs: fused.paste(imgs["Chanting"], (cx + imgs["Time"].width + 10, cy))
 
-            elif "Time" in imgs: fused.paste(imgs["Time"], (cx, cy))
+            elif "Chanting" in imgs: fused.paste(imgs["Chanting"], (cx, cy))
 
             cy += max(imgs["Chanting"].height if "Chanting" in imgs else 0, imgs["Time"].height if "Time" in imgs else 0) + 10
             
