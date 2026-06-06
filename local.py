@@ -1269,9 +1269,10 @@ class TourAnalyzer:
                 "Rig Synergy"       : f"{np.mean(self.t_on_syn  [tid]) * 100:.2f}",
                 "Off Synergy"       : f"{np.mean(self.t_off_syn [tid]) * 100:.2f}",
                 "Shared Rigs"       : f"{np.mean(self.t_sh_rig  [tid]) * 100:.2f}",
+                "Average Over-8"    : f"{avg_o:.2f}" if not np.isnan(avg_o) else "N/A",
                 "Total 1/8s"        : self.t_solos[tid],
-                "Average Over-8"    : f"{avg_o:.2f}" if not np.isnan(avg_o) else "N/A"
             })
+
         self._export_png(pd.DataFrame(res).sort_values("Average GR", ascending = False), path, "Team.png", "Team Statistics")
 
     def _create_tier_png(self, assigns, path, has_chanting_songs):
