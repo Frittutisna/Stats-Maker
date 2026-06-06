@@ -553,6 +553,7 @@ class TourAnalyzer:
         self.p_l_solos                  = defaultdict(int)
         self.p_chan_c                   = defaultdict(int)
         self.p_chan_s                   = defaultdict(int)
+        self.p_usefulness_sum           = defaultdict(float)
         self.t_vint                     = defaultdict(list)
         self.t_c_ps                     = defaultdict(list)
         self.t_on_syn                   = defaultdict(list)
@@ -755,11 +756,24 @@ class TourAnalyzer:
                     if sw.lower() in assignments: self.t_solos[assignments[sw.lower()][0]]  +=  1
                 elif len(correct) == 0: self.global_stats["blanks"] += 1
 
+                amtcorrect = len(correct)
+
+                if amtcorrect > 0:
+                    teamsize    = 4
+                    uf_song     = 0.0
+
+                    for i in range(teamsize): uf_song += math.comb(2 * teamsize - (i + 2), amtcorrect - 1) / math.comb(2 * teamsize - 1, amtcorrect - 1)
+                    uf_song /= teamsize
+                    
+                    for name in final_members:
+                        if name in correct: self.p_usefulness_sum[name] += uf_song
+
                 for name in final_members:
                     if name in correct:
                         self                        .c_counts[name]     += 1
                         if st in [1, 2, 3]  : self  .p_type_c[name][st] += 1
                         if is_chan          : self  .p_chan_c[name]     += 1
+
                     if is_chan: self                .p_chan_s[name]     += 1
 
                 if ls:
@@ -1027,7 +1041,11 @@ class TourAnalyzer:
         rows, eligibility   = [], []
         t_labels            = {1: "OP GR", 2: "ED GR", 3: "IN GR"}
         active              = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
+
         if len(active) <= 1 : active = []
+
+        valid_elos  = [float(v) for v in elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
+        avg_rank    = np.mean(valid_elos) if valid_elos else 1.0
 
         for name in self.s_part:
             tot, cor    = self.s_part[name], self.c_counts[name]
@@ -1064,8 +1082,11 @@ class TourAnalyzer:
 
                 row["Elo"] = elo_map.get(name.lower(), "N/A")
 
+            usefulness_score = (self.p_usefulness_sum[name] * avg_rank * 2) / tot if tot else 0.0
+
             row.update({
                 "Guess Rate"    : cor / tot if tot else 0,
+                "Usefulness"    : usefulness_score,
                 "1/8s"          : self.e_counts [name],
                 "2/8s"          : self.p_two_e  [name],
                 "7/8s"          : self.p_rev_e  [name]
@@ -1092,8 +1113,10 @@ class TourAnalyzer:
         mask    = pd.Series(eligibility, index = pd.DataFrame(rows).index).reindex(df.index).values
         pcts    = ["Guess Rate"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else [])
 
-        if "Elo" in df.columns: df["Elo"] = pd.to_numeric(df["Elo"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        for c in pcts: df[c] = pd.to_numeric(df[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Elo" in df.columns          : df["Elo"]         = pd.to_numeric(df["Elo"],          errors = 'coerce')          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        for c in pcts                   : df[c]             = pd.to_numeric(df[c],              errors = 'coerce').mul(100) .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Usefulness" in df.columns   : df["Usefulness"]  = pd.to_numeric(df["Usefulness"],   errors = 'coerce')          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "0.00")
+        
         self._export_png(df, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask, val_str)
 
     def _create_tour_png(self, use_teams, watched, path):
@@ -1384,6 +1407,7 @@ class TourAnalyzer:
         desc = [
             "Elo", 
             "Guess Rate", 
+            "Usefulness",
             "1/8s", 
             "2/8s", 
             "Rigs", 
