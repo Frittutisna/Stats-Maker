@@ -554,6 +554,7 @@ class TourAnalyzer:
         self.p_chan_c                   = defaultdict(int)
         self.p_chan_s                   = defaultdict(int)
         self.p_usefulness_sum           = defaultdict(float)
+        self.p_answer_times             = defaultdict(list)
         self.t_vint                     = defaultdict(list)
         self.t_c_ps                     = defaultdict(list)
         self.t_on_syn                   = defaultdict(list)
@@ -710,10 +711,37 @@ class TourAnalyzer:
                 if isinstance(si.get("animeDifficulty"), (int, float))  : self.all_diff.append(si.get("animeDifficulty"))
                 if not ls                                               : missing_list_count += 1
 
+                seen_song_times = set()
+
+                for key_name in ["answerTimes", "answerTime", "answerTimesByPlayer", "playerAnswerTimes"]:
+                    val = song.get(key_name)
+
+                    if isinstance(val, dict):
+                        for p_name, t_val in val.items():
+                            try                             : seen_song_times.add((str(p_name).casefold(), float(t_val)))
+                            except (ValueError, TypeError)  : pass
+
+                    elif isinstance(val, list):
+                        for item in val:
+                            if isinstance(item, dict):
+                                p_name  = item.get("name") or item.get("player")        or item.get("playerName")
+                                t_val   = item.get("time") or item.get("answerTime")    or item.get("value")
+
+                                if p_name and t_val is not None:
+                                    try                             : seen_song_times.add((str(p_name).casefold(), float(t_val)))
+                                    except (ValueError, TypeError)  : pass
+
+                name_map = {m.lower(): m for m in final_members}
+
+                for p_name_lower, t_float in seen_song_times:
+                    if p_name_lower in name_map: self.p_answer_times[name_map[p_name_lower]].append(t_float)
+
                 s_riggers = {p["name"] for p in ls}
+
                 if len(ls) == 1:
                     u                   =   ls[0]["name"]
                     self.p_l_solos[u]   +=  1
+
                     if not (len(correct) == 1 and list(correct)[0] == u): self.p_m_erigs[u] += 1
 
                 if use_teams:
@@ -1082,16 +1110,9 @@ class TourAnalyzer:
 
                 row["Elo"] = elo_map.get(name.lower(), "N/A")
 
-            usefulness_score = (self.p_usefulness_sum[name] * avg_rank * 2) / tot if tot else 0.0
-
-            row.update({
-                "Guess Rate"    : cor / tot if tot else 0,
-                "Usefulness"    : usefulness_score,
-                "1/8s"          : self.e_counts [name],
-                "2/8s"          : self.p_two_e  [name],
-                "7/8s"          : self.p_rev_e  [name]
-            })
-
+            row.update({"Guess Rate": cor / tot if tot else 0})
+            if use_teams: row.update({"Usefulness": (self.p_usefulness_sum[name] * avg_rank * 2) / tot if tot else 0.0})
+            row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name]})
             if use_teams: row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
             
             for tid in active:
@@ -1107,6 +1128,9 @@ class TourAnalyzer:
                     "Off GR"            : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
                 })
 
+            times               = self.p_answer_times.get(name, [])
+            row["Median Time"]  = np.median(times) if times else np.nan
+
             rows.append(row)
 
         df      = pd.DataFrame(rows).sort_values("Guess Rate", ascending = False)
@@ -1115,7 +1139,8 @@ class TourAnalyzer:
 
         if "Elo" in df.columns          : df["Elo"]         = pd.to_numeric(df["Elo"],          errors = 'coerce')          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         for c in pcts                   : df[c]             = pd.to_numeric(df[c],              errors = 'coerce').mul(100) .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Usefulness" in df.columns   : df["Usefulness"]  = pd.to_numeric(df["Usefulness"],   errors = 'coerce')          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "0.00")
+        if "Usefulness" in df.columns   : df["Usefulness"]  = pd.to_numeric(df["Usefulness"],   errors = 'coerce')          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Median Time" in df.columns  : df["Median Time"] = pd.to_numeric(df["Median Time"],  errors = 'coerce')          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         
         self._export_png(df, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask, val_str)
 
@@ -1427,7 +1452,7 @@ class TourAnalyzer:
             "Total 1/8s"
         ]
 
-        asc     = ["7/8s"]
+        asc     = ["7/8s", "Median Time"]
         rest    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]
         stats   = {}
 
