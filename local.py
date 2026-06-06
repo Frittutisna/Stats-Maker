@@ -1148,7 +1148,7 @@ class TourAnalyzer:
 
                 row["Elo"] = elo_map.get(name.lower(), "N/A")
 
-            row.update({"Guess Rate": cor / tot if tot else 0})
+            row.update({"GR": cor / tot if tot else 0})
             if use_teams: row.update({"UF": (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0})
             row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name], "Average Over-8": self.p_overs_sum[name] / cor if cor else np.nan})
             if use_teams: row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
@@ -1172,9 +1172,9 @@ class TourAnalyzer:
 
             rows.append(row)
 
-        df      = pd.DataFrame(rows).sort_values("Guess Rate", ascending = False)
+        df      = pd.DataFrame(rows).sort_values("GR", ascending = False)
         mask    = pd.Series(eligibility, index = pd.DataFrame(rows).index).reindex(df.index).values
-        pcts    = ["Guess Rate"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else [])
+        pcts    = ["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else [])
 
         if "Elo"            in df.columns: df["Elo"]            = pd.to_numeric(df["Elo"],              errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "UF"             in df.columns: df["UF"]     = pd.to_numeric(df["UF"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -1483,7 +1483,7 @@ class TourAnalyzer:
 
         desc = [
             "Elo", 
-            "Guess Rate", 
+            "GR", 
             "UF",
             "1/8s", 
             "2/8s", 
@@ -1524,7 +1524,7 @@ class TourAnalyzer:
         df      = df.reset_index(drop = True)
         borders = []
 
-        if "Guess Rate" in df.columns:
+        if "GR" in df.columns:
             if "Eru" in self.tour_label: th = []
             else:
                 if val_str == "default":
@@ -1538,7 +1538,7 @@ class TourAnalyzer:
                 try         : th = [float(x.strip()) for x in th_val.split(",")] if th_val else []
                 except      : th = [28.0, 18.0, 12.0, 6.0]
             
-            gv = pd.to_numeric(df["Guess Rate"].astype(str).str.replace('%',''), errors = 'coerce').tolist()
+            gv = pd.to_numeric(df["GR"].astype(str).str.replace('%',''), errors = 'coerce').tolist()
 
             for t in th:
                 f_idx = -1
