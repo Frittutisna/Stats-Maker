@@ -1149,7 +1149,7 @@ class TourAnalyzer:
                 row["Elo"] = elo_map.get(name.lower(), "N/A")
 
             row.update({"Guess Rate": cor / tot if tot else 0})
-            if use_teams: row.update({"Usefulness": (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0})
+            if use_teams: row.update({"UF": (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0})
             row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name], "Average Over-8": self.p_overs_sum[name] / cor if cor else np.nan})
             if use_teams: row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
             
@@ -1177,7 +1177,7 @@ class TourAnalyzer:
         pcts    = ["Guess Rate"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else [])
 
         if "Elo"            in df.columns: df["Elo"]            = pd.to_numeric(df["Elo"],              errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Usefulness"     in df.columns: df["Usefulness"]     = pd.to_numeric(df["Usefulness"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "UF"             in df.columns: df["UF"]     = pd.to_numeric(df["UF"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Median Time"    in df.columns: df["Median Time"]    = pd.to_numeric(df["Median Time"],      errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Average Over-8" in df.columns: df["Average Over-8"] = pd.to_numeric(df["Average Over-8"],   errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Rig Over-8"     in df.columns: df["Rig Over-8"]     = pd.to_numeric(df["Rig Over-8"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -1484,7 +1484,7 @@ class TourAnalyzer:
         desc = [
             "Elo", 
             "Guess Rate", 
-            "Usefulness",
+            "UF",
             "1/8s", 
             "2/8s", 
             "Rigs", 
