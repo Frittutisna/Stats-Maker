@@ -188,7 +188,7 @@ class TourSelectionDialog(UnifiedDialog):
                 if json_count > 0:
                     with open(codes_file, "r", encoding = "utf-8") as f:
                         content     = f.read()
-                        main_part   = re.split(r'https://challonge.com/S+', content)[0]
+                        main_part   = re.split(r'https://challonge.com/\S+', content)[0]
                         players     = re.findall(r'[^\s(]+\s*\([-]?\d+\.\d+\)', main_part)
                         p           = len(players)
 
@@ -231,7 +231,7 @@ class TourSelectionDialog(UnifiedDialog):
         super().on_confirm()
 
 class TourMetadataDialog(UnifiedDialog):
-    def __init__(self, parent, tour_id, init_label, default_th, baseline_initial, active_players):
+    def __init__(self, parent, tour_id, init_label, default_th, baseline_initial, active_players, elo_map = None):
         super().__init__(parent, f"Tour {tour_id} Configuration", "")
         self.fill_color = "#000000"
         ttk.Label(self.container, text = "What tour is this?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 2))
@@ -295,9 +295,26 @@ class TourMetadataDialog(UnifiedDialog):
         self.spin.pack(anchor = "w", pady = (0, 10))
 
         ttk.Label(self.container, text = "Are there any new players?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 2))
-        self.np_var = tk.StringVar(value = "No")
 
-        self.np_boxes = {}
+        has_round_elo       = False
+        round_elo_players   = set()
+
+        if elo_map:
+            for p in active_players:
+                p_low = p.lower()
+
+                if p_low in elo_map:
+                    try:
+                        val = float(elo_map[p_low])
+
+                        if val.is_integer():
+                            has_round_elo = True
+                            round_elo_players.add(p_low)
+
+                    except ValueError: pass
+
+        self.np_var     = tk.StringVar(value = "Yes" if has_round_elo else "No")
+        self.np_boxes   = {}
 
         for opt in ["No", "Yes"]:
             f_np = ttk.Frame(self.container)
@@ -322,7 +339,8 @@ class TourMetadataDialog(UnifiedDialog):
         for i, name in enumerate(player_list):
             col                     = i //  rows_per_col
             row                     = i %   rows_per_col
-            var                     = tk.BooleanVar(value = False)
+            is_round                = name.lower() in round_elo_players
+            var                     = tk.BooleanVar(value = is_round)
             self.player_vars[name]  = var
             item_frame              = ttk.Frame(self.player_container)
 
@@ -1015,7 +1033,7 @@ class TourAnalyzer:
         has_chanting_songs = any(self.p_chan_s.values())
         if not has_chanting_songs: init_label += " -Chanting"
 
-        meta_dialog     = TourMetadataDialog(root, self.tour_id, init_label, default_th, baseline_initial, list(self.s_part.keys()))
+        meta_dialog     = TourMetadataDialog(root, self.tour_id, init_label, default_th, baseline_initial, list(self.s_part.keys()), elo_map)
         meta_res        = meta_dialog.result if meta_dialog.result else {"tour_label": init_label, "th_str": "default", "base_exp": baseline_initial, "selected_new": []}
         self.tour_label = meta_res["tour_label"]
 
