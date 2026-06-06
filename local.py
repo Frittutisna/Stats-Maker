@@ -658,19 +658,32 @@ class TourAnalyzer:
             songs = data.get("songs", [])
             if not songs: continue
 
-            raw_f_players = {p for s in songs for p in s.get("correctGuessPlayers", [])} | {ls["name"] for s in songs for ls in s.get("listStates", [])}
+            raw_f_players = set()
+
+            for s in songs:
+                for p in s.get("correctGuessPlayers", []):
+                    if      isinstance(p, str)                  : raw_f_players.add(p)
+                    elif    isinstance(p, dict) and "name" in p : raw_f_players.add(p["name"])
+                        
+                for ls in s.get("listStates", []):
+                    if "name" in ls: raw_f_players.add(ls["name"])
+
             final_members = set(raw_f_players)
 
             if use_teams:
                 t_in_f = {assignments[p.lower()][0] for p in raw_f_players if p.lower() in assignments}
+
                 for tid in t_in_f:
                     ros     = rosters[tid]
                     missing = [p for p in ros if p not in raw_f_players]
+
                     if len([p for p in ros if p in raw_f_players]) == 3 and missing:
                         res = SubSelectionDialog(None, missing).result if len(missing) > 1 else missing[0]
+
                         if res:
                             final_members.add(res)
                             potential_subs = list(raw_f_players - rosters[tid])
+
                             for sub_candidate in potential_subs:
                                 if sub_candidate.lower() not in assignments: assignments[sub_candidate.lower()] = assignments[res.lower()]
 
@@ -701,7 +714,13 @@ class TourAnalyzer:
                 if isinstance(si.get("animeGenre"), list): self.genre_c .update(si.get("animeGenre"))
                 if isinstance(si.get("animeTags"),  list): self.tag_c   .update([t for t in si.get("animeTags") if t not in EXCLUDED_TAGS])
                 
-                correct = set(song.get("correctGuessPlayers", []))
+                raw_correct = song.get("correctGuessPlayers", [])
+                correct     = set()
+
+                for p in raw_correct:
+                    if      isinstance(p, str)                  : correct.add(p)
+                    elif    isinstance(p, dict) and "name" in p : correct.add(p["name"])
+
                 self.song_history.append((correct, raw_f_players))
                 ls                          =   song.get("listStates", [])
                 self.global_stats["tot_c"]  +=  len(correct)
@@ -712,6 +731,12 @@ class TourAnalyzer:
                 if not ls                                               : missing_list_count += 1
 
                 seen_song_times = set()
+
+                if isinstance(raw_correct, list):
+                    for p in raw_correct:
+                        if isinstance(p, dict) and "name" in p and "answerTime" in p:
+                            try     : seen_song_times.add((str(p["name"]).casefold(), float(p["answerTime"])))
+                            except  : pass
 
                 for key_name in ["answerTimes", "answerTime", "answerTimesByPlayer", "playerAnswerTimes"]:
                     val = song.get(key_name)
@@ -822,10 +847,22 @@ class TourAnalyzer:
             try:
                 with open(p, encoding = "utf-8") as f:
                     data = json.load(f)
+
                     for s in data.get("songs", []):
-                        for plyr    in s.get("correctGuessPlayers", []): players.add(plyr);         apps[plyr]          .add(str(p))
-                        for ls      in s.get("listStates",          []): players.add(ls["name"]);   apps[ls["name"]]    .add(str(p))
+                        for plyr in s.get("correctGuessPlayers", []):
+                            if isinstance(plyr, str):
+                                players.add(plyr)
+                                apps[plyr].add(str(p))
+
+                            elif isinstance(plyr, dict) and "name" in plyr:
+                                players.add(plyr["name"])
+                                apps[plyr["name"]].add(str(p))
+
+                        for ls in s.get("listStates", []): players.add(ls["name"])
+                        apps[ls["name"]].add(str(p))
+
             except: continue
+
         return players, apps
 
     def _load_team_data(self, all_known):
@@ -1295,13 +1332,13 @@ class TourAnalyzer:
         y_vals                  = list  (y_vals)
 
         rig_rates               = [self.p_rigs      [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist]
-        rig_grs                 = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
+        grid_grs                = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
 
         fig, ax                 = plt.subplots(figsize = (10, 10))
         cmap                    = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR, "#FFFFFF"), (1.0, "#0056B3")])
         scale                   = 1.00 if len(plist) <= 20 else (0.75 if len(plist) <= 28 else 0.50)
         sizes                   = [rate ** 2 * 10000 * scale for rate in rig_rates]
-        sc                      = ax.scatter(x_vals, y_vals, s = sizes, c = rig_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
+        sc                      = ax.scatter(x_vals, y_vals, s = sizes, c = grid_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
 
         points                  = np.column_stack((x_vals, y_vals))
         x_range                 = max(x_vals) - min(x_vals) if max(x_vals) != min(x_vals) else 1
