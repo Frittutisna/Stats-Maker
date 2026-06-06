@@ -554,6 +554,7 @@ class TourAnalyzer:
         self.p_chan_c                   = defaultdict(int)
         self.p_chan_s                   = defaultdict(int)
         self.p_usefulness_sum           = defaultdict(float)
+        self.p_overs_sum                = defaultdict(int)
         self.p_answer_times             = defaultdict(list)
         self.t_vint                     = defaultdict(list)
         self.t_c_ps                     = defaultdict(list)
@@ -562,7 +563,6 @@ class TourAnalyzer:
         self.t_sh_rig                   = defaultdict(list)
         self.t_solos                    = defaultdict(int)
         self.t_sweeps                   = defaultdict(int)
-        self.t_overs                    = defaultdict(list)
         self.genre_c                    = Counter()
         self.tag_c                      = Counter()
         self.global_stats               = Counter()
@@ -767,7 +767,6 @@ class TourAnalyzer:
                         if s_riggers & ros:
                             self.t_on_syn       [tid].append(len(c_on_t)                / 4.0)
                             self.t_sh_rig       [tid].append((len(s_riggers & ros) - 1) / 3.0)
-                            self.t_overs        [tid].append((len(correct), len(s_riggers & ros)))
                         else: self.t_off_syn    [tid].append(len(c_on_t)                / 4.0)
 
                 if len(final_members - correct) == 0: self.global_stats["fulls"] += 1
@@ -798,11 +797,13 @@ class TourAnalyzer:
 
                 for name in final_members:
                     if name in correct:
-                        self                        .c_counts[name]     += 1
-                        if st in [1, 2, 3]  : self  .p_type_c[name][st] += 1
-                        if is_chan          : self  .p_chan_c[name]     += 1
+                        self.c_counts[name]     += 1
+                        self.p_overs_sum[name]  += len(correct)
 
-                    if is_chan: self                .p_chan_s[name]     += 1
+                        if st in [1, 2, 3]  : self.p_type_c[name][st]   += 1
+                        if is_chan          : self.p_chan_c[name]       += 1
+
+                    if is_chan: self.p_chan_s[name] += 1
 
                 if ls:
                     for p in ls:
@@ -1049,7 +1050,7 @@ class TourAnalyzer:
         self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup, val_str)
         self._create_tour_png   (use_teams, watched_valid, out_path)
 
-        if watched_valid and assignments        : self._create_team_png     (t1_lookup,     out_path)
+        if watched_valid and assignments        : self._create_team_png     (assignments,   t1_lookup,      out_path)
         if assignments                          : self._create_tier_png     (assignments,   out_path,       has_chanting_songs)
         if watched_valid                        : self._create_watched_png  (out_path)
         if watched_valid and has_chanting_songs : self._create_chanting_png (out_path)
@@ -1112,7 +1113,7 @@ class TourAnalyzer:
 
             row.update({"Guess Rate": cor / tot if tot else 0})
             if use_teams: row.update({"Usefulness": (self.p_usefulness_sum[name] * avg_rank * 2) / tot if tot else 0.0})
-            row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name]})
+            row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name], "Average Over-8": self.p_overs_sum[name] / cor if cor else np.nan})
             if use_teams: row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
             
             for tid in active:
@@ -1137,11 +1138,12 @@ class TourAnalyzer:
         mask    = pd.Series(eligibility, index = pd.DataFrame(rows).index).reindex(df.index).values
         pcts    = ["Guess Rate"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else [])
 
-        if "Elo" in df.columns          : df["Elo"]         = pd.to_numeric(df["Elo"],          errors = 'coerce')          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        for c in pcts                   : df[c]             = pd.to_numeric(df[c],              errors = 'coerce').mul(100) .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Usefulness" in df.columns   : df["Usefulness"]  = pd.to_numeric(df["Usefulness"],   errors = 'coerce')          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Median Time" in df.columns  : df["Median Time"] = pd.to_numeric(df["Median Time"],  errors = 'coerce')          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        
+        if "Elo"            in df.columns: df["Elo"]            = pd.to_numeric(df["Elo"],              errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Usefulness"     in df.columns: df["Usefulness"]     = pd.to_numeric(df["Usefulness"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Median Time"    in df.columns: df["Median Time"]    = pd.to_numeric(df["Median Time"],      errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Average Over-8" in df.columns: df["Average Over-8"] = pd.to_numeric(df["Average Over-8"],   errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+
+        for c in pcts: df[c] = pd.to_numeric(df[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         self._export_png(df, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask, val_str)
 
     def _create_tour_png(self, use_teams, watched, path):
@@ -1204,12 +1206,18 @@ class TourAnalyzer:
 
         self._export_png(pd.DataFrame(stats, columns = ["Statistic", "Value"]), path, "Tour.png", "Tour Statistics")
 
-    def _create_team_png(self, t1_lookup, path):
+    def _create_team_png(self, assigns, t1_lookup, path):
         res = []
 
         for tid in self.t_c_ps:
             leader_name = t1_lookup.get(tid, "")
             t_lbl       = self._get_team_acronym(leader_name, tid)
+            t_overs     = []
+
+            for n, t_info in assigns.items():
+                if t_info[0] == tid and n in self.s_part and self.c_counts[n] > 0: t_overs.append(self.p_overs_sum[n] / self.c_counts[n])
+                    
+            avg_o = np.mean(t_overs) if t_overs else np.nan
             
             res.append({
                 "Team"              : t_lbl,
@@ -1219,6 +1227,7 @@ class TourAnalyzer:
                 "Off Synergy"       : f"{np.mean(self.t_off_syn [tid]) * 100:.2f}",
                 "Shared Rigs"       : f"{np.mean(self.t_sh_rig  [tid]) * 100:.2f}",
                 "Total 1/8s"        : self.t_solos[tid],
+                "Average Over-8"    : f"{avg_o:.2f}" if not np.isnan(avg_o) else "N/A"
             })
         self._export_png(pd.DataFrame(res).sort_values("Average GR", ascending = False), path, "Team.png", "Team Statistics")
 
@@ -1452,7 +1461,7 @@ class TourAnalyzer:
             "Total 1/8s"
         ]
 
-        asc     = ["7/8s", "Median Time"]
+        asc     = ["7/8s", "Median Time", "Average Over-8"]
         rest    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]
         stats   = {}
 
