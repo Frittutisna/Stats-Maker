@@ -1148,9 +1148,10 @@ class TourAnalyzer:
 
                 row["Elo"] = elo_map.get(name.lower(), "N/A")
 
+            avg_over8 = self.p_overs_sum[name] / cor if cor else np.nan
             row.update({"GR": cor / tot if tot else 0})
             if use_teams: row.update({"UF": (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0})
-            row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name], "Average Over-8": self.p_overs_sum[name] / cor if cor else np.nan})
+            row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name], "Average Over-8": avg_over8})
             if use_teams: row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
             
             for tid in active:
@@ -1158,13 +1159,16 @@ class TourAnalyzer:
                 row[t_labels[tid]]  = self.p_type_c[name][tid] / seen if seen else np.nan
 
             if watched:
+                rig_over8 = np.mean(self.p_l_corr[name]) if self.p_l_corr[name] else np.nan
+
                 row.update({
-                    "Rigs"              : self.p_rigs[name],
-                    "Rig Rate"          : self.p_rigs[name]             / tot                       if tot                          else np.nan,
-                    "Rig Over-8"        : np.mean(self.p_l_corr[name])                              if self.p_l_corr[name]          else np.nan,
-                    "Rig Delta"         : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
-                    "Rig GR"            : self.p_rigs_h[name]           / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
-                    "Off GR"            : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
+                    "Rigs"          : self.p_rigs[name],
+                    "Rig Rate"      : self.p_rigs[name]             / tot                       if tot                          else np.nan,
+                    "Rig Over-8"    : rig_over8,
+                    "Over-8 Delta"  : rig_over8 - avg_over8,
+                    "Rig GR"        : self.p_rigs_h[name]           / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
+                    "Off GR"        : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
+                    "Rig Delta"     : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
                 })
 
             times               = self.p_answer_times.get(name, [])
@@ -1177,10 +1181,11 @@ class TourAnalyzer:
         pcts    = ["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else [])
 
         if "Elo"            in df.columns: df["Elo"]            = pd.to_numeric(df["Elo"],              errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "UF"             in df.columns: df["UF"]     = pd.to_numeric(df["UF"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "UF"             in df.columns: df["UF"]             = pd.to_numeric(df["UF"],               errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Median Time"    in df.columns: df["Median Time"]    = pd.to_numeric(df["Median Time"],      errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Average Over-8" in df.columns: df["Average Over-8"] = pd.to_numeric(df["Average Over-8"],   errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Rig Over-8"     in df.columns: df["Rig Over-8"]     = pd.to_numeric(df["Rig Over-8"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Over-8 Delta"   in df.columns: df["Over-8 Delta"]   = pd.to_numeric(df["Over-8 Delta"],     errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
         for c in pcts: df[c] = pd.to_numeric(df[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         self._export_png(df, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask, val_str)
@@ -1489,6 +1494,7 @@ class TourAnalyzer:
             "1/8s", 
             "2/8s", 
             "Rigs", 
+            "Over-8 Delta",
             "Rig Delta", 
             "Lives Taken", 
             "Lives Saved", 
