@@ -315,7 +315,7 @@ class TourMetadataDialog(UnifiedDialog):
         self.player_container.pack(fill = tk.BOTH, expand = True, pady = (5, 0))
         
         self.player_vars    = {}
-        player_list         = sorted(list(active_players), key = str.lower)
+        player_list         = sorted(list(active_players), key = sorted)
         num_players         = len(player_list)
         rows_per_col        = 8 if num_players >= 16 else num_players
 
@@ -1091,10 +1091,11 @@ class TourAnalyzer:
         if assignments                          : self._create_tier_png     (assignments,   out_path,       has_chanting_songs)
         if watched_valid                        : self._create_watched_png  (out_path)
         if watched_valid and has_chanting_songs : self._create_chanting_png (out_path)
+        if watched_valid                        : self._create_time_png     (out_path)
 
         if watched_valid: self._fuse_and_clean(out_path)
         else:
-            f = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "List": "List.png", "Chanting": "Chanting.png"}
+            f = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "List": "List.png", "Chanting": "Chanting.png", "Time": "Time.png"}
 
             for v in f.values():
                 p = out_path / v
@@ -1306,6 +1307,16 @@ class TourAnalyzer:
 
                 return f"{self._get_player_acronym(name)} ({v1 + v2})"
 
+            def get_speedster(plist):
+                pool = [n for n in plist if len(self.p_answer_times.get(n, [])) > 0]
+                if not pool: return "N/A"
+
+                sorted_p    = sorted(pool, key = lambda x: np.median(self.p_answer_times[x]))
+                name        = sorted_p[0]                
+                med_t       = np.median(self.p_answer_times[name])
+
+                return f"{self._get_player_acronym(name)} ({med_t:.2f})"
+
             def get_chanter(plist):
                 pool = [n for n in plist if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
                 if not pool: return "N/A"
@@ -1316,11 +1327,11 @@ class TourAnalyzer:
 
                 return f"{self._get_player_acronym(name)} ({ratio:.2f})"
 
-            row_data = [tr, get_generalist(tp), get_attblk(tp, self.p_pts), get_attblk(tp, self.p_blks), get_contributor (tp)]
+            row_data = [tr, get_generalist(tp), get_attblk(tp, self.p_pts), get_attblk(tp, self.p_blks), get_contributor(tp), get_speedster(tp)]
             if has_chanting_songs: row_data.append(get_chanter(tp))
             res.append(row_data)
             
-        cols = ["Tier", "Generalist", "Attacker", "Blocker", "Contributor"]
+        cols = ["Tier", "Generalist", "Attacker", "Blocker", "Contributor", "Speedster"]
         if has_chanting_songs: cols.append("Chanter")
         self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = cols), path, "Tier.png", "Tier Statistics")
 
@@ -1484,6 +1495,32 @@ class TourAnalyzer:
 
         self._export_png(pd.DataFrame(rows, columns = ["Rank", "Best", "Worst"]), path, "Chanting.png", "Chanting Statistics")
 
+    def _create_time_png(self, path):
+        plist = [n for n in self.s_part if len(self.p_answer_times.get(n, [])) > 0]
+        if not plist: return
+
+        def get_med(p): return np.median(self.p_answer_times[p])
+
+        fastest = sorted(plist, key = get_med)[ : 3]
+        slowest = sorted(plist, key = get_med, reverse = True)[ : 3]
+        rows    = []
+
+        for i in range(3):
+            f_cell = "N/A"
+            s_cell = "N/A"
+
+            if i < len(fastest):
+                p       = fastest[i]
+                f_cell  = f"{self._get_player_acronym(p)} ({get_med(p):.2f})"
+
+            if i < len(slowest):
+                p       = slowest[i]
+                s_cell  = f"{self._get_player_acronym(p)} ({get_med(p):.2f})"
+            
+            rows.append([f"{i + 1}", f_cell, s_cell])
+
+        self._export_png(pd.DataFrame(rows, columns = ["Rank", "Fastest", "Slowest"]), path, "Time.png", "Time Statistics")
+
     def _export_png(self, df, path, fname, title, mask = None, val_str = "default"):
         if not self.browser_path: return
 
@@ -1590,13 +1627,12 @@ class TourAnalyzer:
         except  : pass
 
     def _fuse_and_clean(self, path):
-        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "List": "List.png", "Chanting": "Chanting.png"}
+        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "List": "List.png", "Chanting": "Chanting.png", "Time": "Time.png"}
         ps      = {k: path / v      for k, v in f   .items() if (path / v).exists()}
         imgs    = {k: Image.open(v) for k, v in ps  .items()}
 
         if not imgs: return
 
-        rk      = [k for k in ["Team", "Tier", "Chanting"] if k in imgs]
         tw, th  = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
         
         if "List" in imgs:
@@ -1611,20 +1647,27 @@ class TourAnalyzer:
 
         rw, rh = 0, 0
 
-        if rk:
-            if "Team" in imgs:
-                rw  =   max(rw, imgs["Team"].width)
-                rh  +=  imgs["Team"].height + 10
+        if "Team" in imgs:
+            rw  =   max(rw, imgs["Team"].width)
+            rh  +=  imgs["Team"].height + 10
 
-            if "Tier" in imgs:
-                rw  =   max(rw, imgs["Tier"].width)
-                rh  +=  imgs["Tier"].height + 10
+        if "Tier" in imgs:
+            rw  =   max(rw, imgs["Tier"].width)
+            rh  +=  imgs["Tier"].height + 10
 
-            if "Chanting" in imgs:
-                rw  =   max(rw, imgs["Chanting"].width)
-                rh  +=  imgs["Chanting"].height + 10
+        if "Chanting" in imgs or "Time" in imgs:
+            w_chan = imgs["Chanting"]   .width  if "Chanting"   in imgs else 0
+            h_chan = imgs["Chanting"]   .height if "Chanting"   in imgs else 0
+            w_time = imgs["Time"]       .width  if "Time"       in imgs else 0
+            h_time = imgs["Time"]       .height if "Time"       in imgs else 0
+            
+            combined_w  = w_chan + (10 if w_chan and w_time else 0) + w_time
+            combined_h  = max(h_chan, h_time)
+            
+            rw =    max(rw, combined_w)
+            rh +=   combined_h + 10
 
-            rh -= 10
+        if "Team" in imgs or "Tier" in imgs or "Chanting" in imgs or "Time" in imgs: rh -= 10
 
         grid_w  = lw + (10 if lw and tw else 0) + tw + (10 if tw and rw else 0) + rw
         grid_h  = max(th, rh)
@@ -1649,9 +1692,14 @@ class TourAnalyzer:
             fused.paste(imgs["Tier"], (cx, cy))
             cy += imgs["Tier"].height + 10
 
-        if "Chanting" in imgs:
-            fused.paste(imgs["Chanting"], (cx, cy))
-            cy += imgs["Chanting"].height + 10
+        if "Chanting" in imgs or "Time" in imgs:
+            if "Chanting" in imgs:
+                fused.paste(imgs["Chanting"], (cx, cy))
+                if "Time" in imgs: fused.paste(imgs["Time"], (cx + imgs["Chanting"].width + 10, cy))
+
+            elif "Time" in imgs: fused.paste(imgs["Time"], (cx, cy))
+
+            cy += max(imgs["Chanting"].height if "Chanting" in imgs else 0, imgs["Time"].height if "Time" in imgs else 0) + 10
             
         if fused:
             f_p = path / "Extra.png"
