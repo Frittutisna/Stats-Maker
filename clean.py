@@ -10,12 +10,14 @@ def clean():
             for item in folder.rglob('*'):
                 try:
                     if item.is_file() or item.is_symlink(): item.unlink()
+
                 except Exception as e:  print(f"[X] Failed to delete {item}: {e}")
 
     for file_path in tour_dir.rglob('*.txt'):
         try:
             print(f"[?] Clearing contents of: {file_path}")
             file_path.write_text("")
+
         except Exception as e: print(f"[X] Failed to clear {file_path}: {e}")
         
     print("[✓] Cleanup complete")

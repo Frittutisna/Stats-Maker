@@ -22,7 +22,7 @@ BROWSER_PATHS = [
 
 DIR_CREDS   = "cred"
 DIR_JSONS   = "json"
-DIR_OUT     = "output"
+DIR_OUT     = "hakohoka"
 DIR_TOURS   = "tour"
 FILE_CHANT  = "chant.txt"
 FILE_CODES  = "code.txt"
@@ -1112,7 +1112,7 @@ class TourAnalyzer:
                 row["Elo"] = elo_map.get(name.lower(), "N/A")
 
             row.update({"Guess Rate": cor / tot if tot else 0})
-            if use_teams: row.update({"Usefulness": (self.p_usefulness_sum[name] * avg_rank * 2) / tot if tot else 0.0})
+            if use_teams: row.update({"Usefulness": (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0})
             row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name], "Average Over-8": self.p_overs_sum[name] / cor if cor else np.nan})
             if use_teams: row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
             
@@ -1214,8 +1214,12 @@ class TourAnalyzer:
             t_lbl       = self._get_team_acronym(leader_name, tid)
             t_overs     = []
 
-            for n, t_info in assigns.items():
-                if t_info[0] == tid and n in self.s_part and self.c_counts[n] > 0: t_overs.append(self.p_overs_sum[n] / self.c_counts[n])
+            for original_name in self.s_part:
+                n_lower = original_name.lower()
+
+                if n_lower in assigns:
+                    t_info = assigns[n_lower]
+                    if t_info[0] == tid and self.c_counts[original_name] > 0: t_overs.append(self.p_overs_sum[original_name] / self.c_counts[original_name])
                     
             avg_o = np.mean(t_overs) if t_overs else np.nan
             
