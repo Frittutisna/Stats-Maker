@@ -1161,6 +1161,7 @@ class TourAnalyzer:
                 row.update({
                     "Rigs"              : self.p_rigs[name],
                     "Rig Rate"          : self.p_rigs[name]             / tot                       if tot                          else np.nan,
+                    "Rig Over-8"        : np.mean(self.p_l_corr[name])                              if self.p_l_corr[name]          else np.nan,
                     "Rig Delta"         : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
                     "Rig GR"            : self.p_rigs_h[name]           / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
                     "Off GR"            : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
@@ -1179,6 +1180,7 @@ class TourAnalyzer:
         if "Usefulness"     in df.columns: df["Usefulness"]     = pd.to_numeric(df["Usefulness"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Median Time"    in df.columns: df["Median Time"]    = pd.to_numeric(df["Median Time"],      errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Average Over-8" in df.columns: df["Average Over-8"] = pd.to_numeric(df["Average Over-8"],   errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Rig Over-8"     in df.columns: df["Rig Over-8"]     = pd.to_numeric(df["Rig Over-8"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
         for c in pcts: df[c] = pd.to_numeric(df[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         self._export_png(df, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask, val_str)
@@ -1502,7 +1504,7 @@ class TourAnalyzer:
             "Total 1/8s"
         ]
 
-        asc     = ["7/8s", "Median Time", "Average Over-8"]
+        asc     = ["7/8s", "Median Time", "Average Over-8", "Rig Over-8"]
         rest    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]
         stats   = {}
 
