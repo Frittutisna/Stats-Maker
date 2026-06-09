@@ -152,7 +152,8 @@ class UnifiedDialog(tk.Toplevel):
         super().__init__(parent)
         self.title(title)
         self.result = None
-        self.geometry(f"+{parent.winfo_rootx() + 50}+{parent.winfo_rooty() + 50}")
+        if parent is not None   : self.geometry(f"+{parent.winfo_rootx() + 50}+{parent.winfo_rooty() + 50}")
+        else                    : self.geometry("+100+100")
         main_frame = ttk.Frame(self, padding = 15)
         main_frame.pack(fill = tk.BOTH, expand = True)
         if prompt: ttk.Label(main_frame, text = prompt, font = ("Segoe UI", 10)).pack(pady = (0, 10), anchor = "w")
