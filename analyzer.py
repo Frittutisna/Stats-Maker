@@ -753,7 +753,8 @@ class TourAnalyzer:
         self._export_png(pd.DataFrame(stats, columns = ["Statistic", "Value"]), path, "Tour.png", "Tour Statistics")
 
     def _create_team_png(self, assigns, t1_lookup, path):
-        res = []
+        categories  = ["Average GR", "Rig Synergy", "Off Synergy", "Shared Rigs", "Average Over-8", "Total 1/8s"]
+        data_by_cat = {cat: [] for cat in categories}
 
         for tid in self.t_c_ps:
             leader_name = t1_lookup.get(tid, "")
@@ -767,20 +768,114 @@ class TourAnalyzer:
                     t_info = assigns[n_lower]
                     if t_info[0] == tid and self.c_counts[original_name] > 0: t_overs.append(self.p_overs_sum[original_name] / self.c_counts[original_name])
                     
-            avg_o = np.mean(t_overs) if t_overs else np.nan
+            avg_o   = np.mean(t_overs)                          if t_overs                  else np.nan
+            agr     = np.mean(self.t_c_ps       [tid]) * 100    if self.t_c_ps      [tid]   else 0.0
+            rs      = np.mean(self.t_on_syn     [tid]) * 100    if self.t_on_syn    [tid]   else 0.0
+            os_syn  = np.mean(self.t_off_syn    [tid]) * 100    if self.t_off_syn   [tid]   else 0.0
+            sr      = np.mean(self.t_sh_rig     [tid]) * 100    if self.t_sh_rig    [tid]   else 0.0
+            tsol    = self.t_solos              [tid]
 
-            res.append({
-                "Team"              : t_lbl,
-                "Median Vintage"    : format_year(np.median(self.t_vint[tid])),
-                "Average GR"        : f"{np.mean(self.t_c_ps    [tid]) * 100:.2f}",
-                "Rig Synergy"       : f"{np.mean(self.t_on_syn  [tid]) * 100:.2f}",
-                "Off Synergy"       : f"{np.mean(self.t_off_syn [tid]) * 100:.2f}",
-                "Shared Rigs"       : f"{np.mean(self.t_sh_rig  [tid]) * 100:.2f}",
-                "Average Over-8"    : f"{avg_o:.2f}" if not np.isnan(avg_o) else "N/A",
-                "Total 1/8s"        : self.t_solos[tid],
-            })
+            data_by_cat["Average GR"]       .append({"player": t_lbl, "value": agr,     "tier": ""})
+            data_by_cat["Rig Synergy"]      .append({"player": t_lbl, "value": rs,      "tier": ""})
+            data_by_cat["Off Synergy"]      .append({"player": t_lbl, "value": os_syn,  "tier": ""})
+            data_by_cat["Shared Rigs"]      .append({"player": t_lbl, "value": sr,      "tier": ""})
+            data_by_cat["Average Over-8"]   .append({"player": t_lbl, "value": avg_o,   "tier": ""})
+            data_by_cat["Total 1/8s"]       .append({"player": t_lbl, "value": tsol,    "tier": ""})
 
-        self._export_png(pd.DataFrame(res).sort_values("Average GR", ascending = False), path, "Team.png", "Team Statistics")
+        for cat in categories:
+            if cat == "Average Over-8"  : data_by_cat[cat].sort(key = lambda x: x["value"] if not np.isnan(x["value"]) else float   ('inf'), reverse = False)
+            else                        : data_by_cat[cat].sort(key = lambda x: x["value"] if not np.isnan(x["value"]) else -float  ('inf'), reverse = True)
+
+        num_plots       = len(categories)
+        fig, axes       = plt.subplots(2, 4, figsize = (10, 10))
+        axes            = axes.flatten()
+        segment_width   = 1.00
+        tier_gap        = 1.00
+
+        for idx, cat in enumerate(categories):
+            ax      = axes[idx]
+            items   = data_by_cat[cat]
+
+            ax.set_title(cat, fontsize = 15, weight = 'bold', fontname = "Segoe UI", pad = 10)
+
+            if not items:
+                ax.text(0.5, 0.5, "No Data", ha = 'center', va = 'center', fontsize = 15, fontname = "Segoe UI")
+                ax.tick_params(axis = 'both', which = 'both', length = 0, labelbottom = False, labelleft = False)
+                continue
+
+            if cat == "Average Over-8":
+                ax.set_xlim(2, 6)
+                ax.xaxis.set_major_locator(mt.MultipleLocator(2))
+
+            else:
+                vals    = [item["value"] for item in items if pd.notnull(item["value"])]
+                max_v   = max(vals) if vals else 5
+                xmax    = math.ceil(max_v / 5) * 5
+
+                if xmax == 0: xmax = 5
+                ax.set_xlim(0, xmax)
+                ax.xaxis.set_major_locator(mt.MultipleLocator(5))
+
+            xmin_axis       = 0.0
+            y_ticks         = []
+            labels          = []
+            tier_groups     = defaultdict(list)
+
+            for item in items: tier_groups[item["tier"]].append(item)
+
+            current_y       = 0.0
+            sorted_tiers    = sorted(list(tier_groups.keys()))
+            first_y         = None
+            last_y          = None
+
+            for t in sorted_tiers:
+                group       = tier_groups[t]
+                num_players = len(group)
+                block_start = current_y
+                block_end   = block_start + (num_players * segment_width)
+
+                if first_y is None: first_y = block_start
+                last_y = block_end
+
+                vertices = [(xmin_axis, block_start)]
+
+                for p_idx, item in enumerate(group):
+                    p_start = block_start + (p_idx * segment_width)
+                    p_end   = p_start + segment_width
+
+                    y_ticks .append(p_start + (segment_width / 2))
+                    labels  .append(item["player"])
+
+                    vertices.append((item["value"], p_start))
+                    vertices.append((item["value"], p_end))
+
+                vertices.append((xmin_axis, block_end))
+
+                v_x, v_y = zip(*vertices)
+                ax.plot(v_x, v_y, color = 'black', linewidth = 1, zorder = 3)
+                current_y = block_end + tier_gap
+
+            ax.set_yticks       (y_ticks)
+            ax.set_yticklabels  (labels)
+            ax.set_ylim         (first_y, last_y)
+            ax.invert_yaxis     ()
+            ax.tick_params      (axis = 'y', which = 'both', length = 0, pad = 5, labelsize = 10)
+            ax.tick_params      (axis = 'x', which = 'both', length = 0, pad = 5, labelsize = 10)
+
+            for label in ax.get_xticklabels(): label.set_fontname("Segoe UI")
+            for label in ax.get_yticklabels(): label.set_fontname("Segoe UI")
+
+            ax.grid(False)
+
+        for j in range(num_plots, len(axes)): axes[j].axis('off')
+
+        plt.suptitle        ("Team Statistics", fontname = "Segoe UI", fontsize = 20, weight = 'bold')
+        plt.tight_layout    ()
+        plt.savefig         (path / "Team.png", dpi = 500)
+        plt.close           (fig)
+
+        try     : trim_whitespace(path / "Team.png")
+        except  : pass
 
     def _create_tier_png(self, assigns, path, has_chanting_songs):
         categories = ["Generalist", "Attacker", "Blocker", "Contributor", "Speedster"]
@@ -927,7 +1022,7 @@ class TourAnalyzer:
             ax.set_yticks       (y_ticks)
             ax.set_yticklabels  (labels)
             ax.set_ylim         (first_y, last_y)
-            ax.invert_yaxis()
+            ax.invert_yaxis     ()
             ax.tick_params      (axis = 'y', which = 'both', length = 0, pad = 5, labelsize = 7.5)
             ax.tick_params      (axis = 'x', which = 'both', length = 0, pad = 5, labelsize = 10)
 
