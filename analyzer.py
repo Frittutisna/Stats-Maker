@@ -957,36 +957,37 @@ class TourAnalyzer:
         valid_data = [(p, x, y) for p, x, y in zip(plist, x_vals, y_vals) if not np.isnan(y)]
         if not valid_data: return
 
-        plist, x_vals, y_vals   = zip   (*valid_data)
-        plist                   = list  (plist)
-        x_vals                  = list  (x_vals)
-        y_vals                  = list  (y_vals)
+        plist, x_vals, y_vals = zip(*valid_data)
 
-        rig_rates               = [self.p_rigs      [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist]
-        grid_grs                = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
+        plist   = list(plist)
+        x_vals  = list(x_vals)
+        y_vals  = list(y_vals)
 
-        fig, ax                 = plt.subplots(figsize = (10, 10))
-        cmap                    = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR, "#FFFFFF"), (1.0, "#0056B3")])
-        scale                   = 1.00 if len(plist) <= 20 else (0.75 if len(plist) <= 28 else 0.50)
-        sizes                   = [rate ** 2 * 10000 * scale for rate in rig_rates]
-        sc                      = ax.scatter(x_vals, y_vals, s = sizes, c = grid_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.9)
+        rig_rates   = [self.p_rigs      [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist]
+        grid_grs    = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
 
-        points                  = np.column_stack((x_vals, y_vals))
-        x_range                 = max(x_vals) - min(x_vals) if max(x_vals) != min(x_vals) else 1
-        y_range                 = max(y_vals) - min(y_vals) if max(y_vals) != min(y_vals) else 1
-        norm_points             = np.column_stack((points[:, 0] / x_range, points[:, 1] / y_range))
-        center_of_mass          = np.median(norm_points, axis = 0)
-        distances               = np.linalg.norm(norm_points - center_of_mass, axis = 1)
-        pack_mask               = distances < np.percentile(distances, 90)
-        pack_points             = points[pack_mask]
+        fig, ax = plt.subplots(figsize = (10, 10))
+        cmap    = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR, "#FFFFFF"), (1.0, "#0056B3")])
+        scale   = 1.00 if len(plist) <= 20 else (0.75 if len(plist) <= 28 else 0.50)
+        sizes   = [rate ** 2 * 10000 * scale for rate in rig_rates]
+        sc      = ax.scatter(x_vals, y_vals, s = sizes, c = grid_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.95)
+
+        points          = np.column_stack((x_vals, y_vals))
+        x_range         = max(x_vals) - min(x_vals) if max(x_vals) != min(x_vals) else 1
+        y_range         = max(y_vals) - min(y_vals) if max(y_vals) != min(y_vals) else 1
+        norm_points     = np.column_stack((points[:, 0] / x_range, points[:, 1] / y_range))
+        center_of_mass  = np.median(norm_points, axis = 0)
+        distances       = np.linalg.norm(norm_points - center_of_mass, axis = 1)
+        pack_mask       = distances < np.percentile(distances, 90)
+        pack_points     = points[pack_mask]
 
         if len(pack_points) >= 3:
             try:
                 hull        = ConvexHull(pack_points)
                 hull_points = pack_points[hull.vertices]
                 hull_points = np.vstack([hull_points, hull_points[0]])
-                ax.plot(hull_points[:, 0], hull_points[:, 1], color = 'black', zorder = 1, alpha = 0.5, linestyle = '--')
-                ax.fill(hull_points[:, 0], hull_points[:, 1], color = 'black', zorder = 0, alpha = 0.1)
+
+                ax.plot(hull_points[:, 0], hull_points[:, 1], color = 'black', zorder = 1, linewidth = 0.5, linestyle = '-')
 
             except Exception: pass
 
@@ -1024,7 +1025,7 @@ class TourAnalyzer:
 
             ha_align    = "left"   if x >= x_center else "right"
             va_align    = "bottom" if y >= y_center else "top"
-            t           = ax.text(x, y, label, fontsize = 10, fontname = "Segoe UI", ha = ha_align, va = va_align)
+            t           = ax.text(x, y, label, fontsize = 10, fontname = "Segoe UI", ha = ha_align, va = va_align, bbox = dict(facecolor = 'white', edgecolor = 'none'))
 
             texts.append(t)
 
@@ -1186,7 +1187,14 @@ class TourAnalyzer:
 
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
-        html            = f"<thead><tr>" + "".join([f"<th>{str(c).replace(' ','<br>')}</th>" for c in df.columns]) + "</tr></thead><tbody>"
+        col_borders = {"Player", "Tier", "UF", "Average Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Statistic", "Value", "T1", "Median Vintage"}
+        th_cells    = []
+
+        for c in df.columns:
+            s_th = ' style="border-right: 3px solid black;"' if c in col_borders else ''
+            th_cells.append(f"<th{s_th}>{str(c).replace(' ', '<br>')}</th>")
+
+        html            = "<thead><tr>" + "".join(th_cells) + "</tr></thead><tbody>"
         bold_columns    = {"Player", "Statistic", "T1"}
 
         for idx, row in df.iterrows():
@@ -1195,6 +1203,7 @@ class TourAnalyzer:
 
             for i, (cname, cell) in enumerate(row.items()):
                 style = [b_s] if b_s else []
+                if cname in col_borders: style.append("border-right: 3px solid black;")
 
                 if cname in stats:
                     v = pd.to_numeric(str(cell).replace('%',''), errors = 'coerce')
@@ -1217,9 +1226,49 @@ class TourAnalyzer:
 
             html += "</tr>"
 
-        full = f"<html><head><style>body {{font-family: 'Segoe UI', Arial, sans-serif; background: white; display: inline-block; margin: 0;}} h2 {{margin: 10px 0 10px 5px; font-size: 30px; text-align: center;}} table {{margin-left: 10px; border-collapse: collapse; width: auto;}} th {{font-weight: bold; font-size: 20px; text-align: center; padding: 10px; border: 1px solid black;}} td {{font-size: 20px; text-align: center; padding: 10px; border: 1px solid black;}}</style></head><body><h2>{title}</h2><table>{html}</table></body></html>"
-        hti  = Html2Image(size = (max(2000, len(df.columns) * 120), max(2000, len(df) * 60)), browser_executable = self.browser_path, output_path = str(path), custom_flags = ['--log-level=3', '--silent'])
+        full = f"""<html>
+            <head>
+                <style>
+                    body {{
+                        font-family     : 'Segoe UI', Arial, sans-serif; 
+                        background      : white; 
+                        display         : inline-block; 
+                        margin          : 0;
+                    }} 
+                    h2 {{
+                        margin          : 10px 0 10px 5px; 
+                        font-size       : 30px; 
+                        text-align      : center;
+                    }} 
+                    table {{
+                        margin-left     : 10px; 
+                        border-collapse : collapse; 
+                        width           : auto; 
+                        border          : 3px solid black;
+                    }} 
+                    th {{
+                        font-weight     : bold; 
+                        font-size       : 20px; 
+                        text-align      : center; 
+                        padding         : 10px; 
+                        border          : 1px solid black; 
+                        border-bottom   : 3px solid black;
+                    }} 
+                    td {{
+                        font-size       : 20px; 
+                        text-align      : center; 
+                        padding         : 10px; 
+                        border          : 1px solid black;
+                    }}
+                </style>
+            </head>
+            <body>
+                <h2>{title}</h2>
+                <table>{html}</table>
+            </body>
+        </html>"""
 
+        hti = Html2Image(size = (max(2000, len(df.columns) * 120), max(2000, len(df) * 60)), browser_executable = self.browser_path, output_path = str(path), custom_flags = ['--log-level=3', '--silent'])
         hti.screenshot(html_str = full, save_as = fname)
 
         try     : trim_whitespace(path / fname)
