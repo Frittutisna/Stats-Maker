@@ -854,8 +854,8 @@ class TourAnalyzer:
         num_plots       = len(categories)
         fig, axes       = plt.subplots(2, 3, figsize = (15, 10))
         axes            = axes.flatten()
-        segment_width   = 5.00
-        tier_gap        = 0.00
+        segment_width   = 1.00
+        tier_gap        = 1.00
 
         for idx, cat in enumerate(categories):
             ax      = axes[idx]
@@ -869,74 +869,75 @@ class TourAnalyzer:
                 continue
 
             if cat in ["Generalist", "Chanter"]:
-                ax.set_ylim(0, 100)
-                ax.yaxis.set_major_locator(mt.MultipleLocator(20))
+                ax.set_xlim(0, 100)
+                ax.xaxis.set_major_locator(mt.MultipleLocator(20))
 
             elif cat == "Speedster":
-                ax.set_ylim(0, 10)
-                ax.yaxis.set_major_locator(mt.MultipleLocator(2))
+                ax.set_xlim(0, 10)
+                ax.xaxis.set_major_locator(mt.MultipleLocator(2))
 
             else:
                 factor  = 10 if cat == "Contributor" else 5
                 max_v   = max([item["value"] for item in items]) if items else factor
-                ymax    = math.ceil(max_v / factor) * factor
+                xmax    = math.ceil(max_v / factor) * factor
 
-                if ymax == 0: ymax = factor
-                ax.set_ylim(0, ymax)
-                ax.yaxis.set_major_locator(mt.MultipleLocator(factor))
+                if xmax == 0: xmax = factor
+                ax.set_xlim(0, xmax)
+                ax.xaxis.set_major_locator(mt.MultipleLocator(factor))
 
-            ymin_axis, _    = ax.get_ylim()
-            x_ticks         = []
+            xmin_axis       = 0.0
+            y_ticks         = []
             labels          = []
             tier_groups     = defaultdict(list)
 
             for item in items: tier_groups[item["tier"]].append(item)
 
-            current_x       = 0.0
+            current_y       = 0.0
             sorted_tiers    = sorted(list(tier_groups.keys()))
-            first_x         = None
-            last_x          = None
-            
+            first_y         = None
+            last_y          = None
+
             for t in sorted_tiers:
                 group       = tier_groups[t]
                 num_players = len(group)
-                block_start = current_x
+                block_start = current_y
                 block_end   = block_start + (num_players * segment_width)
-                
-                if first_x is None: first_x = block_start
-                last_x = block_end
-                
-                vertices = [(block_start, ymin_axis)]
-                
+
+                if first_y is None: first_y = block_start
+                last_y = block_end
+
+                vertices = [(xmin_axis, block_start)]
+
                 for p_idx, item in enumerate(group):
                     p_start = block_start + (p_idx * segment_width)
                     p_end   = p_start + segment_width
-                    
-                    x_ticks .append(p_start + (segment_width / 2))
+
+                    y_ticks .append(p_start + (segment_width / 2))
                     labels  .append(item["player"])
 
-                    vertices.append((p_start,   item["value"]))
-                    vertices.append((p_end,     item["value"]))
-                    
-                vertices.append((block_end, ymin_axis))
-                
+                    vertices.append((item["value"], p_start))
+                    vertices.append((item["value"], p_end))
+
+                vertices.append((xmin_axis, block_end))
+
                 v_x, v_y = zip(*vertices)
                 ax.plot(v_x, v_y, color = 'black', linewidth = 1, zorder = 3)
-                current_x = block_end + tier_gap
-                
-            ax.set_xticks       (x_ticks)
-            ax.set_xticklabels  (labels)
-            ax.set_xlim         (first_x, last_x)
-            ax.tick_params      (axis = 'x', which = 'both', length = 0, pad = 5, labelsize = 7.5)
-            ax.tick_params      (axis = 'y', which = 'both', length = 0, pad = 5, labelsize = 10)
+                current_y = block_end + tier_gap
+
+            ax.set_yticks       (y_ticks)
+            ax.set_yticklabels  (labels)
+            ax.set_ylim         (first_y, last_y)
+            ax.invert_yaxis()
+            ax.tick_params      (axis = 'y', which = 'both', length = 0, pad = 5, labelsize = 7.5)
+            ax.tick_params      (axis = 'x', which = 'both', length = 0, pad = 5, labelsize = 10)
 
             for label in ax.get_xticklabels(): label.set_fontname("Segoe UI")
             for label in ax.get_yticklabels(): label.set_fontname("Segoe UI")
 
             ax.grid(False)
-            
+
         for j in range(num_plots, len(axes)): axes[j].axis('off')
-            
+
         plt.suptitle        ("Tier Statistics", fontname = "Segoe UI", fontsize = 20, weight = 'bold')
         plt.tight_layout    ()
         plt.savefig         (path / "Tier.png", dpi = 500)
