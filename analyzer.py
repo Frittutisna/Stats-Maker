@@ -662,14 +662,17 @@ class TourAnalyzer:
                     "Rig Delta"     : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
                 })
 
-            times               = self.p_answer_times.get(name, [])
+            times       = self.p_answer_times.get(name, [])
+            seen_chan   = self.p_chan_s[name]
+
             row["Median Time"]  = np.median(times) if times else np.nan
+            row["Chant GR"]     = self.p_chan_c[name] / seen_chan if seen_chan else np.nan
 
             rows.append(row)
 
         df      = pd.DataFrame(rows).sort_values("GR", ascending = False)
         mask    = pd.Series(eligibility, index = pd.DataFrame(rows).index).reindex(df.index).values
-        pcts    = ["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else [])
+        pcts    = ["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"]
 
         if "Elo"            in df.columns: df["Elo"]            = pd.to_numeric(df["Elo"],              errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "UF"             in df.columns: df["UF"]             = pd.to_numeric(df["UF"],               errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -870,18 +873,18 @@ class TourAnalyzer:
                 ax.tick_params(axis = 'both', which = 'both', length = 0, labelbottom = False, labelleft = False)
                 continue
 
-            if cat in ["Generalist", "Chanter"]:
+            if cat == "Chanter":
                 ax.set_xlim(0, 100)
                 ax.xaxis.set_major_locator(mt.MultipleLocator(20))
 
             elif cat == "Speedster":
-                ax.set_xlim(0, 10)
-                ax.xaxis.set_major_locator(mt.MultipleLocator(2))
+                ax.set_xlim(0, 20)
+                ax.xaxis.set_major_locator(mt.MultipleLocator(4))
 
             else:
-                factor  = 10 if cat == "Contributor" else 5
-                max_v   = max([item["value"] for item in items]) if items else factor
-                xmax    = math.ceil(max_v / factor) * factor
+                factor  = 10 if cat == "Generalist" else 5
+                max_v   = max([item["value"] for item in items]) + 1 if items else factor
+                xmax    = min(math.ceil(max_v / factor) * factor, 100)
 
                 if      xmax == 0   : xmax      = factor
                 elif    xmax <= 20  : factor    = xmax / 5
@@ -1140,7 +1143,7 @@ class TourAnalyzer:
             "Elo",          "GR",           "UF",           "1/8s",         "2/8s",
             "Lives Taken",  "Lives Saved",  "OP GR",        "ED GR",        "IN GR",
             "Rigs",         "Rig Rate",     "Over-8 Delta", "Rig GR",       "Off GR",       "Rig Delta", 
-            "Average GR",   "Rig Synergy",  "Off Synergy",  "Shared Rigs",  "Total 1/8s"
+            "Chant GR",     "Average GR",   "Rig Synergy",  "Off Synergy",  "Shared Rigs",  "Total 1/8s"
         ]
 
         asc     = ["7/8s", "Median Time", "Average Over-8", "Rig Over-8"]
