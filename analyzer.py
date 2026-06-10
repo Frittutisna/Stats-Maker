@@ -588,21 +588,11 @@ class TourAnalyzer:
         self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup, val_str)
         self._create_tour_png   (use_teams, watched_valid, out_path)
 
-        if watched_valid and assignments        : self._create_team_png     (assignments,   t1_lookup,      out_path)
-        if assignments                          : self._create_tier_png     (assignments,   out_path,       has_chanting_songs)
-        if watched_valid                        : self._create_watched_png  (out_path)
-        if watched_valid and has_chanting_songs : self._create_chanting_png (out_path)
-        if watched_valid                        : self._create_time_png     (out_path)
-        if watched_valid                        : self._fuse_and_clean      (out_path)
-        else:
-            f = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "List": "List.png", "Chanting": "Chanting.png", "Time": "Time.png"}
+        if watched_valid and assignments    : self._create_team_png     (assignments, t1_lookup, out_path)
+        if assignments                      : self._create_tier_png     (assignments, out_path, has_chanting_songs)
+        if watched_valid                    : self._create_watched_png  (out_path)
 
-            for v in f.values():
-                p = out_path / v
-
-                if p.exists():
-                    try     : os.remove(p)
-                    except  : pass
+        self._fuse_and_clean(out_path)
 
     def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup, val_str):
         rows, eligibility   = [], []
@@ -1224,112 +1214,87 @@ class TourAnalyzer:
         except  : pass
 
     def _fuse_and_clean(self, path):
-        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "List": "List.png", "Chanting": "Chanting.png", "Time": "Time.png"}
-        ps      = {k: path / v      for k, v in f   .items() if (path / v).exists()}
-        imgs    = {k: Image.open(v) for k, v in ps  .items()}
+        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "List": "List.png"}
+        ps      = {k: path / v for k, v in f.items() if (path / v).exists()}
+        imgs    = {k: Image.open(v) for k, v in ps.items()}
 
-        if not imgs: return
+        if "Tour" not in imgs or "List" not in imgs:
+            for k, p in ps.items():
+                if k != "List":
+                    try     : os.remove(p)
+                    except  : pass
 
-        tw, th  = (imgs["Tour"].width, imgs["Tour"].height) if "Tour" in imgs else (0, 0)
+            return
 
-        if "List" in imgs:
-            img_list        = imgs["List"]
-            lw, lh          = img_list.width, img_list.height
-            scale_f         = th / float(lh) if th else 1.0
-            new_lw          = int(lw * scale_f)
-            img_list        = img_list.resize((new_lw, th), Image.Resampling.LANCZOS)
-            imgs["List"]    = img_list
-            lw              = new_lw
+        img_tour = imgs["Tour"]
+        img_list = imgs["List"]
 
-        else: lw = 0
+        if img_tour.height < img_list.height:
+            scale_factor    = img_list.height / float(img_tour.height)
+            img_tour        = img_tour.resize((int(img_tour.width * scale_factor), img_list.height), Image.Resampling.LANCZOS)
 
-        rw, rh = 0, 0
+        elif img_list.height < img_tour.height:
+            scale_factor    = img_tour.height / float(img_list.height)
+            img_list        = img_list.resize((int(img_list.width * scale_factor), img_tour.height), Image.Resampling.LANCZOS)
 
-        if "Team" in imgs:
-            rw  =   max(rw, imgs["Team"].width)
-            rh  +=  imgs["Team"].height + 10
-
-        if "Tier" in imgs:
-            rw  =   max(rw, imgs["Tier"].width)
-            rh  +=  imgs["Tier"].height + 10
-
-        if "Chanting" in imgs or "Time" in imgs:
-            w_chan = imgs["Chanting"]   .width  if "Chanting"   in imgs else 0
-            h_chan = imgs["Chanting"]   .height if "Chanting"   in imgs else 0
-            w_time = imgs["Time"]       .width  if "Time"       in imgs else 0
-            h_time = imgs["Time"]       .height if "Time"       in imgs else 0
-
-            combined_w = w_chan + (10 if w_chan and w_time else 0) + w_time
-            combined_h = max(h_chan, h_time)
-
-            rw =    max(rw, combined_w)
-            rh +=   combined_h + 10
-
-        if "Team" in imgs or "Tier" in imgs or "Chanting" in imgs or "Time" in imgs: rh -= 10
-
-        grid_w  = lw + (10 if lw and tw else 0) + tw + (10 if tw and rw else 0) + rw
-        grid_h  = max(th, rh)
-        total_w = grid_w
-        total_h = grid_h
-        fused   = Image.new("RGB", (total_w, total_h), "white")
-        cx, cy  = 0, 0
-
-        if "List" in imgs:
-            fused.paste(imgs["List"], (cx, 0))
-            cx += lw + 10
-
-        if "Tour" in imgs:
-            fused.paste(imgs["Tour"], (cx, 0))
-            cx += tw + 10
+        target_height   = img_list.height
+        split_h         = target_height // 2
 
         if "Team" in imgs:
-            fused.paste(imgs["Team"], (cx, cy))
-            cy += imgs["Team"].height + 10
+            img_team    = imgs["Team"]
+            scale_team  = split_h / float(img_team.height)
+            img_team    = img_team.resize((int(img_team.width * scale_team), split_h), Image.Resampling.LANCZOS)
+
+        else: img_team = None
 
         if "Tier" in imgs:
-            fused.paste(imgs["Tier"], (cx, cy))
-            cy += imgs["Tier"].height + 10
+            img_tier    = imgs["Tier"]
+            scale_tier  = split_h / float(img_tier.height)
+            img_tier    = img_tier.resize((int(img_tier.width * scale_tier), split_h), Image.Resampling.LANCZOS)
 
-        if "Chanting" in imgs or "Time" in imgs:
-            if "Time" in imgs:
-                fused.paste(imgs["Time"], (cx, cy))
-                if "Chanting" in imgs: fused.paste(imgs["Chanting"], (cx + imgs["Time"].width + 10, cy))
+        else: img_tier = None
 
-            elif "Chanting" in imgs: fused.paste(imgs["Chanting"], (cx, cy))
+        rw          = max((img_team.width if img_team else 0), (img_tier.width if img_tier else 0))
+        grid_w      = img_list.width + 10 + img_tour.width + (10 if rw > 0 else 0) + rw
+        grid_h      = target_height
+        extra_img   = Image.new("RGB", (grid_w, grid_h), "white")
 
-            cy += max(imgs["Chanting"].height if "Chanting" in imgs else 0, imgs["Time"].height if "Time" in imgs else 0) + 10
-            
-        if fused:
-            f_p = path / "Extra.png"
-            fused.save(f_p)
+        extra_img.paste(img_list, (0, 0))
+        cx = img_list.width + 10
 
-            try     : trim_whitespace(f_p)
-            except  : pass
-            
-        p_path = path / "Player.png"
+        extra_img.paste(img_tour, (cx, 0))
+        cx += img_tour.width + 10
+
+        if img_team: extra_img.paste(img_team, (cx, 0))
+        if img_tier: extra_img.paste(img_tier, (cx, split_h))
+
+        extra_out_p = path / "Extra.png"
+        extra_img.save(extra_out_p)
+
+        try     : trim_whitespace(extra_out_p)
+        except  : pass
+
+        extra_img   = Image.open(extra_out_p)
+        p_path      = path / "Player.png"
 
         if p_path.exists():
             img_player = Image.open(p_path)
 
-            if img_player.width < total_w:
-                scale_factor        = total_w / float(img_player.width)
-                new_h               = int(img_player.height * scale_factor)
-                img_player          = img_player.resize((total_w, new_h), Image.Resampling.LANCZOS)
+            if img_player.width < extra_img.width:
+                scale_factor    = extra_img.width / float(img_player.width)
+                img_player      = img_player.resize((extra_img.width, int(img_player.height * scale_factor)), Image.Resampling.LANCZOS)
 
-            elif total_w < img_player.width:
-                scale_factor        = img_player.width / float(total_w)
-                new_w               = img_player.width
-                new_h               = int(total_h * scale_factor)
-                fused               = fused.resize((new_w, new_h), Image.Resampling.LANCZOS)
-                total_w, total_h    = new_w, new_h
+            elif extra_img.width < img_player.width:
+                scale_factor    = img_player.width / float(extra_img.width)
+                extra_img       = extra_img.resize((img_player.width, int(extra_img.height * scale_factor)), Image.Resampling.LANCZOS)
 
-            gen_w       = total_w
-            gen_h       = img_player.height + 10 + total_h
+            gen_w = img_player.width
+            gen_h = img_player.height + 10 + extra_img.height
+
             general_img = Image.new("RGB", (gen_w, gen_h), "white")
-
             general_img.paste(img_player, (0, 0))
-            general_img.paste(fused, (0, img_player.height + 10))
-            
+            general_img.paste(extra_img, (0, img_player.height + 10))
+
             gen_out_p = path / "General.png"
             general_img.save(gen_out_p)
 
@@ -1337,7 +1302,6 @@ class TourAnalyzer:
             except  : pass
 
         for k, p in ps.items():
-            if k == "List": continue
-
-            try     : os.remove(p)
-            except  : pass
+            if k in ["Tour", "Team", "Tier"]:
+                try     : os.remove(p)
+                except  : pass
