@@ -1,0 +1,58 @@
+import  re
+from    PIL import Image, ImageChops, ImageOps
+
+BROWSER_PATHS = [
+    r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+    r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+    r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+]
+
+DIR_CREDS   = "cred"
+DIR_JSONS   = "json"
+DIR_OUT     = "hakohoka"
+DIR_TOURS   = "tour"
+FILE_CHANT  = "chant.txt"
+FILE_CODES  = "code.txt"
+FILE_ALIAS  = "alias.txt"
+RIG_GR      = 0.85
+URL_ALIAS   = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
+
+EXCLUDED_TAGS = {
+    "Female Protagonist",
+    "Male Protagonist",
+    "Primarily Female Cast",
+    "Primarily Male Cast",
+    "School",
+    "Heterosexual",
+    "Primarily Teen Cast",
+    "Ensemble Cast"
+}
+
+def extract_year(vintage_str):
+    years       = re.findall(r'\d{4}', str(vintage_str))
+    year_val    = float(years[0])
+    season_map  = {"winter": 0.00, "spring": 0.25, "summer": 0.50, "fall": 0.75}
+    v_lower     = str(vintage_str).lower()
+    decimal     = next((val for s, val in season_map.items() if s in v_lower), 0.0)
+
+    return year_val + decimal
+
+def format_year(val):
+    year    = int(val)
+    frac    = val - year
+    season  = "Winter" if frac < 0.25 else "Spring" if frac < 0.50 else "Summer" if frac < 0.75 else "Fall"
+
+    return f"{season} {year}"
+
+def trim_whitespace(image_path):
+    with Image.open(image_path) as img:
+        img     = img.convert("RGB")
+        bg      = Image.new(img.mode, img.size, "white")
+        diff    = ImageChops.difference(img, bg)
+        bbox    = diff.getbbox()
+
+        if bbox:
+            img = img.crop(bbox)
+            img = ImageOps.expand(img, border = 10, fill = "white")
+
+            img.save(image_path)

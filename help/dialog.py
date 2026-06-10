@@ -1,0 +1,535 @@
+import re
+import tkinter as tk
+
+from help.config    import DIR_TOURS, DIR_JSONS, FILE_CODES
+from pathlib        import Path
+from tkinter        import ttk
+
+class CustomSpinbox(tk.Frame):
+    def __init__(self, parent, from_, to, initial_val = 1, state = "normal"):
+        super().__init__(parent, bg = "white")
+
+        self.from_  = from_
+        self.to     = to
+        self._state = state
+        self.var    = tk.StringVar(value=str(initial_val))
+        vcmd        = (self.register(self._validate_input), '%P')
+        btn_width   = 25
+        btn_height  = 25
+
+        self.btn_dec = tk.Canvas(self, width = btn_width, height = btn_height, bg = "black", highlightthickness = 0, borderwidth = 0, cursor = "hand2")
+        self.btn_dec.create_polygon(7, 9, 17, 9, 12, 15, fill = "white")
+        self.btn_dec.grid(row = 0, column = 0, sticky = "nsew")
+        self.btn_dec.bind("<Button-1>", lambda _: self._adjust_value(-1))
+
+        self.entry = tk.Entry(
+            self, 
+            textvariable        = self.var, 
+            bg                  = "white", 
+            fg                  = "black", 
+            font                = ("Segoe UI", 10), 
+            justify             = "center", 
+            width               = 4,
+            bd                  = 1, 
+            relief              = "solid", 
+            highlightthickness  = 0, 
+            validate            = "key", 
+            validatecommand     = vcmd
+        )
+
+        self.entry.grid(row = 0, column = 1, padx = 0, sticky = "ns")
+        self.grid_columnconfigure(1, minsize = btn_width)
+
+        self.btn_inc = tk.Canvas(self, width = btn_width, height = btn_height, bg = "black", highlightthickness = 0, borderwidth = 0, cursor = "hand2")
+        self.btn_inc.create_polygon(12, 9, 7, 15, 17, 15, fill = "white")
+        self.btn_inc.grid(row = 0, column = 2, sticky = "nsew")
+        self.btn_inc.bind("<Button-1>", lambda _: self._adjust_value(1))
+
+        if state == "disabled": self.configure_state("disabled")
+
+    def _validate_input(self, current_text):
+        if current_text == ""       : return True
+        if current_text.isdigit()   : return self.from_ <= int(current_text) <= self.to
+
+        return False
+
+    def _adjust_value(self, delta):
+        if self._state == "disabled": return
+
+        try                 : curr = int(self.var.get())
+        except ValueError   : curr = self.from_
+        new_val = max(self.from_, min(self.to, curr + delta))
+        self.var.set(str(new_val))
+
+    def get(self):
+        try                 : return int(self.var.get())
+        except ValueError   : return self.from_
+
+    def set(self, val): self.var.set(str(max(self.from_, min(self.to, int(val)))))
+
+    def configure_state(self, state):
+        self._state = state
+
+        if state == "disabled":
+            self.entry      .configure  (state = "disabled", disabledbackground = "gray75", disabledforeground = "gray50")
+            self.btn_dec    .configure  (bg = "gray75", cursor = "")
+            self.btn_inc    .configure  (bg = "gray75", cursor = "")
+            self.btn_dec    .itemconfig (1, fill = "gray50")
+            self.btn_inc    .itemconfig (1, fill = "gray50")
+
+        else:
+            self.entry      .configure(state="normal")
+            self.btn_dec    .configure(bg = "black", cursor = "hand2")
+            self.btn_inc    .configure(bg = "black", cursor = "hand2")
+            self.btn_dec    .itemconfig(1, fill = "white")
+            self.btn_inc    .itemconfig(1, fill = "white")
+
+class UnifiedDialog(tk.Toplevel):
+    def __init__(self, parent, title, prompt):
+        super().__init__(parent)
+        self.title(title)
+        self.result = None
+
+        if parent is not None   : self.geometry(f"+{parent.winfo_rootx() + 50}+{parent.winfo_rooty() + 50}")
+        else                    : self.geometry("+100+100")
+
+        main_frame = ttk.Frame(self, padding = 10)
+        main_frame.pack(fill = tk.BOTH, expand = True)
+        if prompt: ttk.Label(main_frame, text = prompt, font = ("Segoe UI", 10)).pack(pady = (0, 6), anchor = "w")
+
+        self.container = ttk.Frame(main_frame)
+        self.container.pack(fill = tk.BOTH, expand = True)
+
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(fill = tk.X, pady = (8, 0))
+
+        self.confirm_btn = ttk.Button(btn_frame, text = "Confirm", command = self.on_confirm)
+        self.confirm_btn.pack(side = tk.RIGHT)
+        self.bind("<Return>", lambda: self.on_confirm())
+
+    def on_confirm(self): self.destroy()
+
+class TourSelectionDialog(UnifiedDialog):
+    def __init__(self, parent, tour_ids):
+        super().__init__(parent, "Tour Selection", "Which tours should be processed?")
+
+        self.selected_tours = []
+        self.vars           = {}
+        self.fill_color     = "#000000"
+        script_dir          = Path(__file__).parent.absolute()
+        states              = {}
+        any_recommended     = False
+
+        for tid in tour_ids:
+            t_path          = script_dir / DIR_TOURS / str(tid)
+            json_dir        = t_path / DIR_JSONS
+            codes_file      = t_path / FILE_CODES
+            is_recommended  = False
+
+            if codes_file.exists() and json_dir.exists():
+                json_count = len(list(json_dir.glob("*.json")))
+
+                if json_count > 0:
+                    with open(codes_file, "r", encoding = "utf-8") as f:
+                        content     = f.read()
+                        main_part   = re.split(r'https://challonge.com/\S+', content)[0]
+                        players     = re.findall(r'[^\s(]+\s*\([-]?\d+\.\d+\)', main_part)
+                        p           = len(players)
+
+                        if p > 0:
+                            divisor = p // 8
+
+                            if divisor > 0 and json_count % divisor == 0: 
+                                is_recommended  = True
+                                any_recommended = True
+
+            states[tid] = is_recommended
+
+        if not any_recommended and "0" in states: states["0"] = True
+
+        for tid in tour_ids:
+            is_active       = states[tid]
+            var             = tk.BooleanVar(value = is_active)
+            self.vars[tid]  = var
+            item_frame      = ttk.Frame(self.container)
+
+            item_frame.pack(anchor = "w", pady = 2)
+            initial_bg = self.fill_color if is_active else "white"
+
+            box = tk.Canvas(item_frame, width = 10, height = 10, bg = initial_bg, highlightthickness = 1, highlightbackground = "black")
+            box.pack(side = tk.LEFT, padx = (0, 4))
+
+            lbl = ttk.Label(item_frame, text = f"Tour {tid}", font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+
+            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, t = tid, b = box: self.toggle_custom(t, b))
+
+        self.grab_set()
+        self.wait_window()
+
+    def toggle_custom(self, tid, box):
+        new_val = not self.vars[tid].get()
+        self.vars[tid].set(new_val)
+        color = self.fill_color if new_val else "white"
+        box.configure(bg = color)
+
+    def on_confirm(self):
+        self.selected_tours = [tid for tid, var in self.vars.items() if var.get()]
+        super().on_confirm()
+
+class TourMetadataDialog(UnifiedDialog):
+    def __init__(self, parent, tour_id, init_label, default_th, baseline_initial, active_players, elo_map = None):
+        super().__init__(parent, f"Tour {tour_id} Configuration", "")
+        self.fill_color = "#000000"
+        ttk.Label(self.container, text = "What tour is this?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 4))
+
+        self.lbl_var    = tk.StringVar(value = init_label if init_label in ["Watched", "Usual"] else "Others")
+        self.lbl_boxes  = {}
+
+        for opt in ["Watched", "Usual", "Others"]:
+            f_opt = ttk.Frame(self.container)
+            f_opt.pack(anchor = "w", pady = 2)
+
+            is_sel      = (self.lbl_var.get() == opt)
+            bg_color    = self.fill_color if is_sel else "white"
+            box         = tk.Canvas(f_opt, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
+
+            box.pack(side = tk.LEFT, padx = (0, 4))
+            self.lbl_boxes[opt] = box
+            
+            if opt == "Others":
+                lbl = ttk.Label(f_opt, text = "Others:", font = ("Segoe UI", 10))
+                lbl.pack(side = tk.LEFT)
+
+                self.lbl_entry = ttk.Entry(f_opt, width = 20)
+                self.lbl_entry.insert(0, init_label)
+                self.lbl_entry.pack(side = tk.LEFT, padx = (4, 0))
+
+                for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_lbl_opt(o))
+
+            else:
+                lbl = ttk.Label(f_opt, text = opt, font = ("Segoe UI", 10))
+                lbl.pack(side = tk.LEFT)
+
+                for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_lbl_opt(o))
+                    
+        self._update_lbl_state()
+
+        ttk.Label(self.container, text = "What are the comma-separated guess rate threshold values?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (6, 4))
+
+        self.th_var     = tk.StringVar(value = "default")
+        self.th_boxes   = {}
+        f_th1           = ttk.Frame(self.container)
+
+        f_th1.pack(anchor = "w", pady = 2)
+
+        box_th1 = tk.Canvas(f_th1, width = 10, height = 10, bg = self.fill_color, highlightthickness = 1, highlightbackground = "black")
+        box_th1.pack(side = tk.LEFT, padx = (0, 4))
+
+        self.th_boxes["default"]    = box_th1
+        lbl_th1                     = ttk.Label(f_th1, text = "Use the default threshold values", font = ("Segoe UI", 10))
+
+        lbl_th1.pack(side = tk.LEFT)
+        for w in (box_th1, lbl_th1): w.bind("<Button-1>", lambda _: self._select_th_opt("default"))
+            
+        f_th2 = ttk.Frame(self.container)
+        f_th2.pack(anchor = "w", pady = 2)
+
+        box_th2 = tk.Canvas(f_th2, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
+        box_th2.pack(side = tk.LEFT, padx = (0, 4))
+
+        self.th_boxes["custom"] = box_th2
+        lbl_th2                 = ttk.Label(f_th2, text = "Use custom threshold values:", font = ("Segoe UI", 10))
+
+        lbl_th2.pack(side = tk.LEFT)
+
+        self.th_entry = ttk.Entry(f_th2, width = 25)
+        self.th_entry.insert(0, default_th)
+        self.th_entry.pack(side = tk.LEFT, padx = (4, 0))
+
+        for w in (box_th2, lbl_th2): w.bind("<Button-1>", lambda _: self._select_th_opt("custom"))
+
+        self._update_th_state()
+
+        ttk.Label(self.container, text = "How many rounds have elapsed?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (6, 4))
+        self.spin = CustomSpinbox(self.container, from_ = 1, to = 6, initial_val = baseline_initial)
+        self.spin.pack(anchor = "w", pady = 2)
+
+        ttk.Label(self.container, text = "Are there any new players?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (6, 4))
+
+        has_round_elo       = False
+        round_elo_players   = set()
+
+        if elo_map:
+            for p in active_players:
+                p_low = p.lower()
+
+                if p_low in elo_map:
+                    try:
+                        val = float(elo_map[p_low])
+
+                        if val.is_integer():
+                            has_round_elo = True
+                            round_elo_players.add(p_low)
+
+                    except ValueError: pass
+
+        self.np_var     = tk.StringVar(value = "Yes" if has_round_elo else "No")
+        self.np_boxes   = {}
+
+        for opt in ["No", "Yes"]:
+            f_np = ttk.Frame(self.container)
+            f_np.pack(anchor = "w", pady = 2)
+
+            is_sel      = (self.np_var.get() == opt)
+            bg_color    = self.fill_color if is_sel else "white"
+            box         = tk.Canvas(f_np, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
+
+            box.pack(side = tk.LEFT, padx = (0, 4))
+            self.np_boxes[opt] = box
+
+            lbl = ttk.Label(f_np, text = opt, font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+
+            for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_np_opt(o))
+
+        self.player_container = ttk.Frame(self.container)
+        self.player_container.pack(fill = tk.BOTH, expand = True, pady = (6, 0))
+
+        self.player_vars    = {}
+        player_list         = sorted(list(active_players), key = str.lower)
+        num_players         = len(player_list)
+        rows_per_col        = 8 if num_players >= 16 else num_players
+
+        for i, name in enumerate(player_list):
+            col                     = i //  rows_per_col
+            row                     = i %   rows_per_col
+            is_round                = name.lower() in round_elo_players
+            var                     = tk.BooleanVar(value = is_round)
+            self.player_vars[name]  = var
+            item_frame              = ttk.Frame(self.player_container)
+
+            item_frame.grid(row = row, column = col, padx = 4, pady = 2, sticky = "w")
+
+            box = tk.Canvas(item_frame, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
+            box.pack(side = tk.LEFT, padx = (0, 4))
+
+            lbl = ttk.Label(item_frame, text = name, font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+
+            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n=name, b = box: self.toggle_custom_player(n, b))
+
+        self._update_np_state()
+        self.grab_set()
+        self.wait_window()
+
+    def _select_lbl_opt(self, opt):
+        self.lbl_var.set(opt)
+        for k, box in self.lbl_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
+        self._update_lbl_state()
+
+    def _select_th_opt(self, opt):
+        self.th_var.set(opt)
+        for k, box in self.th_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
+        self._update_th_state()
+
+    def _select_np_opt(self, opt):
+        self.np_var.set(opt)
+        for k, box in self.np_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
+        self._update_np_state()
+
+    def _update_lbl_state(self):
+        if self.lbl_var.get() == "Others"   : self.lbl_entry.configure(state = "normal")
+        else                                : self.lbl_entry.configure(state = "disabled")
+
+    def _update_th_state(self):
+        if self.th_var.get() == "custom"    : self.th_entry.configure(state = "normal")
+        else                                : self.th_entry.configure(state = "disabled")
+
+    def _update_np_state(self):
+        state = "normal" if self.np_var.get() == "Yes" else "disabled"
+
+        for child in self.player_container.winfo_children():
+            for w in child.winfo_children():
+                if isinstance(w, tk.Canvas):
+                    if state == "disabled": w.configure(bg = "gray75")
+
+                    else:
+                        name = child.winfo_children()[1].cget("text")
+                        w.configure(bg = self.fill_color if self.player_vars[name].get() else "white")
+
+                elif isinstance(w, ttk.Label): w.configure(state = state)
+
+    def toggle_custom_player(self, name, box):
+        if self.np_var.get() != "Yes": self._select_np_opt("Yes")
+        new_val = not self.player_vars[name].get()
+        self.player_vars[name].set(new_val)
+        color = self.fill_color if new_val else "white"
+        box.configure(bg = color)
+
+    def on_confirm(self):
+        try                 : base_exp = int(self.spin.get())
+        except ValueError   : base_exp = 1
+
+        tour_label      = self.lbl_entry    .get() if self.lbl_var  .get() == "Others" else self.lbl_var.get()
+        th_str          = self.th_entry     .get() if self.th_var   .get() == "custom" else "default"
+        selected_new    = [name for name, var in self.player_vars.items() if var.get()] if self.np_var.get() == "Yes" else []
+        self.result     = {"tour_label": tour_label, "th_str": th_str, "base_exp": base_exp, "selected_new": selected_new}
+
+        super().on_confirm()
+
+class MismatchedRoundsDialog(UnifiedDialog):
+    def __init__(self, parent, mismatched_players, base_exp, subbed_players_set):
+        title_part = "These players appear" if len(mismatched_players) > 1 else "This player appears"
+
+        prompt_text = (
+            f"{title_part} in fewer JSONs than expected; how many rounds were they expected to be in?\n\n"
+            f'• "Use the current round count" is primarily used if the player has 0/0 round(s)\n'
+            f'• "Use the current JSON count" is primarily used if the player was subbed in/out'
+        )
+
+        super().__init__(parent, "Mismatched Round Counts", prompt_text)
+        self.base_exp       = base_exp
+        self.player_configs = {}
+        self.fill_color     = "#000000"
+
+        for _, (name, act) in enumerate(mismatched_players.items()):
+            p_frame = ttk.LabelFrame(self.container, text = f" {name} ", padding = 8)
+            p_frame.pack(fill = tk.X, pady = 4, anchor = "w")
+
+            is_subbed       = name.lower() in subbed_players_set
+            initial_mode    = "json" if is_subbed else "round"
+            mode_var        = tk.StringVar(value=initial_mode)
+            boxes           = {}
+
+            f_r1 = ttk.Frame(p_frame)
+            f_r1.pack(anchor = "w", pady = 2)
+            box_r1 = tk.Canvas(f_r1, width = 10, height = 10, bg = self.fill_color if initial_mode == "round" else "white", highlightthickness = 1, highlightbackground = "black")
+            box_r1.pack(side = tk.LEFT, padx = (0, 4))
+            boxes["round"] = box_r1
+            lbl_r1 = ttk.Label(f_r1, text = "Use the current round count")
+            lbl_r1.pack(side = tk.LEFT)
+
+            f_r2 = ttk.Frame(p_frame)
+            f_r2.pack(anchor = "w", pady = 2)
+            box_r2 = tk.Canvas(f_r2, width = 10, height = 10, bg = self.fill_color if initial_mode == "json" else "white", highlightthickness = 1, highlightbackground = "black")
+            box_r2.pack(side = tk.LEFT, padx = (0, 4))
+            boxes["json"] = box_r2
+            lbl_r2 = ttk.Label(f_r2, text = "Use the current JSON count")
+            lbl_r2.pack(side = tk.LEFT)
+
+            f_custom = ttk.Frame(p_frame)
+            f_custom.pack(anchor = "w", pady = 2)
+            box_r3 = tk.Canvas(f_custom, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
+            box_r3.pack(side = tk.LEFT, padx = (0, 4))
+            boxes["custom"] = box_r3
+            lbl_r3 = ttk.Label(f_custom, text = "Use a custom value:")
+            lbl_r3.pack(side = tk.LEFT)
+
+            spin = CustomSpinbox(f_custom, from_ = act, to = base_exp, initial_val = act)
+            spin.pack(side = tk.LEFT, padx = 4)
+            spin.configure_state("normal" if initial_mode == "custom" else "disabled")
+
+            def make_selector(m_var, b_map, target_opt, s_box):
+                return lambda _: [
+                    m_var.set(target_opt),
+                    s_box.configure_state("normal" if target_opt == "custom" else "disabled"),
+                    *[b.configure(bg = self.fill_color if k == target_opt else "white") for k, b in b_map.items()]
+                ]
+
+            for w, opt in [(box_r1, "round"),   (lbl_r1, "round")]  : w.bind("<Button-1>", make_selector(mode_var, boxes, opt, spin))
+            for w, opt in [(box_r2, "json"),    (lbl_r2, "json")]   : w.bind("<Button-1>", make_selector(mode_var, boxes, opt, spin))
+            for w, opt in [(box_r3, "custom"),  (lbl_r3, "custom")] : w.bind("<Button-1>", make_selector(mode_var, boxes, opt, spin))
+
+            self.player_configs[name] = {"mode": mode_var, "spin": spin, "act": act}
+ 
+        self.grab_set()
+        self.wait_window()
+
+    def on_confirm(self):
+        self.result = {}
+
+        for name, cfg in self.player_configs.items():
+            mode = cfg["mode"].get()
+
+            if      mode == "round" : self.result[name] = self.base_exp
+            elif    mode == "json"  : self.result[name] = cfg["act"]
+            else:
+                try                 : self.result[name] = int(cfg["spin"].get())
+                except ValueError   : self.result[name] = cfg["act"]
+
+        super().on_confirm()
+
+class ManualMatchDialog(tk.Toplevel):
+    def __init__(self, parent, unknown_name, available_pool):
+        super().__init__(parent)
+
+        self.title("Manual Match Required")
+        self.result = None
+
+        main_frame = ttk.Frame(self, padding = 10)
+        main_frame.pack(fill = tk.BOTH, expand = True)
+
+        ttk.Label(main_frame, text = f"Match required for: '{unknown_name}'", font = ("Arial", 10, "bold")).pack(pady = (0, 6), anchor = "w")
+
+        self.listbox = tk.Listbox(main_frame, height = 15)
+        self.listbox.pack(fill = tk.BOTH, expand = True, pady = (0, 8))
+
+        for name in sorted(available_pool): self.listbox.insert(tk.END, name)
+        ttk.Button(main_frame, text = "Match Selected", command = self.on_match).pack(side = tk.RIGHT)
+        self.grab_set(); self.wait_window()
+
+    def on_match(self):
+        sel = self.listbox.curselection()
+        if sel: self.result = self.listbox.get(sel[0]); self.destroy()
+
+class SubSelectionDialog(tk.Toplevel):
+    def __init__(self, parent, missing_roster):
+        super().__init__(parent)
+
+        self.title("Substitute Resolution")
+        self.result = None
+
+        main_frame = ttk.Frame(self, padding = 10)
+        main_frame.pack(fill = tk.BOTH, expand = True)
+
+        ttk.Label(main_frame, text = "Select the subbed player:", font = ("Segoe UI", 10)).pack(pady = (0, 6), anchor = "w")
+
+        self.listbox = tk.Listbox(main_frame, height = len(missing_roster))
+        self.listbox.pack(fill = tk.X, expand = True, pady = (0, 8))
+
+        for m in missing_roster: self.listbox.insert(tk.END, m)
+        ttk.Button(main_frame, text = "Confirm", command = self.on_confirm).pack(side = tk.RIGHT)
+        self.grab_set(); self.wait_window()
+
+    def on_confirm(self):
+        sel = self.listbox.curselection()
+        if sel: self.result = self.listbox.get(sel[0]); self.destroy()
+
+class SubstitutePromptDialog(UnifiedDialog):
+    def __init__(self, parent, sub_name, suggested_team, suggested_tier, all_teams):
+        super().__init__(parent, "Substitute Setup", f"Configure Team and Tier for Sub: {sub_name}")
+        self.result = None
+        
+        ttk.Label(self.container, text = "Team:", font = ("Segoe UI", 10)).grid(row = 0, column = 0, padx = (0, 6), pady = 4, sticky = "w")
+
+        self.team_combobox = ttk.Combobox(self.container, values = sorted(list(all_teams)))
+        self.team_combobox.grid(row = 0, column = 1, pady = 4, sticky = "ew")
+
+        if      suggested_team in all_teams : self.team_combobox.set(suggested_team)
+        elif    all_teams                   : self.team_combobox.set(sorted(list(all_teams))[0])
+
+        ttk.Label(self.container, text = "Tier:", font = ("Segoe UI", 10)).grid(row = 1, column = 0, padx = (0, 6), pady = 4, sticky = "w")
+
+        self.tier_combobox = ttk.Combobox(self.container, values = ["1", "2", "3", "4"])
+        self.tier_combobox.grid(row = 1, column = 1, pady = 4, sticky = "ew")
+        self.tier_combobox.set(suggested_tier if suggested_tier in ["1", "2", "3", "4"] else "1")
+
+        self.container.grid_columnconfigure(1, weight=1)
+
+        self.grab_set()
+        self.wait_window()
+
+    def on_confirm(self):
+        self.result = (self.team_combobox.get(), self.tier_combobox.get())
+        super().on_confirm()
