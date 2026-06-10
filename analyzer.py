@@ -772,7 +772,7 @@ class TourAnalyzer:
             avg_o = np.mean(t_overs) if t_overs else np.nan
 
             res.append({
-                "Team"              : t_lbl,
+                "T1"                : t_lbl,
                 "Median Vintage"    : format_year(np.median(self.t_vint[tid])),
                 "Average GR"        : f"{np.mean(self.t_c_ps    [tid]) * 100:.2f}",
                 "Rig Synergy"       : f"{np.mean(self.t_on_syn  [tid]) * 100:.2f}",
@@ -866,7 +866,7 @@ class TourAnalyzer:
             ax.set_title(cat, fontsize = 15, weight = 'bold', fontname = "Segoe UI", pad = 10)
 
             if not items:
-                ax.text(0.5, 0.5, "No Data", ha = 'center', va = 'center', fontsize = 15, fontname = "Segoe UI")
+                ax.text(0.5, 0.5, "No Data", ha = 'center', va = 'center', fontsize = 17.5, fontname = "Segoe UI")
                 ax.tick_params(axis = 'both', which = 'both', length = 0, labelbottom = False, labelleft = False)
                 continue
 
@@ -930,8 +930,7 @@ class TourAnalyzer:
             ax.set_yticklabels  (labels)
             ax.set_ylim         (first_y, last_y)
             ax.invert_yaxis     ()
-            ax.tick_params      (axis = 'y', which = 'both', length = 0, pad = 5, labelsize = 7.5)
-            ax.tick_params      (axis = 'x', which = 'both', length = 0, pad = 5, labelsize = 10)
+            ax.tick_params      (axis = 'both', which = 'both', length = 0, pad = 5, labelsize = 10)
 
             for label in ax.get_xticklabels(): label.set_fontname("Segoe UI")
             for label in ax.get_yticklabels(): label.set_fontname("Segoe UI")
@@ -940,7 +939,7 @@ class TourAnalyzer:
 
         for j in range(num_plots, len(axes)): axes[j].axis('off')
 
-        plt.suptitle        ("Tier Statistics", fontname = "Segoe UI", fontsize = 20, weight = 'bold')
+        plt.suptitle        ("Tier Statistics", fontname = "Segoe UI", fontsize = 25, weight = 'bold')
         plt.tight_layout    ()
         plt.savefig         (path / "Tier.png", dpi = 500)
         plt.close           (fig)
@@ -1188,7 +1187,7 @@ class TourAnalyzer:
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
         html            = f"<thead><tr>" + "".join([f"<th>{str(c).replace(' ','<br>')}</th>" for c in df.columns]) + "</tr></thead><tbody>"
-        bold_columns    = {"Player", "Statistic", "Team"}
+        bold_columns    = {"Player", "Statistic", "T1"}
 
         for idx, row in df.iterrows():
             b_s     =   "border-bottom: 3px solid black;" if idx in borders else ""
