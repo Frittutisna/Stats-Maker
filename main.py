@@ -7,8 +7,8 @@ from help.dialog    import TourSelectionDialog
 from pathlib        import Path
 
 def sync_chanting(tour_dir_path):
-    cred_file   = os.path.join(DIR_CREDS, "credentials.json")
-    auth_file   = os.path.join(DIR_CREDS, "authorized_user.json")
+    cred_file   = os.path.join("help", DIR_CREDS, "credentials.json")
+    auth_file   = os.path.join("help", DIR_CREDS, "authorized_user.json")
     sheet_name  = "NGM Stats Export v2"
 
     try:
