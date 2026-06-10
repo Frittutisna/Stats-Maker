@@ -1218,89 +1218,103 @@ class TourAnalyzer:
         ps      = {k: path / v for k, v in f.items() if (path / v).exists()}
         imgs    = {k: Image.open(v) for k, v in ps.items()}
 
+        # Core requirement guard: both List and Tour must exist to proceed
         if "Tour" not in imgs or "List" not in imgs:
             for k, p in ps.items():
                 if k != "List":
                     try     : os.remove(p)
                     except  : pass
-
             return
 
-        img_tour = imgs["Tour"]
         img_list = imgs["List"]
+        img_tour = imgs["Tour"]
+        img_team = imgs.get("Team")
+        img_tier = imgs.get("Tier")
 
-        if img_tour.height < img_list.height:
-            scale_factor    = img_list.height / float(img_tour.height)
-            img_tour        = img_tour.resize((int(img_tour.width * scale_factor), img_list.height), Image.Resampling.LANCZOS)
+        # Target heights based on rules
+        tour_h = img_tour.height
+        team_h = img_team.height if img_team else 0
+        
+        # --- 1. Scale down Column Components ---
+        # 1.1 Scale down List Statistics to the height of Tour Statistics
+        list_aspect = img_list.width / img_list.height
+        list_w_scaled = int(tour_h * list_aspect)
+        img_list_scaled = img_list.resize((list_w_scaled, tour_h), Image.Resampling.LANCZOS)
+        
+        # 1.2 Scale down Tier Statistics to the height of Tour Statistics - (height of Team Statistics + 10)
+        if img_tier:
+            target_tier_h = tour_h - (team_h + 10) if img_team else tour_h
+            if target_tier_h > 0:
+                tier_aspect = img_tier.width / img_tier.height
+                tier_w_scaled = int(target_tier_h * tier_aspect)
+                img_tier_scaled = img_tier.resize((tier_w_scaled, target_tier_h), Image.Resampling.LANCZOS)
+            else:
+                img_tier_scaled = None
+        else:
+            img_tier_scaled = None
 
-        elif img_list.height < img_tour.height:
-            scale_factor    = img_tour.height / float(img_list.height)
-            img_list        = img_list.resize((int(img_list.width * scale_factor), img_tour.height), Image.Resampling.LANCZOS)
-
-        target_height   = img_list.height
-        split_h         = target_height // 2
-
-        if "Team" in imgs:
-            img_team    = imgs["Team"]
-            scale_team  = split_h / float(img_team.height)
-            img_team    = img_team.resize((int(img_team.width * scale_team), split_h), Image.Resampling.LANCZOS)
-
-        else: img_team = None
-
-        if "Tier" in imgs:
-            img_tier    = imgs["Tier"]
-            scale_tier  = split_h / float(img_tier.height)
-            img_tier    = img_tier.resize((int(img_tier.width * scale_tier), split_h), Image.Resampling.LANCZOS)
-
-        else: img_tier = None
-
-        rw          = max((img_team.width if img_team else 0), (img_tier.width if img_tier else 0))
-        grid_w      = img_list.width + 10 + img_tour.width + (10 if rw > 0 else 0) + rw
-        grid_h      = target_height
-        extra_img   = Image.new("RGB", (grid_w, grid_h), "white")
-
-        extra_img.paste(img_list, (0, 0))
-        cx = img_list.width + 10
-
+        # --- 2. Construct Extra.png Layout ---
+        col1_w = img_list_scaled.width
+        col2_w = img_tour.width
+        
+        # Calculate Column 3 dimensions with scaled elements
+        team_w = img_team.width if img_team else 0
+        tier_w = img_tier_scaled.width if img_tier_scaled else 0
+        col3_w = max(team_w, tier_w)
+        
+        # Grid dimensions (using the consistent tour_h backdrop)
+        grid_w = col1_w + 10 + col2_w + (10 if col3_w > 0 else 0) + col3_w
+        grid_h = tour_h
+        
+        extra_img = Image.new("RGB", (grid_w, grid_h), "white")
+        
+        # Paste Column 1 (List) & Column 2 (Tour)
+        extra_img.paste(img_list_scaled, (0, 0))
+        cx = col1_w + 10
+        
         extra_img.paste(img_tour, (cx, 0))
-        cx += img_tour.width + 10
-
-        if img_team: extra_img.paste(img_team, (cx, 0))
-        if img_tier: extra_img.paste(img_tier, (cx, split_h))
-
+        cx += col2_w + 10
+        
+        # Paste Column 3 (Team stacked uniformly above scaled Tier)
+        if img_team:
+            extra_img.paste(img_team, (cx, 0))
+        if img_tier_scaled:
+            ty = (team_h + 10) if img_team else 0
+            extra_img.paste(img_tier_scaled, (cx, ty))
+            
         extra_out_p = path / "Extra.png"
         extra_img.save(extra_out_p)
-
+        
         try     : trim_whitespace(extra_out_p)
         except  : pass
 
-        extra_img   = Image.open(extra_out_p)
-        p_path      = path / "Player.png"
-
+        # --- 3. Construct General.png Layout ---
+        p_path = path / "Player.png"
         if p_path.exists():
+            # Re-read extra_img to adapt perfectly to post-trimmed whitespace sizes
+            extra_img = Image.open(extra_out_p)
             img_player = Image.open(p_path)
-
-            if img_player.width < extra_img.width:
-                scale_factor    = extra_img.width / float(img_player.width)
-                img_player      = img_player.resize((extra_img.width, int(img_player.height * scale_factor)), Image.Resampling.LANCZOS)
-
-            elif extra_img.width < img_player.width:
-                scale_factor    = img_player.width / float(extra_img.width)
-                extra_img       = extra_img.resize((img_player.width, int(extra_img.height * scale_factor)), Image.Resampling.LANCZOS)
-
-            gen_w = img_player.width
-            gen_h = img_player.height + 10 + extra_img.height
-
+            
+            # Scale up Player Statistics to match the structural width of Extra.png
+            player_aspect = img_player.width / img_player.height
+            player_w_scaled = extra_img.width
+            player_h_scaled = int(player_w_scaled / player_aspect)
+            img_player_scaled = img_player.resize((player_w_scaled, player_h_scaled), Image.Resampling.LANCZOS)
+            
+            gen_w = extra_img.width
+            gen_h = img_player_scaled.height + 10 + extra_img.height
+            
             general_img = Image.new("RGB", (gen_w, gen_h), "white")
-            general_img.paste(img_player, (0, 0))
-            general_img.paste(extra_img, (0, img_player.height + 10))
-
+            general_img.paste(img_player_scaled, (0, 0))
+            general_img.paste(extra_img, (0, img_player_scaled.height + 10))
+            
             gen_out_p = path / "General.png"
             general_img.save(gen_out_p)
-
+            
             try     : trim_whitespace(gen_out_p)
             except  : pass
 
+        # --- 4. Asset Cleanup ---
         for k, p in ps.items():
             if k in ["Tour", "Team", "Tier"]:
                 try     : os.remove(p)
