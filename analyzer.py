@@ -883,7 +883,9 @@ class TourAnalyzer:
                 max_v   = max([item["value"] for item in items]) if items else factor
                 xmax    = math.ceil(max_v / factor) * factor
 
-                if xmax == 0: xmax = factor
+                if      xmax == 0   : xmax      = factor
+                elif    xmax <= 20  : factor    = xmax / 5
+
                 ax.set_xlim(0, xmax)
                 ax.xaxis.set_major_locator(mt.MultipleLocator(factor))
 
@@ -1025,7 +1027,7 @@ class TourAnalyzer:
 
             ha_align    = "left"   if x >= x_center else "right"
             va_align    = "bottom" if y >= y_center else "top"
-            t           = ax.text(x, y, label, fontsize = 10, fontname = "Segoe UI", ha = ha_align, va = va_align, bbox = dict(facecolor = 'white', edgecolor = 'none'))
+            t           = ax.text(x, y, label, fontsize = 10, fontname = "Segoe UI", ha = ha_align, va = va_align)
 
             texts.append(t)
 
