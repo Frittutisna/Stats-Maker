@@ -1,6 +1,7 @@
 import json, math, os, re
 import matplotlib.pyplot    as plt
 import matplotlib.colors    as mc
+import matplotlib.ticker    as mt
 import numpy                as np
 import pandas               as pd
 
@@ -782,51 +783,167 @@ class TourAnalyzer:
         self._export_png(pd.DataFrame(res).sort_values("Average GR", ascending = False), path, "Team.png", "Team Statistics")
 
     def _create_tier_png(self, assigns, path, has_chanting_songs):
-        tiers   = sorted({v[1] for v in assigns.values() if v[1] != "N/A"}, reverse = True)
-        res     = []
+        categories = ["Generalist", "Attacker", "Blocker", "Contributor", "Speedster"]
+        if has_chanting_songs: categories.append("Chanter")
 
-        for tr in tiers:
+        data_by_cat = {cat: [] for cat in categories}
+
+        for tr in ["1", "2", "3", "4"]:
             tp = [n for n in self.s_part if n.lower() in assigns and assigns[n.lower()][1] == tr]
             if not tp: continue
 
-            def get_generalist(plist):
-                sorted_p        = sorted(plist, key = lambda x: (self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0), reverse = True)
-                name, value     = sorted_p[0], 100 * (self.c_counts[sorted_p[0]] / self.s_part[sorted_p[0]]) if self.s_part[sorted_p[0]] else 0
-                return f"{self._get_player_acronym(name)} ({value:.2f})"
+            gen_players = []
 
-            def get_attblk(plist, sdict):
-                sorted_p        = sorted(plist, key = lambda x: (sdict[x], self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0), reverse = True)
-                name, value     = sorted_p[0], sdict[sorted_p[0]]
-                return f"{self._get_player_acronym(name)} ({value})"
+            for p in tp:
+                val = 100 * (self.c_counts[p] / self.s_part[p]) if self.s_part[p] else 0
+                gen_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
 
-            def get_contributor(plist):
-                sorted_p        = sorted(plist, key = lambda x: ((self.p_pts[x] + self.p_blks[x]), (self.c_counts[x] / self.s_part[x] if self.s_part[x] else 0)), reverse = True)
-                name, v1, v2    = sorted_p[0], self.p_pts[sorted_p[0]], self.p_blks[sorted_p[0]]
-                return f"{self._get_player_acronym(name)} ({v1 + v2})"
+            gen_players.sort(key = lambda x: x["value"], reverse = True)
+            data_by_cat["Generalist"].extend(gen_players)
 
-            def get_speedster(plist):
-                pool = [n for n in plist if len(self.p_answer_times.get(n, [])) > 0]
-                if not pool: return "N/A"
-                sorted_p    = sorted(pool, key = lambda x: np.median(self.p_answer_times[x]))
-                name        = sorted_p[0]                
-                med_t       = np.median(self.p_answer_times[name])
-                return f"{self._get_player_acronym(name)} ({med_t:.2f})"
+            atk_players = []
 
-            def get_chanter(plist):
-                pool = [n for n in plist if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
-                if not pool: return "N/A"
-                sorted_p    = sorted(pool, key = lambda x: (100 * self.p_chan_c[x] / self.p_chan_s[x], -(100 * self.c_counts[x] / self.s_part[x])), reverse = True)
-                name        = sorted_p[0]                
-                ratio       = 100 * self.p_chan_c[name] / self.p_chan_s[name]
-                return f"{self._get_player_acronym(name)} ({ratio:.2f})"
+            for p in tp:
+                val = self.p_pts[p]
+                atk_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
 
-            row_data = [tr, get_generalist(tp), get_attblk(tp, self.p_pts), get_attblk(tp, self.p_blks), get_contributor(tp), get_speedster(tp)]
-            if has_chanting_songs: row_data.append(get_chanter(tp))
-            res.append(row_data)
+            atk_players.sort(key = lambda x: x["value"], reverse = True)
+            data_by_cat["Attacker"].extend(atk_players)
 
-        cols = ["Tier", "Generalist", "Attacker", "Blocker", "Contributor", "Speedster"]
-        if has_chanting_songs: cols.append("Chanter")
-        self._export_png(pd.DataFrame(sorted(res, key = lambda x: x[0]), columns = cols), path, "Tier.png", "Tier Statistics")
+            blk_players = []
+
+            for p in tp:
+                val = self.p_blks[p]
+                blk_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
+
+            blk_players.sort(key = lambda x: x["value"], reverse = True)
+            data_by_cat["Blocker"].extend(blk_players)
+
+            con_players = []
+
+            for p in tp:
+                val = self.p_pts[p] + self.p_blks[p]
+                con_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
+
+            con_players.sort(key = lambda x: x["value"], reverse = True)
+            data_by_cat["Contributor"].extend(con_players)
+
+            spd_players = []
+
+            for p in tp:
+                times = self.p_answer_times.get(p, [])
+
+                if times:
+                    val = np.median(times)
+                    spd_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
+
+            spd_players.sort(key = lambda x: x["value"], reverse = False)
+            data_by_cat["Speedster"].extend(spd_players)
+
+            if has_chanting_songs:
+                chn_players = []
+
+                for p in tp:
+                    if self.p_chan_s[p] > 0 and self.c_counts[p] > 0:
+                        val = 100 * self.p_chan_c[p] / self.p_chan_s[p]
+                        chn_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
+
+                chn_players.sort(key = lambda x: x["value"], reverse = True)
+                data_by_cat["Chanter"].extend(chn_players)
+
+        num_plots       = len(categories)
+        fig, axes       = plt.subplots(2, 3, figsize = (15, 10))
+        axes            = axes.flatten()
+        segment_width   = 5.00
+        tier_gap        = 0.00
+
+        for idx, cat in enumerate(categories):
+            ax      = axes[idx]
+            items   = data_by_cat[cat]
+
+            ax.set_title(cat, fontsize = 15, weight = 'bold', fontname = "Segoe UI", pad = 10)
+
+            if not items:
+                ax.text(0.5, 0.5, "No Data", ha = 'center', va = 'center', fontsize = 15, fontname = "Segoe UI")
+                ax.tick_params(axis = 'both', which = 'both', length = 0, labelbottom = False, labelleft = False)
+                continue
+
+            if cat in ["Generalist", "Chanter"]:
+                ax.set_ylim(0, 100)
+                ax.yaxis.set_major_locator(mt.MultipleLocator(20))
+
+            elif cat == "Speedster":
+                ax.set_ylim(0, 10)
+                ax.yaxis.set_major_locator(mt.MultipleLocator(2))
+
+            else:
+                factor  = 10 if cat == "Contributor" else 5
+                max_v   = max([item["value"] for item in items]) if items else factor
+                ymax    = math.ceil(max_v / factor) * factor
+
+                if ymax == 0: ymax = factor
+                ax.set_ylim(0, ymax)
+                ax.yaxis.set_major_locator(mt.MultipleLocator(factor))
+
+            ymin_axis, _    = ax.get_ylim()
+            x_ticks         = []
+            labels          = []
+            tier_groups     = defaultdict(list)
+
+            for item in items: tier_groups[item["tier"]].append(item)
+
+            current_x       = 0.0
+            sorted_tiers    = sorted(list(tier_groups.keys()))
+            first_x         = None
+            last_x          = None
+            
+            for t in sorted_tiers:
+                group       = tier_groups[t]
+                num_players = len(group)
+                block_start = current_x
+                block_end   = block_start + (num_players * segment_width)
+                
+                if first_x is None: first_x = block_start
+                last_x = block_end
+                
+                vertices = [(block_start, ymin_axis)]
+                
+                for p_idx, item in enumerate(group):
+                    p_start = block_start + (p_idx * segment_width)
+                    p_end   = p_start + segment_width
+                    
+                    x_ticks .append(p_start + (segment_width / 2))
+                    labels  .append(item["player"])
+
+                    vertices.append((p_start,   item["value"]))
+                    vertices.append((p_end,     item["value"]))
+                    
+                vertices.append((block_end, ymin_axis))
+                
+                v_x, v_y = zip(*vertices)
+                ax.plot(v_x, v_y, color = 'black', linewidth = 1, zorder = 3)
+                current_x = block_end + tier_gap
+                
+            ax.set_xticks       (x_ticks)
+            ax.set_xticklabels  (labels)
+            ax.set_xlim         (first_x, last_x)
+            ax.tick_params      (axis = 'x', which = 'both', length = 0, pad = 5, labelsize = 7.5)
+            ax.tick_params      (axis = 'y', which = 'both', length = 0, pad = 5, labelsize = 10)
+
+            for label in ax.get_xticklabels(): label.set_fontname("Segoe UI")
+            for label in ax.get_yticklabels(): label.set_fontname("Segoe UI")
+
+            ax.grid(False)
+            
+        for j in range(num_plots, len(axes)): axes[j].axis('off')
+            
+        plt.suptitle        ("Tier Statistics", fontname = "Segoe UI", fontsize = 20, weight = 'bold')
+        plt.tight_layout    ()
+        plt.savefig         (path / "Tier.png", dpi = 500)
+        plt.close           (fig)
+
+        try     : trim_whitespace(path / "Tier.png")
+        except  : pass
 
     def _create_watched_png(self, path):
         plist = [n for n in self.s_part if self.p_l_corr[n]]
