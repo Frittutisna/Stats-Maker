@@ -1462,8 +1462,3 @@ class TourAnalyzer:
 
             try     : trim_whitespace(gen_out_p)
             except  : pass
-
-        for k, p in ps.items():
-            if k in ["Tour", "Team", "Tier"]:
-                try     : os.remove(p)
-                except  : pass
