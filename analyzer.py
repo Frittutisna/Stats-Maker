@@ -594,8 +594,9 @@ class TourAnalyzer:
         if assignments                      : self._create_tier_png     (assignments, out_path, has_chanting_songs)
         if watched_valid                    : self._create_scatter_png  (out_path, True)
 
-        self._create_scatter_png    (out_path)
-        self._fuse_and_clean        (out_path)
+        self._create_scatter_png(out_path)
+        if watched_valid: self._create_list_guess_png(out_path)
+        self._fuse_and_clean(out_path)
 
     def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup, val_str):
         rows, eligibility   = [], []
@@ -1164,6 +1165,157 @@ class TourAnalyzer:
                         img.save(path / cfg["filename"], compress_level = 9, optimize = True)
 
             except Exception: pass
+
+    def _create_list_guess_png(self, path):
+        plist               = []
+        x_start, y_start    = [], []
+        x_end, y_end        = [], []
+        gr_vals, grid_grs   = [], []
+
+        for name in self.s_part:
+            if self.p_l_corr[name] and self.c_counts[name] > 0:
+                yl = np.median(self.p_l_vint[name]) if self.p_l_vint[name] else np.nan
+                yg = np.median(self.p_c_vint[name]) if self.p_c_vint[name] else np.nan
+
+                if not np.isnan(yl) and not np.isnan(yg):
+                    plist.append(name)
+
+                    x_start.append(np.mean(self.p_l_corr[name]))
+                    y_start.append(yl)
+
+                    x_end.append(self.p_overs_sum[name] / self.c_counts[name])
+                    y_end.append(yg)
+
+                    gr_vals     .append(self.c_counts[name] / self.s_part[name] if self.s_part[name] else 0.0)
+                    grid_grs    .append(self.p_rigs_h[name] / self.p_rigs[name] if self.p_rigs[name] else 0.0)
+
+        if not plist: return
+
+        all_x = x_start + x_end
+        all_y = y_start + y_end
+
+        x_min = math.floor  ((min   (all_x) - 0.5) * 2) / 2
+        x_max = math.ceil   ((max   (all_x) + 0.5) * 2) / 2
+        y_min = math.floor  (min    (all_y) - 1.0)
+        y_max = math.ceil   (max    (all_y) + 1.0)
+
+        while True:
+            r = y_max - y_min
+
+            if r % 4 == 0:
+                step = r // 4
+                break
+
+            elif r % 3 == 0:
+                step = r // 3
+                break
+
+            if r % 2 != 0 or y_max >= 2026  : y_min -= 1
+            else                            : y_max += 1
+
+        fig, ax = plt.subplots(figsize = (10, 10))
+
+        ax.set_xlim(x_min, x_max)
+        ax.set_ylim(y_min, y_max)
+
+        ax.set_xticks(np.arange (x_min, x_max + 0.5,    0.5))
+        ax.set_yticks(range     (y_min, y_max + 1,      step))
+
+        cmap_l  = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#A6611A"), (0.5, "#A6611A"), (RIG_GR, "#E7D4B8"), (1.0, "#018571")])
+        norm    = mc.Normalize(vmin = 0.0, vmax = 1.0)
+
+        for name, xl, yl, xg, yg, gr, rig_gr in zip(plist, x_start, y_start, x_end, y_end, gr_vals, grid_grs):
+            label = self._get_player_acronym(name)
+            if not label: continue
+
+            line_thickness  = (min(1, gr + 0.5)) ** 2 * 2
+            arrow_color     = cmap_l(norm(rig_gr))
+
+            ax.annotate(
+                "", 
+                xy          = (xg, yg), 
+                xytext      = (xl, yl),
+                arrowprops  = dict(arrowstyle = "->", color = arrow_color, linewidth = line_thickness),
+                zorder      = 3
+            )
+
+            xm = (xl + xg) / 2
+            ym = (yl + yg) / 2
+
+            trans   = ax.transData.transform
+            p_start = trans((xl, yl))
+            p_end   = trans((xg, yg))
+            
+            dx = p_end[0] - p_start[0]
+            dy = p_end[1] - p_start[1]
+            
+            angle = np.degrees(np.arctan2(dy, dx))
+
+            if      angle > 90  : angle -= 180
+            elif    angle < -90 : angle += 180
+
+            gap         = 2.5
+            angle_rad   = np.radians(angle)
+
+            p_mid           = trans((xm, ym))
+            p_mid_shifted   = (p_mid[0] - gap * np.sin(angle_rad), p_mid[1] + gap * np.cos(angle_rad))
+
+            xm_shifted, ym_shifted  = ax.transData.inverted().transform(p_mid_shifted)
+
+            ax.text(
+                xm_shifted, ym_shifted, label,
+                fontsize        = 10,
+                fontname        = "Segoe UI",
+                weight          = "bold",
+                ha              = "center",
+                va              = "bottom",
+                rotation        = angle,
+                rotation_mode   = "anchor",
+                zorder          = 4,
+            )
+
+        ax.set_title    ("List-Guess Statistics",   weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
+        ax.set_xlabel   ("Average Over-8",          weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
+        ax.set_ylabel   ("Median Vintage",          weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
+
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
+        plt.setp(ax.get_yticklabels(), horizontalalignment = 'center', verticalalignment = 'center')
+
+        ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
+        ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 15)
+
+        sm = plt.cm.ScalarMappable(cmap = cmap_l, norm = norm)
+        sm.set_array([])
+
+        cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0.0, 0.5, RIG_GR, 1.0])
+        cbar.set_label("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -5)
+        cbar.ax.set_yticklabels(['0', '50', f'{int(RIG_GR * 100)}', '100'])
+        cbar.ax.tick_params(labelsize = 10, length = 0)
+
+        ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "left",    weight = "bold", alpha = 0.75)
+        ax.text(0.99, 0.99, "New\nEasy", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "right",   weight = "bold", alpha = 0.75)
+        ax.text(0.01, 0.01, "Old\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "bottom",    ha = "left",    weight = "bold", alpha = 0.75)
+        ax.text(0.99, 0.01, "Old\nEasy", transform = ax.transAxes, color = "grey", fontsize = 10, va = "bottom",    ha = "right",   weight = "bold", alpha = 0.75)
+
+        ax.grid(False)
+
+        plt.tight_layout    ()
+        plt.savefig         (path / "List-Guess.png", dpi = 500)
+        plt.close           (fig)
+
+        try:
+            with Image.open(path / "List-Guess.png") as img:
+                img     = img           .convert    ("RGB")
+                bg      = Image         .new        (img.mode, img.size, "white")
+                diff    = ImageChops    .difference (img, bg)
+                bbox    = diff          .getbbox    ()
+
+                if bbox:
+                    img = img.crop(bbox)
+                    img = ImageOps.expand(img, border = 30, fill = "white")
+                    img.save(path / "List-Guess.png", compress_level = 9, optimize = True)
+
+        except Exception: pass
 
     def _create_chanting_png(self, path):
         plist = [n for n in self.s_part if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
