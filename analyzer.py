@@ -219,15 +219,23 @@ class TourAnalyzer:
 
                 ls                          =   song.get("listStates", [])
                 self.global_stats["tot_c"]  +=  len(correct)
-                yr                          =   extract_year(si.get("vintage"))
+                
+                try     : yr = int(extract_year(si.get("vintage")))
+                except  : yr = None
 
-                self.all_vint.append(yr)
-                self.all_diff.append(si.get("animeDifficulty"))
+                if yr is not None: self.all_vint.append(yr)
+
+                raw_diff = si.get("animeDifficulty")
+
+                try     : safe_diff = float(raw_diff)
+                except  : safe_diff = 0.0
+
+                self.all_diff.append(safe_diff)
 
                 self.song_data.append({
-                    "vintage"       : yr,
-                    "difficulty"    : si.get("animeDifficulty"),
-                    "correct_count" : len(correct)
+                    "vintage"       : yr if yr is not None else 0,
+                    "difficulty"    : safe_diff,
+                    "correct_count" : int(len(correct))
                 })
 
                 if not ls: missing_list_count += 1
@@ -616,11 +624,13 @@ class TourAnalyzer:
             tasks.append((self._create_list_guess_png,  (out_path, )))
 
         with fut.ProcessPoolExecutor() as executor:
-            futures = [executor.submit(func, *args) for func, args in tasks]
+            task = {executor.submit(func, *args): func.__name__ for func, args in tasks}
 
-            for future in fut.as_completed(futures):
+            for future in fut.as_completed(task):
+                task_name = task[future]
+
                 try                     : future.result()
-                except Exception as e   : print(f"Task failed: {e}")
+                except Exception as e   : print(f"Task {task_name} failed: {e}")
 
         self._fuse(out_path)
 
