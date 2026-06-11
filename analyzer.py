@@ -1079,7 +1079,7 @@ class TourAnalyzer:
                 if bbox:
                     img = img.crop(bbox)
                     img = ImageOps.expand(img, border = 30, fill = "white")
-                    img.save(path / "List.png")
+                    img.save(path / "List.png", compress_level = 9, optimize = True)
 
         except: pass
 
@@ -1336,7 +1336,7 @@ class TourAnalyzer:
         if img_list_scaled  : extra_img.paste(img_list_scaled,  (block1_w   + 10,   0))
 
         extra_out_p = path / "Extra.png"
-        extra_img.save(extra_out_p)
+        extra_img.save(extra_out_p, compress_level = 9, optimize = True)
 
         try     : trim_whitespace(extra_out_p)
         except  : pass
@@ -1360,7 +1360,7 @@ class TourAnalyzer:
             general_img.paste(extra_img, (0, img_player_scaled.height + 10))
 
             gen_out_p = path / "General.png"
-            general_img.save(gen_out_p)
+            general_img.save(gen_out_p, compress_level = 9, optimize = True)
 
             try     : trim_whitespace(gen_out_p)
             except  : pass
