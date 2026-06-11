@@ -1011,7 +1011,7 @@ class TourAnalyzer:
                     grid_grs    = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist_l]
 
                     scale_l = 1.00 if len(plist_l) <= 20 else (0.75 if len(plist_l) <= 28 else 0.50)
-                    sizes_l = [rate ** 2 * 10000 * scale_l for rate in rig_rates]
+                    sizes_l = [rate ** 2 * 5000 * scale_l for rate in rig_rates]
                     cmap_l  = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, COLOR_0), (0.5, COLOR_0), (GR_RIG, COLOR_1), (1.0, COLOR_2)])
                     
                     configs.append({
@@ -1045,7 +1045,7 @@ class TourAnalyzer:
                 uf_rates    = [self.p_usefulness_sum    [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist_g]
 
                 scale_g = 1.00 if len(plist_g) <= 20 else (0.75 if len(plist_g) <= 28 else 0.50)
-                sizes_g = [rate ** 2 * 25000 * scale_g for rate in uf_rates]
+                sizes_g = [rate ** 2 * 50000 * scale_g for rate in uf_rates]
                 cmap_g  = mc.LinearSegmentedColormap.from_list("guess_gr_cmap", [(0.0, COLOR_0), (GR_GEN * 2, COLOR_1), (1.0, COLOR_2)])
                 
                 configs.append({
@@ -1251,7 +1251,7 @@ class TourAnalyzer:
             label = self._get_player_acronym(name)
             if not label: continue
 
-            line_thickness  = (min(1, gr + 0.5)) ** 2 * 2
+            line_thickness  = min(2, gr * 4) ** 2
             arrow_color     = cmap_l(norm(rig_gr))
 
             ax.annotate(
