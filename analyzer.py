@@ -975,7 +975,7 @@ class TourAnalyzer:
         cmap    = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR, "#FFFFFF"), (1.0, "#0056B3")])
         scale   = 1.00 if len(plist) <= 20 else (0.75 if len(plist) <= 28 else 0.50)
         sizes   = [rate ** 2 * 10000 * scale for rate in rig_rates]
-        sc      = ax.scatter(x_vals, y_vals, s = sizes, c = grid_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.95)
+        sc      = ax.scatter(x_vals, y_vals, s = sizes, c = grid_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.95, zorder = 3)
 
         points          = np.column_stack((x_vals, y_vals))
         x_range         = max(x_vals) - min(x_vals) if max(x_vals) != min(x_vals) else 1
@@ -1235,36 +1235,37 @@ class TourAnalyzer:
             <head>
                 <style>
                     body {{
-                        font-family     : 'Segoe UI', Arial, sans-serif; 
-                        background      : white; 
-                        display         : inline-block; 
-                        margin          : 0;
+                        font-family         : 'Segoe UI';
+                        background          : white;
+                        display             : inline-block;
+                        margin              : 0
                     }} 
                     h2 {{
-                        margin          : 10px 0 10px 5px; 
-                        font-size       : 30px; 
-                        text-align      : center;
+                        margin              : 0 0 10px 0;
+                        font-size           : 30px;
+                        text-align          : center
                     }} 
                     table {{
-                        margin-left     : 10px; 
-                        border-collapse : collapse; 
-                        width           : auto; 
-                        border          : 3px solid black;
+                        border-collapse     : collapse;
+                        width               : auto;
+                        border              : 3px solid black
                     }} 
                     th {{
-                        font-weight     : bold; 
-                        font-size       : 20px; 
-                        text-align      : center; 
-                        padding         : 10px; 
-                        border          : 1px solid black; 
-                        border-bottom   : 3px solid black;
+                        font-weight         : bold;
+                        font-size           : 20px;
+                        text-align          : center;
+                        padding             : 10px;
+                        border              : 1px solid black;
+                        border-bottom       : 3px solid black;
+                        background-color    : #f0f0f0
                     }} 
                     td {{
-                        font-size       : 20px; 
-                        text-align      : center; 
-                        padding         : 10px; 
-                        border          : 1px solid black;
+                        font-size           : 20px;
+                        text-align          : center;
+                        padding             : 10px;
+                        border              : 1px solid black
                     }}
+                    tr:nth-child(even) {{background-color: #f0f0f0}}
                 </style>
             </head>
             <body>
