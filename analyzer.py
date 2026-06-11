@@ -1390,8 +1390,8 @@ class TourAnalyzer:
         ax.set_xticks(np.arange(num_x) + 0.5)
         ax.set_yticks(np.arange(num_y) + 0.5)
 
-        ax.set_xticklabels(["0 - 10%", "10 - 20%", "20 - 30%", "30 - 40%", ">40%"], fontname = "Segoe UI", fontsize = 10)
-        ax.set_yticklabels(["Pre-1990s", "1990s", "2000s", "2010s", "2020s"],       fontname = "Segoe UI", fontsize = 10, rotation = 90)
+        ax.set_xticklabels(["0-10%", "10-20%", "20-30%", "30-40%", ">40%"],     fontname = "Segoe UI", fontsize = 10)
+        ax.set_yticklabels(["Pre-1990s", "1990s", "2000s", "2010s", "2020s"],   fontname = "Segoe UI", fontsize = 10, rotation = 90)
 
         ax.set_title    ("Song Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
         ax.set_xlabel   ("Song Difficulty", weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 5)
