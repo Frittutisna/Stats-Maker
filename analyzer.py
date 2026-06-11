@@ -33,6 +33,7 @@ class TourAnalyzer:
         self.p_rigs                     = defaultdict(int)
         self.p_rigs_h                   = defaultdict(int)
         self.p_l_vint                   = defaultdict(list)
+        self.p_c_vint                   = defaultdict(list)
         self.p_l_corr                   = defaultdict(list)
         self.p_m_erigs                  = defaultdict(int)
         self.p_l_solos                  = defaultdict(list)
@@ -325,6 +326,7 @@ class TourAnalyzer:
 
                         if st in [1, 2, 3]  : self.p_type_c[name][st]   += 1
                         if is_chan          : self.p_chan_c[name]       += 1
+                        if yr is not None   : self.p_c_vint[name].append(yr)
 
                     if is_chan: self.p_chan_s[name] += 1
 
@@ -590,9 +592,10 @@ class TourAnalyzer:
 
         if watched_valid and assignments    : self._create_team_png     (assignments, t1_lookup, out_path)
         if assignments                      : self._create_tier_png     (assignments, out_path, has_chanting_songs)
-        if watched_valid                    : self._create_watched_png  (out_path)
+        if watched_valid                    : self._create_scatter_png  (out_path, True)
 
-        self._fuse_and_clean(out_path)
+        self._create_scatter_png    (out_path)
+        self._fuse_and_clean        (out_path)
 
     def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup, val_str):
         rows, eligibility   = [], []
@@ -952,54 +955,92 @@ class TourAnalyzer:
         try     : trim_whitespace(path / "Tier.png")
         except  : pass
 
-    def _create_watched_png(self, path):
-        plist = [n for n in self.s_part if self.p_l_corr[n]]
-        if not plist: return
+    def _create_scatter_png(self, path, list_mode = False):
+        configs = []
 
-        x_vals = [np.mean   (self.p_l_corr[name]) for name in plist]
-        y_vals = [np.median (self.p_l_vint[name]) if self.p_l_vint[name] else np.nan for name in plist]
+        if list_mode:
+            plist_l = [n for n in self.s_part if self.p_l_corr[n]]
 
-        valid_data = [(p, x, y) for p, x, y in zip(plist, x_vals, y_vals) if not np.isnan(y)]
-        if not valid_data: return
+            if plist_l:
+                x_vals_l    = [np.mean(self.p_l_corr[name]) for name in plist_l]
+                y_vals_l    = [np.median(self.p_l_vint[name]) if self.p_l_vint[name] else np.nan for name in plist_l]
+                valid_l     = [(p, x, y) for p, x, y in zip(plist_l, x_vals_l, y_vals_l) if not np.isnan(y)]
+                
+                if valid_l:
+                    plist_l, x_vals_l, y_vals_l = zip(*valid_l)
+                    plist_l, x_vals_l, y_vals_l = list(plist_l), list(x_vals_l), list(y_vals_l)
+                    
+                    rig_rates   = [self.p_rigs      [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist_l]
+                    grid_grs    = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist_l]
 
-        plist, x_vals, y_vals = zip(*valid_data)
+                    scale_l = 1.00 if len(plist_l) <= 20 else (0.75 if len(plist_l) <= 28 else 0.50)
+                    sizes_l = [rate ** 2 * 10000 * scale_l for rate in rig_rates]
+                    cmap_l  = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR, "#FFFFFF"), (1.0, "#0056B3")])
+                    
+                    configs.append({
+                        "filename"          : "List.png",
+                        "title"             : "List Statistics",
+                        "plist"             : plist_l,
+                        "x_vals"            : x_vals_l,
+                        "y_vals"            : y_vals_l,
+                        "sizes"             : sizes_l,
+                        "colors"            : grid_grs,
+                        "cmap"              : cmap_l,
+                        "vmin"              : 0.0,
+                        "vmax"              : 1.0,
+                        "cbar_label"        : "Rig GR",
+                        "cbar_ticks"        : [0.0, 0.5, RIG_GR, 1.0],
+                        "cbar_ticklabels"   : ['0', '50', f'{int(RIG_GR * 100)}', '100']
+                    })
 
-        plist   = list(plist)
-        x_vals  = list(x_vals)
-        y_vals  = list(y_vals)
+        plist_g = [n for n in self.s_part if self.c_counts[n] > 0]
 
-        rig_rates   = [self.p_rigs      [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist]
-        grid_grs    = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist]
+        if plist_g:
+            x_vals_g    = [self.p_overs_sum[name] / self.c_counts[name] for name in plist_g]
+            y_vals_g    = [np.median(self.p_c_vint[name]) if self.p_c_vint[name] else np.nan for name in plist_g]
+            valid_g     = [(p, x, y) for p, x, y in zip(plist_g, x_vals_g, y_vals_g) if not np.isnan(y)]
+            
+            if valid_g:
+                plist_g, x_vals_g, y_vals_g = zip(*valid_g)
+                plist_g, x_vals_g, y_vals_g = list(plist_g), list(x_vals_g), list(y_vals_g)
+                
+                gr_vals     = [self.c_counts            [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist_g]
+                uf_rates    = [self.p_usefulness_sum    [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist_g]
 
-        fig, ax = plt.subplots(figsize = (10, 10))
-        cmap    = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR, "#FFFFFF"), (1.0, "#0056B3")])
-        scale   = 1.00 if len(plist) <= 20 else (0.75 if len(plist) <= 28 else 0.50)
-        sizes   = [rate ** 2 * 10000 * scale for rate in rig_rates]
-        sc      = ax.scatter(x_vals, y_vals, s = sizes, c = grid_grs, cmap = cmap, vmin = 0.0, vmax = 1.0, edgecolors = 'black', alpha = 0.95, zorder = 3)
+                scale_g = 1.00 if len(plist_g) <= 20 else (0.75 if len(plist_g) <= 28 else 0.50)
+                sizes_g = [rate ** 2 * 25000 * scale_g for rate in uf_rates]
+                cmap_g  = mc.LinearSegmentedColormap.from_list("guess_gr_cmap", [(0.0, "#D95400"), (GEN_GR * 2, "#FFFFFF"), (1.0, "#0056B3")])
+                
+                configs.append({
+                    "filename"          : "Guess.png",
+                    "title"             : "Guess Statistics",
+                    "plist"             : plist_g,
+                    "x_vals"            : x_vals_g,
+                    "y_vals"            : y_vals_g,
+                    "sizes"             : sizes_g,
+                    "colors"            : gr_vals,
+                    "cmap"              : cmap_g,
+                    "vmin"              : 0.0,
+                    "vmax"              : 0.5,
+                    "cbar_label"        : "Guess Rate",
+                    "cbar_ticks"        : [0.0, GEN_GR, 0.50],
+                    "cbar_ticklabels"   : ['0', f'{int(RIG_GR * 100)}', '50']
+                })
 
-        points          = np.column_stack((x_vals, y_vals))
-        x_range         = max(x_vals) - min(x_vals) if max(x_vals) != min(x_vals) else 1
-        y_range         = max(y_vals) - min(y_vals) if max(y_vals) != min(y_vals) else 1
-        norm_points     = np.column_stack((points[:, 0] / x_range, points[:, 1] / y_range))
-        center_of_mass  = np.median(norm_points, axis = 0)
-        distances       = np.linalg.norm(norm_points - center_of_mass, axis = 1)
-        pack_mask       = distances < np.percentile(distances, 90)
-        pack_points     = points[pack_mask]
+        if not configs: return
 
-        if len(pack_points) >= 3:
-            try:
-                hull        = ConvexHull(pack_points)
-                hull_points = pack_points[hull.vertices]
-                hull_points = np.vstack([hull_points, hull_points[0]])
+        all_x, all_y = [], []
 
-                ax.plot(hull_points[:, 0], hull_points[:, 1], color = 'black', zorder = 1, linewidth = 0.5, linestyle = '-')
+        for cfg in configs:
+            all_x.extend(cfg["x_vals"])
+            all_y.extend(cfg["y_vals"])
 
-            except Exception: pass
+        if not all_x or not all_y: return
 
-        x_min = math.floor  ((min   (x_vals) - 0.50) * 2) / 2
-        x_max = math.ceil   ((max   (x_vals) + 0.50) * 2) / 2
-        y_min = math.floor  (min    (y_vals) - 1.00)
-        y_max = math.ceil   (max    (y_vals) + 1.00)
+        x_min = math.floor  ((min   (all_x) - 0.5) * 2) / 2
+        x_max = math.ceil   ((max   (all_x) + 0.5) * 2) / 2
+        y_min = math.floor  (min    (all_y) - 1.0)
+        y_max = math.ceil   (max    (all_y) + 1.0)
 
         while True:
             r = y_max - y_min
@@ -1015,73 +1056,114 @@ class TourAnalyzer:
             if r % 2 != 0 or y_max >= 2026  : y_min -= 1
             else                            : y_max += 1
 
-        ax.set_xlim     (x_min, x_max)
-        ax.set_ylim     (y_min, y_max)
-        ax.set_xticks   (np.arange  (x_min, x_max + 0.5,    0.5))
-        ax.set_yticks   (range      (y_min, y_max + 1,      step))
+        x_center = (x_min + x_max) / 2
+        y_center = (y_min + y_max) / 2
 
-        x_center    = (x_min + x_max) / 2
-        y_center    = (y_min + y_max) / 2
-        texts       = []
+        for cfg in configs:
+            fig, ax = plt.subplots(figsize = (10, 10))
+            sc      = ax.scatter(
+                cfg["x_vals"], cfg["y_vals"],
+                s           = cfg["sizes"],
+                c           = cfg["colors"], 
+                cmap        = cfg["cmap"],
+                vmin        = cfg["vmin"],
+                vmax        = cfg["vmax"], 
+                edgecolors  = 'black',
+                alpha       = 0.95,
+                zorder      = 3
+            )
 
-        for name, x, y in zip(plist, x_vals, y_vals):
-            label = self._get_player_acronym(name)
-            if not label: continue
+            points          = np.column_stack((cfg["x_vals"], cfg["y_vals"]))
+            x_range         = max(cfg["x_vals"]) - min(cfg["x_vals"]) if max(cfg["x_vals"]) != min(cfg["x_vals"]) else 1
+            y_range         = max(cfg["y_vals"]) - min(cfg["y_vals"]) if max(cfg["y_vals"]) != min(cfg["y_vals"]) else 1
+            norm_points     = np.column_stack((points[:, 0] / x_range, points[:, 1] / y_range))
+            center_of_mass  = np.median(norm_points, axis=0)
+            distances       = np.linalg.norm(norm_points - center_of_mass, axis = 1)
+            pack_mask       = distances < np.percentile(distances, 90)
+            pack_points     = points[pack_mask]
 
-            ha_align    = "left"   if x >= x_center else "right"
-            va_align    = "bottom" if y >= y_center else "top"
-            t           = ax.text(x, y, label, fontsize = 10, fontname = "Segoe UI", ha = ha_align, va = va_align)
+            if len(pack_points) >= 3:
+                try:
+                    hull        = ConvexHull(pack_points)
+                    hull_points = pack_points[hull.vertices]
+                    hull_points = np.vstack([hull_points, hull_points[0]])
 
-            texts.append(t)
+                    ax.plot(hull_points[:, 0], hull_points[:, 1], color = 'black', zorder = 1, linewidth = 0.5, linestyle = '-')
 
-        if texts: adjust_text(
-            texts, 
-            ax                      = ax, 
-            objects                 = sc, 
-            avoid_self              = True, 
-            add_objects_to_edges    = True, 
-            force_text              = (1.00, 1.00), 
-            force_objects           = (1.00, 1.00), 
-            expand                  = (2.00, 2.00), 
-            arrowprops              = dict(arrowstyle = "-", color = 'black', shrinkA = 10)
-        )
+                except Exception: pass
 
-        ax          .set_title              ("List Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad      = 12.5)
-        ax          .set_xlabel             ("Average Over-8",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad = 2.5)
-        ax          .set_ylabel             ("Median Vintage",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad = 2.5)
-        ax.yaxis    .set_major_formatter    (plt.FuncFormatter(lambda val, _: str(int(val))))
-        plt         .setp                   (ax.get_yticklabels(), horizontalalignment = 'center', verticalalignment = 'center')
-        ax          .tick_params            (axis = 'x', which = 'both', length = 0, pad = 5)
-        ax          .tick_params            (axis = 'y', which = 'both', length = 0, pad = 15)
+            ax.set_xlim(x_min, x_max)
+            ax.set_ylim(y_min, y_max)
 
-        cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = [0.0, 0.5, RIG_GR, 1.0])
-        cbar        .set_label          ("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -5)
-        cbar.ax     .set_yticklabels    (['0', '50', f'{int(RIG_GR * 100)}', '100'])
-        cbar.ax     .tick_params        (labelsize = 10, length = 0)
+            ax.set_xticks(np.arange (x_min, x_max + 0.5,    0.5))
+            ax.set_yticks(range     (y_min, y_max + 1,      step))
 
-        ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "left",    weight = "bold", alpha = 0.75)
-        ax.text(0.99, 0.99, "New\nEasy", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "right",   weight = "bold", alpha = 0.75)
-        ax.text(0.01, 0.01, "Old\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "bottom",    ha = "left",    weight = "bold", alpha = 0.75)
-        ax.text(0.99, 0.01, "Old\nEasy", transform = ax.transAxes, color = "grey", fontsize = 10, va = "bottom",    ha = "right",   weight = "bold", alpha = 0.75)
+            texts = []
 
-        ax  .grid           (False)
-        plt .tight_layout   ()
-        plt .savefig        (path / "List.png", dpi = 500)
-        plt .close          (fig)
+            for name, x, y in zip(cfg["plist"], cfg["x_vals"], cfg["y_vals"]):
+                label = self._get_player_acronym(name)
+                if not label: continue
 
-        try:
-            with Image.open(path / "List.png") as img:
-                img     = img.convert("RGB")
-                bg      = Image.new(img.mode, img.size, "white")
-                diff    = ImageChops.difference(img, bg)
-                bbox    = diff.getbbox()
+                ha_align = "left"   if x >= x_center else "right"
+                va_align = "bottom" if y >= y_center else "top"
 
-                if bbox:
-                    img = img.crop(bbox)
-                    img = ImageOps.expand(img, border = 30, fill = "white")
-                    img.save(path / "List.png", compress_level = 9, optimize = True)
+                texts.append(ax.text(x, y, label, fontsize = 10, fontname = "Segoe UI", ha = ha_align, va = va_align))
 
-        except: pass
+            if texts:
+                adjust_text(
+                    texts,
+                    ax                      = ax,
+                    objects                 = sc,
+                    avoid_self              = True,
+                    add_objects_to_edges    = True,
+                    force_text              = (1.00, 1.00),
+                    force_objects           = (1.00, 1.00),
+                    expand                  = (2.00, 2.00),
+                    arrowprops              = dict(arrowstyle="-", color='black', shrinkA=10)
+                )
+
+            ax.set_title    (cfg["title"],      weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
+            ax.set_xlabel   ("Average Over-8",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
+            ax.set_ylabel   ("Median Vintage",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
+
+            ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
+            plt.setp(ax.get_yticklabels(), horizontalalignment = 'center', verticalalignment = 'center')
+
+            ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
+            ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 15)
+
+            cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = cfg["cbar_ticks"])
+            cbar.set_label(cfg["cbar_label"], weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -5)
+
+            cbar.ax.set_yticklabels(cfg["cbar_ticklabels"])
+            cbar.ax.tick_params(labelsize = 10, length = 0)
+
+            ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "left",    weight = "bold", alpha = 0.75)
+            ax.text(0.99, 0.99, "New\nEasy", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "right",   weight = "bold", alpha = 0.75)
+            ax.text(0.01, 0.01, "Old\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "bottom",    ha = "left",    weight = "bold", alpha = 0.75)
+            ax.text(0.99, 0.01, "Old\nEasy", transform = ax.transAxes, color = "grey", fontsize = 10, va = "bottom",    ha = "right",   weight = "bold", alpha = 0.75)
+
+            ax.grid(False)
+
+            plt.tight_layout    ()
+            plt.savefig         (path / cfg["filename"], dpi = 500)
+            plt.close           (fig)
+
+            try:
+                with Image.open(path / cfg["filename"]) as img:
+
+                    img     = img           .convert    ("RGB")
+                    bg      = Image         .new        (img.mode, img.size, "white")
+                    diff    = ImageChops    .difference (img, bg)
+                    bbox    = diff          .getbbox    ()
+
+                    if bbox:
+                        img = img.crop(bbox)
+                        img = ImageOps.expand(img, border = 30, fill = "white")
+
+                        img.save(path / cfg["filename"], compress_level = 9, optimize = True)
+
+            except Exception: pass
 
     def _create_chanting_png(self, path):
         plist = [n for n in self.s_part if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
