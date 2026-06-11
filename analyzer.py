@@ -1150,21 +1150,8 @@ class TourAnalyzer:
             plt.savefig         (path / cfg["filename"], dpi = 500)
             plt.close           (fig)
 
-            try:
-                with Image.open(path / cfg["filename"]) as img:
-
-                    img     = img           .convert    ("RGB")
-                    bg      = Image         .new        (img.mode, img.size, "white")
-                    diff    = ImageChops    .difference (img, bg)
-                    bbox    = diff          .getbbox    ()
-
-                    if bbox:
-                        img = img.crop(bbox)
-                        img = ImageOps.expand(img, border = 30, fill = "white")
-
-                        img.save(path / cfg["filename"], compress_level = 9, optimize = True)
-
-            except Exception: pass
+            try     : trim_whitespace(path / cfg["filename"])
+            except  : pass
 
     def _create_list_guess_png(self, path):
         plist               = []
@@ -1304,19 +1291,8 @@ class TourAnalyzer:
         plt.savefig         (path / "List-Guess.png", dpi = 500)
         plt.close           (fig)
 
-        try:
-            with Image.open(path / "List-Guess.png") as img:
-                img     = img           .convert    ("RGB")
-                bg      = Image         .new        (img.mode, img.size, "white")
-                diff    = ImageChops    .difference (img, bg)
-                bbox    = diff          .getbbox    ()
-
-                if bbox:
-                    img = img.crop(bbox)
-                    img = ImageOps.expand(img, border = 30, fill = "white")
-                    img.save(path / "List-Guess.png", compress_level = 9, optimize = True)
-
-        except Exception: pass
+        try     : trim_whitespace(path / "List-Guess.png")
+        except  : pass
 
     def _create_chanting_png(self, path):
         plist = [n for n in self.s_part if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
@@ -1516,23 +1492,22 @@ class TourAnalyzer:
         except  : pass
 
     def _fuse_and_clean(self, path):
-        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "List": "List.png", "Guess": "Guess.png"}
+        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Guess": "Guess.png", "List-Guess": "List-Guess.png"}
         ps      = {k: path / v for k, v in f.items() if (path / v).exists()}
         imgs    = {k: Image.open(v) for k, v in ps.items()}
 
         if "Tour" not in imgs:
             for k, p in ps.items():
-                if k not in ["List", "Guess"]:
+                if k not in ["List", "Guess", "List-Guess"]:
                     try     : os.remove(p)
                     except  : pass
 
             return
 
-        img_tour    = imgs["Tour"]
+        img_tour    = imgs.get("Tour")
         img_team    = imgs.get("Team")
         img_tier    = imgs.get("Tier")
-        img_list    = imgs.get("List")
-        img_guess   = imgs.get("Guess")
+        img_right   = imgs.get("List-Guess") or imgs.get("Guess")
 
         col1_w = img_tour.width
         col1_h = img_tour.height
@@ -1541,19 +1516,9 @@ class TourAnalyzer:
             col1_w = max(col1_w, img_team.width)
             col1_h += 10 + img_team.height
 
-        block1_h = col1_h
-
-        if img_guess:
-            guess_aspect        = img_guess.width / img_guess.height
-            guess_w_scaled      = int(block1_h * guess_aspect)
-            img_guess_scaled    = img_guess.resize((guess_w_scaled, block1_h), Image.Resampling.LANCZOS)
-            tour_x_offset       = guess_w_scaled + 10
-
-        else:
-            img_guess_scaled    = None
-            tour_x_offset       = 0
-
-        block1_w = tour_x_offset + col1_w
+        block1_h        = col1_h
+        tour_x_offset   = 0
+        block1_w        = col1_w
 
         if img_tier:
             tier_aspect     = img_tier.width / img_tier.height
@@ -1566,25 +1531,24 @@ class TourAnalyzer:
             img_tier_scaled = None
             tier_x_offset   = block1_w
 
-        if img_list:
-            list_aspect     = img_list.width / img_list.height
-            list_w_scaled   = int(block1_h * list_aspect)
-            img_list_scaled = img_list.resize((list_w_scaled, block1_h), Image.Resampling.LANCZOS)
-            extra_w         = block1_w + 10 + img_list_scaled.width
+        if img_right:
+            right_aspect        = img_right.width / img_right.height
+            right_w_scaled      = int(block1_h * right_aspect)
+            img_right_scaled    = img_right.resize((right_w_scaled, block1_h), Image.Resampling.LANCZOS)
+            extra_w             = block1_w + 10 + img_right_scaled.width
 
         else:
-            img_list_scaled = None
-            extra_w         = block1_w
+            img_right_scaled    = None
+            extra_w             = block1_w
 
         extra_h     = block1_h
         extra_img   = Image.new("RGB", (extra_w, extra_h), "white")
 
-        if img_guess_scaled: extra_img.paste(img_guess_scaled, (0, 0))
         extra_img.paste(img_tour, (tour_x_offset, 0))
 
-        if img_team         : extra_img.paste(img_team,         (tour_x_offset, img_tour.height + 10))
-        if img_tier_scaled  : extra_img.paste(img_tier_scaled,  (tier_x_offset, 0))
-        if img_list_scaled  : extra_img.paste(img_list_scaled,  (block1_w + 10, 0))
+        if img_team         : extra_img.paste(img_team,             (tour_x_offset, img_tour.height + 10))
+        if img_tier_scaled  : extra_img.paste(img_tier_scaled,      (tier_x_offset, 0))
+        if img_right_scaled : extra_img.paste(img_right_scaled,     (block1_w + 10, 0))
 
         extra_out_p = path / "Extra.png"
         extra_img.save(extra_out_p, compress_level = 9, optimize = True)
