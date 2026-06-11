@@ -171,10 +171,12 @@ class JSONEditor(tk.Tk):
 
         if "songs" in self.data:
             for song in self.data["songs"]:
-                for player in song.get("correctGuessPlayers", []): self.all_players.add(player)
+                for player in song.get("correctGuessPlayers", []): 
+                    if      isinstance(player, dict) and "name" in player   : self.all_players.add(player["name"])
+                    elif    isinstance(player, str)                         : self.all_players.add(player)
 
                 for state in song.get("listStates", []):
-                    if "name" in state: self.all_players.add(state["name"])
+                    if isinstance(state, dict) and "name" in state: self.all_players.add(state["name"])
 
     def create_widgets(self):
         main_frame = ttk.Frame(self, padding = 20)
@@ -286,7 +288,13 @@ class JSONEditor(tk.Tk):
         elif    song_type == 2  : self.lbl_type.configure(text = f"Ending {type_num}")
         else                    : self.lbl_type.configure(text = "Insert")
 
-        correct_guessers    = set(target_song.get("correctGuessPlayers", []))
+        correct_guess_raw   = target_song.get("correctGuessPlayers", [])
+        correct_guessers    = set()
+
+        for p in correct_guess_raw:
+            if      isinstance(p, dict) and "name" in p : correct_guessers.add(p["name"])
+            elif    isinstance(p, str)                  : correct_guessers.add(p)
+
         list_state_players  = set(state["name"] for state in target_song.get("listStates", []) if "name" in state)
 
         self.player_vars    .clear()
