@@ -596,7 +596,7 @@ class TourAnalyzer:
 
         self._create_scatter_png(out_path)
         if watched_valid: self._create_list_guess_png(out_path)
-        self._fuse_and_clean(out_path)
+        self._fuse(out_path)
 
     def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup, val_str):
         rows, eligibility   = [], []
@@ -1491,7 +1491,7 @@ class TourAnalyzer:
         try     : trim_whitespace(path / fname)
         except  : pass
 
-    def _fuse_and_clean(self, path):
+    def _fuse(self, path):
         f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Guess": "Guess.png", "List-Guess": "List-Guess.png"}
         ps      = {k: path / v for k, v in f.items() if (path / v).exists()}
         imgs    = {k: Image.open(v) for k, v in ps.items()}
