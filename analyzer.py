@@ -1,12 +1,13 @@
 import json, math, matplotlib, os, re
 matplotlib.use('Agg')
 
-import concurrent.futures   as fut
-import matplotlib.pyplot    as plt
-import matplotlib.colors    as mc
-import matplotlib.ticker    as mt
-import numpy                as np
-import pandas               as pd
+import concurrent.futures       as fut
+import matplotlib.colors        as mc
+import matplotlib.patheffects   as mpe
+import matplotlib.pyplot        as plt
+import matplotlib.ticker        as mt
+import numpy                    as np
+import pandas                   as pd
 
 from adjustText     import adjust_text
 from collections    import Counter, defaultdict
@@ -60,6 +61,7 @@ class TourAnalyzer:
         self.global_stats               = Counter()
         self.all_diff, self.all_vint    = [], []
         self.song_history               = []
+        self.song_data                  = []
         self.chanting_ids               = set()
         self.subbed_players_set         = set()
         self.tour_label                 = ""
@@ -219,10 +221,16 @@ class TourAnalyzer:
                 self.global_stats["tot_c"]  +=  len(correct)
                 yr                          =   extract_year(si.get("vintage"))
 
-                if yr is not None                                       : self.all_vint.append(yr)
-                if isinstance(si.get("animeDifficulty"), (int, float))  : self.all_diff.append(si.get("animeDifficulty"))
-                if not ls                                               : missing_list_count += 1
+                self.all_vint.append(yr)
+                self.all_diff.append(si.get("animeDifficulty"))
 
+                self.song_data.append({
+                    "vintage"       : yr,
+                    "difficulty"    : si.get("animeDifficulty"),
+                    "correct_count" : len(correct)
+                })
+
+                if not ls: missing_list_count += 1
                 seen_song_times = set()
 
                 if isinstance(raw_correct, list):
@@ -597,6 +605,7 @@ class TourAnalyzer:
         tasks.append((self._create_player_png,  (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup, val_str)))
         tasks.append((self._create_tour_png,    (use_teams, watched_valid, out_path)))
         tasks.append((self._create_scatter_png, (out_path, )))
+        tasks.append((self._create_song_png,    (out_path, )))
 
         if assignments:
             tasks.append((self._create_tier_png, (assignments, out_path, has_chanting_songs)))
@@ -1309,6 +1318,97 @@ class TourAnalyzer:
         plt.close           (fig)
 
         try     : trim_whitespace(path / "List-Guess.png")
+        except  : pass
+
+    def _create_song_png(self, path):
+        vintages    = [int(s["vintage"]) for s in self.song_data]
+        min_y_block = (min(vintages) // 10) * 10
+        max_y_block = (max(vintages) // 10) * 10
+        y_blocks    = list(range(min_y_block, max_y_block + 1, 10))
+
+        num_x = 10
+        num_y = len(y_blocks)
+
+        counts          = np.zeros((num_y, num_x), dtype = int)
+        over8_sums      = np.zeros((num_y, num_x), dtype = float)
+        y_block_to_idx  = {block: i for i, block in enumerate(y_blocks)}
+
+        for s in self.song_data:
+            yb      = (int(s["vintage"]) // 10) * 10
+            y_idx   = y_block_to_idx[yb]
+            x_idx   = min(int(s["difficulty"] // 10), 9)
+
+            counts[y_idx, x_idx] += 1
+            over8_sums[y_idx, x_idx] += s["correct_count"]
+
+        row_has_entries = np.any(counts > 0, axis = 1)
+        col_has_entries = np.any(counts > 0, axis = 0)
+
+        active_y_indices = np.where(row_has_entries)[0]
+        active_x_indices = np.where(col_has_entries)[0]
+
+        num_x_active = len(active_x_indices)
+        num_y_active = len(active_y_indices)
+
+        fig, ax     = plt.subplots(figsize = (10, 10))
+        cmap_song   = mc.LinearSegmentedColormap.from_list("song_cmap", [(0.0, COLOR_0), (0.25, COLOR_1), (0.5, COLOR_2), (1.0, COLOR_2)])
+
+        for y_new, y_idx in enumerate(active_y_indices):
+            for x_new, x_idx in enumerate(active_x_indices):
+                count = counts[y_idx, x_idx]
+
+                if count == 0: facecolor = 'white'
+
+                else:
+                    avg_over8 = over8_sums[y_idx, x_idx] / count
+                    facecolor = cmap_song(avg_over8 / 8.0)
+
+                rect = plt.Rectangle((x_new, y_new), 1, 1, facecolor = facecolor, edgecolor = 'none')
+                ax.add_patch(rect)
+
+                if count > 0: ax.text(
+                    x_new + 0.5, y_new + 0.5, str(count),
+                    ha          = 'center',
+                    va          = 'center',
+                    color       = 'white',
+                    weight      = 'bold',
+                    fontsize    = 50,
+                    fontname    = "Segoe UI"
+                )
+
+        ax.set_xlim(0, num_x_active)
+        ax.set_ylim(0, num_y_active)
+
+        ax.set_xticks(np.arange(num_x_active) + 0.5)
+        ax.set_yticks(np.arange(num_y_active) + 0.5)
+
+        ax.set_xticklabels([f"{i * 10} - {(i + 1) * 10}%"   for i in active_x_indices], fontname = "Segoe UI", fontsize = 10)
+        ax.set_yticklabels([f"{y_blocks[j]}s"               for j in active_y_indices], fontname = "Segoe UI", fontsize = 10, rotation = 90)
+
+        ax.set_title    ("Song Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
+        ax.set_xlabel   ("Song Difficulty", weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 5)
+        ax.set_ylabel   ("Vintage",         weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 5)
+
+        ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
+        ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 5)
+
+        ax.grid(False)
+        norm = mc.Normalize(vmin = 0.0, vmax = 8.0)
+
+        sm = plt.cm.ScalarMappable(cmap = cmap_song, norm = norm)
+        sm.set_array([])
+
+        cbar = fig.colorbar(sm, ax = ax, pad = 0.01, aspect = 40, ticks = [0.0, 2.0, 4.0, 8.0])
+        cbar.set_label("Average Over-8", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = 5)
+
+        cbar.ax.set_yticklabels(['0', '2', '4', '8'])
+        cbar.ax.tick_params(labelsize = 10, length = 0)
+
+        plt.tight_layout    ()
+        plt.savefig         (path / "Song.png", dpi = 500)
+        plt.close           (fig)
+
+        try     : trim_whitespace(path / "Song.png")
         except  : pass
 
     def _create_chanting_png(self, path):
