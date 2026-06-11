@@ -682,7 +682,7 @@ class TourAnalyzer:
             avg_over8 = self.p_overs_sum[name] / cor if cor else np.nan
             row.update({"GR": cor / tot if tot else 0})
             if use_teams: row.update({"UF": (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0})
-            row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name], "Average Over-8": avg_over8})
+            row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name], "Mean Over-8": avg_over8})
             if use_teams: row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
 
             for tid in active:
@@ -714,12 +714,12 @@ class TourAnalyzer:
         mask    = pd.Series(eligibility, index = pd.DataFrame(rows).index).reindex(df.index).values
         pcts    = ["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"]
 
-        if "Elo"            in df.columns: df["Elo"]            = pd.to_numeric(df["Elo"],              errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "UF"             in df.columns: df["UF"]             = pd.to_numeric(df["UF"],               errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Median Time"    in df.columns: df["Median Time"]    = pd.to_numeric(df["Median Time"],      errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Average Over-8" in df.columns: df["Average Over-8"] = pd.to_numeric(df["Average Over-8"],   errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Rig Over-8"     in df.columns: df["Rig Over-8"]     = pd.to_numeric(df["Rig Over-8"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Over-8 Delta"   in df.columns: df["Over-8 Delta"]   = pd.to_numeric(df["Over-8 Delta"],     errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Elo"            in df.columns: df["Elo"]            = pd.to_numeric(df["Elo"],          errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "UF"             in df.columns: df["UF"]             = pd.to_numeric(df["UF"],           errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Median Time"    in df.columns: df["Median Time"]    = pd.to_numeric(df["Median Time"],  errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Mean Over-8"    in df.columns: df["Mean Over-8"]    = pd.to_numeric(df["Mean Over-8"],  errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Rig Over-8"     in df.columns: df["Rig Over-8"]     = pd.to_numeric(df["Rig Over-8"],   errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Over-8 Delta"   in df.columns: df["Over-8 Delta"]   = pd.to_numeric(df["Over-8 Delta"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
         for c in pcts: df[c] = pd.to_numeric(df[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         self._export_png(df, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask, val_str)
@@ -734,14 +734,14 @@ class TourAnalyzer:
             return f"{self._get_player_acronym(win)} ({val}{f', {gr:.2f}' if len(names) > 1 else ''})"
 
         stats = [
-            ["Median Vintage",      format_year(round(np.median(self.all_vint), 2))                         if self.all_vint    else "N/A"],
-            ["Average Difficulty",  f"{np.mean(self.all_diff):.2f}"                                         if self.all_diff    else "N/A"],
-            ["Average GR",          f"{100 * (self.global_stats['tot_c'] / sum(self.s_part.values())):.2f}" if self.s_part      else "0.00"],
-            ["Total 0/8s",          self.global_stats["blanks"]],
-            ["Total 1/8s",          self.global_stats["solos"]],
-            ["Total 2/8s",          self.global_stats["doubles"]],
-            ["Total 7/8s",          self.global_stats["sevens"]],
-            ["Total 8/8s",          self.global_stats["fulls"]]
+            ["Median Vintage",  format_year(round(np.median(self.all_vint), 2))                         if self.all_vint    else "N/A"],
+            ["Mean Difficulty", f"{np.mean(self.all_diff):.2f}"                                         if self.all_diff    else "N/A"],
+            ["Mean GR",         f"{100 * (self.global_stats['tot_c'] / sum(self.s_part.values())):.2f}" if self.s_part      else "0.00"],
+            ["Total 0/8s",      self.global_stats["blanks"]],
+            ["Total 1/8s",      self.global_stats["solos"]],
+            ["Total 2/8s",      self.global_stats["doubles"]],
+            ["Total 7/8s",      self.global_stats["sevens"]],
+            ["Total 8/8s",      self.global_stats["fulls"]]
         ]
 
         if use_teams: stats.append(["Total 4-0s", self.global_stats["sweeps"]])
@@ -817,15 +817,15 @@ class TourAnalyzer:
             res.append({
                 "T1"                : t_lbl,
                 "Median Vintage"    : format_year(np.median(self.t_vint[tid])),
-                "Average GR"        : f"{np.mean(self.t_c_ps    [tid]) * 100:.2f}",
+                "Mean GR"           : f"{np.mean(self.t_c_ps    [tid]) * 100:.2f}",
                 "Rig Synergy"       : f"{np.mean(self.t_on_syn  [tid]) * 100:.2f}",
                 "Off Synergy"       : f"{np.mean(self.t_off_syn [tid]) * 100:.2f}",
                 "Shared Rigs"       : f"{np.mean(self.t_sh_rig  [tid]) * 100:.2f}",
-                "Average Over-8"    : f"{avg_o:.2f}" if not np.isnan(avg_o) else "N/A",
+                "Mean Over-8"       : f"{avg_o:.2f}" if not np.isnan(avg_o) else "N/A",
                 "Total 1/8s"        : self.t_solos[tid],
             })
 
-        self._export_png(pd.DataFrame(res).sort_values("Average GR", ascending = False), path, "Team.png", "Team Statistics")
+        self._export_png(pd.DataFrame(res).sort_values("Mean GR", ascending = False), path, "Team.png", "Team Statistics")
 
     def _create_tier_png(self, assigns, path, has_chanting_songs):
         categories = ["Generalist", "Attacker", "Blocker", "Contributor", "Speedster"]
@@ -922,7 +922,7 @@ class TourAnalyzer:
                 ax.xaxis.set_major_locator(mt.MultipleLocator(4))
 
             else:
-                factor  = 10 if cat == "Generalist" else 5
+                factor  = 10 if cat in ["Generalist", "Contributor"] else 5
                 max_v   = max([item["value"] for item in items]) + 1 if items else factor
                 xmax    = min(math.ceil(max_v / factor) * factor, 100)
 
@@ -1160,7 +1160,7 @@ class TourAnalyzer:
                 )
 
             ax.set_title    (cfg["title"],      weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
-            ax.set_xlabel   ("Average Over-8",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
+            ax.set_xlabel   ("Mean Over-8",     weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
             ax.set_ylabel   ("Median Vintage",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
 
             ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
@@ -1298,7 +1298,7 @@ class TourAnalyzer:
             )
 
         ax.set_title    ("List → Guess Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
-        ax.set_xlabel   ("Average Over-8",          weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
+        ax.set_xlabel   ("Mean Over-8",             weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
         ax.set_ylabel   ("Median Vintage",          weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
 
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
@@ -1331,40 +1331,38 @@ class TourAnalyzer:
         except  : pass
 
     def _create_song_png(self, path):
-        vintages    = [int(s["vintage"]) for s in self.song_data]
-        min_y_block = (min(vintages) // 10) * 10
-        max_y_block = (max(vintages) // 10) * 10
-        y_blocks    = list(range(min_y_block, max_y_block + 1, 10))
+        num_x = 5
+        num_y = 5
 
-        num_x = 10
-        num_y = len(y_blocks)
-
-        counts          = np.zeros((num_y, num_x), dtype = int)
-        over8_sums      = np.zeros((num_y, num_x), dtype = float)
-        y_block_to_idx  = {block: i for i, block in enumerate(y_blocks)}
+        counts      = np.zeros((num_y, num_x), dtype = int)
+        over8_sums  = np.zeros((num_y, num_x), dtype = float)
 
         for s in self.song_data:
-            yb      = (int(s["vintage"]) // 10) * 10
-            y_idx   = y_block_to_idx[yb]
-            x_idx   = min(int(s["difficulty"] // 10), 9)
+            vint = int(s["vintage"])
+            if vint == 0: continue
 
-            counts[y_idx, x_idx] += 1
-            over8_sums[y_idx, x_idx] += s["correct_count"]
+            diff = s["difficulty"]
 
-        row_has_entries = np.any(counts > 0, axis = 1)
-        col_has_entries = np.any(counts > 0, axis = 0)
+            if      diff < 10   : x_idx = 0
+            elif    diff < 20   : x_idx = 1
+            elif    diff < 30   : x_idx = 2
+            elif    diff < 40   : x_idx = 3
+            else                : x_idx = 4
 
-        active_y_indices = np.where(row_has_entries)[0]
-        active_x_indices = np.where(col_has_entries)[0]
+            if      vint < 1990: y_idx = 0
+            elif    vint < 2000 : y_idx = 1
+            elif    vint < 2010 : y_idx = 2
+            elif    vint < 2020 : y_idx = 3
+            else                : y_idx = 4
 
-        num_x_active = len(active_x_indices)
-        num_y_active = len(active_y_indices)
+            counts      [y_idx, x_idx] += 1
+            over8_sums  [y_idx, x_idx] += s["correct_count"]
 
         fig, ax     = plt.subplots(figsize = (10, 10))
-        cmap_song   = mc.LinearSegmentedColormap.from_list("song_cmap", [(0.0, COLOR_0), (0.25, COLOR_1), (0.5, COLOR_2), (1.0, COLOR_2)])
+        cmap_song   = mc.LinearSegmentedColormap.from_list("song_cmap", [(0, COLOR_0), (0.25, COLOR_1), (0.75, COLOR_2), (1, COLOR_2)])
 
-        for y_new, y_idx in enumerate(active_y_indices):
-            for x_new, x_idx in enumerate(active_x_indices):
+        for y_idx in range(num_y):
+            for x_idx in range(num_x):
                 count = counts[y_idx, x_idx]
 
                 if count == 0: facecolor = 'white'
@@ -1373,11 +1371,11 @@ class TourAnalyzer:
                     avg_over8 = over8_sums[y_idx, x_idx] / count
                     facecolor = cmap_song(avg_over8 / 8.0)
 
-                rect = plt.Rectangle((x_new, y_new), 1, 1, facecolor = facecolor, edgecolor = 'none')
+                rect = plt.Rectangle((x_idx, y_idx), 1, 1, facecolor = facecolor, edgecolor = 'none')
                 ax.add_patch(rect)
 
                 if count > 0: ax.text(
-                    x_new + 0.5, y_new + 0.5, str(count),
+                    x_idx + 0.5, y_idx + 0.5, str(count),
                     ha          = 'center',
                     va          = 'center',
                     color       = 'white',
@@ -1386,14 +1384,14 @@ class TourAnalyzer:
                     fontname    = "Segoe UI"
                 )
 
-        ax.set_xlim(0, num_x_active)
-        ax.set_ylim(0, num_y_active)
+        ax.set_xlim(0, num_x)
+        ax.set_ylim(0, num_y)
 
-        ax.set_xticks(np.arange(num_x_active) + 0.5)
-        ax.set_yticks(np.arange(num_y_active) + 0.5)
+        ax.set_xticks(np.arange(num_x) + 0.5)
+        ax.set_yticks(np.arange(num_y) + 0.5)
 
-        ax.set_xticklabels([f"{i * 10} - {(i + 1) * 10}%"   for i in active_x_indices], fontname = "Segoe UI", fontsize = 10)
-        ax.set_yticklabels([f"{y_blocks[j]}s"               for j in active_y_indices], fontname = "Segoe UI", fontsize = 10, rotation = 90)
+        ax.set_xticklabels(["0 - 10%", "10 - 20%", "20 - 30%", "30 - 40%", ">40%"], fontname = "Segoe UI", fontsize = 10)
+        ax.set_yticklabels(["Pre-1990s", "1990s", "2000s", "2010s", "2020s"],       fontname = "Segoe UI", fontsize = 10, rotation = 90)
 
         ax.set_title    ("Song Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
         ax.set_xlabel   ("Song Difficulty", weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 5)
@@ -1408,10 +1406,10 @@ class TourAnalyzer:
         sm = plt.cm.ScalarMappable(cmap = cmap_song, norm = norm)
         sm.set_array([])
 
-        cbar = fig.colorbar(sm, ax = ax, pad = 0.01, aspect = 40, ticks = [0.0, 2.0, 4.0, 8.0])
-        cbar.set_label("Average Over-8", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = 5)
+        cbar = fig.colorbar(sm, ax = ax, pad = 0.01, aspect = 40, ticks = [0.0, 2.0, 6.0, 8.0])
+        cbar.set_label("Mean Over-8", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = 5)
 
-        cbar.ax.set_yticklabels(['0', '2', '4', '8'])
+        cbar.ax.set_yticklabels(['0', '2', '6', '8'])
         cbar.ax.tick_params(labelsize = 10, length = 0)
 
         plt.tight_layout    ()
@@ -1481,10 +1479,10 @@ class TourAnalyzer:
             "Elo",          "GR",           "UF",           "1/8s",         "2/8s",
             "Lives Taken",  "Lives Saved",  "OP GR",        "ED GR",        "IN GR",
             "Rigs",         "Rig Rate",     "Over-8 Delta", "Rig GR",       "Off GR",       "Rig Delta", 
-            "Chant GR",     "Average GR",   "Rig Synergy",  "Off Synergy",  "Shared Rigs",  "Total 1/8s"
+            "Chant GR",     "Mean GR",      "Rig Synergy",  "Off Synergy",  "Shared Rigs",  "Total 1/8s"
         ]
 
-        asc     = ["7/8s", "Median Time", "Average Over-8", "Rig Over-8"]
+        asc     = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
         rest    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]
         stats   = {}
 
@@ -1530,7 +1528,7 @@ class TourAnalyzer:
 
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
-        col_borders = {"Player", "Tier", "UF", "Average Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Statistic", "Value", "T1", "Median Vintage"}
+        col_borders = {"Player", "Tier", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Statistic", "Value", "T1", "Median Vintage"}
         th_cells    = []
 
         for c in df.columns:
