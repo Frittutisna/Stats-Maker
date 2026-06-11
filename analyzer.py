@@ -1,4 +1,7 @@
-import json, math, os, re
+import json, math, matplotlib, os, re
+matplotlib.use('Agg')
+
+import concurrent.futures   as fut
 import matplotlib.pyplot    as plt
 import matplotlib.colors    as mc
 import matplotlib.ticker    as mt
@@ -11,9 +14,11 @@ from help.config    import *
 from help.dialog    import *
 from html2image     import Html2Image
 from pathlib        import Path
-from PIL            import Image, ImageChops, ImageOps
+from PIL            import Image
 from scipy.spatial  import ConvexHull
 from tkinter        import messagebox
+
+def _nested_defaultdict(): return defaultdict(int)
 
 class TourAnalyzer:
     def __init__(self, tour_id):
@@ -28,8 +33,8 @@ class TourAnalyzer:
         self.p_two_e                    = defaultdict(int)
         self.p_pts                      = defaultdict(int)
         self.p_blks                     = defaultdict(int)
-        self.p_type_c                   = defaultdict(lambda: defaultdict(int))
-        self.p_type_s                   = defaultdict(lambda: defaultdict(int))
+        self.p_type_c                   = defaultdict(_nested_defaultdict)
+        self.p_type_s                   = defaultdict(_nested_defaultdict)
         self.p_rigs                     = defaultdict(int)
         self.p_rigs_h                   = defaultdict(int)
         self.p_l_vint                   = defaultdict(list)
@@ -585,17 +590,29 @@ class TourAnalyzer:
 
         prefix      = f"{tour_disp}, " 
         out_path    = self.tour_dir / DIR_OUT
+
         out_path.mkdir(parents = True, exist_ok = True)
+        tasks = []
 
-        self._create_player_png (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup, val_str)
-        self._create_tour_png   (use_teams, watched_valid, out_path)
+        tasks.append((self._create_player_png,  (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup, val_str)))
+        tasks.append((self._create_tour_png,    (use_teams, watched_valid, out_path)))
+        tasks.append((self._create_scatter_png, (out_path, )))
 
-        if watched_valid and assignments    : self._create_team_png     (assignments, t1_lookup, out_path)
-        if assignments                      : self._create_tier_png     (assignments, out_path, has_chanting_songs)
-        if watched_valid                    : self._create_scatter_png  (out_path, True)
+        if assignments:
+            tasks.append((self._create_tier_png, (assignments, out_path, has_chanting_songs)))
+            if watched_valid: tasks.append((self._create_team_png, (assignments, t1_lookup, out_path)))
 
-        self._create_scatter_png(out_path)
-        if watched_valid: self._create_list_guess_png(out_path)
+        if watched_valid:
+            tasks.append((self._create_scatter_png,     (out_path, True)))
+            tasks.append((self._create_list_guess_png,  (out_path, )))
+
+        with fut.ProcessPoolExecutor() as executor:
+            futures = [executor.submit(func, *args) for func, args in tasks]
+
+            for future in fut.as_completed(futures):
+                try                     : future.result()
+                except Exception as e   : print(f"Task failed: {e}")
+
         self._fuse(out_path)
 
     def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup, val_str):
@@ -1261,7 +1278,7 @@ class TourAnalyzer:
                 zorder          = 4,
             )
 
-        ax.set_title    ("List-Guess Statistics",   weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
+        ax.set_title    ("List → Guess Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
         ax.set_xlabel   ("Average Over-8",          weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
         ax.set_ylabel   ("Median Vintage",          weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
 
