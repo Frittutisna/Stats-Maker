@@ -1609,13 +1609,13 @@ class TourAnalyzer:
         except  : pass
 
     def _fuse(self, path):
-        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Guess": "Guess.png", "List-Guess": "List-Guess.png"}
+        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Guess": "Guess.png", "List-Guess": "List-Guess.png", "Song": "Song.png"}
         ps      = {k: path / v for k, v in f.items() if (path / v).exists()}
         imgs    = {k: Image.open(v) for k, v in ps.items()}
 
         if "Tour" not in imgs:
             for k, p in ps.items():
-                if k not in ["List", "Guess", "List-Guess"]:
+                if k not in ["List", "Guess", "List-Guess", "Song"]:
                     try     : os.remove(p)
                     except  : pass
 
@@ -1624,6 +1624,7 @@ class TourAnalyzer:
         img_tour    = imgs.get("Tour")
         img_team    = imgs.get("Team")
         img_tier    = imgs.get("Tier")
+        img_left    = imgs.get("Song")
         img_right   = imgs.get("List-Guess") or imgs.get("Guess")
 
         col1_w = img_tour.width
@@ -1633,9 +1634,19 @@ class TourAnalyzer:
             col1_w = max(col1_w, img_team.width)
             col1_h += 10 + img_team.height
 
-        block1_h        = col1_h
-        tour_x_offset   = 0
-        block1_w        = col1_w
+        block1_h = col1_h
+
+        if img_left:
+            left_aspect     = img_left.width / img_left.height
+            left_w_scaled   = int(block1_h * left_aspect)
+            img_left_scaled = img_left.resize((left_w_scaled, block1_h), Image.Resampling.LANCZOS)
+            tour_x_offset   = img_left_scaled.width + 10
+
+        else:
+            img_left_scaled = None
+            tour_x_offset   = 0
+
+        block1_w = tour_x_offset + col1_w
 
         if img_tier:
             tier_aspect     = img_tier.width / img_tier.height
@@ -1661,6 +1672,7 @@ class TourAnalyzer:
         extra_h     = block1_h
         extra_img   = Image.new("RGB", (extra_w, extra_h), "white")
 
+        if img_left_scaled: extra_img.paste(img_left_scaled, (0, 0))
         extra_img.paste(img_tour, (tour_x_offset, 0))
 
         if img_team         : extra_img.paste(img_team,             (tour_x_offset, img_tour.height + 10))
