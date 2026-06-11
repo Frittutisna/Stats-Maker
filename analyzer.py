@@ -976,7 +976,7 @@ class TourAnalyzer:
 
                     scale_l = 1.00 if len(plist_l) <= 20 else (0.75 if len(plist_l) <= 28 else 0.50)
                     sizes_l = [rate ** 2 * 10000 * scale_l for rate in rig_rates]
-                    cmap_l  = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#D95400"), (0.5, "#D95400"), (RIG_GR, "#FFFFFF"), (1.0, "#0056B3")])
+                    cmap_l  = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, COLOR_0), (0.5, COLOR_0), (GR_RIG, COLOR_1), (1.0, COLOR_2)])
                     
                     configs.append({
                         "filename"          : "List.png",
@@ -990,8 +990,8 @@ class TourAnalyzer:
                         "vmin"              : 0.0,
                         "vmax"              : 1.0,
                         "cbar_label"        : "Rig GR",
-                        "cbar_ticks"        : [0.0, 0.5, RIG_GR, 1.0],
-                        "cbar_ticklabels"   : ['0', '50', f'{int(RIG_GR * 100)}', '100']
+                        "cbar_ticks"        : [0.0, 0.5, GR_RIG, 1.0],
+                        "cbar_ticklabels"   : ['0', '50', f'{int(GR_RIG * 100)}', '100']
                     })
 
         plist_g = [n for n in self.s_part if self.c_counts[n] > 0]
@@ -1010,7 +1010,7 @@ class TourAnalyzer:
 
                 scale_g = 1.00 if len(plist_g) <= 20 else (0.75 if len(plist_g) <= 28 else 0.50)
                 sizes_g = [rate ** 2 * 25000 * scale_g for rate in uf_rates]
-                cmap_g  = mc.LinearSegmentedColormap.from_list("guess_gr_cmap", [(0.0, "#D95400"), (GEN_GR * 2, "#FFFFFF"), (1.0, "#0056B3")])
+                cmap_g  = mc.LinearSegmentedColormap.from_list("guess_gr_cmap", [(0.0, COLOR_0), (GR_GEN * 2, COLOR_1), (1.0, COLOR_2)])
                 
                 configs.append({
                     "filename"          : "Guess.png",
@@ -1024,8 +1024,8 @@ class TourAnalyzer:
                     "vmin"              : 0.0,
                     "vmax"              : 0.5,
                     "cbar_label"        : "Guess Rate",
-                    "cbar_ticks"        : [0.0, GEN_GR, 0.50],
-                    "cbar_ticklabels"   : ['0', f'{int(GEN_GR * 100)}', '50']
+                    "cbar_ticks"        : [0.0, GR_GEN, 0.50],
+                    "cbar_ticklabels"   : ['0', f'{int(GR_GEN * 100)}', '50']
                 })
 
         if not configs: return
@@ -1221,7 +1221,7 @@ class TourAnalyzer:
         ax.set_xticks(np.arange (x_min, x_max + 0.5,    0.5))
         ax.set_yticks(range     (y_min, y_max + 1,      step))
 
-        cmap_l  = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, "#A6611A"), (0.5, "#A6611A"), (RIG_GR, "#E7D4B8"), (1.0, "#018571")])
+        cmap_l  = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, COLOR_0), (0.5, COLOR_0), (GR_RIG, COLOR_1), (1.0, COLOR_2)])
         norm    = mc.Normalize(vmin = 0.0, vmax = 1.0)
 
         for name, xl, yl, xg, yg, gr, rig_gr in zip(plist, x_start, y_start, x_end, y_end, gr_vals, grid_grs):
@@ -1287,9 +1287,10 @@ class TourAnalyzer:
         sm = plt.cm.ScalarMappable(cmap = cmap_l, norm = norm)
         sm.set_array([])
 
-        cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0.0, 0.5, RIG_GR, 1.0])
+        cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0.0, 0.5, GR_RIG, 1.0])
         cbar.set_label("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -5)
-        cbar.ax.set_yticklabels(['0', '50', f'{int(RIG_GR * 100)}', '100'])
+
+        cbar.ax.set_yticklabels(['0', '50', f'{int(GR_RIG * 100)}', '100'])
         cbar.ax.tick_params(labelsize = 10, length = 0)
 
         ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "left",    weight = "bold", alpha = 0.75)
@@ -1452,12 +1453,12 @@ class TourAnalyzer:
                         elig            = True if mask is None or cname not in rest else mask[idx]
 
                         if cname in desc:
-                            if      is_max          : style.append("color: #0056B3; font-weight: bold;")
-                            elif    is_min and elig : style.append("color: #D95400; font-weight: bold;")
+                            if      is_max          : style.append(f"color: {COLOR_2}; font-weight: bold;")
+                            elif    is_min and elig : style.append(f"color: {COLOR_0}; font-weight: bold;")
 
                         elif cname in asc:
-                            if      is_max and elig : style.append("color: #D95400; font-weight: bold;")
-                            elif    is_min          : style.append("color: #0056B3; font-weight: bold;")
+                            if      is_max and elig : style.append(f"color: {COLOR_0}; font-weight: bold;")
+                            elif    is_min          : style.append(f"color: {COLOR_2}; font-weight: bold;")
 
                 s_attr  =   f' style="{" ".join(style)}"' if style else ""
                 cnt     =   f"<b>{cell}</b>" if cname in bold_columns else cell

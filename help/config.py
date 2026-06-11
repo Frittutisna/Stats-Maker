@@ -7,6 +7,9 @@ BROWSER_PATHS = [
     r"C:\Program Files\Google\Chrome\Application\chrome.exe",
 ]
 
+COLOR_0     = "#E05A47"
+COLOR_1     = "#7B1FA2"
+COLOR_2     = "#00897B"
 DIR_CREDS   = "cred"
 DIR_JSONS   = "json"
 DIR_OUT     = "hakohoka"
@@ -14,8 +17,8 @@ DIR_TOURS   = "tour"
 FILE_CHANT  = "chant.txt"
 FILE_CODES  = "code.txt"
 FILE_ALIAS  = "alias.txt"
-GEN_GR      = 0.40
-RIG_GR      = 0.85
+GR_GEN      = 0.40
+GR_RIG      = 0.85
 URL_ALIAS   = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
 
 EXCLUDED_TAGS = {
