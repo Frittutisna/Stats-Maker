@@ -1144,7 +1144,14 @@ class TourAnalyzer:
                 ha_align = "left"   if x >= x_center else "right"
                 va_align = "bottom" if y >= y_center else "top"
 
-                texts.append(ax.text(x, y, label, fontsize = 10, fontname = "Segoe UI", ha = ha_align, va = va_align))
+                texts.append(ax.text(
+                    x, y, label,
+                    size        = 15,
+                    weight      = "bold",
+                    fontname    = "Segoe UI",
+                    ha          = ha_align,
+                    va          = va_align
+                ))
 
             if texts:
                 adjust_text(
@@ -1287,7 +1294,7 @@ class TourAnalyzer:
 
             ax.text(
                 xm_shifted, ym_shifted, label,
-                fontsize        = 10,
+                fontsize        = 15,
                 fontname        = "Segoe UI",
                 weight          = "bold",
                 ha              = "center",
