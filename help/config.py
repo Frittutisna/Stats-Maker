@@ -7,9 +7,9 @@ BROWSER_PATHS = [
     r"C:\Program Files\Google\Chrome\Application\chrome.exe",
 ]
 
-COLOR_0     = "#E05A47"
-COLOR_1     = "#7B1FA2"
-COLOR_2     = "#00897B"
+COLOR_0     = "#D81B60"
+COLOR_1     = "#D97706"
+COLOR_2     = "#004D40"
 DIR_CREDS   = "cred"
 DIR_JSONS   = "json"
 DIR_OUT     = "hakohoka"

@@ -668,21 +668,7 @@ class TourAnalyzer:
                 if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
 
             row = {"Player": d_name}
-
-            if use_teams:
-                team_info = assigns.get(name.lower(), ("N/A", "N/A"))
-
-                if team_info[0] != "N/A":
-                    leader_name = t1_lookup.get(team_info[0], "")
-                    row["Team"] = self._get_team_acronym(leader_name, team_info[0])
-                    row["Tier"] = team_info[1]
-
-                else:
-                    row["Team"] = "N/A"
-                    row["Tier"] = "N/A"
-
-                row["Elo"] = elo_map.get(name.lower(), "N/A")
-
+            if use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
             avg_over8 = self.p_overs_sum[name] / cor if cor else np.nan
             row.update({"GR": cor / tot if tot else 0})
             if use_teams: row.update({"UF": (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0})
@@ -735,7 +721,7 @@ class TourAnalyzer:
             win = sorted(names, key = lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]
             gr  = (self.c_counts[win] / self.s_part[win]) * 100 if self.s_part[win] else 0
 
-            return f"{self._get_player_acronym(win)} ({val}{f', {gr:.2f}' if len(names) > 1 else ''})"
+            return f"{win} ({val}{f', {gr:.2f}' if len(names) > 1 else ''})"
 
         stats = [
             ["Median Vintage",  format_year(round(np.median(self.all_vint), 2))                         if self.all_vint    else "N/A"],
@@ -762,8 +748,8 @@ class TourAnalyzer:
         no_s    = sorted([n for n in plist if self.e_counts[n] ==   0 and self.s_part[n] > 0], key = lambda x: self.c_counts[x] / self.s_part[x], reverse = True)
         yes_s   = sorted([n for n in plist if self.e_counts[n] >    0 and self.s_part[n] > 0], key = lambda x: self.c_counts[x] / self.s_part[x])
 
-        if no_s     : stats.append(["Highest GR Without 1/8s",  f"{self._get_player_acronym(no_s[0])} ({100 * (self.c_counts[no_s[0]] / self.s_part[no_s[0]]):.2f})"])
-        if yes_s    : stats.append(["Lowest GR With 1/8s",      f"{self._get_player_acronym(yes_s[0])} ({100 * (self.c_counts[yes_s[0]] / self.s_part[yes_s[0]]):.2f}, {self.e_counts[yes_s[0]]})"])
+        if no_s     : stats.append(["Highest GR Without 1/8s",  f"{no_s     [0]} ({100 * (self.c_counts[no_s    [0]] / self.s_part[no_s     [0]]):.2f})"])
+        if yes_s    : stats.append(["Lowest GR With 1/8s",      f"{yes_s    [0]} ({100 * (self.c_counts[yes_s   [0]] / self.s_part[yes_s    [0]]):.2f}, {self.e_counts[yes_s[0]]})"])
 
         if watched:
             conv        = []
@@ -784,8 +770,8 @@ class TourAnalyzer:
                 b = sorted(conv, key = lambda x: x['score'], reverse = True)    [0]
                 w = sorted(conv, key = lambda x: x['score'])                    [0]
 
-                stats.append(["Best Solo Rig Converter",    f"{self._get_player_acronym(b['n'])} ({b['p']:.2f}, {b['h']}/{b['t']})"])
-                stats.append(["Worst Solo Rig Converter",   f"{self._get_player_acronym(w['n'])} ({w['p']:.2f}, {w['h']}/{w['t']})"])
+                stats.append(["Best Solo Rig Converter",    f"{b['n']} ({b['p']:.2f}, {b['h']}/{b['t']})"])
+                stats.append(["Worst Solo Rig Converter",   f"{w['n']} ({w['p']:.2f}, {w['h']}/{w['t']})"])
 
         if use_teams:
             half        = math.ceil(len(stats) / 2)
@@ -806,7 +792,7 @@ class TourAnalyzer:
 
         for tid in self.t_c_ps:
             leader_name = t1_lookup.get(tid, "")
-            t_lbl       = self._get_team_acronym(leader_name, tid)
+            t_lbl       = leader_name if leader_name else f"Team {tid}"
             t_overs     = []
 
             for original_name in self.s_part:
@@ -819,7 +805,7 @@ class TourAnalyzer:
             avg_o = np.mean(t_overs) if t_overs else np.nan
 
             res.append({
-                "T1"                : t_lbl,
+                "Team Leader"       : t_lbl,
                 "Median Vintage"    : format_year(np.median(self.t_vint[tid])),
                 "Mean GR"           : f"{np.mean(self.t_c_ps    [tid]) * 100:.2f}",
                 "Rig Synergy"       : f"{np.mean(self.t_on_syn  [tid]) * 100:.2f}",
@@ -1583,7 +1569,7 @@ class TourAnalyzer:
 
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
-        col_borders = {"Player", "Tier", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Statistic", "Value", "T1", "Median Vintage"}
+        col_borders = {"Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Statistic", "Value", "Team Leader", "Median Vintage"}
         th_cells    = []
 
         for c in df.columns:
@@ -1591,7 +1577,7 @@ class TourAnalyzer:
             th_cells.append(f"<th{s_th}>{str(c).replace(' ', '<br>')}</th>")
 
         html            = "<thead><tr>" + "".join(th_cells) + "</tr></thead><tbody>"
-        bold_columns    = {"Player", "Statistic", "T1"}
+        bold_columns    = {"Player", "Statistic", "Team Leader"}
 
         for idx, row in df.iterrows():
             b_s     =   "border-bottom: 3px solid black;" if idx in borders else ""
