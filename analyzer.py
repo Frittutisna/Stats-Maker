@@ -3,7 +3,6 @@ matplotlib.use('Agg')
 
 import concurrent.futures       as fut
 import matplotlib.colors        as mc
-import matplotlib.patheffects   as mpe
 import matplotlib.pyplot        as plt
 import matplotlib.ticker        as mt
 import numpy                    as np
@@ -42,7 +41,6 @@ class TourAnalyzer:
         self.p_c_vint                   = defaultdict(list)
         self.p_l_corr                   = defaultdict(list)
         self.p_m_erigs                  = defaultdict(int)
-        self.p_l_solos                  = defaultdict(list)
         self.p_l_solos                  = defaultdict(int)
         self.p_chan_c                   = defaultdict(int)
         self.p_chan_s                   = defaultdict(int)
@@ -123,7 +121,7 @@ class TourAnalyzer:
 
         return f"T{tid}"
 
-    def run(self):
+    def prepare_configuration(self):
         chanting_path = self.script_dir / DIR_TOURS / FILE_CHANT
 
         if chanting_path.exists():
@@ -136,21 +134,87 @@ class TourAnalyzer:
 
         if not json_dir.exists() or not any(json_dir.glob("*.json")):
             messagebox.showerror("Error", f"Folder not found or empty: {json_dir}")
-            return
+            return False
 
-        json_paths              = list(json_dir.glob("*.json"))
-        all_known, appearances  = self._scan_players    (json_paths)
+        self.json_paths         = list(json_dir.glob("*.json"))
+        all_known, self.apps    = self._scan_players(self.json_paths)
 
         self._generate_acronyms(all_known)
+        self.use_teams, self.elo_map, self.assignments, self.t1_lookup, self.rosters, all_known = self._load_team_data(all_known)
 
-        use_teams, elo_map, assignments, t1_lookup, rosters, all_known  = self._load_team_data  (all_known)
-        missing_list_count                                              = 0
-        tour_types                                                      = set()
+        self.missing_list_count = 0
+        self.tour_types         = set()
 
-        for path in json_paths:
+        for path in self.json_paths:
             with open(path, encoding = "utf-8") as f: data = json.load(f)
             songs = data.get("songs", [])
             if not songs: continue
+
+            for song in songs:
+                st = song.get("songInfo", {}).get("type")
+
+                if st in [1, 2, 3]                  : self.tour_types.add(st)
+                if not song.get("listStates", [])   : self.missing_list_count += 1
+
+        watched_valid       = self.missing_list_count <= 5
+        baseline_initial    = int(np.median([len(self.apps.get(name, [])) for name in all_known]))
+
+        if len(self.tour_types) == 1:
+            t_map       = {1: "OP", 2: "ED", 3: "IN"}
+            t_str       = t_map.get(list(self.tour_types)[0], "")
+            init_label  = f"Watched {t_str}" if watched_valid else f"Random {t_str}"
+
+        else: init_label = "Watched" if watched_valid else "Usual"
+
+        if "Eru" in init_label and self.use_teams: default_th = ""
+
+        else:
+            if      init_label == "Watched 2+8"                 : default_th = "25, 20, 15, 10, 5"
+            elif    init_label in ["Watched",   "QuagWatched"]  : default_th = "28, 18, 12, 6"
+            elif    init_label in ["Usual",     "Quagsual"]     : default_th = "28, 19, 8"
+            else                                                : default_th = "28, 19, 8"
+
+        meta_dialog     = TourMetadataDialog(None, self.tour_id, init_label, default_th, baseline_initial, list(all_known), self.elo_map)
+        meta_res        = meta_dialog.result if meta_dialog.result else {"tour_label": init_label, "th_str": "default", "base_exp": baseline_initial, "selected_new": []}
+        self.tour_label = meta_res["tour_label"]
+
+        if not self.tour_label: self.tour_label = init_label
+
+        self.val_str        = meta_res["th_str"]
+        self.base_exp       = meta_res["base_exp"]
+        self.new_players    = meta_res["selected_new"]
+        self.exp_map        = {}
+        mismatched_players  = {}
+
+        for name in list(all_known):
+            act = len(self.apps.get(name, []))
+
+            if act < self.base_exp  : mismatched_players[name]  = act
+            else                    : self.exp_map[name]        = self.base_exp
+
+        if mismatched_players:
+            mismatch_dialog = MismatchedRoundsDialog(None, mismatched_players, self.base_exp, self.subbed_players_set)
+            mismatch_res    = mismatch_dialog.result if mismatch_dialog.result else {k: self.base_exp for k in mismatched_players}
+
+            for name, target in mismatch_res.items():
+                act                 = len(self.apps.get(name, []))
+                self.exp_map[name]  = target
+
+                if target > act:
+                    avg_songs_per_json  = sum(len(self.apps.get(n, [])) for n in all_known) / len(all_known)
+                    missing_rounds      = target - act
+                    self.s_part[name]   += int(missing_rounds * avg_songs_per_json)
+
+        return True
+
+    def process_and_generate(self):
+        watched_valid = self.missing_list_count <= 5
+
+        for path in self.json_paths:
+            with open(path, encoding = "utf-8") as f: data = json.load(f)
+            songs = data.get("songs", [])
+            if not songs: continue
+
             raw_f_players = set()
 
             for s in songs:
@@ -163,11 +227,11 @@ class TourAnalyzer:
 
             final_members = set(raw_f_players)
 
-            if use_teams:
-                t_in_f = {assignments[p.lower()][0] for p in raw_f_players if p.lower() in assignments}
+            if self.use_teams:
+                t_in_f = {self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments}
 
                 for tid in t_in_f:
-                    ros     = rosters[tid]
+                    ros     = self.rosters[tid]
                     missing = [p for p in ros if p not in raw_f_players]
 
                     if len([p for p in ros if p in raw_f_players]) == 3 and missing:
@@ -175,13 +239,13 @@ class TourAnalyzer:
 
                         if res:
                             final_members.add(res)
-                            potential_subs = list(raw_f_players - rosters[tid])
+                            potential_subs = list(raw_f_players - self.rosters[tid])
 
                             for sub_candidate in potential_subs:
-                                if sub_candidate.lower() not in assignments: assignments[sub_candidate.lower()] = assignments[res.lower()]
+                                if sub_candidate.lower() not in self.assignments: self.assignments[sub_candidate.lower()] = self.assignments[res.lower()]
 
                 if len(final_members) < 8:
-                    for tid in t_in_f: final_members.update(rosters[tid])
+                    for tid in t_in_f: final_members.update(self.rosters[tid])
 
             apply_rev       = (len(final_members) % 2 == 0)
             max_s           = max(s.get("songNumber", 0) for s in songs)
@@ -189,10 +253,7 @@ class TourAnalyzer:
 
             for song in songs:
                 st = song.get("songInfo", {}).get("type")
-
-                if st in [1, 2, 3]: 
-                    f_type_totals[st] += 1
-                    tour_types.add(st)
+                if st in [1, 2, 3]: f_type_totals[st] += 1
 
             for name in final_members:
                 if name in raw_f_players:
@@ -238,7 +299,6 @@ class TourAnalyzer:
                     "correct_count" : int(len(correct))
                 })
 
-                if not ls: missing_list_count += 1
                 seen_song_times = set()
 
                 if isinstance(raw_correct, list):
@@ -277,18 +337,18 @@ class TourAnalyzer:
                     self.p_l_solos[u]   +=  1
                     if not (len(correct) == 1 and list(correct)[0] == u): self.p_m_erigs[u] += 1
 
-                if use_teams:
-                    t_list = list({assignments[p.lower()][0] for p in raw_f_players if p.lower() in assignments})
+                if self.use_teams:
+                    t_list = list({self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments})
 
                     if len(t_list) == 2:
                         tA, tB = t_list[0],             t_list[1]
-                        cA, cB = correct & rosters[tA], correct & rosters[tB]
+                        cA, cB = correct & self.rosters[tA], correct & self.rosters[tB]
 
                         if len(cA) == 4 and not cB: self.t_sweeps[tA] += 1; self.global_stats["sweeps"] += 1
                         if len(cB) == 4 and not cA: self.t_sweeps[tB] += 1; self.global_stats["sweeps"] += 1
 
                         for cur, opp in [(tA, tB), (tB, tA)]:
-                            cC, oC = correct & rosters[cur], correct & rosters[opp]
+                            cC, oC = correct & self.rosters[cur], correct & self.rosters[opp]
 
                             if not oC: 
                                 for p in cC: self.p_pts[p] += 1
@@ -296,7 +356,7 @@ class TourAnalyzer:
                             if len(cC) == 1 and len(oC) > 0: self.p_blks[list(cC)[0]] += 1
 
                     for tid in t_list:
-                        ros     = rosters[tid]
+                        ros     = self.rosters[tid]
                         c_on_t  = correct & ros
 
                         self.t_c_ps[tid].append(len(c_on_t) / 4.0)
@@ -323,8 +383,7 @@ class TourAnalyzer:
                     sw                          =   list(correct)[0]
                     self.e_counts[sw]           +=  1
 
-                    if sw.lower() in assignments:
-                        self.t_solos[assignments[sw.lower()][0]] += 1
+                    if sw.lower() in self.assignments: self.t_solos[self.assignments[sw.lower()][0]] += 1
 
                 elif len(correct) == 0: self.global_stats["blanks"] += 1
 
@@ -361,7 +420,67 @@ class TourAnalyzer:
 
                         self.p_l_corr[n].append(len(correct))
 
-        self._finalize_outputs(missing_list_count, appearances, use_teams, elo_map, assignments, t1_lookup, tour_types)
+        if "Eru" in self.tour_label and self.use_teams:
+            self.p_pts  .clear()
+            self.p_blks .clear()
+
+            for cor, raw_f_players in self.song_history:
+                t_list = list({self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments})
+
+                if len(t_list) == 2:
+                    tA, tB  = t_list[0], t_list[1]
+                    cA      = {self.assignments[p.lower()][1]: p for p in raw_f_players if p.lower() in self.assignments and self.assignments[p.lower()][0] == tA}
+                    cB      = {self.assignments[p.lower()][1]: p for p in raw_f_players if p.lower() in self.assignments and self.assignments[p.lower()][0] == tB}
+
+                    for tr in ["1", "2", "3", "4"]:
+                        pA, pB = cA.get(tr), cB.get(tr)
+
+                        if pA and pB:
+                            rA, rB = pA in cor, pB in cor
+
+                            if rA and not rB: self.p_pts[pA] += 1
+                            if rB and not rA: self.p_pts[pB] += 1
+                            if rA and rB:
+                                self.p_blks[pA] += 0.50
+                                self.p_blks[pB] += 0.50
+
+        final_threshold = 6 if len(self.s_part) <= 20 else 5
+
+        if      self.base_exp >= final_threshold: stage = "Final"
+        elif    self.base_exp == 3              : stage = "Mid-Tour"
+        else                                    : stage = f"R{self.base_exp}"
+
+        prefix      = f"{self.tour_label.strip()} Tour, " 
+        out_path    = self.tour_dir / DIR_OUT
+
+        out_path.mkdir(parents = True, exist_ok = True)
+        for item in out_path.iterdir(): item.unlink()
+
+        tasks = []
+
+        tasks.append((self._create_player_png,  (self.use_teams, self.elo_map, watched_valid, stage, out_path, self.apps, prefix, self.exp_map, self.base_exp, self.assignments, self.new_players, self.t1_lookup, self.val_str)))
+        tasks.append((self._create_tour_png,    (self.use_teams, watched_valid, out_path)))
+        tasks.append((self._create_scatter_png, (out_path, False, self.elo_map)))
+        tasks.append((self._create_song_png,    (out_path, )))
+
+        if self.assignments:
+            tasks.append((self._create_tier_png, (self.assignments, out_path, any(self.p_chan_s.values()))))
+            if watched_valid: tasks.append((self._create_team_png, (self.assignments, self.t1_lookup, out_path)))
+
+        if watched_valid:
+            tasks.append((self._create_scatter_png,     (out_path, True, self.elo_map)))
+            tasks.append((self._create_list_guess_png,  (out_path, )))
+
+        with fut.ProcessPoolExecutor() as executor:
+            task = {executor.submit(func, *args): func.__name__ for func, args in tasks}
+
+            for future in fut.as_completed(task):
+                task_name = task[future]
+
+                try                     : future.result()
+                except Exception as e   : print(f"Task {task_name} failed: {e}")
+
+        self._fuse(out_path)
 
     def _scan_players(self, paths):
         players = set           ()
@@ -516,123 +635,6 @@ class TourAnalyzer:
                         existing_entries.append(entry)
 
         return True, elo_map, assignments, t1_lookup, rosters, all_known
-
-    def _finalize_outputs(self, missing_count, appearances, use_teams, elo_map, assignments, t1_lookup, tour_types):
-        watched_valid       = missing_count <= 5
-        baseline_initial    = int(np.median([len(appearances.get(name, [])) for name in self.s_part]))
-
-        if len(tour_types) == 1:
-            t_map           = {1: "OP", 2: "ED", 3: "IN"}
-            t_str           = t_map.get(list(tour_types)[0], "")
-            init_label      = f"Watched {t_str}" if watched_valid else f"Random {t_str}"
-
-        else: init_label    = "Watched" if watched_valid else "Usual"
-
-        if "Eru" in init_label and use_teams: default_th = ""
-
-        else:
-            if      init_label == "Watched 2+8"                 : default_th = "25, 20, 15, 10, 5"
-            elif    init_label in ["Watched",   "QuagWatched"]  : default_th = "28, 18, 12, 6"
-            elif    init_label in ["Usual",     "Quagsual"]     : default_th = "28, 19, 8"
-            elif    "Rigs" in self.s_part                       : default_th = "28, 18, 12, 6"
-            else                                                : default_th = "28, 19, 8"
-
-        has_chanting_songs = any(self.p_chan_s.values())
-        if not has_chanting_songs: init_label += " -Chanting"
-
-        meta_dialog     = TourMetadataDialog(None, self.tour_id, init_label, default_th, baseline_initial, list(self.s_part.keys()), elo_map)
-        meta_res        = meta_dialog.result if meta_dialog.result else {"tour_label": init_label, "th_str": "default", "base_exp": baseline_initial, "selected_new": []}
-        self.tour_label = meta_res["tour_label"]
-
-        if not self.tour_label: self.tour_label = init_label
-
-        val_str     = meta_res["th_str"]
-        base_exp    = meta_res["base_exp"]
-        new_players = meta_res["selected_new"]
-
-        if "Eru" in self.tour_label and use_teams:
-            self.p_pts  .clear()
-            self.p_blks .clear()
-
-            for cor, raw_f_players in self.song_history:
-                t_list = list({assignments[p.lower()][0] for p in raw_f_players if p.lower() in assignments})
-
-                if len(t_list) == 2:
-                    tA, tB  = t_list[0], t_list[1]
-                    cA      = {assignments[p.lower()][1]: p for p in raw_f_players if p.lower() in assignments and assignments[p.lower()][0] == tA}
-                    cB      = {assignments[p.lower()][1]: p for p in raw_f_players if p.lower() in assignments and assignments[p.lower()][0] == tB}
-
-                    for tr in ["1", "2", "3", "4"]:
-                        pA, pB = cA.get(tr), cB.get(tr)
-
-                        if pA and pB:
-                            rA, rB = pA in cor, pB in cor
-
-                            if rA and not rB: self.p_pts[pA] += 1
-                            if rB and not rA: self.p_pts[pB] += 1
-                            if rA and rB:
-                                self.p_blks[pA] += 0.50
-                                self.p_blks[pB] += 0.50
-
-        t_name              = self.tour_label.strip()
-        tour_disp           = f"{t_name} Tour"    
-        exp_map             = {}
-        mismatched_players  = {}
-
-        for name in list(self.s_part.keys()):
-            act = len(appearances.get(name, []))
-
-            if act < base_exp   : mismatched_players[name]  = act
-            else                : exp_map[name]             = base_exp
-
-        if mismatched_players:
-            mismatch_dialog = MismatchedRoundsDialog(None, mismatched_players, base_exp, self.subbed_players_set)
-            mismatch_res    = mismatch_dialog.result if mismatch_dialog.result else {k: base_exp for k in mismatched_players}
-
-            for name, target in mismatch_res.items():
-                act             = len(appearances.get(name, []))
-                exp_map[name]   = target
-
-                if target > act:
-                    avg_songs_per_json  =   sum(self.s_part.values()) / sum(len(v) for v in appearances.values())
-                    missing_rounds      =   target - act
-                    self.s_part[name]   +=  int(missing_rounds * avg_songs_per_json)
-
-        final_threshold = 6 if len(self.s_part) <= 20 else 5
-
-        if      base_exp >= final_threshold     : stage = "Final"
-        elif    base_exp == 3                   : stage = "Mid-Tour"
-        else                                    : stage = f"R{base_exp}"
-
-        prefix      = f"{tour_disp}, " 
-        out_path    = self.tour_dir / DIR_OUT
-
-        out_path.mkdir(parents = True, exist_ok = True)
-        tasks = []
-
-        tasks.append((self._create_player_png,  (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup, val_str)))
-        tasks.append((self._create_tour_png,    (use_teams, watched_valid, out_path)))
-        tasks.append((self._create_scatter_png, (out_path, False, elo_map)))
-        tasks.append((self._create_song_png,    (out_path, )))
-
-        if assignments:
-            tasks.append((self._create_tier_png, (assignments, out_path, has_chanting_songs)))
-            if watched_valid: tasks.append((self._create_team_png, (assignments, t1_lookup, out_path)))
-
-        if watched_valid:
-            tasks.append((self._create_scatter_png,     (out_path, True, elo_map)))
-            tasks.append((self._create_list_guess_png,  (out_path, )))
-
-        with fut.ProcessPoolExecutor() as executor:
-            task = {executor.submit(func, *args): func.__name__ for func, args in tasks}
-
-            for future in fut.as_completed(task):
-                task_name = task[future]
-
-                try                     : future.result()
-                except Exception as e   : print(f"Task {task_name} failed: {e}")
-
-        self._fuse(out_path)
 
     def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup, val_str):
         rows, eligibility   = [], []

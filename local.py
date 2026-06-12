@@ -41,4 +41,12 @@ if __name__ == "__main__":
     if not chant_txt_file.exists() or os.path.getsize(chant_txt_file) == 0: sync_chanting(tour_folder_path)
     
     if selected_tours:
-        for tour_id in selected_tours: TourAnalyzer(tour_id).run()
+        analyzer_pool = []
+        
+        for tour_id in selected_tours:
+            analyzer = TourAnalyzer(tour_id)
+            is_valid = analyzer.prepare_configuration()
+
+            if is_valid: analyzer_pool.append(analyzer)
+                
+        for analyzer in analyzer_pool: analyzer.process_and_generate()
