@@ -612,7 +612,7 @@ class TourAnalyzer:
 
         tasks.append((self._create_player_png,  (use_teams, elo_map, watched_valid, stage, out_path, appearances, prefix, exp_map, base_exp, assignments, new_players, t1_lookup, val_str)))
         tasks.append((self._create_tour_png,    (use_teams, watched_valid, out_path)))
-        tasks.append((self._create_scatter_png, (out_path, )))
+        tasks.append((self._create_scatter_png, (out_path, False, elo_map)))
         tasks.append((self._create_song_png,    (out_path, )))
 
         if assignments:
@@ -620,7 +620,7 @@ class TourAnalyzer:
             if watched_valid: tasks.append((self._create_team_png, (assignments, t1_lookup, out_path)))
 
         if watched_valid:
-            tasks.append((self._create_scatter_png,     (out_path, True)))
+            tasks.append((self._create_scatter_png,     (out_path, True, elo_map)))
             tasks.append((self._create_list_guess_png,  (out_path, )))
 
         with fut.ProcessPoolExecutor() as executor:
@@ -992,7 +992,7 @@ class TourAnalyzer:
         try     : trim_whitespace(path / "Tier.png")
         except  : pass
 
-    def _create_scatter_png(self, path, list_mode = False):
+    def _create_scatter_png(self, path, list_mode = False, elo_map = None):
         configs = []
 
         if list_mode:
@@ -1011,8 +1011,15 @@ class TourAnalyzer:
                     grid_grs    = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist_l]
 
                     scale_l = 1.00 if len(plist_l) <= 20 else (0.75 if len(plist_l) <= 28 else 0.50)
-                    sizes_l = [rate ** 2 * 5000 * scale_l for rate in rig_rates]
-                    cmap_l  = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, COLOR_0), (0.5, COLOR_0), (GR_RIG, COLOR_1), (1.0, COLOR_2)])
+                    sizes_l = [rate ** 2 * 10000 * scale_l for rate in rig_rates]
+
+                    cmap_l = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [
+                        (0.00, COLOR_0),
+                        (0.75, COLOR_0),
+                        (0.85, COLOR_1),
+                        (0.95, COLOR_2),
+                        (1.00, COLOR_2)
+                    ])
                     
                     configs.append({
                         "filename"          : "List.png",
@@ -1026,8 +1033,9 @@ class TourAnalyzer:
                         "vmin"              : 0.0,
                         "vmax"              : 1.0,
                         "cbar_label"        : "Rig GR",
-                        "cbar_ticks"        : [0.0, 0.5, GR_RIG, 1.0],
-                        "cbar_ticklabels"   : ['0', '50', f'{int(GR_RIG * 100)}', '100']
+                        "cbar_ticks"        : [0, 0.75, 0.85, 0.95, 1],
+                        "cbar_ticklabels"   : ['0', '75', '85', '95', '100'],
+                        "labelpad"          : -15
                     })
 
         plist_g = [n for n in self.s_part if self.c_counts[n] > 0]
@@ -1041,12 +1049,44 @@ class TourAnalyzer:
                 plist_g, x_vals_g, y_vals_g = zip(*valid_g)
                 plist_g, x_vals_g, y_vals_g = list(plist_g), list(x_vals_g), list(y_vals_g)
                 
-                gr_vals     = [self.c_counts            [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist_g]
-                uf_rates    = [self.p_usefulness_sum    [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist_g]
+                gr_vals = [self.c_counts[name] / self.s_part[name] if self.s_part[name] else 0 for name in plist_g]
+                if elo_map is None: elo_map = {}
+                diffs = []
+
+                valid_elos  = [float(v) for v in elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
+                avg_rank    = np.mean(valid_elos) if valid_elos else 1.0
+
+                for name in plist_g:
+                    tot         = self.s_part[name]
+                    uf_scaled   = (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
+                    elo_val     = elo_map.get(name.lower(), 0.0)
+
+                    try     : elo = float(elo_val)
+                    except  : elo = 0.0
+
+                    diffs.append(uf_scaled - elo)
+                
+                if diffs:
+                    max_d = max(diffs)
+                    min_d = min(diffs)
+                    denom = max(abs(max_d), abs(min_d))
+
+                    if denom == 0: denom = 1.0
+                    normalized_uf_elo = [(d / denom ) for d in diffs]
+
+                else: normalized_uf_elo = [0] * len(plist_g)
 
                 scale_g = 1.00 if len(plist_g) <= 20 else (0.75 if len(plist_g) <= 28 else 0.50)
-                sizes_g = [rate ** 2 * 50000 * scale_g for rate in uf_rates]
-                cmap_g  = mc.LinearSegmentedColormap.from_list("guess_gr_cmap", [(0.0, COLOR_0), (GR_GEN * 2, COLOR_1), (1.0, COLOR_2)])
+                sizes_g = [rate ** 3 * 20000 * scale_g for rate in gr_vals]
+
+                cmap_g = mc.LinearSegmentedColormap.from_list("guess_uf_elo_cmap", [
+                    (0.0, COLOR_0),
+                    (0.2, COLOR_0),
+                    (0.4, COLOR_1),
+                    (0.6, COLOR_1),
+                    (0.8, COLOR_2),
+                    (1.0, COLOR_2)
+                ])
                 
                 configs.append({
                     "filename"          : "Guess.png",
@@ -1055,17 +1095,17 @@ class TourAnalyzer:
                     "x_vals"            : x_vals_g,
                     "y_vals"            : y_vals_g,
                     "sizes"             : sizes_g,
-                    "colors"            : gr_vals,
+                    "colors"            : normalized_uf_elo,
                     "cmap"              : cmap_g,
-                    "vmin"              : 0.0,
-                    "vmax"              : 0.5,
-                    "cbar_label"        : "Guess Rate",
-                    "cbar_ticks"        : [0.0, GR_GEN, 0.50],
-                    "cbar_ticklabels"   : ['0', f'{int(GR_GEN * 100)}', '50']
+                    "vmin"              : -1.0,
+                    "vmax"              : 1.0,
+                    "cbar_label"        : "Normalized Usefulness Over Elo",
+                    "cbar_ticks"        : [-1, 0, 1],
+                    "cbar_ticklabels"   : ['-1', '0', '1'],
+                    "labelpad"          : 0
                 })
 
         if not configs: return
-
         all_x, all_y = [], []
 
         for cfg in configs:
@@ -1177,7 +1217,7 @@ class TourAnalyzer:
             ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 15)
 
             cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = cfg["cbar_ticks"])
-            cbar.set_label(cfg["cbar_label"], weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -5)
+            cbar.set_label(cfg["cbar_label"], weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = cfg["labelpad"])
 
             cbar.ax.set_yticklabels(cfg["cbar_ticklabels"])
             cbar.ax.tick_params(labelsize = 10, length = 0)
@@ -1251,8 +1291,15 @@ class TourAnalyzer:
         ax.set_xticks(np.arange (x_min, x_max + 0.5,    0.5))
         ax.set_yticks(range     (y_min, y_max + 1,      step))
 
-        cmap_l  = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [(0.0, COLOR_0), (0.5, COLOR_0), (GR_RIG, COLOR_1), (1.0, COLOR_2)])
-        norm    = mc.Normalize(vmin = 0.0, vmax = 1.0)
+        cmap_l = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [
+            (0.00, COLOR_0),
+            (0.75, COLOR_0),
+            (0.85, COLOR_1),
+            (0.95, COLOR_2),
+            (1.00, COLOR_2)
+        ])
+
+        norm = mc.Normalize(vmin = 0.0, vmax = 1.0)
 
         for name, xl, yl, xg, yg, gr, rig_gr in zip(plist, x_start, y_start, x_end, y_end, gr_vals, grid_grs):
             label = self._get_player_acronym(name)
@@ -1317,10 +1364,10 @@ class TourAnalyzer:
         sm = plt.cm.ScalarMappable(cmap = cmap_l, norm = norm)
         sm.set_array([])
 
-        cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0.0, 0.5, GR_RIG, 1.0])
-        cbar.set_label("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -5)
+        cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0, 0.75, 0.85, 0.95, 1])
+        cbar.set_label("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -15)
 
-        cbar.ax.set_yticklabels(['0', '50', f'{int(GR_RIG * 100)}', '100'])
+        cbar.ax.set_yticklabels(['0', '75', '85', '95', '100'])
         cbar.ax.tick_params(labelsize = 10, length = 0)
 
         ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "left",    weight = "bold", alpha = 0.75)
@@ -1338,8 +1385,8 @@ class TourAnalyzer:
         except  : pass
 
     def _create_song_png(self, path):
-        num_x = 5
-        num_y = 5
+        num_x = 9
+        num_y = 9
 
         counts      = np.zeros((num_y, num_x), dtype = int)
         over8_sums  = np.zeros((num_y, num_x), dtype = float)
@@ -1348,25 +1395,20 @@ class TourAnalyzer:
             vint = int(s["vintage"])
             if vint == 0: continue
 
-            diff = s["difficulty"]
-
-            if      diff < 10   : x_idx = 0
-            elif    diff < 20   : x_idx = 1
-            elif    diff < 30   : x_idx = 2
-            elif    diff < 40   : x_idx = 3
-            else                : x_idx = 4
-
-            if      vint < 1990: y_idx = 0
-            elif    vint < 2000 : y_idx = 1
-            elif    vint < 2010 : y_idx = 2
-            elif    vint < 2020 : y_idx = 3
-            else                : y_idx = 4
+            diff    = s["difficulty"]
+            x_idx   = min(int(math.floor(diff / 5)), 8)
+            y_idx   = min(max(int(math.floor((vint - 1985) / 5)), 0), 8)
 
             counts      [y_idx, x_idx] += 1
             over8_sums  [y_idx, x_idx] += s["correct_count"]
 
         fig, ax     = plt.subplots(figsize = (10, 10))
-        cmap_song   = mc.LinearSegmentedColormap.from_list("song_cmap", [(0, COLOR_0), (0.25, COLOR_1), (0.75, COLOR_2), (1, COLOR_2)])
+        cmap_song   = mc.LinearSegmentedColormap.from_list("song_cmap", [
+            (0.00, COLOR_0),
+            (0.25, COLOR_1),
+            (0.50, COLOR_2),
+            (1.00, COLOR_2)
+        ])
 
         for y_idx in range(num_y):
             for x_idx in range(num_x):
@@ -1387,7 +1429,7 @@ class TourAnalyzer:
                     va          = 'center',
                     color       = 'white',
                     weight      = 'bold',
-                    fontsize    = 50,
+                    fontsize    = 40,
                     fontname    = "Segoe UI"
                 )
 
@@ -1397,11 +1439,14 @@ class TourAnalyzer:
         ax.set_xticks(np.arange(num_x) + 0.5)
         ax.set_yticks(np.arange(num_y) + 0.5)
 
-        ax.set_xticklabels(["0-10%", "10-20%", "20-30%", "30-40%", ">40%"],     fontname = "Segoe UI", fontsize = 10)
-        ax.set_yticklabels(["Pre-1990s", "1990s", "2000s", "2010s", "2020s"],   fontname = "Segoe UI", fontsize = 10, rotation = 90)
+        p_bucket = ["0-5%", "5-10%", "10-15%", "15-20%", "20-25%", "25-30%", "30-35%", "35-40%", ">40%"]
+        y_bucket = ["<1990", "1990-1994", "1995-1999", "2000-2004", "2005-2009", "2010-2014", "2015-2019", "2020-2024", ">2024"]
+
+        ax.set_xticklabels(p_bucket, fontname = "Segoe UI", fontsize = 10)
+        ax.set_yticklabels(y_bucket, fontname = "Segoe UI", fontsize = 10, rotation = 90)
 
         ax.set_title    ("Song Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
-        ax.set_xlabel   ("Song Difficulty", weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 5)
+        ax.set_xlabel   ("Difficulty",      weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 5)
         ax.set_ylabel   ("Vintage",         weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 5)
 
         ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
@@ -1413,10 +1458,10 @@ class TourAnalyzer:
         sm = plt.cm.ScalarMappable(cmap = cmap_song, norm = norm)
         sm.set_array([])
 
-        cbar = fig.colorbar(sm, ax = ax, pad = 0.01, aspect = 40, ticks = [0.0, 2.0, 6.0, 8.0])
-        cbar.set_label("Mean Over-8", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = 5)
+        cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0, 2, 4, 8])
+        cbar.set_label("Over-8", weight = 'bold', fontname = "Segoe UI", fontsize = 15)
 
-        cbar.ax.set_yticklabels(['0', '2', '6', '8'])
+        cbar.ax.set_yticklabels(['0', '2', '4', '8'])
         cbar.ax.tick_params(labelsize = 10, length = 0)
 
         plt.tight_layout    ()

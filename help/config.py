@@ -17,8 +17,6 @@ DIR_TOURS   = "tour"
 FILE_CHANT  = "chant.txt"
 FILE_CODES  = "code.txt"
 FILE_ALIAS  = "alias.txt"
-GR_GEN      = 0.40
-GR_RIG      = 0.85
 URL_ALIAS   = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
 
 EXCLUDED_TAGS = {
