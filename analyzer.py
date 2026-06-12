@@ -1699,48 +1699,85 @@ class TourAnalyzer:
 
         block1_h = col1_h
 
-        if img_left:
-            left_aspect     = img_left.width / img_left.height
-            left_w_scaled   = int(block1_h * left_aspect)
-            img_left_scaled = img_left.resize((left_w_scaled, block1_h), Image.Resampling.LANCZOS)
-            tour_x_offset   = img_left_scaled.width + 10
-
-        else:
-            img_left_scaled = None
-            tour_x_offset   = 0
-
-        block1_w = tour_x_offset + col1_w
-
         if img_tier:
             tier_aspect     = img_tier.width / img_tier.height
             tier_w_scaled   = int(block1_h * tier_aspect)
             img_tier_scaled = img_tier.resize((tier_w_scaled, block1_h), Image.Resampling.LANCZOS)
-            tier_x_offset   = block1_w + 10
-            block1_w        = tier_x_offset + img_tier_scaled.width
+            
+            top_w = col1_w + 10 + tier_w_scaled
+            top_h = col1_h
 
+            target_w = (top_w - 10) // 2            
+            bottom_h = 0
+
+            if img_left:
+                left_aspect     = img_left.width / img_left.height
+                left_h_scaled   = int(target_w / left_aspect)
+                img_left_scaled = img_left.resize((target_w, left_h_scaled), Image.Resampling.LANCZOS)
+                bottom_h        = max(bottom_h, left_h_scaled)
+
+            else: img_left_scaled = None
+                
+            if img_right:
+                right_aspect        = img_right.width / img_right.height
+                right_h_scaled      = int(target_w / right_aspect)
+                img_right_scaled    = img_right.resize((target_w, right_h_scaled), Image.Resampling.LANCZOS)
+                bottom_h            = max(bottom_h, right_h_scaled)
+
+            else: img_right_scaled = None
+                
+            extra_w     = top_w
+            extra_h     = top_h + (10 + bottom_h if bottom_h > 0 else 0)
+            extra_img   = Image.new("RGB", (extra_w, extra_h), "white")
+            
+            tour_x = (col1_w - img_tour.width) // 2
+            extra_img.paste(img_tour, (tour_x, 0))
+
+            if img_team:
+                team_x = (col1_w - img_team.width) // 2
+                extra_img.paste(img_team, (team_x, img_tour.height + 10))
+
+            extra_img.paste(img_tier_scaled, (col1_w + 10, 0))
+            
+            if img_left_scaled  : extra_img.paste(img_left_scaled,  (0,             top_h + 10))
+            if img_right_scaled : extra_img.paste(img_right_scaled, (target_w + 10, top_h + 10))
+                
         else:
+            if img_left:
+                left_aspect     = img_left.width / img_left.height
+                left_w_scaled   = int(block1_h * left_aspect)
+                img_left_scaled = img_left.resize((left_w_scaled, block1_h), Image.Resampling.LANCZOS)
+                tour_x_offset   = img_left_scaled.width + 10
+
+            else:
+                img_left_scaled = None
+                tour_x_offset   = 0
+
+            block1_w        = tour_x_offset + col1_w
             img_tier_scaled = None
-            tier_x_offset   = block1_w
 
-        if img_right:
-            right_aspect        = img_right.width / img_right.height
-            right_w_scaled      = int(block1_h * right_aspect)
-            img_right_scaled    = img_right.resize((right_w_scaled, block1_h), Image.Resampling.LANCZOS)
-            extra_w             = block1_w + 10 + img_right_scaled.width
+            if img_right:
+                right_aspect        = img_right.width / img_right.height
+                right_w_scaled      = int(block1_h * right_aspect)
+                img_right_scaled    = img_right.resize((right_w_scaled, block1_h), Image.Resampling.LANCZOS)
+                extra_w             = block1_w + 10 + img_right_scaled.width
 
-        else:
-            img_right_scaled    = None
-            extra_w             = block1_w
+            else:
+                img_right_scaled    = None
+                extra_w             = block1_w
 
-        extra_h     = block1_h
-        extra_img   = Image.new("RGB", (extra_w, extra_h), "white")
+            extra_h     = block1_h
+            extra_img   = Image.new("RGB", (extra_w, extra_h), "white")
 
-        if img_left_scaled: extra_img.paste(img_left_scaled, (0, 0))
-        extra_img.paste(img_tour, (tour_x_offset, 0))
+            if img_left_scaled: extra_img.paste(img_left_scaled, (0, 0))        
+            tour_x = tour_x_offset + (col1_w - img_tour.width) // 2
+            extra_img.paste(img_tour, (tour_x, 0))
 
-        if img_team         : extra_img.paste(img_team,             (tour_x_offset, img_tour.height + 10))
-        if img_tier_scaled  : extra_img.paste(img_tier_scaled,      (tier_x_offset, 0))
-        if img_right_scaled : extra_img.paste(img_right_scaled,     (block1_w + 10, 0))
+            if img_team:
+                team_x = tour_x_offset + (col1_w - img_team.width) // 2
+                extra_img.paste(img_team, (team_x, img_tour.height + 10))
+
+            if img_right_scaled : extra_img.paste(img_right_scaled, (block1_w + 10, 0))
 
         extra_out_p = path / "Extra.png"
         extra_img.save(extra_out_p, compress_level = 9, optimize = True)
