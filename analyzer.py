@@ -986,7 +986,7 @@ class TourAnalyzer:
 
         plt.suptitle        ("Tier Statistics", fontname = "Segoe UI", fontsize = 25, weight = 'bold')
         plt.tight_layout    ()
-        plt.savefig         (path / "Tier.png", dpi = 500)
+        plt.savefig         (path / "Tier.png", dpi = 100)
         plt.close           (fig)
 
         try     : trim_whitespace(path / "Tier.png")
@@ -1099,7 +1099,7 @@ class TourAnalyzer:
                     "cmap"              : cmap_g,
                     "vmin"              : -1.0,
                     "vmax"              : 1.0,
-                    "cbar_label"        : "Normalized Usefulness Over Elo",
+                    "cbar_label"        : "Normalized Usefulness Above Elo",
                     "cbar_ticks"        : [-1, 0, 1],
                     "cbar_ticklabels"   : ['-1', '0', '1'],
                     "labelpad"          : 0
@@ -1172,8 +1172,8 @@ class TourAnalyzer:
             ax.set_xlim(x_min, x_max)
             ax.set_ylim(y_min, y_max)
 
-            ax.set_xticks(np.arange (x_min, x_max + 0.5,    0.5))
-            ax.set_yticks(range     (y_min, y_max + 1,      step))
+            ax.set_xticks(np.arange (x_min + 0.5,   x_max, 0.5))
+            ax.set_yticks(range     (y_min + step,  y_max, step))
 
             texts = []
 
@@ -1211,10 +1211,10 @@ class TourAnalyzer:
             ax.set_ylabel   ("Median Vintage",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
 
             ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
-            plt.setp(ax.get_yticklabels(), horizontalalignment = 'center', verticalalignment = 'center')
+            plt.setp(ax.get_yticklabels(), horizontalalignment = 'center', verticalalignment = 'center', rotation = 90)
 
             ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
-            ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 15)
+            ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 7.5)
 
             cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = cfg["cbar_ticks"])
             cbar.set_label(cfg["cbar_label"], weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = cfg["labelpad"])
@@ -1230,7 +1230,7 @@ class TourAnalyzer:
             ax.grid(False)
 
             plt.tight_layout    ()
-            plt.savefig         (path / cfg["filename"], dpi = 500)
+            plt.savefig         (path / cfg["filename"], dpi = 100)
             plt.close           (fig)
 
             try     : trim_whitespace(path / cfg["filename"])
@@ -1288,8 +1288,8 @@ class TourAnalyzer:
         ax.set_xlim(x_min, x_max)
         ax.set_ylim(y_min, y_max)
 
-        ax.set_xticks(np.arange (x_min, x_max + 0.5,    0.5))
-        ax.set_yticks(range     (y_min, y_max + 1,      step))
+        ax.set_xticks(np.arange (x_min + 0.5,   x_max, 0.5))
+        ax.set_yticks(range     (y_min + step,  y_max, step))
 
         cmap_l = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [
             (0.00, COLOR_0),
@@ -1356,10 +1356,10 @@ class TourAnalyzer:
         ax.set_ylabel   ("Median Vintage",          weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
 
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
-        plt.setp(ax.get_yticklabels(), horizontalalignment = 'center', verticalalignment = 'center')
+        plt.setp(ax.get_yticklabels(), horizontalalignment = 'center', verticalalignment = 'center', rotation = 90)
 
         ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
-        ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 15)
+        ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 7.5)
 
         sm = plt.cm.ScalarMappable(cmap = cmap_l, norm = norm)
         sm.set_array([])
@@ -1378,7 +1378,7 @@ class TourAnalyzer:
         ax.grid(False)
 
         plt.tight_layout    ()
-        plt.savefig         (path / "List-Guess.png", dpi = 500)
+        plt.savefig         (path / "List-Guess.png", dpi = 100)
         plt.close           (fig)
 
         try     : trim_whitespace(path / "List-Guess.png")
@@ -1465,7 +1465,7 @@ class TourAnalyzer:
         cbar.ax.tick_params(labelsize = 10, length = 0)
 
         plt.tight_layout    ()
-        plt.savefig         (path / "Song.png", dpi = 500)
+        plt.savefig         (path / "Song.png", dpi = 100)
         plt.close           (fig)
 
         try     : trim_whitespace(path / "Song.png")
