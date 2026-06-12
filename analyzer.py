@@ -1,5 +1,7 @@
-import json, math, matplotlib, os, re
-matplotlib.use('Agg')
+import json, logging, math, matplotlib, os, re
+
+logging     .getLogger  ("adjustText").setLevel(logging.ERROR)
+matplotlib  .use        ('Agg')
 
 import concurrent.futures       as fut
 import matplotlib.colors        as mc
@@ -1174,8 +1176,8 @@ class TourAnalyzer:
             ax.set_xlim(x_min, x_max)
             ax.set_ylim(y_min, y_max)
 
-            ax.set_xticks(np.arange (x_min + 0.5,   x_max, 0.5))
-            ax.set_yticks(range     (y_min + step,  y_max, step))
+            ax.set_xticks(np.arange (x_min + 0.5,   x_max + 0.5,    0.5))
+            ax.set_yticks(range     (y_min + step,  y_max + step,   step))
 
             texts = []
 
@@ -1195,28 +1197,27 @@ class TourAnalyzer:
                     va          = va_align
                 ))
 
-            if texts:
-                adjust_text(
-                    texts,
-                    ax                      = ax,
-                    objects                 = sc,
-                    avoid_self              = True,
-                    add_objects_to_edges    = True,
-                    force_text              = (1.00, 1.00),
-                    force_objects           = (1.00, 1.00),
-                    expand                  = (2.00, 2.00),
-                    arrowprops              = dict(arrowstyle="-", color='black', shrinkA=10)
-                )
+            if texts: adjust_text(
+                texts,
+                ax                      = ax,
+                objects                 = sc,
+                avoid_self              = True,
+                add_objects_to_edges    = True,
+                force_text              = (1.00, 1.00),
+                force_objects           = (1.00, 1.00),
+                expand                  = (2.00, 2.00),
+                arrowprops              = dict(arrowstyle = "-", color = 'black', shrinkA = 10)
+            )
 
-            ax.set_title    (cfg["title"],      weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
-            ax.set_xlabel   ("Mean Over-8",     weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
-            ax.set_ylabel   ("Median Vintage",  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
+            ax.set_title    (cfg["title"],  weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
+            ax.set_xlabel   ("Over-8",      weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
+            ax.set_ylabel   ("Vintage",     weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
 
             ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
-            plt.setp(ax.get_yticklabels(), horizontalalignment = 'center', verticalalignment = 'center', rotation = 90)
+            plt.setp(ax.get_yticklabels(), rotation = 90, va = 'center')
 
             ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
-            ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 7.5)
+            ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 2.5)
 
             cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = cfg["cbar_ticks"])
             cbar.set_label(cfg["cbar_label"], weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = cfg["labelpad"])
@@ -1290,8 +1291,8 @@ class TourAnalyzer:
         ax.set_xlim(x_min, x_max)
         ax.set_ylim(y_min, y_max)
 
-        ax.set_xticks(np.arange (x_min + 0.5,   x_max, 0.5))
-        ax.set_yticks(range     (y_min + step,  y_max, step))
+        ax.set_xticks(np.arange (x_min + 0.5,   x_max + 0.5,    0.5))
+        ax.set_yticks(range     (y_min + step,  y_max + step,   step))
 
         cmap_l = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [
             (0.00, COLOR_0),
@@ -1354,14 +1355,14 @@ class TourAnalyzer:
             )
 
         ax.set_title    ("List → Guess Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
-        ax.set_xlabel   ("Mean Over-8",             weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
-        ax.set_ylabel   ("Median Vintage",          weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
+        ax.set_xlabel   ("Over-8",                  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
+        ax.set_ylabel   ("Vintage",                 weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
 
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
-        plt.setp(ax.get_yticklabels(), horizontalalignment = 'center', verticalalignment = 'center', rotation = 90)
+        plt.setp(ax.get_yticklabels(), rotation = 90, va = 'center')
 
         ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
-        ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 7.5)
+        ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 2.5)
 
         sm = plt.cm.ScalarMappable(cmap = cmap_l, norm = norm)
         sm.set_array([])
@@ -1445,14 +1446,14 @@ class TourAnalyzer:
         y_bucket = ["<1990", "1990-1994", "1995-1999", "2000-2004", "2005-2009", "2010-2014", "2015-2019", "2020-2024", ">2024"]
 
         ax.set_xticklabels(p_bucket, fontname = "Segoe UI", fontsize = 10)
-        ax.set_yticklabels(y_bucket, fontname = "Segoe UI", fontsize = 10, rotation = 90)
+        ax.set_yticklabels(y_bucket, fontname = "Segoe UI", fontsize = 10, rotation = 90, va = 'center')
 
         ax.set_title    ("Song Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
         ax.set_xlabel   ("Difficulty",      weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 5)
         ax.set_ylabel   ("Vintage",         weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 5)
 
         ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
-        ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 5)
+        ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 2.5)
 
         ax.grid(False)
         norm = mc.Normalize(vmin = 0.0, vmax = 8.0)
