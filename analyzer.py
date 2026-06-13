@@ -893,7 +893,7 @@ class TourAnalyzer:
                 data_by_cat["Chanting Guess Rate"].extend(chn_players)
 
         num_plots       = len(categories)
-        fig, axes       = plt.subplots(2, 3, figsize = (15, 10))
+        fig, axes       = plt.subplots(2, 3, figsize = (15, 15))
         axes            = axes.flatten()
         segment_width   = 1.00
         tier_gap        = 1.00
@@ -902,12 +902,7 @@ class TourAnalyzer:
             ax      = axes[idx]
             items   = data_by_cat[cat]
 
-            ax.set_title(cat, fontsize = 15, weight = 'bold', fontname = "Segoe UI", pad = 10)
-
-            if not items:
-                ax.text(0.5, 0.5, "No Data", ha = 'center', va = 'center', fontsize = 17.5, fontname = "Segoe UI")
-                ax.tick_params(axis = 'both', which = 'both', length = 0, labelbottom = False, labelleft = False)
-                continue
+            ax.set_title(cat, fontsize = 22.5, weight = 'bold', fontname = "Segoe UI", pad = 10)
 
             if cat == "Chanting Guess Rate":
                 ax.set_xlim(0, 100)
@@ -971,7 +966,7 @@ class TourAnalyzer:
             ax.set_yticklabels  (labels)
             ax.set_ylim         (first_y, last_y)
             ax.invert_yaxis     ()
-            ax.tick_params      (axis = 'both', which = 'both', length = 0, pad = 5, labelsize = 10)
+            ax.tick_params      (axis = 'both', which = 'both', length = 0, pad = 5, labelsize = 15)
 
             for label in ax.get_xticklabels(): label.set_fontname("Segoe UI")
             for label in ax.get_yticklabels(): label.set_fontname("Segoe UI")
@@ -980,7 +975,7 @@ class TourAnalyzer:
 
         for j in range(num_plots, len(axes)): axes[j].axis('off')
 
-        plt.suptitle        ("Tier Statistics", fontname = "Segoe UI", fontsize = 25, weight = 'bold')
+        plt.suptitle        ("Tier Statistics", fontname = "Segoe UI", fontsize = 35, weight = 'bold', y = 0.99)
         plt.tight_layout    ()
         plt.savefig         (path / "Tier.png", dpi = 100)
         plt.close           (fig)
@@ -1031,7 +1026,7 @@ class TourAnalyzer:
                         "cbar_label"        : "Rig GR",
                         "cbar_ticks"        : [0, 0.7, 0.8, 0.9, 1],
                         "cbar_ticklabels"   : ['0', '70', '80', '90', '100'],
-                        "labelpad"          : -15
+                        "labelpad"          : -32.5
                     })
 
         plist_g = [n for n in self.s_part if self.c_counts[n] > 0]
@@ -1097,7 +1092,7 @@ class TourAnalyzer:
                     "cbar_label"        : "Performance",
                     "cbar_ticks"        : [0, 1],
                     "cbar_ticklabels"   : ['0', '100'],
-                    "labelpad"          : -17.5
+                    "labelpad"          : -35
                 })
 
         if not configs: return
@@ -1149,7 +1144,7 @@ class TourAnalyzer:
             x_range         = max(cfg["x_vals"]) - min(cfg["x_vals"]) if max(cfg["x_vals"]) != min(cfg["x_vals"]) else 1
             y_range         = max(cfg["y_vals"]) - min(cfg["y_vals"]) if max(cfg["y_vals"]) != min(cfg["y_vals"]) else 1
             norm_points     = np.column_stack((points[:, 0] / x_range, points[:, 1] / y_range))
-            center_of_mass  = np.median(norm_points, axis=0)
+            center_of_mass  = np.median(norm_points, axis = 0)
             distances       = np.linalg.norm(norm_points - center_of_mass, axis = 1)
             pack_mask       = distances < np.percentile(distances, 75)
             pack_points     = points[pack_mask]
@@ -1181,7 +1176,7 @@ class TourAnalyzer:
 
                 texts.append(ax.text(
                     x, y, label,
-                    size        = 15,
+                    size        = 20,
                     weight      = "bold",
                     fontname    = "Segoe UI",
                     ha          = ha_align,
@@ -1200,26 +1195,26 @@ class TourAnalyzer:
                 arrowprops              = dict(arrowstyle = "-", color = 'black', shrinkA = 10)
             )
 
-            ax.set_title    (cfg["title"],  weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
-            ax.set_xlabel   ("Over-8",      weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
-            ax.set_ylabel   ("Vintage",     weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
+            ax.set_title    (cfg["title"],  weight = 'bold', fontname = "Segoe UI", fontsize = 30, pad      = 15)
+            ax.set_xlabel   ("Over-8",      weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
+            ax.set_ylabel   ("Vintage",     weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
 
             ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
             plt.setp(ax.get_yticklabels(), rotation = 90, va = 'center')
 
-            ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
-            ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 2.5)
+            ax.tick_params(axis = 'x', which = 'both', length = 0, labelsize = 20, pad = 5)
+            ax.tick_params(axis = 'y', which = 'both', length = 0, labelsize = 20, pad = 2.5)
 
             cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = cfg["cbar_ticks"])
-            cbar.set_label(cfg["cbar_label"], weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = cfg["labelpad"])
+            cbar.set_label(cfg["cbar_label"], weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = cfg["labelpad"])
 
             cbar.ax.set_yticklabels(cfg["cbar_ticklabels"])
-            cbar.ax.tick_params(labelsize = 10, length = 0)
+            cbar.ax.tick_params(labelsize = 20, length = 0)
 
-            ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "left",    weight = "bold", alpha = 0.75)
-            ax.text(0.99, 0.99, "New\nEasy", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "right",   weight = "bold", alpha = 0.75)
-            ax.text(0.01, 0.01, "Old\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "bottom",    ha = "left",    weight = "bold", alpha = 0.75)
-            ax.text(0.99, 0.01, "Old\nEasy", transform = ax.transAxes, color = "grey", fontsize = 10, va = "bottom",    ha = "right",   weight = "bold", alpha = 0.75)
+            ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "black", fontsize = 15, va = "top",       ha = "left",    weight = "bold", alpha = 0.75)
+            ax.text(0.99, 0.99, "New\nEasy", transform = ax.transAxes, color = "black", fontsize = 15, va = "top",       ha = "right",   weight = "bold", alpha = 0.75)
+            ax.text(0.01, 0.01, "Old\nHard", transform = ax.transAxes, color = "black", fontsize = 15, va = "bottom",    ha = "left",    weight = "bold", alpha = 0.75)
+            ax.text(0.99, 0.01, "Old\nEasy", transform = ax.transAxes, color = "black", fontsize = 15, va = "bottom",    ha = "right",   weight = "bold", alpha = 0.75)
 
             ax.grid(False)
 
@@ -1345,29 +1340,29 @@ class TourAnalyzer:
                 zorder          = 4,
             )
 
-        ax.set_title    ("List → Guess Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
-        ax.set_xlabel   ("Over-8",                  weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
-        ax.set_ylabel   ("Vintage",                 weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 2.5)
+        ax.set_title    ("List → Guess Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 30, pad      = 15)
+        ax.set_xlabel   ("Over-8",                  weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
+        ax.set_ylabel   ("Vintage",                 weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
 
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
         plt.setp(ax.get_yticklabels(), rotation = 90, va = 'center')
 
-        ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
-        ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 2.5)
+        ax.tick_params(axis = 'x', which = 'both', length = 0, labelsize = 20, pad = 5)
+        ax.tick_params(axis = 'y', which = 'both', length = 0, labelsize = 20, pad = 2.5)
 
         sm = plt.cm.ScalarMappable(cmap = cmap_l, norm = norm)
         sm.set_array([])
 
         cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0, 0.7, 0.8, 0.9, 1])
-        cbar.set_label("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -15)
+        cbar.set_label("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = -32.5)
 
         cbar.ax.set_yticklabels(['0', '70', '80', '90', '100'])
-        cbar.ax.tick_params(labelsize = 10, length = 0)
+        cbar.ax.tick_params(labelsize = 20, length = 0)
 
-        ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "left",    weight = "bold", alpha = 0.75)
-        ax.text(0.99, 0.99, "New\nEasy", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "right",   weight = "bold", alpha = 0.75)
-        ax.text(0.01, 0.01, "Old\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "bottom",    ha = "left",    weight = "bold", alpha = 0.75)
-        ax.text(0.99, 0.01, "Old\nEasy", transform = ax.transAxes, color = "grey", fontsize = 10, va = "bottom",    ha = "right",   weight = "bold", alpha = 0.75)
+        ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "black", fontsize = 15, va = "top",      ha = "left",    weight = "bold", alpha = 0.75)
+        ax.text(0.99, 0.99, "New\nEasy", transform = ax.transAxes, color = "black", fontsize = 15, va = "top",      ha = "right",   weight = "bold", alpha = 0.75)
+        ax.text(0.01, 0.01, "Old\nHard", transform = ax.transAxes, color = "black", fontsize = 15, va = "bottom",   ha = "left",    weight = "bold", alpha = 0.75)
+        ax.text(0.99, 0.01, "Old\nEasy", transform = ax.transAxes, color = "black", fontsize = 15, va = "bottom",   ha = "right",   weight = "bold", alpha = 0.75)
 
         ax.grid(False)
 
@@ -1433,15 +1428,15 @@ class TourAnalyzer:
         ax.set_xticks(np.arange(num_x) + 0.5)
         ax.set_yticks(np.arange(num_y) + 0.5)
 
-        p_bucket = ["0-5%", "5-10%", "10-15%", "15-20%", "20-25%", "25-30%", "30-35%", "35-40%", ">40%"]
-        y_bucket = ["<1990", "1990-1994", "1995-1999", "2000-2004", "2005-2009", "2010-2014", "2015-2019", "2020-2024", ">2024"]
+        p_bucket = ["0-5", "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", ">40"]
+        y_bucket = ["<90", "90-94", "95-99", "00-04", "05-09", "10-14", "15-19", "20-24", ">24"]
 
-        ax.set_xticklabels(p_bucket, fontname = "Segoe UI", fontsize = 10)
-        ax.set_yticklabels(y_bucket, fontname = "Segoe UI", fontsize = 10, rotation = 90, va = 'center')
+        ax.set_xticklabels(p_bucket, fontname = "Segoe UI", fontsize = 20)
+        ax.set_yticklabels(y_bucket, fontname = "Segoe UI", fontsize = 20, rotation = 90, va = 'center')
 
-        ax.set_title    ("Song Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 22.5, pad        = 12.5)
-        ax.set_xlabel   ("Difficulty",      weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 5)
-        ax.set_ylabel   ("Vintage",         weight = 'bold', fontname = "Segoe UI", fontsize = 15.0, labelpad   = 5)
+        ax.set_title    ("Song Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 30, pad      = 12.5)
+        ax.set_xlabel   ("Difficulty",      weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
+        ax.set_ylabel   ("Vintage",         weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
 
         ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
         ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 2.5)
@@ -1453,10 +1448,10 @@ class TourAnalyzer:
         sm.set_array([])
 
         cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0, 2, 4, 8])
-        cbar.set_label("Over-8", weight = 'bold', fontname = "Segoe UI", fontsize = 15)
+        cbar.set_label("Over-8", weight = 'bold', fontname = "Segoe UI", fontsize = 25)
 
         cbar.ax.set_yticklabels(['0', '2', '4', '8'])
-        cbar.ax.tick_params(labelsize = 10, length = 0)
+        cbar.ax.tick_params(labelsize = 20, length = 0)
 
         plt.tight_layout    ()
         plt.savefig         (path / "Song.png", dpi = 100)
