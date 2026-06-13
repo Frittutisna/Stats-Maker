@@ -1338,7 +1338,7 @@ class TourAnalyzer:
 
             ax.text(
                 xm_shifted, ym_shifted, label,
-                fontsize        = 15,
+                fontsize        = 20,
                 fontname        = "Segoe UI",
                 weight          = "bold",
                 ha              = "center",
