@@ -483,6 +483,12 @@ class TourAnalyzer:
                 except Exception as e   : print(f"Task {task_name} failed: {e}")
 
         self._fuse(out_path)
+        allowed_files = {"General.png", "Player.png", "Extra.png", "Plots.png"}
+
+        for file_path in out_path.glob("*.png"):
+            if file_path.name not in allowed_files:
+                try                 : file_path.unlink()
+                except Exception    : pass
 
     def _scan_players(self, paths):
         players = set           ()
@@ -818,8 +824,8 @@ class TourAnalyzer:
         self._export_png(pd.DataFrame(res).sort_values("Mean GR", ascending = False), path, "Team.png", "Team Statistics")
 
     def _create_tier_png(self, assigns, path, has_chanting_songs):
-        categories = ["Generalist", "Attacker", "Blocker", "Contributor", "Speedster"]
-        if has_chanting_songs: categories.append("Chanter")
+        categories = ["Guess Rate", "Lives Taken", "Lives Saved", "Lives Taken/Saved", "Median Time"]
+        if has_chanting_songs: categories.append("Chanting Guess Rate")
 
         data_by_cat = {cat: [] for cat in categories}
 
@@ -834,7 +840,7 @@ class TourAnalyzer:
                 gen_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
 
             gen_players.sort(key = lambda x: x["value"], reverse = True)
-            data_by_cat["Generalist"].extend(gen_players)
+            data_by_cat["Guess Rate"].extend(gen_players)
 
             atk_players = []
 
@@ -843,7 +849,7 @@ class TourAnalyzer:
                 atk_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
 
             atk_players.sort(key = lambda x: x["value"], reverse = True)
-            data_by_cat["Attacker"].extend(atk_players)
+            data_by_cat["Lives Taken"].extend(atk_players)
 
             blk_players = []
 
@@ -852,7 +858,7 @@ class TourAnalyzer:
                 blk_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
 
             blk_players.sort(key = lambda x: x["value"], reverse = True)
-            data_by_cat["Blocker"].extend(blk_players)
+            data_by_cat["Lives Saved"].extend(blk_players)
 
             con_players = []
 
@@ -861,7 +867,7 @@ class TourAnalyzer:
                 con_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
 
             con_players.sort(key = lambda x: x["value"], reverse = True)
-            data_by_cat["Contributor"].extend(con_players)
+            data_by_cat["Lives Taken/Saved"].extend(con_players)
 
             spd_players = []
 
@@ -873,7 +879,7 @@ class TourAnalyzer:
                     spd_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
 
             spd_players.sort(key = lambda x: x["value"], reverse = False)
-            data_by_cat["Speedster"].extend(spd_players)
+            data_by_cat["Median Time"].extend(spd_players)
 
             if has_chanting_songs:
                 chn_players = []
@@ -884,7 +890,7 @@ class TourAnalyzer:
                         chn_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
 
                 chn_players.sort(key = lambda x: x["value"], reverse = True)
-                data_by_cat["Chanter"].extend(chn_players)
+                data_by_cat["Chanting Guess Rate"].extend(chn_players)
 
         num_plots       = len(categories)
         fig, axes       = plt.subplots(2, 3, figsize = (15, 10))
@@ -903,16 +909,16 @@ class TourAnalyzer:
                 ax.tick_params(axis = 'both', which = 'both', length = 0, labelbottom = False, labelleft = False)
                 continue
 
-            if cat == "Chanter":
+            if cat == "Chanting Guess Rate":
                 ax.set_xlim(0, 100)
                 ax.xaxis.set_major_locator(mt.MultipleLocator(20))
 
-            elif cat == "Speedster":
+            elif cat == "Median Time":
                 ax.set_xlim(0, 20)
                 ax.xaxis.set_major_locator(mt.MultipleLocator(4))
 
             else:
-                factor  = 10 if cat in ["Generalist", "Contributor"] else 5
+                factor  = 10 if cat in ["Guess Rate", "Lives Taken/Saved"] else 5
                 max_v   = max([item["value"] for item in items]) + 1 if items else factor
                 xmax    = min(math.ceil(max_v / factor) * factor, 100)
 
