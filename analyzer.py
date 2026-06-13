@@ -1004,11 +1004,11 @@ class TourAnalyzer:
                     sizes_l = [rate ** 2 * 10000 * scale_l for rate in rig_rates]
 
                     cmap_l = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [
-                        (0.00, COLOR_0),
-                        (0.75, COLOR_0),
-                        (0.85, COLOR_1),
-                        (0.95, COLOR_2),
-                        (1.00, COLOR_2)
+                        (0.0, COLOR_0),
+                        (0.7, COLOR_0),
+                        (0.8, COLOR_1),
+                        (0.9, COLOR_2),
+                        (1.0, COLOR_2)
                     ])
                     
                     configs.append({
@@ -1023,8 +1023,8 @@ class TourAnalyzer:
                         "vmin"              : 0.0,
                         "vmax"              : 1.0,
                         "cbar_label"        : "Rig GR",
-                        "cbar_ticks"        : [0, 0.75, 0.85, 0.95, 1],
-                        "cbar_ticklabels"   : ['0', '75', '85', '95', '100'],
+                        "cbar_ticks"        : [0, 0.7, 0.8, 0.9, 1],
+                        "cbar_ticklabels"   : ['0', '70', '80', '90', '100'],
                         "labelpad"          : -15
                     })
 
@@ -1041,7 +1041,7 @@ class TourAnalyzer:
                 
                 gr_vals = [self.c_counts[name] / self.s_part[name] if self.s_part[name] else 0 for name in plist_g]
                 if elo_map is None: elo_map = {}
-                diffs = []
+                uf_pool, el_pool = [], []
 
                 valid_elos  = [float(v) for v in elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
                 avg_rank    = np.mean(valid_elos) if valid_elos else 1.0
@@ -1054,29 +1054,28 @@ class TourAnalyzer:
                     try     : elo = float(elo_val)
                     except  : elo = 0.0
 
-                    diffs.append(uf_scaled - elo)
-                
-                if diffs:
-                    max_d = max(diffs)
-                    min_d = min(diffs)
-                    denom = max(abs(max_d), abs(min_d))
+                    uf_pool.append(uf_scaled)
+                    el_pool.append(elo)
 
-                    if denom == 0: denom = 1.0
-                    normalized_uf_elo = [(d / denom ) for d in diffs]
+                if uf_pool and el_pool:
+                    min_uf,     max_uf      = min(uf_pool),     max(uf_pool)
+                    min_el,     max_el      = min(el_pool),     max(el_pool)
+                    range_uf,   range_el    = max_uf - min_uf,  max_el - min_el
+ 
+                    norm_uf     = [(uf - min_uf) * 0.5 / range_uf + 0.5 if range_uf > 0 else 0.75 for uf in uf_pool]
+                    norm_elo    = [(el - min_el) * 0.5 / range_el       if range_el > 0 else 0.25 for el in el_pool]
+                    perf_pool   = [u - e for u, e in zip(norm_uf, norm_elo)]
 
-                else: normalized_uf_elo = [0] * len(plist_g)
+                    min_perf    = min(perf_pool)
+                    max_perf    = max(perf_pool)
+                    range_perf  = max_perf - min_perf
+                    norm_perf   = [(perf - min_perf) / range_perf if range_perf > 0 else 0.5 for perf in perf_pool]
+
+                else: norm_perf = [0.5] * len(plist_g)
 
                 scale_g = 1.00 if len(plist_g) <= 20 else (0.75 if len(plist_g) <= 28 else 0.50)
                 sizes_g = [rate ** 3 * 20000 * scale_g for rate in gr_vals]
-
-                cmap_g = mc.LinearSegmentedColormap.from_list("guess_uf_elo_cmap", [
-                    (0.0, COLOR_0),
-                    (0.2, COLOR_0),
-                    (0.4, COLOR_1),
-                    (0.6, COLOR_1),
-                    (0.8, COLOR_2),
-                    (1.0, COLOR_2)
-                ])
+                cmap_g  = mc.LinearSegmentedColormap.from_list("guess_uf_elo_cmap", [(0, COLOR_0), (0.5, COLOR_1), (1, COLOR_2)])
                 
                 configs.append({
                     "filename"          : "Guess.png",
@@ -1085,14 +1084,14 @@ class TourAnalyzer:
                     "x_vals"            : x_vals_g,
                     "y_vals"            : y_vals_g,
                     "sizes"             : sizes_g,
-                    "colors"            : normalized_uf_elo,
+                    "colors"            : norm_perf,
                     "cmap"              : cmap_g,
-                    "vmin"              : -1.0,
+                    "vmin"              : 0.0,
                     "vmax"              : 1.0,
-                    "cbar_label"        : "Normalized Usefulness Above Elo",
-                    "cbar_ticks"        : [-1, 0, 1],
-                    "cbar_ticklabels"   : ['-1', '0', '1'],
-                    "labelpad"          : 0
+                    "cbar_label"        : "Performance",
+                    "cbar_ticks"        : [0, 1],
+                    "cbar_ticklabels"   : ['0', '100'],
+                    "labelpad"          : -17.5
                 })
 
         if not configs: return
@@ -1146,7 +1145,7 @@ class TourAnalyzer:
             norm_points     = np.column_stack((points[:, 0] / x_range, points[:, 1] / y_range))
             center_of_mass  = np.median(norm_points, axis=0)
             distances       = np.linalg.norm(norm_points - center_of_mass, axis = 1)
-            pack_mask       = distances < np.percentile(distances, 90)
+            pack_mask       = distances < np.percentile(distances, 75)
             pack_points     = points[pack_mask]
 
             if len(pack_points) >= 3:
@@ -1281,11 +1280,11 @@ class TourAnalyzer:
         ax.set_yticks(range     (y_min + step,  y_max + step,   step))
 
         cmap_l = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [
-            (0.00, COLOR_0),
-            (0.75, COLOR_0),
-            (0.85, COLOR_1),
-            (0.95, COLOR_2),
-            (1.00, COLOR_2)
+            (0.0, COLOR_0),
+            (0.7, COLOR_0),
+            (0.8, COLOR_1),
+            (0.9, COLOR_2),
+            (1.0, COLOR_2)
         ])
 
         norm = mc.Normalize(vmin = 0.0, vmax = 1.0)
@@ -1353,10 +1352,10 @@ class TourAnalyzer:
         sm = plt.cm.ScalarMappable(cmap = cmap_l, norm = norm)
         sm.set_array([])
 
-        cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0, 0.75, 0.85, 0.95, 1])
+        cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0, 0.7, 0.8, 0.9, 1])
         cbar.set_label("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 15, labelpad = -15)
 
-        cbar.ax.set_yticklabels(['0', '75', '85', '95', '100'])
+        cbar.ax.set_yticklabels(['0', '70', '80', '90', '100'])
         cbar.ax.tick_params(labelsize = 10, length = 0)
 
         ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "grey", fontsize = 10, va = "top",       ha = "left",    weight = "bold", alpha = 0.75)
