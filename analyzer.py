@@ -830,8 +830,8 @@ class TourAnalyzer:
         data_by_cat = {cat: [] for cat in categories}
         num_players = len(self.s_part)
 
-        if      num_players > 28    : labelsize = 15
-        elif    num_players > 20    : labelsize = 25
+        if      num_players > 28    : labelsize = 25
+        elif    num_players > 20    : labelsize = 30
         else                        : labelsize = 35
 
         for tr in ["1", "2", "3", "4"]:
@@ -973,8 +973,8 @@ class TourAnalyzer:
             ax.set_yticklabels  (labels)
             ax.set_ylim         (first_y, last_y)
             ax.invert_yaxis     ()
-            ax.tick_params      (axis = 'x', which = 'both', length = 0, pad = 10, labelsize = labelsize)
-            ax.tick_params      (axis = 'y', which = 'both', length = 0, pad = 10, labelsize = 35)
+            ax.tick_params      (axis = 'x', which = 'both', length = 0, pad = 10, labelsize = 35)
+            ax.tick_params      (axis = 'y', which = 'both', length = 0, pad = 10, labelsize = labelsize)
 
             for label in ax.get_xticklabels(): label.set_fontname("Segoe UI")
             for label in ax.get_yticklabels(): label.set_fontname("Segoe UI"); label.set_weight("bold")
@@ -1010,7 +1010,7 @@ class TourAnalyzer:
                     grid_grs    = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist_l]
 
                     scale_l = 1.00 if len(plist_l) <= 20 else (0.75 if len(plist_l) <= 28 else 0.50)
-                    sizes_l = [rate ** 2 * 10000 * scale_l for rate in rig_rates]
+                    sizes_l = [(rate * scale_l) ** 2 * 10000 for rate in rig_rates]
 
                     cmap_l = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [
                         (0.0, COLOR_0),
@@ -1083,7 +1083,7 @@ class TourAnalyzer:
                 else: norm_perf = [0.5] * len(plist_g)
 
                 scale_g = 1.00 if len(plist_g) <= 20 else (0.75 if len(plist_g) <= 28 else 0.50)
-                sizes_g = [rate ** 3 * 20000 * scale_g for rate in gr_vals]
+                sizes_g = [(rate * scale_g) ** 2 * 10000 for rate in gr_vals]
                 cmap_g  = mc.LinearSegmentedColormap.from_list("guess_uf_elo_cmap", [(0, COLOR_0), (0.5, COLOR_1), (1, COLOR_2)])
                 
                 configs.append({
@@ -1705,15 +1705,15 @@ class TourAnalyzer:
                 plots_img.paste(img_guess_scaled,       (w + 10,    h + 10))
 
             else:
-                plots_w             = img_song.width
-                guess_h_scaled      = int(plots_w * (img_guess.height / img_guess.width))
-                img_guess_scaled    = img_guess.resize((plots_w, guess_h_scaled), Image.Resampling.LANCZOS)
+                plots_h             = img_song.height
+                guess_w_scaled      = int(plots_h * (img_guess.width / img_guess.height))
+                img_guess_scaled    = img_guess.resize((guess_w_scaled, plots_h), Image.Resampling.LANCZOS)
 
-                plots_h     = img_song.height + 10 + guess_h_scaled
+                plots_w     = img_song.width + 10 + guess_w_scaled
                 plots_img   = Image.new("RGB", (plots_w, plots_h), "white")
 
                 plots_img.paste(img_song, (0, 0))
-                plots_img.paste(img_guess_scaled, (0, img_song.height + 10))
+                plots_img.paste(img_guess_scaled, (img_song.width + 10, 0))
 
             if plots_img:
                 plots_out_p = path / "Plots.png"
