@@ -828,6 +828,11 @@ class TourAnalyzer:
         if has_chanting_songs: categories.append("Chanting Guess Rate")
 
         data_by_cat = {cat: [] for cat in categories}
+        num_players = len(self.s_part)
+
+        if      num_players > 28    : labelsize = 15
+        elif    num_players > 20    : labelsize = 25
+        else                        : labelsize = 35
 
         for tr in ["1", "2", "3", "4"]:
             tp = [n for n in self.s_part if n.lower() in assigns and assigns[n.lower()][1] == tr]
@@ -893,7 +898,7 @@ class TourAnalyzer:
                 data_by_cat["Chanting Guess Rate"].extend(chn_players)
 
         num_plots       = len(categories)
-        fig, axes       = plt.subplots(2, 3, figsize = (15, 15))
+        fig, axes       = plt.subplots(2, 3, figsize = (30, 30))
         axes            = axes.flatten()
         segment_width   = 1.00
         tier_gap        = 1.00
@@ -902,7 +907,7 @@ class TourAnalyzer:
             ax      = axes[idx]
             items   = data_by_cat[cat]
 
-            ax.set_title(cat, fontsize = 22.5, weight = 'bold', fontname = "Segoe UI", pad = 10)
+            ax.set_title(cat, fontsize = 50, weight = 'bold', fontname = "Segoe UI", pad = 20)
 
             if cat == "Chanting Guess Rate":
                 ax.set_xlim(0, 100)
@@ -922,6 +927,8 @@ class TourAnalyzer:
 
                 ax.set_xlim(0, xmax)
                 ax.xaxis.set_major_locator(mt.MultipleLocator(factor))
+
+            ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: '' if val == 0 else f"{val:g}"))
 
             xmin_axis       = 0.0
             y_ticks         = []
@@ -966,7 +973,8 @@ class TourAnalyzer:
             ax.set_yticklabels  (labels)
             ax.set_ylim         (first_y, last_y)
             ax.invert_yaxis     ()
-            ax.tick_params      (axis = 'both', which = 'both', length = 0, pad = 5, labelsize = 15)
+            ax.tick_params      (axis = 'x', which = 'both', length = 0, pad = 10, labelsize = labelsize)
+            ax.tick_params      (axis = 'y', which = 'both', length = 0, pad = 10, labelsize = 35)
 
             for label in ax.get_xticklabels(): label.set_fontname("Segoe UI")
             for label in ax.get_yticklabels(): label.set_fontname("Segoe UI")
@@ -975,8 +983,8 @@ class TourAnalyzer:
 
         for j in range(num_plots, len(axes)): axes[j].axis('off')
 
-        plt.suptitle        ("Tier Statistics", fontname = "Segoe UI", fontsize = 35, weight = 'bold', y = 0.99)
-        plt.tight_layout    ()
+        plt.suptitle        ("Tier Statistics", fontname = "Segoe UI", fontsize = 70, weight = 'bold', y = 1)
+        plt.tight_layout    (w_pad = 2.5, h_pad = 2.5)
         plt.savefig         (path / "Tier.png", dpi = 100)
         plt.close           (fig)
 
@@ -1716,44 +1724,48 @@ class TourAnalyzer:
 
                 plots_img = Image.open(plots_out_p)
 
-        col1_w = img_tour.width
-        col1_h = img_tour.height
+        h_extra = img_tour.height
+        if img_team: h_extra += 10 + img_team.height
 
-        if img_team:
-            col1_w = max(col1_w, img_team.width)
-            col1_h += 10 + img_team.height
-
-        block1_h = col1_h
+        w_tour_team = max(img_tour.width, img_team.width) if img_team else img_tour.width
 
         if img_tier:
-            tier_aspect     = img_tier.width / img_tier.height
-            tier_w_scaled   = int(block1_h * tier_aspect)
-            img_tier_scaled = img_tier.resize((tier_w_scaled, block1_h), Image.Resampling.LANCZOS)
-            
-            extra_w     = col1_w + 10 + tier_w_scaled
-            extra_h     = block1_h
-            extra_img   = Image.new("RGB", (extra_w, extra_h), "white")
+            tier_w_scaled   = int(h_extra * (img_tier.width / img_tier.height))
+            img_tier_scaled = img_tier.resize((tier_w_scaled, h_extra), Image.Resampling.LANCZOS)
 
-            tour_x = (col1_w - img_tour.width) // 2
-            extra_img.paste(img_tour, (tour_x, 0))
+        else: tier_w_scaled = 0
 
-            if img_team:
-                team_x = (col1_w - img_team.width) // 2
-                extra_img.paste(img_team, (team_x, img_tour.height + 10))
+        if plots_img:
+            plots_w_scaled      = int(h_extra * (plots_img.width / plots_img.height))
+            plots_img_scaled    = plots_img.resize((plots_w_scaled, h_extra), Image.Resampling.LANCZOS)
 
-            extra_img.paste(img_tier_scaled, (col1_w + 10, 0))
+        else: plots_w_scaled = 0
 
-        else:
-            extra_w     = col1_w
-            extra_h     = block1_h
-            extra_img   = Image.new("RGB", (extra_w, extra_h), "white")
-            
-            tour_x = (col1_w - img_tour.width) // 2
-            extra_img.paste(img_tour, (tour_x, 0))
+        w_extra = w_tour_team
 
-            if img_team:
-                team_x = (col1_w - img_team.width) // 2
-                extra_img.paste(img_team, (team_x, img_tour.height + 10))
+        if img_tier     : w_extra += 10 + tier_w_scaled
+        if plots_img    : w_extra += 10 + plots_w_scaled
+
+        extra_img = Image.new("RGB", (w_extra, h_extra), "white")
+
+        tour_x = (w_tour_team - img_tour.width) // 2
+        extra_img.paste(img_tour, (tour_x, 0))
+
+        if img_team:
+            team_x = (w_tour_team - img_team.width) // 2
+            extra_img.paste(img_team, (team_x, img_tour.height + 10))
+
+        current_x = w_tour_team
+
+        if img_tier:
+            current_x += 10
+            extra_img.paste(img_tier_scaled, (current_x, 0))
+            current_x += tier_w_scaled
+
+        if plots_img:
+            current_x += 10
+            extra_img.paste(plots_img_scaled, (current_x, 0))
+            current_x += plots_w_scaled
 
         extra_out_p = path / "Extra.png"
         extra_img.save(extra_out_p, compress_level = 9, optimize = True)
@@ -1761,39 +1773,27 @@ class TourAnalyzer:
         try     : trim_whitespace(extra_out_p)
         except  : pass
 
-        extra_img   = Image.open(extra_out_p)
-        p_path      = path / "Player.png"
+        extra_img = Image.open(extra_out_p)
+
+        p_path = path / "Player.png"
 
         if p_path.exists():
-            img_player  = Image.open(p_path)
+            img_player = Image.open(p_path)
 
             player_aspect       = img_player.width / img_player.height
             player_w_scaled     = extra_img.width
             player_h_scaled     = int(player_w_scaled / player_aspect)
             img_player_scaled   = img_player.resize((player_w_scaled, player_h_scaled), Image.Resampling.LANCZOS)
 
-            former_w = extra_img.width
-            former_h = img_player_scaled.height + 10 + extra_img.height
+            gen_w = extra_img.width
+            gen_h = player_h_scaled + 10 + extra_img.height
 
-            former_img = Image.new("RGB", (former_w, former_h), "white")
-            former_img.paste(img_player_scaled, (0, 0))
-            former_img.paste(extra_img, (0, img_player_scaled.height + 10))
+            general_img = Image.new("RGB", (gen_w, gen_h), "white")
+            general_img.paste(img_player_scaled, (0, 0))
+            general_img.paste(extra_img, (0, player_h_scaled + 10))
 
-            if plots_img:
-                plots_aspect     = plots_img.width / plots_img.height
-                plots_h_scaled   = former_h
-                plots_w_scaled   = int(plots_h_scaled * plots_aspect)
-                plots_img_scaled = plots_img.resize((plots_w_scaled, plots_h_scaled), Image.Resampling.LANCZOS)
+            gen_out_p = path / "General.png"
+            general_img.save(gen_out_p, compress_level = 9, optimize = True)
 
-                gen_w = former_w + 10 + plots_w_scaled
-                gen_h = former_h
-
-                general_img = Image.new("RGB", (gen_w, gen_h), "white")
-                general_img.paste(former_img, (0, 0))
-                general_img.paste(plots_img_scaled, (former_w + 10, 0))
-
-                gen_out_p = path / "General.png"
-                general_img.save(gen_out_p, compress_level = 9, optimize = True)
-
-                try     : trim_whitespace(gen_out_p)
-                except  : pass
+            try     : trim_whitespace(gen_out_p)
+            except  : pass
