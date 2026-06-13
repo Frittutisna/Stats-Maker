@@ -1436,7 +1436,7 @@ class TourAnalyzer:
         ax.set_xticks(np.arange(num_x) + 0.5)
         ax.set_yticks(np.arange(num_y) + 0.5)
 
-        p_bucket = ["0-5", "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", ">40"]
+        p_bucket = ["<5", "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", ">40"]
         y_bucket = ["<90", "90-94", "95-99", "00-04", "05-09", "10-14", "15-19", "20-24", ">24"]
 
         ax.set_xticklabels(p_bucket, fontname = "Segoe UI", fontsize = 20)
