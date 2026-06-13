@@ -1657,7 +1657,7 @@ class TourAnalyzer:
         except  : pass
 
     def _fuse(self, path):
-        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Guess": "Guess.png", "List-Guess": "List-Guess.png", "Song": "Song.png"}
+        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Guess": "Guess.png", "List": "List.png", "List-Guess": "List-Guess.png", "Song": "Song.png"}
         ps      = {k: path / v for k, v in f.items() if (path / v).exists()}
         imgs    = {k: Image.open(v) for k, v in ps.items()}
 
@@ -1669,11 +1669,51 @@ class TourAnalyzer:
 
             return
 
-        img_tour    = imgs.get("Tour")
-        img_team    = imgs.get("Team")
-        img_tier    = imgs.get("Tier")
-        img_left    = imgs.get("Song")
-        img_right   = imgs.get("List-Guess") or imgs.get("Guess")
+        img_tour        = imgs.get("Tour")
+        img_team        = imgs.get("Team")
+        img_tier        = imgs.get("Tier")
+        img_song        = imgs.get("Song")
+        img_guess       = imgs.get("Guess")
+        img_list        = imgs.get("List")
+        img_list_guess  = imgs.get("List-Guess")
+
+        plots_img = None
+
+        if img_song and img_guess:
+            if img_list and img_list_guess:
+                w, h = img_song.width, img_song.height
+
+                img_guess_scaled        = img_guess         .resize((w, h), Image.Resampling.LANCZOS)
+                img_list_scaled         = img_list          .resize((w, h), Image.Resampling.LANCZOS)
+                img_list_guess_scaled   = img_list_guess    .resize((w, h), Image.Resampling.LANCZOS)
+
+                plots_w, plots_h    = w + 10 + w, h + 10 + h
+                plots_img           = Image.new("RGB", (plots_w, plots_h), "white")
+
+                plots_img.paste(img_song,               (0,         0))
+                plots_img.paste(img_list_guess_scaled,  (w + 10,    0))
+                plots_img.paste(img_list_scaled,        (0,         h + 10))
+                plots_img.paste(img_guess_scaled,       (w + 10,    h + 10))
+
+            else:
+                plots_w             = img_song.width
+                guess_h_scaled      = int(plots_w * (img_guess.height / img_guess.width))
+                img_guess_scaled    = img_guess.resize((plots_w, guess_h_scaled), Image.Resampling.LANCZOS)
+
+                plots_h     = img_song.height + 10 + guess_h_scaled
+                plots_img   = Image.new("RGB", (plots_w, plots_h), "white")
+
+                plots_img.paste(img_song, (0, 0))
+                plots_img.paste(img_guess_scaled, (0, img_song.height + 10))
+
+            if plots_img:
+                plots_out_p = path / "Plots.png"
+                plots_img.save(plots_out_p, compress_level = 9, optimize = True)
+
+                try     : trim_whitespace(plots_out_p)
+                except  : pass
+
+                plots_img = Image.open(plots_out_p)
 
         col1_w = img_tour.width
         col1_h = img_tour.height
@@ -1689,30 +1729,22 @@ class TourAnalyzer:
             tier_w_scaled   = int(block1_h * tier_aspect)
             img_tier_scaled = img_tier.resize((tier_w_scaled, block1_h), Image.Resampling.LANCZOS)
             
-            top_w = col1_w + 10 + tier_w_scaled
-            top_h = col1_h
+            extra_w     = col1_w + 10 + tier_w_scaled
+            extra_h     = block1_h
+            extra_img   = Image.new("RGB", (extra_w, extra_h), "white")
 
-            target_w = (top_w - 10) // 2            
-            bottom_h = 0
+            tour_x = (col1_w - img_tour.width) // 2
+            extra_img.paste(img_tour, (tour_x, 0))
 
-            if img_left:
-                left_aspect     = img_left.width / img_left.height
-                left_h_scaled   = int(target_w / left_aspect)
-                img_left_scaled = img_left.resize((target_w, left_h_scaled), Image.Resampling.LANCZOS)
-                bottom_h        = max(bottom_h, left_h_scaled)
+            if img_team:
+                team_x = (col1_w - img_team.width) // 2
+                extra_img.paste(img_team, (team_x, img_tour.height + 10))
 
-            else: img_left_scaled = None
-                
-            if img_right:
-                right_aspect        = img_right.width / img_right.height
-                right_h_scaled      = int(target_w / right_aspect)
-                img_right_scaled    = img_right.resize((target_w, right_h_scaled), Image.Resampling.LANCZOS)
-                bottom_h            = max(bottom_h, right_h_scaled)
+            extra_img.paste(img_tier_scaled, (col1_w + 10, 0))
 
-            else: img_right_scaled = None
-                
-            extra_w     = top_w
-            extra_h     = top_h + (10 + bottom_h if bottom_h > 0 else 0)
+        else:
+            extra_w     = col1_w
+            extra_h     = block1_h
             extra_img   = Image.new("RGB", (extra_w, extra_h), "white")
             
             tour_x = (col1_w - img_tour.width) // 2
@@ -1722,58 +1754,16 @@ class TourAnalyzer:
                 team_x = (col1_w - img_team.width) // 2
                 extra_img.paste(img_team, (team_x, img_tour.height + 10))
 
-            extra_img.paste(img_tier_scaled, (col1_w + 10, 0))
-            
-            if img_left_scaled  : extra_img.paste(img_left_scaled,  (0,             top_h + 10))
-            if img_right_scaled : extra_img.paste(img_right_scaled, (target_w + 10, top_h + 10))
-                
-        else:
-            if img_left:
-                left_aspect     = img_left.width / img_left.height
-                left_w_scaled   = int(block1_h * left_aspect)
-                img_left_scaled = img_left.resize((left_w_scaled, block1_h), Image.Resampling.LANCZOS)
-                tour_x_offset   = img_left_scaled.width + 10
-
-            else:
-                img_left_scaled = None
-                tour_x_offset   = 0
-
-            block1_w        = tour_x_offset + col1_w
-            img_tier_scaled = None
-
-            if img_right:
-                right_aspect        = img_right.width / img_right.height
-                right_w_scaled      = int(block1_h * right_aspect)
-                img_right_scaled    = img_right.resize((right_w_scaled, block1_h), Image.Resampling.LANCZOS)
-                extra_w             = block1_w + 10 + img_right_scaled.width
-
-            else:
-                img_right_scaled    = None
-                extra_w             = block1_w
-
-            extra_h     = block1_h
-            extra_img   = Image.new("RGB", (extra_w, extra_h), "white")
-
-            if img_left_scaled: extra_img.paste(img_left_scaled, (0, 0))        
-            tour_x = tour_x_offset + (col1_w - img_tour.width) // 2
-            extra_img.paste(img_tour, (tour_x, 0))
-
-            if img_team:
-                team_x = tour_x_offset + (col1_w - img_team.width) // 2
-                extra_img.paste(img_team, (team_x, img_tour.height + 10))
-
-            if img_right_scaled : extra_img.paste(img_right_scaled, (block1_w + 10, 0))
-
         extra_out_p = path / "Extra.png"
         extra_img.save(extra_out_p, compress_level = 9, optimize = True)
 
         try     : trim_whitespace(extra_out_p)
         except  : pass
 
-        p_path = path / "Player.png"
+        extra_img   = Image.open(extra_out_p)
+        p_path      = path / "Player.png"
 
         if p_path.exists():
-            extra_img   = Image.open(extra_out_p)
             img_player  = Image.open(p_path)
 
             player_aspect       = img_player.width / img_player.height
@@ -1781,15 +1771,28 @@ class TourAnalyzer:
             player_h_scaled     = int(player_w_scaled / player_aspect)
             img_player_scaled   = img_player.resize((player_w_scaled, player_h_scaled), Image.Resampling.LANCZOS)
 
-            gen_w = extra_img.width
-            gen_h = img_player_scaled.height + 10 + extra_img.height
+            former_w = extra_img.width
+            former_h = img_player_scaled.height + 10 + extra_img.height
 
-            general_img = Image.new("RGB", (gen_w, gen_h), "white")
-            general_img.paste(img_player_scaled, (0, 0))
-            general_img.paste(extra_img, (0, img_player_scaled.height + 10))
+            former_img = Image.new("RGB", (former_w, former_h), "white")
+            former_img.paste(img_player_scaled, (0, 0))
+            former_img.paste(extra_img, (0, img_player_scaled.height + 10))
 
-            gen_out_p = path / "General.png"
-            general_img.save(gen_out_p, compress_level = 9, optimize = True)
+            if plots_img:
+                plots_aspect     = plots_img.width / plots_img.height
+                plots_h_scaled   = former_h
+                plots_w_scaled   = int(plots_h_scaled * plots_aspect)
+                plots_img_scaled = plots_img.resize((plots_w_scaled, plots_h_scaled), Image.Resampling.LANCZOS)
 
-            try     : trim_whitespace(gen_out_p)
-            except  : pass
+                gen_w = former_w + 10 + plots_w_scaled
+                gen_h = former_h
+
+                general_img = Image.new("RGB", (gen_w, gen_h), "white")
+                general_img.paste(former_img, (0, 0))
+                general_img.paste(plots_img_scaled, (former_w + 10, 0))
+
+                gen_out_p = path / "General.png"
+                general_img.save(gen_out_p, compress_level = 9, optimize = True)
+
+                try     : trim_whitespace(gen_out_p)
+                except  : pass
