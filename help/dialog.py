@@ -118,7 +118,6 @@ class TourSelectionDialog(UnifiedDialog):
         self.fill_color     = "#000000"
         script_dir          = Path(__file__).parent.absolute()
         states              = {}
-        any_recommended     = False
 
         for tid in tour_ids:
             t_path          = script_dir / DIR_TOURS / str(tid)
@@ -127,25 +126,11 @@ class TourSelectionDialog(UnifiedDialog):
             is_recommended  = False
 
             if codes_file.exists() and json_dir.exists():
+                codes_size = codes_file.stat().st_size
                 json_count = len(list(json_dir.glob("*.json")))
-
-                if json_count > 0:
-                    with open(codes_file, "r", encoding = "utf-8") as f:
-                        content     = f.read()
-                        main_part   = re.split(r'https://challonge.com/\S+', content)[0]
-                        players     = re.findall(r'[^\s(]+\s*\([-]?\d+\.\d+\)', main_part)
-                        p           = len(players)
-
-                        if p > 0:
-                            divisor = p // 8
-
-                            if divisor > 0 and json_count % divisor == 0: 
-                                is_recommended  = True
-                                any_recommended = True
+                if codes_size > 0 and json_count > 1: is_recommended = True
 
             states[tid] = is_recommended
-
-        if not any_recommended and "0" in states: states["0"] = True
 
         for tid in tour_ids:
             is_active       = states[tid]
