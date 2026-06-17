@@ -779,18 +779,7 @@ class TourAnalyzer:
                 stats.append(["Best Solo Rig Converter",    f"{b['n']} ({b['p']:.2f}, {b['h']}/{b['t']})"])
                 stats.append(["Worst Solo Rig Converter",   f"{w['n']} ({w['p']:.2f}, {w['h']}/{w['t']})"])
 
-        if use_teams:
-            half        = math.ceil(len(stats) / 2)
-            left_side   = stats[:half]
-            right_side  = stats[half:]
-
-            while len(right_side) < len(left_side): right_side.append(["", ""])
-            two_col_stats = []
-            for l, r in zip(left_side, right_side): two_col_stats.append([l[0], l[1], r[0], r[1]])
-            df_tour = pd.DataFrame(two_col_stats, columns = ["Statistic", "Value", "Statistic", "Value"])
-
-        else: df_tour = pd.DataFrame(stats, columns = ["Statistic", "Value"])
-
+        df_tour = pd.DataFrame(stats, columns = ["Metric", "Value"])
         self._export_png(df_tour, path, "Tour.png", "Tour Statistics")
 
     def _create_team_png(self, assigns, t1_lookup, path):
@@ -1621,7 +1610,7 @@ class TourAnalyzer:
             th_cells.append(f"<th{s_th}>{str(c).replace(' ', '<br>')}</th>")
 
         html            = "<thead><tr>" + "".join(th_cells) + "</tr></thead><tbody>"
-        bold_columns    = {"Player", "Statistic", "Team Leader"}
+        bold_columns    = {"Player", "Metric", "Team Leader"}
 
         for idx, row in df.iterrows():
             b_s     =   "border-bottom: 3px solid black;" if idx in borders else ""
