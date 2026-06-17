@@ -1546,7 +1546,12 @@ class TourAnalyzer:
 
                     else:
                         best_val    = num.dropna().min()
-                        worst_val   = el_num.max() if not el_num.empty else None
+
+                        if col == "Median Time":
+                            under_limit = el_num[el_num < THRESH_TIME]
+                            worst_val   = under_limit.max() if not under_limit.empty else None
+
+                        else: worst_val = el_num.max() if not el_num.empty else None
 
                     best_b_indices  = num[num == best_val].index        if pd.notnull(best_val)     else pd.Index([])
                     worst_b_indices = el_num[el_num == worst_val].index if pd.notnull(worst_val)    else pd.Index([])
