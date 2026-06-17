@@ -797,9 +797,7 @@ class TourAnalyzer:
         res = []
 
         for tid in self.t_c_ps:
-            leader_name = t1_lookup.get(tid, "")
-            t_lbl       = leader_name if leader_name else f"Team {tid}"
-            t_overs     = []
+            t_overs = []
 
             for original_name in self.s_part:
                 n_lower = original_name.lower()
@@ -807,21 +805,32 @@ class TourAnalyzer:
                 if n_lower in assigns:
                     t_info = assigns[n_lower]
                     if t_info[0] == tid and self.c_counts[original_name] > 0: t_overs.append(self.p_overs_sum[original_name] / self.c_counts[original_name])
-                    
-            avg_o = np.mean(t_overs) if t_overs else np.nan
+         
+            t_elos = []
+
+            for p in self.rosters[tid]:
+                v = self.elo_map.get(p.lower())
+
+                if v is not None:
+                    try     : t_elos.append(float(v))
+                    except  : pass
 
             res.append({
-                "Team Leader"       : t_lbl,
-                "Median Vintage"    : format_year(np.median(self.t_vint[tid])),
-                "Mean GR"           : f"{np.mean(self.t_c_ps    [tid]) * 100:.2f}",
-                "Rig Synergy"       : f"{np.mean(self.t_on_syn  [tid]) * 100:.2f}",
-                "Off Synergy"       : f"{np.mean(self.t_off_syn [tid]) * 100:.2f}",
-                "Shared Rigs"       : f"{np.mean(self.t_sh_rig  [tid]) * 100:.2f}",
-                "Mean Over-8"       : f"{avg_o:.2f}" if not np.isnan(avg_o) else "N/A",
-                "Total 1/8s"        : self.t_solos[tid],
+                "Team Leader"   : t1_lookup.get(tid, ""),
+                "Mean Elo"      : np.mean(t_elos),
+                "Mean GR"       : np.mean(self.t_c_ps       [tid]) * 100,
+                "Total 1/8s"    : self.t_solos              [tid],
+                "Mean Over-8"   : np.mean(t_overs),
+                "Rig Synergy"   : np.mean(self.t_on_syn     [tid]) * 100,
+                "Off Synergy"   : np.mean(self.t_off_syn    [tid]) * 100,
+                "Shared Rigs"   : np.mean(self.t_sh_rig     [tid]) * 100,
             })
 
-        self._export_png(pd.DataFrame(res).sort_values("Mean GR", ascending = False), path, "Team.png", "Team Statistics")
+        df          = pd.DataFrame(res).sort_values("Mean Elo", ascending = False)
+        num_cols    = ["Mean Elo", "Mean GR", "Mean Over-8", "Rig Synergy", "Off Synergy", "Shared Rigs"]
+
+        for c in num_cols: df[c] = pd.to_numeric(df[c], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        self._export_png(df, path, "Team.png", "Team Statistics")
 
     def _create_tier_png(self, assigns, path, has_chanting_songs):
         categories = ["Guess Rate", "Lives Taken", "Lives Saved", "Lives Taken/Saved", "Median Time"]
@@ -1523,17 +1532,25 @@ class TourAnalyzer:
 
     def _export_png(self, df, path, fname, title, mask = None, val_str = "default"):
         if not self.browser_path: return
+        df = df.reset_index(drop = True)
 
         desc = [
-            "Elo",          "GR",           "UF",           "1/8s",         "2/8s",
-            "Lives Taken",  "Lives Saved",  "OP GR",        "ED GR",        "IN GR",
-            "Rigs",         "Rig Rate",     "Over-8 Delta", "Rig GR",       "Off GR",       "Rig Delta", 
-            "Chant GR",     "Mean GR",      "Rig Synergy",  "Off Synergy",  "Shared Rigs",  "Total 1/8s"
+            "Elo",          "GR",           "UF",
+            "1/8s",         "2/8s",
+            "Lives Taken",  "Lives Saved",
+            "OP GR",        "ED GR",        "IN GR",
+            "Rigs",         "Rig Rate",     "Over-8 Delta",
+            "Rig GR",       "Off GR",       "Rig Delta", 
+            "Chant GR",
+            "Mean Elo",     "Mean GR",      "Total 1/8s",
+            "Rig Synergy",  "Off Synergy",  "Shared Rigs"
         ]
 
         asc     = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
         rest    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]
         stats   = {}
+        elo_col = "Elo" if "Elo" in df.columns else "Mean Elo" if "Mean Elo" in df.columns else None
+        elo_ser = pd.to_numeric(df[elo_col], errors = 'coerce').fillna(0.0) if elo_col else pd.Series(0.0, index = df.index)
 
         for col in df.columns:
             if col in desc or col in asc:
@@ -1541,14 +1558,22 @@ class TourAnalyzer:
                 el_num  = num[mask].dropna() if mask is not None and col in rest else num.dropna()
 
                 if not num.dropna().empty:
-                    stats[col] = {
-                        'max'   : num.dropna().max(),
-                        'min'   : el_num.min() if not el_num.empty else None, 
-                        's_max' : num.dropna().value_counts().get(num.dropna().max(), 0) <= 3, 
-                        's_min' : el_num.value_counts().get(el_num.min(), 0) <= 3 if not el_num.empty else False
-                    }
+                    if col in ["Elo", "Mean Elo"]:
+                        best_idx    = num.dropna().idxmax() if col in desc else num.dropna().idxmin()
+                        worst_idx   = num.dropna().idxmin() if col in desc else num.dropna().idxmax()
 
-        df      = df.reset_index(drop = True)
+                    else:
+                        best_val    = num.dropna().max()    if col in desc else num.dropna().min()
+                        worst_val   = el_num.min()          if col in desc else el_num.max() if not el_num.empty else None
+
+                        best_b_indices  = num[num == best_val].index
+                        best_idx        = elo_ser.loc[best_b_indices].idxmin() if not best_b_indices.empty else None
+
+                        worst_b_indices = el_num[el_num == worst_val].index     if worst_val is not None        else pd.Index([])
+                        worst_idx       = elo_ser.loc[worst_b_indices].idxmax() if not worst_b_indices.empty    else None
+
+                    stats[col] = {'best_idx': best_idx, 'worst_idx': worst_idx}
+
         borders = []
 
         if "GR" in df.columns:
@@ -1577,7 +1602,7 @@ class TourAnalyzer:
 
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
-        col_borders = {"Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Statistic", "Value", "Team Leader", "Median Vintage"}
+        col_borders = {"Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Statistic", "Value", "Team Leader", "Mean Elo", "Mean Over-8"}
         th_cells    = []
 
         for c in df.columns:
@@ -1596,19 +1621,26 @@ class TourAnalyzer:
                 if cname in col_borders: style.append("border-right: 3px solid black;")
 
                 if cname in stats:
-                    v = pd.to_numeric(str(cell).replace('%',''), errors = 'coerce')
+                    val_best_idx    = stats[cname]['best_idx']
+                    val_worst_idx   = stats[cname]['worst_idx']
 
-                    if pd.notnull(v):
-                        is_max, is_min  = (v == stats[cname]['max']) and stats[cname]['s_max'], (v == stats[cname]['min']) and stats[cname]['s_min']
-                        elig            = True if mask is None or cname not in rest else mask[idx]
+                    if cname in desc:
+                        is_max = (idx == val_best_idx)
+                        is_min = (idx == val_worst_idx)
 
-                        if cname in desc:
-                            if      is_max          : style.append(f"background-color: {COLOR_2}; color: white; font-weight: bold;")
-                            elif    is_min and elig : style.append(f"background-color: {COLOR_0}; color: white; font-weight: bold;")
+                    else:
+                        is_max = (idx == val_worst_idx)
+                        is_min = (idx == val_best_idx)
 
-                        elif cname in asc:
-                            if      is_max and elig : style.append(f"background-color: {COLOR_0}; color: white; font-weight: bold;")
-                            elif    is_min          : style.append(f"background-color: {COLOR_2}; color: white; font-weight: bold;")
+                    elig = True if mask is None or cname not in rest else mask[idx]
+
+                    if cname in desc:
+                        if      is_max          : style.append(f"background-color: {COLOR_2}; color: white; font-weight: bold;")
+                        elif    is_min and elig : style.append(f"background-color: {COLOR_0}; color: white; font-weight: bold;")
+
+                    elif cname in asc:
+                        if      is_max and elig : style.append(f"background-color: {COLOR_0}; color: white; font-weight: bold;")
+                        elif    is_min          : style.append(f"background-color: {COLOR_2}; color: white; font-weight: bold;")
 
                 s_attr  =   f' style="{" ".join(style)}"' if style else ""
                 cnt     =   f"<b>{cell}</b>" if cname in bold_columns else cell
