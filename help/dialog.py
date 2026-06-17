@@ -116,7 +116,7 @@ class TourSelectionDialog(UnifiedDialog):
         self.selected_tours = []
         self.vars           = {}
         self.fill_color     = "#000000"
-        script_dir          = Path(__file__).parent.absolute()
+        script_dir          = Path(__file__).parent.parent.absolute()
         states              = {}
 
         for tid in tour_ids:
