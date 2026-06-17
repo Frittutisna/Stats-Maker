@@ -1553,8 +1553,8 @@ class TourAnalyzer:
 
                         else: worst_val = el_num.max() if not el_num.empty else None
 
-                    best_b_indices  = num[num == best_val].index        if pd.notnull(best_val)     else pd.Index([])
-                    worst_b_indices = el_num[el_num == worst_val].index if pd.notnull(worst_val)    else pd.Index([])
+                    best_b_indices  = num       [num    == best_val]    .index if pd.notnull(best_val)  else pd.Index([])
+                    worst_b_indices = el_num    [el_num == worst_val]   .index if pd.notnull(worst_val) else pd.Index([])
 
                     el_cols = ["Elo", "Mean Elo"]
                     gr_cols = ["OP GR", "ED GR", "IN GR", "Chant GR"]
