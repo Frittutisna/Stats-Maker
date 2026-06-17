@@ -1603,12 +1603,12 @@ class TourAnalyzer:
                         elig            = True if mask is None or cname not in rest else mask[idx]
 
                         if cname in desc:
-                            if      is_max          : style.append(f"color: {COLOR_2}; font-weight: bold;")
-                            elif    is_min and elig : style.append(f"color: {COLOR_0}; font-weight: bold;")
+                            if      is_max          : style.append(f"background-color: {COLOR_2}; color: white; font-weight: bold;")
+                            elif    is_min and elig : style.append(f"background-color: {COLOR_0}; color: white; font-weight: bold;")
 
                         elif cname in asc:
-                            if      is_max and elig : style.append(f"color: {COLOR_0}; font-weight: bold;")
-                            elif    is_min          : style.append(f"color: {COLOR_2}; font-weight: bold;")
+                            if      is_max and elig : style.append(f"background-color: {COLOR_0}; color: white; font-weight: bold;")
+                            elif    is_min          : style.append(f"background-color: {COLOR_2}; color: white; font-weight: bold;")
 
                 s_attr  =   f' style="{" ".join(style)}"' if style else ""
                 cnt     =   f"<b>{cell}</b>" if cname in bold_columns else cell
@@ -1627,7 +1627,7 @@ class TourAnalyzer:
                     }} 
                     h2 {{
                         margin              : 0 0 10px 0;
-                        font-size           : 30px;
+                        font-size           : 40px;
                         text-align          : center
                     }} 
                     table {{
@@ -1637,7 +1637,7 @@ class TourAnalyzer:
                     }} 
                     th {{
                         font-weight         : bold;
-                        font-size           : 20px;
+                        font-size           : 25px;
                         text-align          : center;
                         padding             : 10px;
                         border              : 1px solid black;
@@ -1645,7 +1645,7 @@ class TourAnalyzer:
                         background-color    : #f0f0f0
                     }} 
                     td {{
-                        font-size           : 20px;
+                        font-size           : 25px;
                         text-align          : center;
                         padding             : 10px;
                         border              : 1px solid black
