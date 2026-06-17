@@ -1198,7 +1198,7 @@ class TourAnalyzer:
                 force_text              = (1.00, 1.00),
                 force_objects           = (1.00, 1.00),
                 expand                  = (2.00, 2.00),
-                arrowprops              = dict(arrowstyle = "-", color = 'black', shrinkA = 10)
+                arrowprops              = dict(arrowstyle = "-", color = 'black', shrinkA = 15)
             )
 
             ax.set_title    (cfg["title"],  weight = 'bold', fontname = "Segoe UI", fontsize = 40, pad      = 15)
@@ -1294,7 +1294,8 @@ class TourAnalyzer:
             (1.0, COLOR_2)
         ])
 
-        norm = mc.Normalize(vmin = 0.0, vmax = 1.0)
+        norm    = mc.Normalize(vmin = 0.0, vmax = 1.0)
+        texts   = []
 
         for name, xl, yl, xg, yg, gr, rig_gr in zip(plist, x_start, y_start, x_end, y_end, gr_vals, grid_grs):
             label = self._get_player_acronym(name)
@@ -1314,36 +1315,28 @@ class TourAnalyzer:
             xm = (xl + xg) / 2
             ym = (yl + yg) / 2
 
-            trans   = ax.transData.transform
-            p_start = trans((xl, yl))
-            p_end   = trans((xg, yg))
-            
-            dx = p_end[0] - p_start[0]
-            dy = p_end[1] - p_start[1]
-            
-            angle = np.degrees(np.arctan2(dy, dx))
+            ha_align = "left"   if xm >= ((x_min + x_max) / 2) else "right"
+            va_align = "bottom" if ym >= ((y_min + y_max) / 2) else "top"
 
-            if      angle > 90  : angle -= 180
-            elif    angle < -90 : angle += 180
+            texts.append(ax.text(
+                xm, ym, label,
+                size        = 20,
+                weight      = "bold",
+                fontname    = "Segoe UI",
+                ha          = ha_align,
+                va          = va_align,
+                zorder      = 4
+            ))
 
-            gap         = 2.5
-            angle_rad   = np.radians(angle)
-
-            p_mid           = trans((xm, ym))
-            p_mid_shifted   = (p_mid[0] - gap * np.sin(angle_rad), p_mid[1] + gap * np.cos(angle_rad))
-
-            xm_shifted, ym_shifted  = ax.transData.inverted().transform(p_mid_shifted)
-
-            ax.text(
-                xm_shifted, ym_shifted, label,
-                fontsize        = 20,
-                fontname        = "Segoe UI",
-                weight          = "bold",
-                ha              = "center",
-                va              = "bottom",
-                rotation        = angle,
-                rotation_mode   = "anchor",
-                zorder          = 4,
+        if texts: 
+            adjust_text(
+                texts,
+                ax                      = ax,
+                avoid_self              = True,
+                add_objects_to_edges    = True,
+                force_text              = (1.00, 1.00),
+                expand                  = (2.00, 2.00),
+                arrowprops              = dict(arrowstyle = "-", color = 'black', shrinkA = 15)
             )
 
         ax.set_title    ("List → Guess Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 40, pad      = 15)
