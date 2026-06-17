@@ -1558,19 +1558,30 @@ class TourAnalyzer:
                 el_num  = num[mask].dropna() if mask is not None and col in rest else num.dropna()
 
                 if not num.dropna().empty:
-                    if col in ["Elo", "Mean Elo"]:
-                        best_idx    = num.dropna().idxmax() if col in desc else num.dropna().idxmin()
-                        worst_idx   = num.dropna().idxmin() if col in desc else num.dropna().idxmax()
+                    if col in desc:
+                        best_val    = num.dropna().max()
+                        worst_val   = el_num.min() if not el_num.empty else None
 
                     else:
-                        best_val    = num.dropna().max()    if col in desc else num.dropna().min()
-                        worst_val   = el_num.min()          if col in desc else el_num.max() if not el_num.empty else None
+                        best_val    = num.dropna().min()
+                        worst_val   = el_num.max() if not el_num.empty else None
 
-                        best_b_indices  = num[num == best_val].index
-                        best_idx        = elo_ser.loc[best_b_indices].idxmin() if not best_b_indices.empty else None
+                    best_b_indices  = num[num == best_val].index        if pd.notnull(best_val)     else pd.Index([])
+                    worst_b_indices = el_num[el_num == worst_val].index if pd.notnull(worst_val)    else pd.Index([])
 
-                        worst_b_indices = el_num[el_num == worst_val].index     if worst_val is not None        else pd.Index([])
-                        worst_idx       = elo_ser.loc[worst_b_indices].idxmax() if not worst_b_indices.empty    else None
+                    el_cols = ["Elo", "Mean Elo"]
+                    gr_cols = ["OP GR", "ED GR", "IN GR", "Chant GR"]
+
+                    if      len(best_b_indices) > 3                     : best_idx = None
+                    elif    col in el_cols                              : best_idx = best_b_indices[0]                                                                      if not best_b_indices.empty else None
+                    elif    col in gr_cols                              : best_idx = pd.to_numeric(df["GR"],    errors = 'coerce').fillna(0).loc[best_b_indices].idxmin()   if not best_b_indices.empty else None
+                    elif    col == "Rig GR" and "Rigs" in df.columns    : best_idx = pd.to_numeric(df["Rigs"],  errors = 'coerce').fillna(0).loc[best_b_indices].idxmax()   if not best_b_indices.empty else None
+                    else                                                : best_idx = elo_ser.loc[best_b_indices].idxmin()                                                   if not best_b_indices.empty else None
+
+                    if      len(worst_b_indices) > 3    : worst_idx = None
+                    elif    col in el_cols              : worst_idx = worst_b_indices[0]                                                                    if not worst_b_indices.empty else None
+                    elif    col in gr_cols              : worst_idx = pd.to_numeric(df["GR"], errors = 'coerce').fillna(0).loc[worst_b_indices].idxmax()    if not worst_b_indices.empty else None
+                    else                                : worst_idx = elo_ser.loc[worst_b_indices].idxmax()                                                 if not worst_b_indices.empty else None
 
                     stats[col] = {'best_idx': best_idx, 'worst_idx': worst_idx}
 
@@ -1602,7 +1613,7 @@ class TourAnalyzer:
 
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
-        col_borders = {"Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Statistic", "Value", "Team Leader", "Mean Elo", "Mean Over-8"}
+        col_borders = {"Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Statistic", "Value", "Team Leader", "Mean Over-8"}
         th_cells    = []
 
         for c in df.columns:
