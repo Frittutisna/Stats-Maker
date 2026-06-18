@@ -830,55 +830,62 @@ class TourAnalyzer:
         self._export_png(df, path, "Team.png", "Team Statistics")
 
     def _create_tier_png(self, assigns, path, has_chanting_songs):
-        categories = ["Guess Rate", "Lives Taken", "Lives Saved", "Lives Taken/Saved", "Median Time"]
-        if has_chanting_songs: categories.append("Chanting Guess Rate")
-
-        data_by_cat = {cat: [] for cat in categories}
-        num_players = len(self.s_part)
-
-        if      num_players > 28    : labelsize = 25
-        elif    num_players > 20    : labelsize = 30
-        else                        : labelsize = 35
+        rows = []
 
         for tr in ["1", "2", "3", "4"]:
             tp = [n for n in self.s_part if n.lower() in assigns and assigns[n.lower()][1] == tr]
             if not tp: continue
 
+            row         = {"Tier": tr}
             gen_players = []
 
             for p in tp:
                 val = 100 * (self.c_counts[p] / self.s_part[p]) if self.s_part[p] else 0
-                gen_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
+                gen_players.append({"player": p, "value": val})
 
-            gen_players.sort(key = lambda x: x["value"], reverse = True)
-            data_by_cat["Guess Rate"].extend(gen_players)
+            if gen_players:
+                gen_players.sort(key = lambda x: x["value"], reverse = True)
+                row["Guess Rate"] = f"{gen_players[0]['player']} ({gen_players[0]['value']:.2f})"
+
+            else: row["Guess Rate"] = "N/A"
 
             atk_players = []
 
             for p in tp:
                 val = self.p_pts[p]
-                atk_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
+                atk_players.append({"player": p, "value": val})
 
-            atk_players.sort(key = lambda x: x["value"], reverse = True)
-            data_by_cat["Lives Taken"].extend(atk_players)
+            if atk_players:
+                atk_players.sort(key = lambda x: x["value"], reverse = True)
+                row["Lives Taken"] = f"{atk_players[0]['player']} ({atk_players[0]['value']:g})"
+
+            else: row["Lives Taken"] = "N/A"
 
             blk_players = []
 
             for p in tp:
                 val = self.p_blks[p]
-                blk_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
+                blk_players.append({"player": p, "value": val})
 
-            blk_players.sort(key = lambda x: x["value"], reverse = True)
-            data_by_cat["Lives Saved"].extend(blk_players)
+            if blk_players:
+                blk_players.sort(key = lambda x: x["value"], reverse = True)
+                row["Lives Saved"] = f"{blk_players[0]['player']} ({blk_players[0]['value']:g})"
+
+            else: row["Lives Saved"] = "N/A"
 
             con_players = []
 
             for p in tp:
-                val = self.p_pts[p] + self.p_blks[p]
-                con_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
+                cor = self.c_counts[p]
+                val = (100 * (self.p_pts[p] + self.p_blks[p]) / self.c_counts[p]) if cor > 0 else 0
 
-            con_players.sort(key = lambda x: x["value"], reverse = True)
-            data_by_cat["Lives Taken/Saved"].extend(con_players)
+                con_players.append({"player": p, "value": val})
+
+            if con_players:
+                con_players.sort(key = lambda x: x["value"], reverse = True)
+                row["Contribution Rate"] = f"{con_players[0]['player']} ({con_players[0]['value']:.2f})"
+
+            else: row["Contribution Rate"] = "N/A"
 
             spd_players = []
 
@@ -887,10 +894,13 @@ class TourAnalyzer:
 
                 if times:
                     val = np.median(times)
-                    spd_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
+                    spd_players.append({"player": p, "value": val})
 
-            spd_players.sort(key = lambda x: x["value"], reverse = False)
-            data_by_cat["Median Time"].extend(spd_players)
+            if spd_players:
+                spd_players.sort(key = lambda x: x["value"], reverse = False)
+                row["Median Time"] = f"{spd_players[0]['player']} ({spd_players[0]['value']:.2f})"
+
+            else: row["Median Time"] = "N/A"
 
             if has_chanting_songs:
                 chn_players = []
@@ -898,104 +908,18 @@ class TourAnalyzer:
                 for p in tp:
                     if self.p_chan_s[p] > 0 and self.c_counts[p] > 0:
                         val = 100 * self.p_chan_c[p] / self.p_chan_s[p]
-                        chn_players.append({"player": self._get_player_acronym(p), "value": val, "tier": tr})
+                        chn_players.append({"player": p, "value": val})
 
-                chn_players.sort(key = lambda x: x["value"], reverse = True)
-                data_by_cat["Chanting Guess Rate"].extend(chn_players)
+                if chn_players:
+                    chn_players.sort(key = lambda x: x["value"], reverse = True)
+                    row["Chant GR"] = f"{chn_players[0]['player']} ({chn_players[0]['value']:.2f})"
 
-        num_plots       = len(categories)
-        fig, axes       = plt.subplots(2, 3, figsize = (30, 30))
-        axes            = axes.flatten()
-        segment_width   = 1.00
-        tier_gap        = 1.00
+                else: row["Chant GR"] = "N/A"
 
-        for idx, cat in enumerate(categories):
-            ax      = axes[idx]
-            items   = data_by_cat[cat]
+            rows.append(row)
 
-            ax.set_title(cat, fontsize = 50, weight = 'bold', fontname = "Segoe UI", pad = 20)
-
-            if cat == "Chanting Guess Rate":
-                ax.set_xlim(0, 100)
-                ax.xaxis.set_major_locator(mt.MultipleLocator(20))
-
-            elif cat == "Median Time":
-                ax.set_xlim(0, 20)
-                ax.xaxis.set_major_locator(mt.MultipleLocator(4))
-
-            else:
-                factor  = 10 if cat in ["Guess Rate", "Lives Taken/Saved"] else 5
-                max_v   = max([item["value"] for item in items]) + 1 if items else factor
-                xmax    = min(math.ceil(max_v / factor) * factor, 100)
-
-                if      xmax == 0   : xmax      = factor
-                elif    xmax <= 20  : factor    = xmax / 5
-
-                ax.set_xlim(0, xmax)
-                ax.xaxis.set_major_locator(mt.MultipleLocator(factor))
-
-            ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: '' if val == 0 else f"{val:g}"))
-
-            xmin_axis       = 0.0
-            y_ticks         = []
-            labels          = []
-            tier_groups     = defaultdict(list)
-
-            for item in items: tier_groups[item["tier"]].append(item)
-
-            current_y       = 0.0
-            sorted_tiers    = sorted(list(tier_groups.keys()))
-            first_y         = None
-            last_y          = None
-
-            for t in sorted_tiers:
-                group       = tier_groups[t]
-                num_players = len(group)
-                block_start = current_y
-                block_end   = block_start + (num_players * segment_width)
-
-                if first_y is None: first_y = block_start
-                last_y = block_end
-
-                vertices = [(xmin_axis, block_start)]
-
-                for p_idx, item in enumerate(group):
-                    p_start = block_start + (p_idx * segment_width)
-                    p_end   = p_start + segment_width
-
-                    y_ticks .append(p_start + (segment_width / 2))
-                    labels  .append(item["player"])
-
-                    vertices.append((item["value"], p_start))
-                    vertices.append((item["value"], p_end))
-
-                vertices.append((xmin_axis, block_end))
-
-                v_x, v_y = zip(*vertices)
-                ax.plot(v_x, v_y, color = 'black', linewidth = 1, zorder = 3)
-                current_y = block_end + tier_gap
-
-            ax.set_yticks       (y_ticks)
-            ax.set_yticklabels  (labels)
-            ax.set_ylim         (first_y, last_y)
-            ax.invert_yaxis     ()
-            ax.tick_params      (axis = 'x', which = 'both', length = 0, pad = 10, labelsize = 35)
-            ax.tick_params      (axis = 'y', which = 'both', length = 0, pad = 10, labelsize = labelsize)
-
-            for label in ax.get_xticklabels(): label.set_fontname("Segoe UI")
-            for label in ax.get_yticklabels(): label.set_fontname("Segoe UI"); label.set_weight("bold")
-
-            ax.grid(False)
-
-        for j in range(num_plots, len(axes)): axes[j].axis('off')
-
-        plt.suptitle        ("Tier Statistics", fontname = "Segoe UI", fontsize = 70, weight = 'bold', y = 1)
-        plt.tight_layout    (w_pad = 2.5, h_pad = 2.5)
-        plt.savefig         (path / "Tier.png", dpi = 100)
-        plt.close           (fig)
-
-        try     : trim_whitespace(path / "Tier.png")
-        except  : pass
+        df_tier = pd.DataFrame(rows)
+        self._export_png(df_tier, path, "Tier.png", "Tier Statistics")
 
     def _create_scatter_png(self, path, list_mode = False, elo_map = None):
         configs = []
