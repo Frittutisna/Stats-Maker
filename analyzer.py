@@ -1041,7 +1041,7 @@ class TourAnalyzer:
                         "cbar_label"        : "Rig GR",
                         "cbar_ticks"        : [0, 0.7, 0.8, 0.9, 1],
                         "cbar_ticklabels"   : ['0', '70', '80', '90', '100'],
-                        "labelpad"          : -32.5
+                        "labelpad"          : -35
                     })
 
         plist_g = [n for n in self.s_part if self.c_counts[n] > 0]
@@ -1107,7 +1107,7 @@ class TourAnalyzer:
                     "cbar_label"        : "Performance",
                     "cbar_ticks"        : [0, 1],
                     "cbar_ticklabels"   : ['0', '100'],
-                    "labelpad"          : -35
+                    "labelpad"          : -37.5
                 })
 
         if not configs: return
@@ -1177,8 +1177,8 @@ class TourAnalyzer:
             ax.set_xlim(x_min, x_max)
             ax.set_ylim(y_min, y_max)
 
-            ax.set_xticks(np.arange (x_min + 0.5,   x_max + 0.5,    0.5))
-            ax.set_yticks(range     (y_min + step,  y_max + step,   step))
+            ax.set_xticks(range(math.ceil(x_min)    + 1,    math.floor(x_max)   + 1,    1))
+            ax.set_yticks(range(y_min               + step, y_max               + step, step))
 
             texts = []
 
@@ -1210,9 +1210,9 @@ class TourAnalyzer:
                 arrowprops              = dict(arrowstyle = "-", color = 'black', shrinkA = 15)
             )
 
-            ax.set_title    (cfg["title"],  weight = 'bold', fontname = "Segoe UI", fontsize = 40, pad      = 15)
-            ax.set_xlabel   ("Over-8",      weight = 'bold', fontname = "Segoe UI", fontsize = 30, labelpad = 5)
-            ax.set_ylabel   ("Vintage",     weight = 'bold', fontname = "Segoe UI", fontsize = 30, labelpad = 5)
+            ax.set_title    (cfg["title"],  weight = 'bold', fontname = "Segoe UI", fontsize = 35, pad      = 15)
+            ax.set_xlabel   ("Over-8",      weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
+            ax.set_ylabel   ("Vintage",     weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
 
             ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
             plt.setp(ax.get_yticklabels(), rotation = 90, va = 'center')
@@ -1221,7 +1221,7 @@ class TourAnalyzer:
             ax.tick_params(axis = 'y', which = 'both', length = 0, labelsize = 20, pad = 2.5)
 
             cbar = fig.colorbar(sc, ax = ax, pad = 0.005, aspect = 40, ticks = cfg["cbar_ticks"])
-            cbar.set_label(cfg["cbar_label"], weight = 'bold', fontname = "Segoe UI", fontsize = 30, labelpad = cfg["labelpad"])
+            cbar.set_label(cfg["cbar_label"], weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = cfg["labelpad"])
 
             cbar.ax.set_yticklabels(cfg["cbar_ticklabels"])
             cbar.ax.tick_params(labelsize = 20, length = 0)
@@ -1292,8 +1292,8 @@ class TourAnalyzer:
         ax.set_xlim(x_min, x_max)
         ax.set_ylim(y_min, y_max)
 
-        ax.set_xticks(np.arange (x_min + 0.5,   x_max + 0.5,    0.5))
-        ax.set_yticks(range     (y_min + step,  y_max + step,   step))
+        ax.set_xticks(range(math.ceil(x_min)    + 1,    math.floor(x_max)   + 1,    1))
+        ax.set_yticks(range(y_min               + step, y_max               + step, step))
 
         cmap_l = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [
             (0.0, COLOR_0),
@@ -1348,9 +1348,9 @@ class TourAnalyzer:
                 arrowprops              = dict(arrowstyle = "-", color = 'black', shrinkA = 15)
             )
 
-        ax.set_title    ("List → Guess Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 40, pad      = 15)
-        ax.set_xlabel   ("Over-8",                  weight = 'bold', fontname = "Segoe UI", fontsize = 30, labelpad = 5)
-        ax.set_ylabel   ("Vintage",                 weight = 'bold', fontname = "Segoe UI", fontsize = 30, labelpad = 5)
+        ax.set_title    ("List → Guess Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 35, pad      = 15)
+        ax.set_xlabel   ("Over-8",                  weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
+        ax.set_ylabel   ("Vintage",                 weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
 
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
         plt.setp(ax.get_yticklabels(), rotation = 90, va = 'center')
@@ -1362,7 +1362,7 @@ class TourAnalyzer:
         sm.set_array([])
 
         cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0, 0.7, 0.8, 0.9, 1])
-        cbar.set_label("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 30, labelpad = -32.5)
+        cbar.set_label("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = -35)
 
         cbar.ax.set_yticklabels(['0', '70', '80', '90', '100'])
         cbar.ax.tick_params(labelsize = 20, length = 0)
@@ -1442,9 +1442,9 @@ class TourAnalyzer:
         ax.set_xticklabels(p_bucket, fontname = "Segoe UI", fontsize = 20)
         ax.set_yticklabels(y_bucket, fontname = "Segoe UI", fontsize = 20, rotation = 90, va = 'center')
 
-        ax.set_title    ("Song Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 40, pad      = 12.5)
-        ax.set_xlabel   ("Difficulty",      weight = 'bold', fontname = "Segoe UI", fontsize = 30, labelpad = 5)
-        ax.set_ylabel   ("Vintage",         weight = 'bold', fontname = "Segoe UI", fontsize = 30, labelpad = 5)
+        ax.set_title    ("Song Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 35, pad      = 15)
+        ax.set_xlabel   ("Difficulty",      weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
+        ax.set_ylabel   ("Vintage",         weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
 
         ax.tick_params(axis = 'x', which = 'both', length = 0, pad = 5)
         ax.tick_params(axis = 'y', which = 'both', length = 0, pad = 2.5)
@@ -1456,7 +1456,7 @@ class TourAnalyzer:
         sm.set_array([])
 
         cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0, 2, 4, 8])
-        cbar.set_label("Over-8", weight = 'bold', fontname = "Segoe UI", fontsize = 30)
+        cbar.set_label("Over-8", weight = 'bold', fontname = "Segoe UI", fontsize = 25)
 
         cbar.ax.set_yticklabels(['0', '2', '4', '8'])
         cbar.ax.tick_params(labelsize = 20, length = 0)
@@ -1527,7 +1527,7 @@ class TourAnalyzer:
 
         desc = [
             "Elo",          "GR",           "UF",
-            "1/8s",         "2/8s",
+            "1/8s",         "2/8s",         "≤3/8s",
             "Lives Taken",  "Lives Saved",
             "OP GR",        "ED GR",        "IN GR",
             "Rigs",         "Rig Rate",     "Over-8 Delta",
@@ -1609,7 +1609,7 @@ class TourAnalyzer:
 
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
-        col_borders = {"Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Statistic", "Value", "Team Leader", "Mean Over-8"}
+        col_borders = {"Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Mean Over-8"}
         th_cells    = []
 
         for c in df.columns:
