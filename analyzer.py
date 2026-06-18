@@ -1686,49 +1686,33 @@ class TourAnalyzer:
 
                 plots_img = Image.open(plots_out_p)
 
-        h_extra = img_tour.height
-        if img_team: h_extra += 10 + img_team.height
+        left_components = [img_tour, img_tier]
+        if img_team: left_components.append(img_team)
 
-        w_tour_team = max(img_tour.width, img_team.width) if img_team else img_tour.width
-
-        if img_tier:
-            tier_w_scaled   = int(h_extra * (img_tier.width / img_tier.height))
-            img_tier_scaled = img_tier.resize((tier_w_scaled, h_extra), Image.Resampling.LANCZOS)
-
-        else: tier_w_scaled = 0
+        gap_size    = 10
+        total_gaps  = gap_size * (len(left_components) - 1)
+        left_h_raw  = sum(img.height   for img in left_components) + total_gaps
+        left_w_max  = max(img.width    for img in left_components)
 
         if plots_img:
-            plots_w_scaled      = int(h_extra * (plots_img.width / plots_img.height))
-            plots_img_scaled    = plots_img.resize((plots_w_scaled, h_extra), Image.Resampling.LANCZOS)
+            plots_aspect        = plots_img.width / plots_img.height
+            plots_h_scaled      = left_h_raw
+            plots_w_scaled      = int(plots_h_scaled * plots_aspect)
+            plots_img_scaled    = plots_img.resize((plots_w_scaled, plots_h_scaled), Image.Resampling.LANCZOS)
 
         else: plots_w_scaled = 0
 
-        w_extra = w_tour_team
+        w_extra     = left_w_max + (gap_size + plots_w_scaled if plots_img else 0)
+        h_extra     = left_h_raw
+        extra_img   = Image.new("RGB", (w_extra, h_extra), "white")
+        current_y   = 0
 
-        if img_tier     : w_extra += 10 + tier_w_scaled
-        if plots_img    : w_extra += 10 + plots_w_scaled
+        for img in left_components:
+            centered_x = (left_w_max - img.width) // 2
+            extra_img.paste(img, (centered_x, current_y))
+            current_y += img.height + gap_size
 
-        extra_img = Image.new("RGB", (w_extra, h_extra), "white")
-
-        tour_x = (w_tour_team - img_tour.width) // 2
-        extra_img.paste(img_tour, (tour_x, 0))
-
-        if img_team:
-            team_x = (w_tour_team - img_team.width) // 2
-            extra_img.paste(img_team, (team_x, img_tour.height + 10))
-
-        current_x = w_tour_team
-
-        if img_tier:
-            current_x += 10
-            extra_img.paste(img_tier_scaled, (current_x, 0))
-            current_x += tier_w_scaled
-
-        if plots_img:
-            current_x += 10
-            extra_img.paste(plots_img_scaled, (current_x, 0))
-            current_x += plots_w_scaled
-
+        if plots_img: extra_img.paste(plots_img_scaled, (left_w_max + gap_size, 0))
         extra_out_p = path / "Extra.png"
         extra_img.save(extra_out_p, compress_level = 9, optimize = True)
 
@@ -1736,7 +1720,6 @@ class TourAnalyzer:
         except  : pass
 
         extra_img = Image.open(extra_out_p)
-
         p_path = path / "Player.png"
 
         if p_path.exists():
