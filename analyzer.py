@@ -830,96 +830,173 @@ class TourAnalyzer:
         self._export_png(df, path, "Team.png", "Team Statistics")
 
     def _create_tier_png(self, assigns, path, has_chanting_songs):
-        rows = []
+        rows1 = []
+        rows2 = []
 
         for tr in ["1", "2", "3", "4"]:
             tp = [n for n in self.s_part if n.lower() in assigns and assigns[n.lower()][1] == tr]
             if not tp: continue
 
-            row         = {"Tier": tr}
+            row1 = {"Tier": tr}
+            row2 = {"Tier": tr}
+
             gen_players = []
-
-            for p in tp:
-                val = 100 * (self.c_counts[p] / self.s_part[p]) if self.s_part[p] else 0
-                gen_players.append({"player": p, "value": val})
-
-            if gen_players:
-                gen_players.sort(key = lambda x: x["value"], reverse = True)
-                row["Guess Rate"] = f"{gen_players[0]['player']} ({gen_players[0]['value']:.2f})"
-
-            else: row["Guess Rate"] = "N/A"
-
             atk_players = []
-
-            for p in tp:
-                val = self.p_pts[p]
-                atk_players.append({"player": p, "value": val})
-
-            if atk_players:
-                atk_players.sort(key = lambda x: x["value"], reverse = True)
-                row["Lives Taken"] = f"{atk_players[0]['player']} ({atk_players[0]['value']:g})"
-
-            else: row["Lives Taken"] = "N/A"
-
             blk_players = []
-
-            for p in tp:
-                val = self.p_blks[p]
-                blk_players.append({"player": p, "value": val})
-
-            if blk_players:
-                blk_players.sort(key = lambda x: x["value"], reverse = True)
-                row["Lives Saved"] = f"{blk_players[0]['player']} ({blk_players[0]['value']:g})"
-
-            else: row["Lives Saved"] = "N/A"
-
             con_players = []
+            spd_players = []
+            chn_players = []
 
             for p in tp:
                 cor = self.c_counts[p]
-                val = (100 * (self.p_pts[p] + self.p_blks[p]) / self.c_counts[p]) if cor > 0 else 0
+                tot = self.s_part[p]
+                tim = self.p_answer_times.get(p, [])
+                chc = self.p_chan_c[p]
+                cht = self.p_chan_s[p]
 
-                con_players.append({"player": p, "value": val})
+                gen = 100 * cor / tot if tot else 0
+                atk = self.p_pts[p]
+                blk = self.p_blks[p]
+                con = 100 * (atk + blk) / cor if cor else 0
+                spd = np.median(tim)
+                chn = 100 * chc / cht if cht else 0
 
-            if con_players:
-                con_players.sort(key = lambda x: x["value"], reverse = True)
-                row["Contribution Rate"] = f"{con_players[0]['player']} ({con_players[0]['value']:.2f})"
+                gen_players.append({"player": p, "value": gen})
+                atk_players.append({"player": p, "value": atk})
+                blk_players.append({"player": p, "value": blk})
+                con_players.append({"player": p, "value": con})
+                spd_players.append({"player": p, "value": spd})
+                if has_chanting_songs: chn_players.append({"player": p, "value": chn})
 
-            else: row["Contribution Rate"] = "N/A"
+            gen_players.sort(key = lambda x: x["value"], reverse = True)
+            atk_players.sort(key = lambda x: x["value"], reverse = True)
+            blk_players.sort(key = lambda x: x["value"], reverse = True)
+            con_players.sort(key = lambda x: x["value"], reverse = True)
+            spd_players.sort(key = lambda x: x["value"], reverse = False)
+            if chn_players: chn_players.sort(key = lambda x: x["value"], reverse = True)
 
-            spd_players = []
+            row1["Guess Rate"]          = f"{gen_players[0]['player']} ({gen_players[0]['value']:.2f})"
+            row1["Lives Taken"]         = f"{atk_players[0]['player']} ({atk_players[0]['value']:g})"
+            row1["Lives Saved"]         = f"{blk_players[0]['player']} ({blk_players[0]['value']:g})"
+            row2["Contribution Rate"]   = f"{con_players[0]['player']} ({con_players[0]['value']:.2f})"
+            row2["Median Time"]         = f"{spd_players[0]['player']} ({spd_players[0]['value']:.2f})"
+            row2["Chant GR"]            = f"{chn_players[0]['player']} ({chn_players[0]['value']:.2f})" if chn_players else "N/A"
 
-            for p in tp:
-                times = self.p_answer_times.get(p, [])
+            row1["gen_val"] = gen_players[0]['value']
+            row1["atk_val"] = atk_players[0]['value']
+            row1["blk_val"] = blk_players[0]['value']
+            row2["con_val"] = con_players[0]['value']
+            row2["spd_val"] = spd_players[0]['value']
+            row2["chn_val"] = chn_players[0]['value'] if chn_players else None
 
-                if times:
-                    val = np.median(times)
-                    spd_players.append({"player": p, "value": val})
+            rows1.append(row1)
+            rows2.append(row2)
 
-            if spd_players:
-                spd_players.sort(key = lambda x: x["value"], reverse = False)
-                row["Median Time"] = f"{spd_players[0]['player']} ({spd_players[0]['value']:.2f})"
+        g_best_gen = max((r["gen_val"] for r in rows1),                             default = None)
+        g_best_atk = max((r["atk_val"] for r in rows1),                             default = None)
+        g_best_blk = max((r["blk_val"] for r in rows1),                             default = None)
+        g_best_con = max((r["con_val"] for r in rows2),                             default = None)
+        g_best_spd = min((r["spd_val"] for r in rows2),                             default = None)
+        g_best_chn = max((r["chn_val"] for r in rows2 if r["chn_val"] is not None), default = None)
 
-            else: row["Median Time"] = "N/A"
+        html_parts = []
+        html_parts.append("<tr><th>Tier</th><th>Guess Rate</th><th>Lives Taken</th><th>Lives Saved</th></tr>")
 
-            if has_chanting_songs:
-                chn_players = []
+        style_hl = f" style='background-color: {COLOR_2}; color: white; font-weight: bold;'"
 
-                for p in tp:
-                    if self.p_chan_s[p] > 0 and self.c_counts[p] > 0:
-                        val = 100 * self.p_chan_c[p] / self.p_chan_s[p]
-                        chn_players.append({"player": p, "value": val})
+        for row in rows1:
+            s_gen = style_hl if row["gen_val"] == g_best_gen else ""
+            s_atk = style_hl if row["atk_val"] == g_best_atk else ""
+            s_blk = style_hl if row["blk_val"] == g_best_blk else ""
 
-                if chn_players:
-                    chn_players.sort(key = lambda x: x["value"], reverse = True)
-                    row["Chant GR"] = f"{chn_players[0]['player']} ({chn_players[0]['value']:.2f})"
+            html_parts.append(
+                f"<tr>"
+                    f"<td><b>{row['Tier']}</b></td>"
+                    f"<td{s_gen}>{row['Guess Rate']}</td>"
+                    f"<td{s_atk}>{row['Lives Taken']}</td>"
+                    f"<td{s_blk}>{row['Lives Saved']}</td>"
+                f"</tr>"
+            )
 
-                else: row["Chant GR"] = "N/A"
+        html_parts.append(
+            "<tr>"
+                "<th style='border-top: 3px solid black;'>Tier</th>"
+                "<th style='border-top: 3px solid black;'>Contribution Rate</th>"
+                "<th style='border-top: 3px solid black;'>Median Time</th>"
+                "<th style='border-top: 3px solid black;'>Chanting Guess Rate</th>"
+            "</tr>"
+        )
 
-            rows.append(row)
+        for row in rows2:
+            s_con = style_hl if row["con_val"] == g_best_con                            else ""
+            s_spd = style_hl if row["spd_val"] == g_best_spd                            else ""
+            s_chn = style_hl if row["chn_val"] == g_best_chn and g_best_chn is not None else ""
 
-        df_tier = pd.DataFrame(rows)
-        self._export_png(df_tier, path, "Tier.png", "Tier Statistics")
+            html_parts.append(
+                f"<tr>"
+                    f"<td><b>{row['Tier']}</b></td>"
+                    f"<td{s_con}>{row['Contribution Rate']}</td>"
+                    f"<td{s_spd}>{row['Median Time']}</td>"
+                    f"<td{s_chn}>{row['Chant GR']}</td>"
+                f"</tr>"
+            )
+
+        html_table_content = "".join(html_parts)
+
+        full = f"""<html>
+            <head>
+                <style>
+                    body {{
+                        font-family         : 'Segoe UI';
+                        background          : white;
+                        display             : inline-block;
+                        margin              : 0
+                    }}
+
+                    h2 {{
+                        margin              : 0 0 10px 0;
+                        font-size           : 40px;
+                        text-align          : center
+                    }}
+
+                    table {{
+                        border-collapse     : collapse;
+                        width               : auto;
+                        border              : 3px solid black
+                    }}
+
+                    th {{
+                        font-weight         : bold;
+                        font-size           : 25px;
+                        text-align          : center;
+                        padding             : 10px;
+                        border              : 1px solid black;
+                        border-bottom       : 3px solid black;
+                        background-color    : #f0f0f0
+                    }}
+
+                    td {{
+                        font-size           : 25px;
+                        text-align          : center;
+                        padding             : 10px;
+                        border              : 1px solid black
+                    }}
+
+                    tr:nth-child(even) {{background-color: #f0f0f0}}
+                </style>
+            </head>
+            <body>
+                <h2>Tier Statistics</h2>
+                <table>{html_table_content}</table>
+            </body>
+        </html>"""
+
+        if not self.browser_path: return
+        hti = Html2Image(size = (2000, 2000), browser_executable = self.browser_path, output_path = str(path), custom_flags = ['--log-level=3', '--silent'])
+        hti.screenshot(html_str = full, save_as = "Tier.png")
+
+        try     : trim_whitespace(path / "Tier.png")
+        except  : pass
 
     def _create_scatter_png(self, path, list_mode = False, elo_map = None):
         configs = []
@@ -1686,8 +1763,10 @@ class TourAnalyzer:
 
                 plots_img = Image.open(plots_out_p)
 
-        left_components = [img_tour, img_tier]
+        left_components = [img_tour]
+
         if img_team: left_components.append(img_team)
+        if img_tier: left_components.append(img_tier)
 
         gap_size    = 10
         total_gaps  = gap_size * (len(left_components) - 1)
