@@ -779,7 +779,15 @@ class TourAnalyzer:
                 stats.append(["Best Solo Rig Converter",    f"{b['n']} ({b['p']:.2f}, {b['h']}/{b['t']})"])
                 stats.append(["Worst Solo Rig Converter",   f"{w['n']} ({w['p']:.2f}, {w['h']}/{w['t']})"])
 
-        df_tour = pd.DataFrame(stats, columns = ["Metric", "Value"])
+        half    = (len(stats) + 1) // 2
+        left    = stats[:half]
+        right   = stats[half:]
+
+        while len(right) < len(left): right.append(["", ""])
+        split_stats = []
+        for l, r in zip(left, right): split_stats.append([l[0], l[1], r[0], r[1]])
+
+        df_tour = pd.DataFrame(split_stats, columns = ["Metric", "Value", "Metric", "Value"])
         self._export_png(df_tour, path, "Tour.png", "Tour Statistics")
 
     def _create_team_png(self, assigns, t1_lookup, path):
@@ -815,7 +823,7 @@ class TourAnalyzer:
                 "Shared Rigs"   : np.mean(self.t_sh_rig     [tid]) * 100,
             })
 
-        df          = pd.DataFrame(res).sort_values("Mean Elo", ascending = False)
+        df          = pd.DataFrame(res).sort_values("Mean GR", ascending = False)
         num_cols    = ["Mean Elo", "Mean GR", "Mean Over-8", "Rig Synergy", "Off Synergy", "Shared Rigs"]
 
         for c in num_cols: df[c] = pd.to_numeric(df[c], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
