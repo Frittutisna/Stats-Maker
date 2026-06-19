@@ -1569,14 +1569,12 @@ class TourAnalyzer:
                     el_cols = ["Elo", "Mean Elo"]
                     gr_cols = ["OP GR", "ED GR", "IN GR", "Chant GR"]
 
-                    if      len(best_b_indices) > 3                     : best_idx = None
-                    elif    col in el_cols                              : best_idx = best_b_indices[0]                                                                      if not best_b_indices.empty else None
+                    if      col in el_cols                              : best_idx = best_b_indices[0]                                                                      if not best_b_indices.empty else None
                     elif    col in gr_cols                              : best_idx = pd.to_numeric(df["GR"],    errors = 'coerce').fillna(0).loc[best_b_indices].idxmin()   if not best_b_indices.empty else None
                     elif    col == "Rig GR" and "Rigs" in df.columns    : best_idx = pd.to_numeric(df["Rigs"],  errors = 'coerce').fillna(0).loc[best_b_indices].idxmax()   if not best_b_indices.empty else None
                     else                                                : best_idx = elo_ser.loc[best_b_indices].idxmin()                                                   if not best_b_indices.empty else None
 
-                    if      len(worst_b_indices) > 3    : worst_idx = None
-                    elif    col in el_cols              : worst_idx = worst_b_indices[0]                                                                    if not worst_b_indices.empty else None
+                    if      col in el_cols              : worst_idx = worst_b_indices[0]                                                                    if not worst_b_indices.empty else None
                     elif    col in gr_cols              : worst_idx = pd.to_numeric(df["GR"], errors = 'coerce').fillna(0).loc[worst_b_indices].idxmax()    if not worst_b_indices.empty else None
                     else                                : worst_idx = elo_ser.loc[worst_b_indices].idxmax()                                                 if not worst_b_indices.empty else None
 
