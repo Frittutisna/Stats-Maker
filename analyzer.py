@@ -892,22 +892,24 @@ class TourAnalyzer:
             rows1.append(row1)
             rows2.append(row2)
 
-        g_best_gen = max((r["gen_val"] for r in rows1),                             default = None)
-        g_best_atk = max((r["atk_val"] for r in rows1),                             default = None)
-        g_best_blk = max((r["blk_val"] for r in rows1),                             default = None)
-        g_best_con = max((r["con_val"] for r in rows2),                             default = None)
-        g_best_spd = min((r["spd_val"] for r in rows2),                             default = None)
-        g_best_chn = max((r["chn_val"] for r in rows2 if r["chn_val"] is not None), default = None)
+        best_gen_idx = len(rows1) - 1 - max(range(len(rows1)), key = lambda i: rows1[::-1][i]["gen_val"]) if rows1 else None
+        best_atk_idx = len(rows1) - 1 - max(range(len(rows1)), key = lambda i: rows1[::-1][i]["atk_val"]) if rows1 else None
+        best_blk_idx = len(rows1) - 1 - max(range(len(rows1)), key = lambda i: rows1[::-1][i]["blk_val"]) if rows1 else None
+        best_con_idx = len(rows2) - 1 - max(range(len(rows2)), key = lambda i: rows2[::-1][i]["con_val"]) if rows2 else None
+        best_spd_idx = len(rows2) - 1 - min(range(len(rows2)), key = lambda i: rows2[::-1][i]["spd_val"]) if rows2 else None
+
+        valid_chn_rows  = [i for i, r in enumerate(rows2) if r["chn_val"] is not None]
+        best_chn_idx    = len(rows2) - 1 - max(valid_chn_rows, key = lambda i: rows2[::-1][i]["chn_val"]) if valid_chn_rows else None
 
         html_parts = []
         html_parts.append("<tr><th>Tier</th><th>Guess Rate</th><th>Lives Taken</th><th>Lives Saved</th></tr>")
 
         style_hl = f" style='background-color: {COLOR_2}; color: white; font-weight: bold;'"
 
-        for row in rows1:
-            s_gen = style_hl if row["gen_val"] == g_best_gen else ""
-            s_atk = style_hl if row["atk_val"] == g_best_atk else ""
-            s_blk = style_hl if row["blk_val"] == g_best_blk else ""
+        for idx, row in enumerate(rows1):
+            s_gen = style_hl if idx == best_gen_idx else ""
+            s_atk = style_hl if idx == best_atk_idx else ""
+            s_blk = style_hl if idx == best_blk_idx else ""
 
             html_parts.append(
                 f"<tr>"
@@ -927,10 +929,10 @@ class TourAnalyzer:
             "</tr>"
         )
 
-        for row in rows2:
-            s_con = style_hl if row["con_val"] == g_best_con                            else ""
-            s_spd = style_hl if row["spd_val"] == g_best_spd                            else ""
-            s_chn = style_hl if row["chn_val"] == g_best_chn and g_best_chn is not None else ""
+        for idx, row in enumerate(rows2):
+            s_con = style_hl if idx == best_con_idx else ""
+            s_spd = style_hl if idx == best_spd_idx else ""
+            s_chn = style_hl if idx == best_chn_idx else ""
 
             html_parts.append(
                 f"<tr>"
