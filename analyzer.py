@@ -880,7 +880,7 @@ class TourAnalyzer:
             row1["Lives Saved"]         = f"{blk_players[0]['player']} ({blk_players[0]['value']:g})"
             row2["Contribution Rate"]   = f"{con_players[0]['player']} ({con_players[0]['value']:.2f})"
             row2["Median Time"]         = f"{spd_players[0]['player']} ({spd_players[0]['value']:.2f})"
-            row2["Chant GR"]            = f"{chn_players[0]['player']} ({chn_players[0]['value']:.2f})" if chn_players else "N/A"
+            row2["Chant GR"]            = f"{chn_players[0]['player']} ({chn_players[0]['value']:.2f})" if chn_players and chn_players[0]['value'] > 0 else ""
 
             row1["gen_val"] = gen_players[0]['value']
             row1["atk_val"] = atk_players[0]['value']
@@ -1076,18 +1076,17 @@ class TourAnalyzer:
                     el_pool.append(elo)
 
                 if uf_pool and el_pool:
-                    min_uf,     max_uf      = min(uf_pool),     max(uf_pool)
-                    min_el,     max_el      = min(el_pool),     max(el_pool)
-                    range_uf,   range_el    = max_uf - min_uf,  max_el - min_el
- 
-                    norm_uf     = [(uf - min_uf) * 0.5 / range_uf + 0.5 if range_uf > 0 else 0.75 for uf in uf_pool]
-                    norm_elo    = [(el - min_el) * 0.5 / range_el       if range_el > 0 else 0.25 for el in el_pool]
-                    perf_pool   = [u - e for u, e in zip(norm_uf, norm_elo)]
+                    els, ufs = np.array(el_pool), np.array(uf_pool)
 
-                    min_perf    = min(perf_pool)
-                    max_perf    = max(perf_pool)
-                    range_perf  = max_perf - min_perf
-                    norm_perf   = [(perf - min_perf) / range_perf if range_perf > 0 else 0.5 for perf in perf_pool]
+                    if len(els) > 1 and np.var(els) > 0:
+                        slope, intercept = np.polyfit(els, ufs, 1)
+                        expected_ufs = slope * els + intercept
+
+                    else: expected_ufs = np.array([np.mean(ufs)] * len(ufs))
+
+                    residuals   = ufs - expected_ufs
+                    res_std     = np.std(residuals) if np.std(residuals) > 0 else 1
+                    norm_perf   = [1 / (1 + np.exp(SCALE_PERF * (res / res_std))) for res in residuals]
 
                 else: norm_perf = [0.5] * len(plist_g)
 
