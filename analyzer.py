@@ -1383,8 +1383,8 @@ class TourAnalyzer:
         except  : pass
 
     def _create_song_png(self, path):
-        num_x = 9
-        num_y = 9
+        num_x = 5
+        num_y = 5
 
         counts      = np.zeros((num_y, num_x), dtype = int)
         over8_sums  = np.zeros((num_y, num_x), dtype = float)
@@ -1394,18 +1394,18 @@ class TourAnalyzer:
             if vint == 0: continue
 
             diff    = s["difficulty"]
-            x_idx   = min(int(math.floor(diff / 5)), 8)
-            y_idx   = min(max(int(math.floor((vint - 1985) / 5)), 0), 8)
+            x_idx   = min(int(math.floor(diff / 10)), 4)
+            y_idx   = min(max(int(math.floor((vint - 1980) / 10)), 0), 4)
 
             counts      [y_idx, x_idx] += 1
             over8_sums  [y_idx, x_idx] += s["correct_count"]
 
         fig, ax     = plt.subplots(figsize = (10, 10))
         cmap_song   = mc.LinearSegmentedColormap.from_list("song_cmap", [
-            (0.00, COLOR_0),
-            (0.25, COLOR_1),
-            (0.50, COLOR_2),
-            (1.00, COLOR_2)
+            (0.000, COLOR_0),
+            (0.375, COLOR_1),
+            (0.625, COLOR_2),
+            (1.000, COLOR_2)
         ])
 
         for y_idx in range(num_y):
@@ -1422,26 +1422,26 @@ class TourAnalyzer:
                 ax.add_patch(rect)
 
                 if count > 0: ax.text(
-                    x_idx + 0.5, y_idx + 0.5, str(count),
+                    x_idx + 0.5, y_idx + 0.45, str(count),
                     ha          = 'center',
                     va          = 'center',
                     color       = 'white',
                     weight      = 'bold',
-                    fontsize    = 40,
+                    fontsize    = 75,
                     fontname    = "Segoe UI"
                 )
 
         ax.set_xlim(0, num_x)
         ax.set_ylim(0, num_y)
 
-        ax.set_xticks(np.arange(num_x) + 0.5)
-        ax.set_yticks(np.arange(num_y) + 0.5)
+        ax.set_xticks(np.arange(1, num_x))
+        ax.set_yticks(np.arange(1, num_y))
 
-        p_bucket = ["<5", "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", ">40"]
-        y_bucket = ["<90", "90-94", "95-99", "00-04", "05-09", "10-14", "15-19", "20-24", ">24"]
+        p_labels = ["10",   "20",   "30",   "40"]
+        y_labels = ["1990", "2000", "2010", "2020"]
 
-        ax.set_xticklabels(p_bucket, fontname = "Segoe UI", fontsize = 20)
-        ax.set_yticklabels(y_bucket, fontname = "Segoe UI", fontsize = 20, rotation = 90, va = 'center')
+        ax.set_xticklabels(p_labels, fontname = "Segoe UI", fontsize = 20)
+        ax.set_yticklabels(y_labels, fontname = "Segoe UI", fontsize = 20, rotation = 90, va = 'center')
 
         ax.set_title    ("Song Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 35, pad      = 15)
         ax.set_xlabel   ("Difficulty",      weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
@@ -1456,10 +1456,10 @@ class TourAnalyzer:
         sm = plt.cm.ScalarMappable(cmap = cmap_song, norm = norm)
         sm.set_array([])
 
-        cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0, 2, 4, 8])
-        cbar.set_label("Over-8", weight = 'bold', fontname = "Segoe UI", fontsize = 25)
+        cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0, 3, 5, 8])
+        cbar.set_label("Over-8", weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = -12.5)
 
-        cbar.ax.set_yticklabels(['0', '2', '4', '8'])
+        cbar.ax.set_yticklabels(['0', '3', '5', '8'])
         cbar.ax.tick_params(labelsize = 20, length = 0)
 
         plt.tight_layout    ()
