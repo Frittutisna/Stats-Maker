@@ -374,6 +374,7 @@ class MismatchedRoundsDialog(UnifiedDialog):
         )
 
         super().__init__(parent, "Mismatched Round Counts", prompt_text)
+
         self.base_exp       = base_exp
         self.player_configs = {}
         self.fill_color     = "#000000"
@@ -428,8 +429,8 @@ class MismatchedRoundsDialog(UnifiedDialog):
 
             self.player_configs[name] = {"mode": mode_var, "spin": spin, "act": act}
  
-        self.grab_set()
-        self.wait_window()
+        self.grab_set       ()
+        self.wait_window    ()
 
     def on_confirm(self):
         self.result = {}
@@ -493,20 +494,39 @@ class SubSelectionDialog(tk.Toplevel):
 
 class SubstitutePromptDialog(UnifiedDialog):
     def __init__(self, parent, sub_name, original_players_list):
-        super().__init__(parent, "Substitute Setup", f"Who is {sub_name} subbing for?")
+        super().__init__(parent, "Substitute Setup", "")
         self.result = None
 
-        ttk.Label(self.container, text = "Player to be subbed out:", font = ("Segoe UI", 10)).grid(row = 0, column = 0, padx = (0, 6), pady = 4, sticky = "w")
+        lbl = ttk.Label(self.container, text = f"Who is {sub_name} subbing for?", font = ("Segoe UI", 10))
+        lbl.grid(row = 0, column = 0, padx = (0, 6), pady = 4, sticky = "w")
 
-        self.player_combobox = ttk.Combobox(self.container, values = sorted(list(original_players_list)), state = "readonly")
-        self.player_combobox.grid(row = 0, column = 1, pady = 4, sticky = "ew")
+        self.choice_var     = tk.StringVar()
+        self.sorted_players = sorted(list(original_players_list))
 
-        if original_players_list: self.player_combobox.set(sorted(list(original_players_list))[0])
+        if self.sorted_players: self.choice_var.set(self.sorted_players[0])
+
+        combo_frame = tk.Frame(self.container, bg = "white", bd = 1, relief = "solid")
+        combo_frame.grid(row = 0, column = 1, pady = 4, sticky = "ew")
         self.container.grid_columnconfigure(1, weight = 1)
+
+        self.entry = tk.Entry(combo_frame, textvariable = self.choice_var, bg = "white", fg = "black", font = ("Segoe UI", 10), bd = 0, state = "readonly")
+        self.entry.pack(side = tk.LEFT, fill = tk.X, expand = True, padx = 2)
+
+        arrow_btn = tk.Canvas(combo_frame, width = 25, height = 25, bg = "black", highlightthickness = 0, borderwidth = 0, cursor = "hand2")
+        arrow_btn.create_polygon(7, 10, 17, 10, 12, 16, fill = "white")
+        arrow_btn.pack(side = tk.RIGHT)
+
+        def show_menu(event):
+            menu = tk.Menu(self, tearoff = 0)
+            for p in self.sorted_players: menu.add_command(label = p, command = lambda val = p: self.choice_var.set(val))
+            menu.post(event.x_root, event.y_root)
+
+        arrow_btn   .bind("<Button-1>", show_menu)
+        self.entry  .bind("<Button-1>", show_menu)
 
         self.grab_set       ()
         self.wait_window    ()
 
     def on_confirm(self):
-        self.result = self.player_combobox.get()
+        self.result = self.choice_var.get()
         super().on_confirm()
