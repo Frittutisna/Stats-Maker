@@ -1568,6 +1568,7 @@ class TourAnalyzer:
         # Initialize tracking dictionaries for tooltips
         player_song_details = defaultdict(lambda: defaultdict(list))
         tour_song_details = defaultdict(list)
+        team_song_details = defaultdict(lambda: defaultdict(list))
 
         # Re-iterate or track song data dynamically from the JSON paths to construct accurate maps
         for json_path in self.json_paths:
@@ -1627,6 +1628,8 @@ class TourAnalyzer:
                     tour_song_details["Total 1/8s"].append(song_line)
                     sw = list(active_correct)[0]
                     player_song_details[sw]["1/8s"].append(song_line)
+                    if sw.lower() in self.assignments:
+                        team_song_details[self.assignments[sw.lower()][0]]["Total 1/8s"].append(song_line)
                 elif amt_correct == 2:
                     tour_song_details["Total 2/8s"].append(song_line)
                     for sw in active_correct:
@@ -1720,7 +1723,7 @@ class TourAnalyzer:
                     "Rig Over-8": float(rig_over8) if pd.notnull(rig_over8) else np.nan,
                     "Over-8 Delta": float(rig_over8 - avg_over8) if (pd.notnull(rig_over8) and pd.notnull(avg_over8)) else np.nan,
                     "Rig GR": float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
-                    "Off GR": float((cor - self.p_rigs_h[name]) / (tot - self.p_rigs[name]) * 100) if (tot - self.p_rigs[name]) else np.nan,
+                    "Off GR": float((cor - self.p_rigs_h[name]) / (tot - self.p_rigs_h[name]) * 100) if (tot - self.p_rigs[name]) else np.nan,
                     "Rig Delta": float((cor - self.p_rigs_h[name]) / cor * 100) if cor else np.nan,
                 })
 
@@ -1867,16 +1870,49 @@ class TourAnalyzer:
             for tid in self.t_c_ps:
                 t_overs = [self.p_overs_sum[p] / self.c_counts[p] for p in self.s_part if p.lower() in self.assignments and self.assignments[p.lower()][0] == tid and self.c_counts[p] > 0]
                 t_elos = [float(self.elo_map.get(p.lower(), 0)) for p in self.rosters[tid] if p.lower() in self.elo_map]
+                team_song_details[tid]["Total 1/8s"].sort(key=str.lower)
                 team_rows.append({
                     "Team Leader": self.t1_lookup.get(tid, f"Team {tid}"),
-                    "Mean Elo": f"{np.mean(t_elos):.2f}" if t_elos else "N/A",
-                    "Mean GR": f"{np.mean(self.t_c_ps[tid]) * 100:.2f}",
-                    "Total 1/8s": int(self.t_solos[tid]),
-                    "Mean Over-8": f"{np.mean(t_overs):.2f}" if t_overs else "N/A",
-                    "Rig Synergy": f"{np.mean(self.t_on_syn[tid]) * 100:.2f}" if self.t_on_syn[tid] else "N/A",
-                    "Off Synergy": f"{np.mean(self.t_off_syn[tid]) * 100:.2f}" if self.t_off_syn[tid] else "N/A",
-                    "Shared Rigs": f"{np.mean(self.t_sh_rig[tid]) * 100:.2f}" if self.t_sh_rig[tid] else "N/A"
+                    "Mean Elo": float(np.mean(t_elos)) if t_elos else np.nan,
+                    "Mean GR": float(np.mean(self.t_c_ps[tid]) * 100),
+                    "Total 1/8s": {
+                        "count": int(self.t_solos[tid]),
+                        "details": team_song_details[tid]["Total 1/8s"]
+                    },
+                    "Mean Over-8": float(np.mean(t_overs)) if t_overs else np.nan,
+                    "Rig Synergy": float(np.mean(self.t_on_syn[tid]) * 100) if self.t_on_syn[tid] else np.nan,
+                    "Off Synergy": float(np.mean(self.t_off_syn[tid]) * 100) if self.t_off_syn[tid] else np.nan,
+                    "Shared Rigs": float(np.mean(self.t_sh_rig[tid]) * 100) if self.t_sh_rig[tid] else np.nan
                 })
+            
+            # Sort teams descending by Mean GR matching the standalone PNG logic
+            team_rows = sorted(team_rows, key=lambda x: x["Mean GR"], reverse=True)
+
+        # Build Rule Map for Team Highlights Matrix
+        team_hl_rules = {}
+        if use_teams and team_rows:
+            team_desc = ["Mean Elo", "Mean GR", "Rig Synergy", "Off Synergy", "Shared Rigs"]
+            team_asc = ["Total 1/8s", "Mean Over-8"]
+            
+            df_teams_temp = pd.DataFrame(team_rows)
+            for col in df_teams_temp.columns:
+                if col in team_desc or col in team_asc:
+                    if col == "Total 1/8s":
+                        num = df_teams_temp[col].map(lambda x: x["count"])
+                    else:
+                        num = df_teams_temp[col]
+                    
+                    if not num.dropna().empty:
+                        best_val = num.dropna().max() if col in team_desc else num.dropna().min()
+                        worst_val = num.dropna().min() if col in team_desc else num.dropna().max()
+                        
+                        best_b_idx = num[num == best_val].index
+                        worst_b_idx = num[num == worst_val].index
+                        
+                        team_hl_rules[col] = {
+                            'best_idx': int(best_b_idx[0]) if not best_b_idx.empty else None,
+                            'worst_idx': int(worst_b_idx[0]) if not worst_b_idx.empty else None
+                        }
 
         tier_merged = []
         for tr in ["1", "2", "3", "4"]:
@@ -1967,12 +2003,27 @@ class TourAnalyzer:
                     row_dict[col] = f"{float(val):.2f}"
             html_rows_list.append(row_dict)
 
+        # Apply structural mutations formatting row values before packing into json fields
+        formatted_team_rows = []
+        if use_teams:
+            for row in team_rows:
+                f_dict = {}
+                for k, v in row.items():
+                    if k == "Total 1/8s" or k == "Team Leader":
+                        f_dict[k] = v
+                    elif pd.isnull(v) or (isinstance(v, float) and np.isnan(v)):
+                        f_dict[k] = "N/A"
+                    else:
+                        f_dict[k] = f"{float(v):.2f}"
+                formatted_team_rows.append(f_dict)
+
         json_players = json.dumps(html_rows_list)
         json_hl_rules = json.dumps(stats_hl)
         json_borders = json.dumps(borders)
         json_eligibility = json.dumps(eligibility)
         json_tour_stats = json.dumps(tour_unrolled)
-        json_teams = json.dumps(team_rows)
+        json_teams = json.dumps(formatted_team_rows)
+        json_team_hl_rules = json.dumps(team_hl_rules)
         json_tier_merged = json.dumps(tier_merged)
         json_songs = json.dumps(song_matrix_list)
         json_scatter = json.dumps(scatter_list)
@@ -1984,7 +2035,7 @@ class TourAnalyzer:
             "Player"        : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
             "GR"            : "Guess Rate",
             "UF"            : "Usefulness",
-            "Mean Over-8"   : "Average of correct guessers across songs this player guessed correctly",
+            "Mean Over-8"   : "Average of correct guessers across songs this player/team guessed correctly",
             "Lives Taken"   : "Count of points won against the opposing team; correct guessers exclusively on their team",
             "Lives Saved"   : "Count of blocks achieved against the opposing team; lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
             "OP GR"         : "Opening Guess Rate",
@@ -1997,7 +2048,10 @@ class TourAnalyzer:
             "Rig Delta"     : "100 * (Correct - Rig) / Correct: Calculates this player's performance against their own list",
             "Median Time"   : "Median guess time across songs this player guessed correctly",
             "Chant GR"      : "Chanting Guess Rate",
-            "Total 4-0s"    : "Count of songs where all players from one team guessed correctly and all players from the other team missed"
+            "Total 4-0s"    : "Count of songs where all players from one team guessed correctly and all players from the other team missed",
+            "Rig Synergy"   : "Average team guess rate across songs from its own members' lists",
+            "Off Synergy"   : "Average team guess rate across songs from the opposing team member's lists",
+            "Shared Rigs"   : "Calculates how much songs are shared across its own members' lists"
         }
         json_explanations = json.dumps(explanations)
 
@@ -2052,7 +2106,7 @@ class TourAnalyzer:
     <div class="max-w-[1800px] mx-auto border-b border-gray-300 flex flex-wrap justify-center gap-2 mb-8">
         <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
-        {"<button class='tab-btn' onclick='switchDashboardTab(event, \"team-tab\")'>Team ⚠︎</button>" if use_teams else ""}
+        {"<button class='tab-btn' onclick='switchDashboardTab(event, \"team-tab\")'>Team</button>" if use_teams else ""}
         <button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier ⚠︎</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song ⚠︎</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess ⚠︎</button>
@@ -2107,6 +2161,7 @@ class TourAnalyzer:
         const players = {json_players};
         const tourStats = {json_tour_stats};
         const teamStats = {json_teams};
+        const teamHlRules = {json_team_hl_rules};
         const tierStats = {json_tier_merged};
         const songData = {json_songs};
         const scatterData = {json_scatter};
@@ -2279,31 +2334,36 @@ class TourAnalyzer:
         function renderTeamTable() {{
             const table = document.getElementById('teamStatsTable');
             if(!table || !teamStats.length) return;
+            
             let headers = Object.keys(teamStats[0]);
-            let thead = "<thead><tr>" + headers.map(h => `<th${{colBorders.has(h) ? ' class="border-col-group"':''}}>${{h.replace(' ', '<br>')}}</th>`).join('') + "</thead><tbody>";
-            let tbody = "";
-            teamStats.forEach(row => {{
+            let thead = "<thead><tr>" + headers.map(h => {{
+                let styleStr = colBorders.has(h) ? ' class="border-col-group"' : '';
+                return `<th${{styleStr}} data-metric="${{h}}">${{h.replace(' ', '<br>')}}</th>`;
+            }}).join('') + "</tr></thead>";
+            
+            let tbody = "<tbody>";
+            teamStats.forEach((row, idx) => {{
                 tbody += "<tr>";
                 headers.forEach(h => {{
-                    let disp = row[h];
-                    tbody += `<td class='${{colBorders.has(h) ? "border-col-group":""}}'>${{h==="Team Leader"?`<b>${{disp}}</b>`:disp}}</td>`;
-                }});
-                tbody += "</tr>";
-            }});
-            table.innerHTML = thead + tbody + "</tbody>";
-        }}
-
-        function renderTeamTable() {{
-            const table = document.getElementById('teamStatsTable');
-            if(!table || !teamStats.length) return;
-            let headers = Object.keys(teamStats[0]);
-            let thead = "<thead><tr>" + headers.map(h => `<th${{colBorders.has(h) ? ' class="border-col-group"':''}}>${{h.replace(' ', '<br>')}}</th>`).join('') + "</thead><tbody>";
-            let tbody = "";
-            teamStats.forEach(row => {{
-                tbody += "<tr>";
-                headers.forEach(h => {{
-                    let disp = row[h];
-                    tbody += `<td class='${{colBorders.has(h) ? "border-col-group":""}}'>${{h==="Team Leader"?`<b>${{disp}}</b>`:disp}}</td>`;
+                    let rawCell = row[h];
+                    let displayVal = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
+                    let cellStyle = colBorders.has(h) ? "border-col-group " : "";
+                    
+                    if (teamHlRules[h]) {{
+                        let isBest = (teamHlRules[h].best_idx === idx);
+                        let isWorst = (teamHlRules[h].worst_idx === idx);
+                        if (isBest) cellStyle += "highlight-best ";
+                        else if (isWorst) cellStyle += "highlight-worst ";
+                    }}
+                    
+                    let finalVal = (h === "Team Leader") ? `<b>${{displayVal}}</b>` : displayVal;
+                    
+                    if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {{
+                        let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
+                        tbody += `<td class="${{cellStyle.trim()}}" data-songs="${{encodedDetails}}">${{finalVal}}</td>`;
+                    }} else {{
+                        tbody += `<td class="${{cellStyle.trim()}}">${{finalVal}}</td>`;
+                    }}
                 }});
                 tbody += "</tr>";
             }});
