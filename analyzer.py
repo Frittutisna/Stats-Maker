@@ -1187,11 +1187,11 @@ class TourAnalyzer:
             r = y_max - y_min
 
             if r % 4 == 0:
-                step = r // 4
+                y_stp = r // 4
                 break
 
             elif r % 3 == 0:
-                step = r // 3
+                y_stp = r // 3
                 break
 
             if r % 2 != 0 or y_max >= 2026  : y_min -= 1
@@ -1236,8 +1236,10 @@ class TourAnalyzer:
             ax.set_xlim(x_min, x_max)
             ax.set_ylim(y_min, y_max)
 
-            ax.set_xticks(range(math.ceil(x_min)    + 1,    math.floor(x_max)   + 1,    1))
-            ax.set_yticks(range(y_min               + step, y_max               + step, step))
+            x_mnc, x_mxf, x_stp = math.ceil(x_min), math.floor(x_max), 1
+
+            ax.set_xticks(range(x_mnc,      x_mxf + x_stp, x_stp))
+            ax.set_yticks(range(y_min + 1,  y_max + y_stp, y_stp))
 
             texts = []
 
