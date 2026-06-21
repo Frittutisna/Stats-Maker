@@ -6,7 +6,6 @@ matplotlib  .use        ('Agg')
 import concurrent.futures       as fut
 import matplotlib.colors        as mc
 import matplotlib.pyplot        as plt
-import matplotlib.ticker        as mt
 import numpy                    as np
 import pandas                   as pd
 
@@ -498,10 +497,11 @@ class TourAnalyzer:
 
         tasks = []
 
-        tasks.append((self._create_player_png,  (self.use_teams, self.elo_map, watched_valid, stage, out_path, self.apps, prefix, self.exp_map, self.base_exp, self.new_players, self.val_str)))
-        tasks.append((self._create_tour_png,    (self.use_teams, watched_valid, out_path)))
-        tasks.append((self._create_scatter_png, (out_path, False, self.elo_map)))
-        tasks.append((self._create_song_png,    (out_path, )))
+        tasks.append((self._create_player_png,      (self.use_teams, self.elo_map, watched_valid, stage, out_path, self.apps, prefix, self.exp_map, self.base_exp, self.new_players, self.val_str)))
+        tasks.append((self._create_tour_png,        (self.use_teams, watched_valid, out_path)))
+        tasks.append((self._create_scatter_png,     (out_path, False, self.elo_map)))
+        tasks.append((self._create_song_png,        (out_path, )))
+        tasks.append((self._create_dashboard_html,  (out_path, self.use_teams, watched_valid)))
 
         if self.assignments:
             tasks.append((self._create_tier_png, (self.assignments, out_path, any(self.p_chan_s.values()))))
@@ -1549,58 +1549,408 @@ class TourAnalyzer:
         try     : trim_whitespace(path / "Song.png")
         except  : pass
 
-    def _create_chanting_png(self, path):
-        plist = [n for n in self.s_part if self.p_chan_s[n] > 0 and self.c_counts[n] > 0]
-        if not plist: return
+    def _create_dashboard_html(self, path, use_teams, watched):
+        rows = []
+        eligibility = []
+        t_labels = {1: "OP GR", 2: "ED GR", 3: "IN GR"}
+        active = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
+        if len(active) <= 1: active = []
 
-        def get_ratio   (p): return 100 * self.p_chan_c[p] / self.p_chan_s  [p]
-        def get_gr      (p): return 100 * self.c_counts[p] / self.s_part    [p]
+        # Sort names by GR descending to find border thresholds exactly like the engine does
+        sorted_players = sorted(self.s_part.keys(), key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0, reverse=True)
 
-        best    = sorted(plist, key = lambda p: (get_ratio(p), -get_gr(p)), reverse = True) [ : 3]
-        worst   = sorted(plist, key = lambda p: (get_ratio(p), -get_gr(p)))                 [ : 3]
-        rows    = []
+        for name in sorted_players:
+            tot, cor = self.s_part[name], self.c_counts[name]
+            target = self.exp_map.get(name, self.base_exp)
+            d_name = name
 
-        for i in range(3):
-            b_cell = "N/A"
-            w_cell = "N/A"
+            if name in self.new_players: d_name += " ☆"
+            if target < self.base_exp:
+                if name.lower() in self.main_roster_names: d_name += " ▼"
+                else: d_name += " ▲"
 
-            if i < len(best):
-                p       = best[i]
-                b_cell  = f"{self._get_player_acronym(p)} ({get_ratio(p):.2f})"
+            is_eligible = not ("▼" in d_name or "▲" in d_name)
+            eligibility.append(is_eligible)
+            act = len(self.apps.get(name, []))
 
-            if i < len(worst):
-                p       = worst[i]
-                w_cell  = f"{self._get_player_acronym(p)} ({get_ratio(p):.2f})"
+            if act < target:
+                syms = ["", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)"]
+                if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
 
-            rows.append([f"{i + 1}", b_cell, w_cell])
+            avg_over8 = self.p_overs_sum[name] / cor if cor else np.nan
+            row = {"Player": d_name}
+            if use_teams: row["Elo"] = self.elo_map.get(name.lower(), "N/A")
+            
+            row.update({
+                "GR": (cor / tot * 100) if tot else 0,
+                "UF": (self.p_usefulness_sum[name] * 8) / tot if tot else 0.0, # Simple reference scale fallback
+                "1/8s": self.e_counts[name],
+                "2/8s": self.p_two_e[name],
+                "7/8s": self.p_rev_e[name],
+                "Mean Over-8": avg_over8
+            })
+            if use_teams:
+                row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
 
-        self._export_png(pd.DataFrame(rows, columns = ["Rank", "Best", "Worst"]), path, "Chanting.png", "Chanting Statistics")
+            for tid in active:
+                seen = self.p_type_s[name][tid]
+                row[t_labels[tid]] = (self.p_type_c[name][tid] / seen * 100) if seen else np.nan
 
-    def _create_time_png(self, path):
-        plist = [n for n in self.s_part if len(self.p_answer_times.get(n, [])) > 0]
-        if not plist: return
+            if watched:
+                rig_over8 = np.mean(self.p_l_corr[name]) if self.p_l_corr[name] else np.nan
+                row.update({
+                    "Rigs": self.p_rigs[name],
+                    "Rig Rate": (self.p_rigs[name] / tot * 100) if tot else np.nan,
+                    "Rig Over-8": rig_over8,
+                    "Over-8 Delta": rig_over8 - avg_over8,
+                    "Rig GR": (self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
+                    "Off GR": ((cor - self.p_rigs_h[name]) / (tot - self.p_rigs[name]) * 100) if (tot - self.p_rigs[name]) else np.nan,
+                    "Rig Delta": ((cor - self.p_rigs[name]) / cor * 100) if cor else np.nan,
+                })
 
-        def get_med(p): return np.median(self.p_answer_times[p])
+            times = self.p_answer_times.get(name, [])
+            seen_chan = self.p_chan_s[name]
+            row["Median Time"] = np.median(times) if times else np.nan
+            row["Chant GR"] = (self.p_chan_c[name] / seen_chan * 100) if seen_chan else np.nan
+            rows.append(row)
 
-        fastest = sorted(plist, key = get_med)[ : 3]
-        slowest = sorted(plist, key = get_med, reverse = True)[ : 3]
-        rows    = []
+        df_players = pd.DataFrame(rows)
 
-        for i in range(3):
-            f_cell = "N/A"
-            s_cell = "N/A"
+        # Determine grouping break line thresholds based on configuration engine
+        borders = []
+        if "GR" in df_players.columns and "Eru" not in self.tour_label:
+            th_val = self.val_str if self.val_str != "default" else ("28, 18, 12, 6" if watched else "28, 19, 8")
+            try: th = [float(x.strip()) for x in th_val.split(",")] if th_val else []
+            except: th = [28.0, 18.0, 12.0, 6.0]
+            
+            gv = df_players["GR"].tolist()
+            for t in th:
+                f_idx = -1
+                for i, v in enumerate(gv):
+                    if pd.notnull(v) and v >= t: f_idx = i
+                if f_idx != -1 and f_idx < len(df_players) - 1: borders.append(f_idx)
 
-            if i < len(fastest):
-                p       = fastest[i]
-                f_cell  = f"{self._get_player_acronym(p)} ({get_med(p):.2f})"
+        # ==========================================
+        # 2. PARSE & STRUCTURE TOUR STATS TABLES
+        # ==========================================
+        def fmt_most(names, val):
+            if not names: return "N/A"
+            win = sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]
+            gr = (self.c_counts[win] / self.s_part[win]) * 100 if self.s_part[win] else 0
+            return f"{win} ({val}{f', {gr:.2f}%' if len(names) > 1 else ''})"
 
-            if i < len(slowest):
-                p       = slowest[i]
-                s_cell  = f"{self._get_player_acronym(p)} ({get_med(p):.2f})"
+        tour_stats = [
+            ["Median Vintage", format_year(round(np.median(self.all_vint), 2)) if self.all_vint else "N/A"],
+            ["Mean Difficulty", f"{np.mean(self.all_diff):.2f}" if self.all_diff else "N/A"],
+            ["Mean GR", f"{(self.global_stats['tot_c'] / sum(self.s_part.values()) * 100):.2f}%" if self.s_part else "0.00%"],
+            ["Total 0/8s", str(self.global_stats["blanks"])],
+            ["Total 1/8s", str(self.global_stats["solos"])],
+            ["Total 2/8s", str(self.global_stats["doubles"])],
+            ["Total 7/8s", str(self.global_stats["sevens"])],
+            ["Total 8/8s", str(self.global_stats["fulls"])]
+        ]
+        if use_teams: tour_stats.append(["Total 4-0s", str(self.global_stats["sweeps"])])
+        
+        tour_stats.extend([
+            ["Most Popular Genre", f"{self.genre_c.most_common(1)[0][0]} ({self.genre_c.most_common(1)[0][1]})" if self.genre_c else "N/A"],
+            ["Most Popular Tag", f"{self.tag_c.most_common(1)[0][0]} ({self.tag_c.most_common(1)[0][1]})" if self.tag_c else "N/A"],
+            ["Most 1/8s", fmt_most([n for n, v in self.e_counts.items() if v == max(self.e_counts.values(), default=0) and v > 0], max(self.e_counts.values(), default=0))],
+            ["Most 2/8s", fmt_most([n for n, v in self.p_two_e.items() if v == max(self.p_two_e.values(), default=0) and v > 0], max(self.p_two_e.values(), default=0))],
+            ["Most 7/8s", fmt_most([n for n, v in self.p_rev_e.items() if v == max(self.p_rev_e.values(), default=0) and v > 0], max(self.p_rev_e.values(), default=0))]
+        ])
+        
+        plist = list(self.s_part.keys())
+        no_s = sorted([n for n in plist if self.e_counts[n] == 0 and self.s_part[n] > 0], key=lambda x: self.c_counts[x] / self.s_part[x], reverse=True)
+        yes_s = sorted([n for n in plist if self.e_counts[n] > 0 and self.s_part[n] > 0], key=lambda x: self.c_counts[x] / self.s_part[x])
+        if no_s: tour_stats.append(["Highest GR No 1/8s", f"{no_s[0]} ({100 * (self.c_counts[no_s[0]] / self.s_part[no_s[0]]):.2f}%)"])
+        if yes_s: tour_stats.append(["Lowest GR With 1/8s", f"{yes_s[0]} ({100 * (self.c_counts[yes_s[0]] / self.s_part[yes_s[0]]):.2f}%, {self.e_counts[yes_s[0]]})"])
 
-            rows.append([f"{i + 1}", f_cell, s_cell])
+        # Create structured array matrix for side-by-side splitting style seen in Tour.png
+        half = (len(tour_stats) + 1) // 2
+        left_side, right_side = tour_stats[:half], tour_stats[half:]
+        while len(right_side) < len(left_side): right_side.append(["", ""])
+        split_tour_data = []
+        for l, r in zip(left_side, right_side):
+            split_tour_data.append({"Metric_L": l[0], "Value_L": l[1], "Metric_R": r[0], "Value_R": r[1]})
 
-        self._export_png(pd.DataFrame(rows, columns = ["Rank", "Fastest", "Slowest"]), path, "Time.png", "Time Statistics")
+        # ==========================================
+        # 3. STRUCTURE TEAM & TIER LIST TABLES
+        # ==========================================
+        team_rows = []
+        if use_teams:
+            for tid in self.t_c_ps:
+                t_overs = [self.p_overs_sum[p] / self.c_counts[p] for p in self.s_part if p.lower() in self.assignments and self.assignments[p.lower()][0] == tid and self.c_counts[p] > 0]
+                t_elos = [float(self.elo_map.get(p.lower(), 0)) for p in self.rosters[tid] if p.lower() in self.elo_map]
+                team_rows.append({
+                    "Team Leader": self.t1_lookup.get(tid, f"Team {tid}"),
+                    "Mean Elo": np.mean(t_elos) if t_elos else 0,
+                    "Mean GR": np.mean(self.t_c_ps[tid]) * 100,
+                    "Total 1/8s": self.t_solos[tid],
+                    "Mean Over-8": np.mean(t_overs) if t_overs else 0,
+                    "Rig Synergy": np.mean(self.t_on_syn[tid]) * 100 if self.t_on_syn[tid] else 0,
+                    "Off Synergy": np.mean(self.t_off_syn[tid]) * 100 if self.t_off_syn[tid] else 0,
+                    "Shared Rigs": np.mean(self.t_sh_rig[tid]) * 100 if self.t_sh_rig[tid] else 0
+                })
+
+        # ==========================================
+        # 4. PREPARE CHARTS & PLOTLY JSON OBJECTS
+        # ==========================================
+        song_matrix_list = []
+        for s in self.song_data:
+            if s["vintage"] > 0:
+                song_matrix_list.append({"vintage": int(s["vintage"]), "difficulty": float(s["difficulty"]), "correct_count": int(s["correct_count"])})
+
+        scatter_list = []
+        for name in self.s_part:
+            if self.c_counts[name] > 0:
+                times = self.p_answer_times.get(name, [])
+                scatter_list.append({
+                    "acronym": self._get_player_acronym(name),
+                    "name": name,
+                    "over8": self.p_overs_sum[name] / self.c_counts[name],
+                    "vintage": np.median(self.p_c_vint[name]) if self.p_c_vint[name] else 2010,
+                    "gr": (self.c_counts[name] / self.s_part[name] * 100) if self.s_part[name] else 0,
+                    "rig_gr": (self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else 0
+                })
+
+        # Converts missing parameters seamlessly to structural clean JSON string sets
+        json_players = df_players.to_json(orient="records")
+        json_tour_stats = json.dumps(split_tour_data)
+        json_teams = json.dumps(team_rows)
+        json_songs = json.dumps(song_matrix_list)
+        json_scatter = json.dumps(scatter_list)
+        json_borders = json.dumps(borders)
+        json_eligibility = json.dumps(eligibility)
+
+        c0, c1, c2 = COLOR_0, COLOR_1, COLOR_2
+
+        # ==========================================
+        # 5. GENERATE COMPREHENSIVE DASHBOARD BUNDLE
+        # ==========================================
+        html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{self.tour_label} Tournament Analytics Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body {{ font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #ffffff; color: #000000; }}
+        .main-table {{ border: 3px solid black; border-collapse: collapse; width: 100%; }}
+        .main-table th {{ background-color: #f0f0f0; border: 1px solid black; border-bottom: 3px solid black; padding: 10px; font-weight: bold; font-size: 14px; text-align: center; }}
+        .main-table td {{ border: 1px solid black; padding: 10px; text-align: center; font-size: 14px; }}
+        .main-table tr:nth-child(even) {{ background-color: #f0f0f0; }}
+        .border-group-line {{ border-bottom: 3px solid black !important; }}
+        .border-col-group {{ border-right: 3px solid black !important; }}
+        .highlight-best {{ background-color: {c2} !important; color: white !important; font-weight: bold; }}
+        .highlight-worst {{ background-color: {c0} !important; color: white !important; font-weight: bold; }}
+    </style>
+</head>
+<body class="p-6">
+    <h2 class="text-3xl font-bold text-center mb-6">{self.tour_label} Tour, Player Statistics Dashboard</h2>
+    
+    <div class="mb-8 overflow-x-auto">
+        <table class="main-table" id="playerStandingsTable"></table>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <div class="lg:col-span-5 space-y-6">
+            <div>
+                <h3 class="text-xl font-bold text-center mb-2">Tour Statistics</h3>
+                <table class="main-table" id="tourStatsTable"></table>
+            </div>
+            
+            {"<div><h3 class='text-xl font-bold text-center mb-2'>Team Statistics</h3><table class='main-table' id='teamStatsTable'></table></div>" if use_teams else ""}
+        </div>
+
+        <div class="lg:col-span-7 grid grid-cols-1 gap-6">
+            <div class="border border-gray-300 p-2 bg-white rounded shadow-sm">
+                <div id="plotlySongChart" style="width:100%; height:450px;"></div>
+            </div>
+            <div class="border border-gray-300 p-2 bg-white rounded shadow-sm">
+                <div id="plotlyScatterChart" style="width:100%; height:450px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Bind serialized python payloads
+        const players = {json_players};
+        const tourStats = {json_tour_stats};
+        const teamStats = {json_teams};
+        const songData = {json_songs};
+        const scatterData = {json_scatter};
+        const groupBorders = {json_borders};
+        const eligibility = {json_eligibility};
+
+        const col0 = "{c0}", col1 = "{c1}", col2 = "{c2}";
+        const colBorders = new Set(["Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric_L", "Value_L", "Metric_R", "Value_R", "Team Leader"]);
+
+        // --- PANEL 1: PLAYER STATISTICS RENDERER ---
+        function renderPlayerTable() {{
+            const table = document.getElementById('playerStandingsTable');
+            if(!players.length) return;
+
+            let headers = Object.keys(players[0]);
+            let thead = "<thead><tr>" + headers.map(h => {{
+                let styleStr = colBorders.has(h) ? ' class="border-col-group"' : '';
+                return `<th${{styleStr}}>${{h.replace(' ', '<br>')}}</th>`;
+            }}).join('') + "</tr></thead>";
+
+            // Establish standard optimization boundary metrics
+            let limits = {{}};
+            const excludedHighlightCols = new Set(["Player", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]);
+            headers.forEach(h => {{
+                if(!excludedHighlightCols.has(h)) {{
+                    let rawVals = players.map(p => p[h]).filter(v => v !== null && typeof v === 'number');
+                    limits[h] = {{ max: Math.max(...rawVals), min: Math.min(...rawVals) }};
+                }}
+            }});
+
+            let tbody = "<tbody>";
+            players.forEach((row, idx) => {{
+                let groupLine = groupBorders.includes(idx) ? " border-group-line" : "";
+                tbody += `<tr class="${{groupLine}}">`;
+                
+                headers.forEach(h => {{
+                    let val = row[h];
+                    let displayVal = val;
+                    if(val === null || val === undefined) displayVal = "N/A";
+                    else if(typeof val === 'number') {{
+                        if (h.includes('GR') || h === 'Rig Rate' || h === 'Rig Delta' || h === 'Off GR') displayVal = val.toFixed(2) + "%";
+                        else displayVal = val.toFixed(2);
+                    }}
+
+                    let cellStyle = colBorders.has(h) ? "border-col-group " : "";
+                    if(!excludedHighlightCols.has(h) && limits[h] && typeof val === 'number') {{
+                        let isBest = (h === "Median Time") ? (val === limits[h].min) : (val === limits[h].max);
+                        let isWorst = (h === "Median Time") ? (val === limits[h].max) : (val === limits[h].min);
+                        let isElig = eligibility[idx];
+
+                        if(isBest) cellStyle += "highlight-best ";
+                        else if(isWorst && isElig) cellStyle += "highlight-worst ";
+                    }}
+
+                    let finalVal = (h === "Player" || h === "Metric_L" || h === "Team Leader") ? `<b>${{displayVal}}</b>` : displayVal;
+                    tbody += `<td class="${{cellStyle.trim()}}">${{finalVal}}</td>`;
+                }});
+                tbody += "</tr>";
+            }});
+            table.innerHTML = thead + tbody + "</tbody>";
+        }}
+
+        // --- PANEL 2: TOUR STATISTICS SPLIT TABLE ---
+        function renderTourTable() {{
+            const table = document.getElementById('tourStatsTable');
+            let thead = "<thead><tr><th>Metric</th><th class='border-col-group'>Value</th><th>Metric</th><th>Value</th></tr></thead><tbody>";
+            let tbody = "";
+            tourStats.forEach(row => {{
+                tbody += `<tr>
+                    <td><b>${{row.Metric_L}}</b></td><td class='border-col-group'>${{row.Value_L}}</td>
+                    <td><b>${{row.Metric_R}}</b></td><td>${{row.Value_R}}</td>
+                </tr>`;
+            }});
+            table.innerHTML = thead + tbody + "</tbody>";
+        }}
+
+        // --- PANEL 3: TEAM STATISTICS VIEW PANEL ---
+        function renderTeamTable() {{
+            const table = document.getElementById('teamStatsTable');
+            if(!table || !teamStats.length) return;
+            let headers = Object.keys(teamStats[0]);
+            let thead = "<thead><tr>" + headers.map(h => `<th${{colBorders.has(h) ? ' class="border-col-group"':''}}>${{h}}</th>`).join('') + "</tr></thead><tbody>";
+            let tbody = "";
+            teamStats.forEach(row => {{
+                tbody += "<tr>";
+                headers.forEach(h => {{
+                    let val = row[h];
+                    let disp = (typeof val === 'number') ? val.toFixed(2) : val;
+                    if(h.includes('GR') || h.includes('Synergy') || h.includes('Rigs') && h !== 'Shared Rigs') disp += "%";
+                    tbody += `<td class='${{colBorders.has(h) ? "border-col-group":""}}'>${{h==="Team Leader"?`<b>${{disp}}</b>`:disp}}</td>`;
+                }});
+                tbody += "</tr>";
+            }});
+            table.innerHTML = thead + tbody + "</tbody>";
+        }}
+
+        // Run element execution mappings
+        renderPlayerTable();
+        renderTourTable();
+        renderTeamTable();
+
+        // ==========================================
+        // PLOTLY GRAPH INTERACTIVE BINDINGS
+        // ==========================================
+        
+        // --- CHART A: INTERACTIVE DISTRIBUTION MATRICES ---
+        const matrixBins = {{}};
+        songData.forEach(s => {{
+            let xIdx = Math.min(Math.floor(s.difficulty / 10), 4);
+            let yBin = Math.floor(s.vintage / 10) * 10;
+            let key = `${{xIdx * 10}}-${{yBin}}`;
+            if(!matrixBins[key]) matrixBins[key] = {{ count: 0, over8Sum: 0 }};
+            matrixBins[key].count++;
+            matrixBins[key].over8Sum += s.correct_count;
+        }});
+
+        const xLabels = ['0-9', '10-19', '20-29', '30-39', '40+'];
+        const yLabels = [1990, 2000, 2010, 2020];
+        let zValues = [], textLabels = [];
+
+        for(let i=0; i<yLabels.length; i++) {{
+            let rowZ = [], rowText = [];
+            for(let j=0; j<xLabels.length; j++) {{
+                let key = `${{j * 10}}-${{yLabels[i]}}`;
+                if(matrixBins[key]) {{
+                    let val = matrixBins[key].over8Sum / matrixBins[key].count;
+                    rowZ.push(val);
+                    rowText.push(`<b>Count:</b> ${{matrixBins[key].count}}<br><b>Avg Over-8:</b> ${{val.toFixed(2)}}`);
+                }} else {{ rowZ.push(null); rowText.push(''); }}
+            }}
+            zValues.push(rowZ);
+            textLabels.push(rowText);
+        }}
+
+        Plotly.newPlot('plotlySongChart', [{{
+            z: zValues, x: xLabels, y: yLabels, text: textLabels, hoverinfo: 'text',
+            type: 'heatmap', colorscale: [[0, col0], [0.5, col1], [1, col2]], showscale: true,
+            colorbar: {{ title: 'Over-8 Count Scale', thickness: 15 }}
+        }}], {{
+            title: {{ text: '<b>Song Matrix Statistics</b>', font: {{ family: 'Segoe UI', size: 20 }} }},
+            xaxis: {{ title: 'Difficulty', font: {{ weight: 'bold' }} }},
+            yaxis: {{ title: 'Vintage', tickmode: 'array', tickvals: yLabels }},
+            margin: {{ t: 40, b: 40, l: 50, r: 10 }}
+        }}, {{displayModeBar: false}});
+
+        // --- CHART B: INTERACTIVE COMPREHENSIVE SCATTER PLOTS ---
+        Plotly.newPlot('plotlyScatterChart', [{{
+            x: scatterData.map(d => d.over8),
+            y: scatterData.map(d => d.vintage),
+            text: scatterData.map(d => d.acronym),
+            customdata: scatterData.map(d => [d.name, d.gr.toFixed(2), d.rig_gr.toFixed(2)]),
+            hovertemplate: '<b>%{{customdata[0]}}</b><br>Over-8: %{{x:.2f}}<br>Vintage: %{{y}}<br>GR: %{{customdata[1]}}%<br>Rig GR: %{{customdata[2]}}%<extra></extra>',
+            mode: 'markers+text', textposition: 'top center',
+            textfont: {{ family: 'Segoe UI', size: 11, weight: 'bold' }},
+            marker: {{
+                size: scatterData.map(d => Math.max(14, d.gr * 0.55)),
+                color: scatterData.map(d => d.rig_gr),
+                colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]],
+                showscale: true, colorbar: {{ title: 'Rig GR (%)', thickness: 15 }},
+                line: {{ color: 'black', width: 1 }}
+            }}
+        }}], {{
+            title: {{ text: '<b>Guess Statistics Map</b>', font: {{ family: 'Segoe UI', size: 20 }} }},
+            xaxis: {{ title: 'Over-8' }}, yaxis: {{ title: 'Vintage', tickformat: 'd' }},
+            plot_bgcolor: '#ffffff', paper_bgcolor: '#ffffff',
+            margin: {{ t: 40, b: 40, l: 50, r: 10 }}
+        }}, {{displayModeBar: false}});
+    </script>
+</body>
+</html>
+"""
+        with open(path / "Dashboard.html", "w", encoding="utf-8") as f:
+            f.write(html_content)
 
     def _export_png(self, df, path, fname, title, mask = None, val_str = "default"):
         if not self.browser_path: return
