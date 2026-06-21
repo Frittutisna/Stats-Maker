@@ -1926,9 +1926,12 @@ class TourAnalyzer:
                 cor, tot = self.c_counts[p], self.s_part[p]
                 tim, chc, cht = self.p_answer_times.get(p, []), self.p_chan_c[p], self.p_chan_s[p]
 
+                player_song_details[p]["Lives Taken"].sort(key=str.lower)
+                player_song_details[p]["Lives Saved"].sort(key=str.lower)
+
                 gen_players.append({"player": p, "value": 100 * cor / tot if tot else 0.0})
-                atk_players.append({"player": p, "value": int(self.p_pts[p])})
-                blk_players.append({"player": p, "value": int(self.p_blks[p])})
+                atk_players.append({"player": p, "value": int(self.p_pts[p]), "details": player_song_details[p]["Lives Taken"]})
+                blk_players.append({"player": p, "value": float(self.p_blks[p]), "details": player_song_details[p]["Lives Saved"]})
                 con_players.append({"player": p, "value": 100 * (self.p_pts[p] + self.p_blks[p]) / cor if cor else 0.0})
                 if tim: spd_players.append({"player": p, "value": float(np.median(tim))})
                 if cht: chn_players.append({"player": p, "value": 100 * chc / cht})
@@ -1942,12 +1945,18 @@ class TourAnalyzer:
 
             tier_merged.append({
                 "Tier": int(tr),
-                "Guess Rate": f"{gen_players[0]['player']} ({gen_players[0]['value']:.2f})" if gen_players else "N/A",
-                "Lives Taken": f"{atk_players[0]['player']} ({atk_players[0]['value']})" if atk_players else "N/A",
-                "Lives Saved": f"{blk_players[0]['player']} ({blk_players[0]['value']})" if blk_players else "N/A",
+                "Guess Rate": f"{gen_players[0]['player']} ({gen_players[0]['value']:.2f})",
+                "Lives Taken": {"count": f"{atk_players[0]['player']} ({atk_players[0]['value']})", "details": atk_players[0]['details']} if atk_players else {"count": "N/A", "details": []},
+                "Lives Saved": {"count": f"{blk_players[0]['player']} ({blk_players[0]['value']:g})", "details": blk_players[0]['details']} if blk_players else {"count": "N/A", "details": []},
                 "Contribution Rate": f"{con_players[0]['player']} ({con_players[0]['value']:.2f})" if con_players else "N/A",
                 "Median Time": f"{spd_players[0]['player']} ({spd_players[0]['value']:.2f})" if spd_players else "N/A",
-                "Chant GR": f"{chn_players[0]['player']} ({chn_players[0]['value']:.2f})" if chn_players else "N/A"
+                "Chanting Guess Rate": f"{chn_players[0]['player']} ({chn_players[0]['value']:.2f})" if chn_players else "N/A",
+                "gen_val": gen_players[0]['value'] if gen_players else 0,
+                "atk_val": atk_players[0]['value'] if atk_players else 0,
+                "blk_val": blk_players[0]['value'] if blk_players else 0,
+                "con_val": con_players[0]['value'] if con_players else 0,
+                "spd_val": spd_players[0]['value'] if spd_players else float('inf'),
+                "chn_val": chn_players[0]['value'] if chn_players else 0
             })
 
         song_matrix_list = []
@@ -2032,26 +2041,27 @@ class TourAnalyzer:
         c0, c1, c2 = COLOR_0, COLOR_1, COLOR_2
 
         explanations = {
-            "Player"        : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
-            "GR"            : "Guess Rate",
-            "UF"            : "Usefulness",
-            "Mean Over-8"   : "Average of correct guessers across songs this player/team guessed correctly",
-            "Lives Taken"   : "Count of points won against the opposing team; correct guessers exclusively on their team",
-            "Lives Saved"   : "Count of blocks achieved against the opposing team; lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
-            "OP GR"         : "Opening Guess Rate",
-            "ED GR"         : "Ending Guess Rate",
-            "IN GR"         : "Insert Guess Rate",
-            "Rig Over-8"    : "Average of correct guessers across songs from this player's list",
-            "Over-8 Delta"  : "Rig Over-8 - Mean Over-8",
-            "Rig GR"        : "Rig Guess Rate",
-            "Off GR"        : "Off-Rig Guess Rate",
-            "Rig Delta"     : "100 * (Correct - Rig) / Correct: Calculates this player's performance against their own list",
-            "Median Time"   : "Median guess time across songs this player guessed correctly",
-            "Chant GR"      : "Chanting Guess Rate",
-            "Total 4-0s"    : "Count of songs where all players from one team guessed correctly and all players from the other team missed",
-            "Rig Synergy"   : "Average team guess rate across songs from its own members' lists",
-            "Off Synergy"   : "Average team guess rate across songs from the opposing team member's lists",
-            "Shared Rigs"   : "Calculates how much songs are shared across its own members' lists"
+            "Player"                : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
+            "GR"                    : "Guess Rate",
+            "UF"                    : "Usefulness",
+            "Mean Over-8"           : "Average of correct guessers across songs this player/team guessed correctly",
+            "Lives Taken"           : "Count of points won against the opposing team; correct guessers exclusively on their team",
+            "Lives Saved"           : "Count of blocks achieved against the opposing team; lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
+            "OP GR"                 : "Opening Guess Rate",
+            "ED GR"                 : "Ending Guess Rate",
+            "IN GR"                 : "Insert Guess Rate",
+            "Rig Over-8"            : "Average of correct guessers across songs from this player's list",
+            "Over-8 Delta"          : "Rig Over-8 - Mean Over-8",
+            "Rig GR"                : "Rig Guess Rate",
+            "Off GR"                : "Off-Rig Guess Rate",
+            "Rig Delta"             : "100 * (Correct - Rig) / Correct: Calculates this player's performance against their own list",
+            "Median Time"           : "Median guess time across songs this player guessed correctly",
+            "Chant GR"              : "Chanting Guess Rate",
+            "Total 4-0s"            : "Count of songs where all players from one team guessed correctly and all players from the other team missed",
+            "Rig Synergy"           : "Average team guess rate across songs from its own members' lists",
+            "Off Synergy"           : "Average team guess rate across songs from the opposing team member's lists",
+            "Shared Rigs"           : "Calculates how much songs are shared across its own members' lists",
+            "Contribution Rate"     : "100 * (Lives Taken + Saved) / Correct: Calculates how much of this player's correct guesses directly contributed to the scoreline",
         }
         json_explanations = json.dumps(explanations)
 
@@ -2107,7 +2117,7 @@ class TourAnalyzer:
         <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
         {"<button class='tab-btn' onclick='switchDashboardTab(event, \"team-tab\")'>Team</button>" if use_teams else ""}
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier ⚠︎</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song ⚠︎</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess ⚠︎</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List ⚠︎</button>
@@ -2172,7 +2182,7 @@ class TourAnalyzer:
         const colExplanations = {json_explanations};
 
         const col0 = "{c0}", col1 = "{c1}", col2 = "{c2}";
-        const colBorders = new Set(["Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier"]);
+        const colBorders = new Set(["Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier", "Lives Saved", "Chanting Guess Rate"]);
 
         function switchDashboardTab(evt, tabId) {{
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
@@ -2374,11 +2384,42 @@ class TourAnalyzer:
             const table = document.getElementById('tierStatsTable');
             if(!tierStats.length) return;
 
-            let headers = Object.keys(tierStats[0]);
-            let thead = "<thead><tr>" + headers.map(h => `<th${{colBorders.has(h)?' class="border-col-group"':''}}>${{h.replace(' ', '<br>')}}</th>`).join('') + "</thead><tbody>";
-            let tbody = "";
-            tierStats.forEach(r => {{
-                tbody += "<tr>" + headers.map(h => `<td class='${{colBorders.has(h)?"border-col-group":""}}'>${{h==="Tier"?`<b>${{r[h]}}</b>`:r[h]}}</td>`).join('') + "</tr>";
+            let baseHeaders = ["Tier", "Guess Rate", "Lives Taken", "Lives Saved", "Contribution Rate", "Median Time", "Chanting Guess Rate"];
+            let thead = "<thead><tr>" + baseHeaders.map(h => {{
+                let borderClass = colBorders.has(h) ? ' class="border-col-group"' : '';
+                return `<th${{borderClass}} data-metric="${{h}}">${{h}}</th>`;
+            }}).join('') + "</tr></thead>";
+
+            let bestIndices = {{
+                "Guess Rate": tierStats.reduce((maxIdx, current, idx, arr) => current.gen_val > arr[maxIdx].gen_val ? idx : maxIdx, 0),
+                "Lives Taken": tierStats.reduce((maxIdx, current, idx, arr) => current.atk_val > arr[maxIdx].atk_val ? idx : maxIdx, 0),
+                "Lives Saved": tierStats.reduce((maxIdx, current, idx, arr) => current.blk_val > arr[maxIdx].blk_val ? idx : maxIdx, 0),
+                "Contribution Rate": tierStats.reduce((maxIdx, current, idx, arr) => current.con_val > arr[maxIdx].con_val ? idx : maxIdx, 0),
+                "Median Time": tierStats.reduce((minIdx, current, idx, arr) => current.spd_val < arr[minIdx].spd_val ? idx : minIdx, 0),
+                "Chanting Guess Rate": tierStats.reduce((maxIdx, current, idx, arr) => current.chn_val > arr[maxIdx].chn_val ? idx : maxIdx, 0)
+            }};
+
+            let tbody = "<tbody>";
+            tierStats.forEach((r, idx) => {{
+                tbody += "<tr>";
+                baseHeaders.forEach(h => {{
+                    let cellStyle = colBorders.has(h) ? "border-col-group " : "";
+                    if (h !== "Tier" && bestIndices[h] === idx) {{
+                        cellStyle += "highlight-best ";
+                    }}
+
+                    let rawCell = r[h];
+                    let displayVal = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
+                    let finalVal = (h === "Tier") ? `<b>${{displayVal}}</b>` : displayVal;
+
+                    if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {{
+                        let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
+                        tbody += `<td class="${{cellStyle.trim()}}" data-songs="${{encodedDetails}}">${{finalVal}}</td>`;
+                    }} else {{
+                        tbody += `<td class="${{cellStyle.trim()}}">${{finalVal}}</td>`;
+                    }}
+                }});
+                tbody += "</tr>";
             }});
             table.innerHTML = thead + tbody + "</tbody>";
         }}
