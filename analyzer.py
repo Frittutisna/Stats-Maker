@@ -1565,8 +1565,9 @@ class TourAnalyzer:
         else: stage = f"R{self.base_exp}"
         prefix = f"{self.tour_label.strip()} Tour: {stage}"
 
-        # Initialize dictionaries to hold lists of song contribution strings for tooltips
+        # Initialize tracking dictionaries for tooltips
         player_song_details = defaultdict(lambda: defaultdict(list))
+        tour_song_details = defaultdict(list)
 
         # Re-iterate or track song data dynamically from the JSON paths to construct accurate maps
         for json_path in self.json_paths:
@@ -1619,15 +1620,32 @@ class TourAnalyzer:
                 active_correct = correct & final_members
                 amt_correct = len(active_correct)
 
-                if amt_correct == 1:
+                # Track tour total groupings
+                if amt_correct == 0:
+                    tour_song_details["Total 0/8s"].append(song_line)
+                elif amt_correct == 1:
+                    tour_song_details["Total 1/8s"].append(song_line)
                     sw = list(active_correct)[0]
                     player_song_details[sw]["1/8s"].append(song_line)
                 elif amt_correct == 2:
+                    tour_song_details["Total 2/8s"].append(song_line)
                     for sw in active_correct:
                         player_song_details[sw]["2/8s"].append(song_line)
                 elif apply_rev and len(final_members - active_correct) == 1:
+                    tour_song_details["Total 7/8s"].append(song_line)
                     sevens_target = list(final_members - active_correct)[0]
                     player_song_details[sevens_target]["7/8s"].append(song_line)
+                elif amt_correct == len(final_members):
+                    tour_song_details["Total 8/8s"].append(song_line)
+
+                # Track global fields for genres and tags
+                if isinstance(si.get("animeGenre"), list):
+                    for gen in si.get("animeGenre"):
+                        tour_song_details[f"Genre:{gen}"].append(song_line)
+                if isinstance(si.get("animeTags"), list):
+                    for tag in si.get("animeTags"):
+                        if tag not in EXCLUDED_TAGS:
+                            tour_song_details[f"Tag:{tag}"].append(song_line)
 
                 ls = song.get("listStates", [])
                 if ls:
@@ -1641,6 +1659,9 @@ class TourAnalyzer:
                         tA, tB = t_list[0], t_list[1]
                         cA, cB = active_correct & self.rosters[tA], active_correct & self.rosters[tB]
                         
+                        if (len(cA) == 4 and not cB) or (len(cB) == 4 and not cA):
+                            tour_song_details["Total 4-0s"].append(song_line)
+
                         for cur, opp, cC, oC in [(tA, tB, cA, cB), (tB, tA, cB, cA)]:
                             if not oC:
                                 for p in cC:
@@ -1791,32 +1812,55 @@ class TourAnalyzer:
         function_fmt_most = lambda names, val: "N/A" if not names else f"{sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]} ({val}{f', {(self.c_counts[sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]] / self.s_part[sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]] * 100):.2f}' if len(names) > 1 else ''})"
 
         tour_stats_raw = [
-            ["Median Vintage", format_year(round(np.median(self.all_vint), 2)) if self.all_vint else "N/A"],
-            ["Mean Difficulty", f"{np.mean(self.all_diff):.2f}" if self.all_diff else "N/A"],
-            ["Mean Guess Rate", f"{(self.global_stats['tot_c'] / sum(self.s_part.values()) * 100):.2f}" if self.s_part else "0.00"],
-            ["Total 0/8s", str(self.global_stats["blanks"])],
-            ["Total 1/8s", str(self.global_stats["solos"])],
-            ["Total 2/8s", str(self.global_stats["doubles"])],
-            ["Total 7/8s", str(self.global_stats["sevens"])],
-            ["Total 8/8s", str(self.global_stats["fulls"])]
+            ["Median Vintage", format_year(round(np.median(self.all_vint), 2)) if self.all_vint else "N/A", []],
+            ["Mean Difficulty", f"{np.mean(self.all_diff):.2f}" if self.all_diff else "N/A", []],
+            ["Mean Guess Rate", f"{(self.global_stats['tot_c'] / sum(self.s_part.values()) * 100):.2f}" if self.s_part else "0.00", []],
+            ["Total 0/8s", str(self.global_stats["blanks"]), tour_song_details["Total 0/8s"]],
+            ["Total 1/8s", str(self.global_stats["solos"]), tour_song_details["Total 1/8s"]],
+            ["Total 2/8s", str(self.global_stats["doubles"]), tour_song_details["Total 2/8s"]],
+            ["Total 7/8s", str(self.global_stats["sevens"]), tour_song_details["Total 7/8s"]],
+            ["Total 8/8s", str(self.global_stats["fulls"]), tour_song_details["Total 8/8s"]]
         ]
-        if use_teams: tour_stats_raw.append(["Total 4-0s", str(self.global_stats["sweeps"])])
+        if use_teams: 
+            tour_stats_raw.append(["Total 4-0s", str(self.global_stats["sweeps"]), tour_song_details["Total 4-0s"]])
         
+        pop_gen = self.genre_c.most_common(1)[0][0] if self.genre_c else "N/A"
+        pop_gen_count = self.genre_c.most_common(1)[0][1] if self.genre_c else 0
+        pop_tag = self.tag_c.most_common(1)[0][0] if self.tag_c else "N/A"
+        pop_tag_count = self.tag_c.most_common(1)[0][1] if self.tag_c else 0
+
+        m1_p = [n for n, v in self.e_counts.items() if v == max(self.e_counts.values(), default=0) and v > 0]
+        m1_win = sorted(m1_p, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0] if m1_p else None
+        m2_p = [n for n, v in self.p_two_e.items() if v == max(self.p_two_e.values(), default=0) and v > 0]
+        m2_win = sorted(m2_p, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0] if m2_p else None
+        m7_p = [n for n, v in self.p_rev_e.items() if v == max(self.p_rev_e.values(), default=0) and v > 0]
+        m7_win = sorted(m7_p, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0] if m7_p else None
+
         tour_stats_raw.extend([
-            ["Most Popular Genre", f"{self.genre_c.most_common(1)[0][0]} ({self.genre_c.most_common(1)[0][1]})" if self.genre_c else "N/A"],
-            ["Most Popular Tag", f"{self.tag_c.most_common(1)[0][0]} ({self.tag_c.most_common(1)[0][1]})" if self.tag_c else "N/A"],
-            ["Most 1/8s", function_fmt_most([n for n, v in self.e_counts.items() if v == max(self.e_counts.values(), default=0) and v > 0], max(self.e_counts.values(), default=0))],
-            ["Most 2/8s", function_fmt_most([n for n, v in self.p_two_e.items() if v == max(self.p_two_e.values(), default=0) and v > 0], max(self.p_two_e.values(), default=0))],
-            ["Most 7/8s", function_fmt_most([n for n, v in self.p_rev_e.items() if v == max(self.p_rev_e.values(), default=0) and v > 0], max(self.p_rev_e.values(), default=0))]
+            ["Most Popular Genre", f"{pop_gen} ({pop_gen_count})" if self.genre_c else "N/A", tour_song_details[f"Genre:{pop_gen}"]],
+            ["Most Popular Tag", f"{pop_tag} ({pop_tag_count})" if self.tag_c else "N/A", tour_song_details[f"Tag:{pop_tag}"]],
+            ["Most 1/8s", function_fmt_most(m1_p, max(self.e_counts.values(), default=0)), player_song_details[m1_win]["1/8s"] if m1_win else []],
+            ["Most 2/8s", function_fmt_most(m2_p, max(self.p_two_e.values(), default=0)), player_song_details[m2_win]["2/8s"] if m2_win else []],
+            ["Most 7/8s", function_fmt_most(m7_p, max(self.p_rev_e.values(), default=0)), player_song_details[m7_win]["7/8s"] if m7_win else []]
         ])
         
         plist = list(self.s_part.keys())
         no_s = sorted([n for n in plist if self.e_counts[n] == 0 and self.s_part[n] > 0], key=lambda x: self.c_counts[x] / self.s_part[x], reverse=True)
         yes_s = sorted([n for n in plist if self.e_counts[n] > 0 and self.s_part[n] > 0], key=lambda x: self.c_counts[x] / self.s_part[x])
-        if no_s: tour_stats_raw.append(["Highest GR Without 1/8s", f"{no_s[0]} ({100 * (self.c_counts[no_s[0]] / self.s_part[no_s[0]]):.2f})"])
-        if yes_s: tour_stats_raw.append(["Lowest GR With 1/8s", f"{yes_s[0]} ({100 * (self.c_counts[yes_s[0]] / self.s_part[yes_s[0]]):.2f}, {self.e_counts[yes_s[0]]})"])
+        if no_s: tour_stats_raw.append(["Highest GR Without 1/8s", f"{no_s[0]} ({100 * (self.c_counts[no_s[0]] / self.s_part[no_s[0]]):.2f})", []])
+        if yes_s: 
+            tour_stats_raw.append(["Lowest GR With 1/8s", f"{yes_s[0]} ({100 * (self.c_counts[yes_s[0]] / self.s_part[yes_s[0]]):.2f}, {self.e_counts[yes_s[0]]})", player_song_details[yes_s[0]]["1/8s"]])
 
-        tour_unrolled = [{"Metric": row[0], "Value": row[1]} for row in tour_stats_raw]
+        tour_unrolled = []
+        for row in tour_stats_raw:
+            row[2].sort(key=str.lower)
+            tour_unrolled.append({
+                "Metric": row[0],
+                "Value": {
+                    "count": row[1],
+                    "details": row[2]
+                }
+            })
 
         team_rows = []
         if use_teams:
@@ -1826,7 +1870,7 @@ class TourAnalyzer:
                 team_rows.append({
                     "Team Leader": self.t1_lookup.get(tid, f"Team {tid}"),
                     "Mean Elo": f"{np.mean(t_elos):.2f}" if t_elos else "N/A",
-                    "Mean Guess Rate": f"{np.mean(self.t_c_ps[tid]) * 100:.2f}",
+                    "Mean GR": f"{np.mean(self.t_c_ps[tid]) * 100:.2f}",
                     "Total 1/8s": int(self.t_solos[tid]),
                     "Mean Over-8": f"{np.mean(t_overs):.2f}" if t_overs else "N/A",
                     "Rig Synergy": f"{np.mean(self.t_on_syn[tid]) * 100:.2f}" if self.t_on_syn[tid] else "N/A",
@@ -1952,7 +1996,8 @@ class TourAnalyzer:
             "Off GR"        : "Off-Rig Guess Rate",
             "Rig Delta"     : "100 * (Correct - Rig) / Correct: Calculates this player's performance against their own list",
             "Median Time"   : "Median guess time across songs this player guessed correctly",
-            "Chant GR"      : "Chanting Guess Rate"
+            "Chant GR"      : "Chanting Guess Rate",
+            "Total 4-0s"    : "Count of songs where all players from one team guessed correctly and all players from the other team missed"
         }
         json_explanations = json.dumps(explanations)
 
@@ -2007,12 +2052,12 @@ class TourAnalyzer:
     <div class="max-w-[1800px] mx-auto border-b border-gray-300 flex flex-wrap justify-center gap-2 mb-8">
         <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
-        {"<button class='tab-btn' onclick='switchDashboardTab(event, \"team-tab\")'>Team</button>" if use_teams else ""}
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'listguess-tab')">List → Guess</button>
+        {"<button class='tab-btn' onclick='switchDashboardTab(event, \"team-tab\")'>Team ⚠︎</button>" if use_teams else ""}
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier ⚠︎</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song ⚠︎</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess ⚠︎</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List ⚠︎</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'listguess-tab')">List → Guess ⚠︎</button>
     </div>
 
     <div class="max-w-[2400px] mx-auto">
@@ -2123,16 +2168,31 @@ class TourAnalyzer:
                 tbody += "</tr>";
             }});
             table.innerHTML = thead + tbody + "</tbody>";
-            
-            setupTooltipListeners();
+        }}
+
+        function renderTourTable() {{
+            const table = document.getElementById('tourStatsTable');
+            let thead = "<thead><tr><th class='border-col-group' data-metric='Metric'>Metric</th><th data-metric='Value'>Value</th></tr></thead><tbody>";
+            let tbody = "";
+            tourStats.forEach(row => {{
+                let rawCell = row.Value;
+                let displayVal = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
+                
+                if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {{
+                    let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
+                    tbody += `<tr><td class='border-col-group'><b>${{row.Metric}}</b></td><td data-songs="${{encodedDetails}}">${{displayVal}}</td></tr>`;
+                }} else {{
+                    tbody += `<tr><td class='border-col-group'><b>${{row.Metric}}</b></td><td>${{displayVal}}</td></tr>`;
+                }}
+            }});
+            table.innerHTML = thead + tbody + "</tbody>";
         }}
 
         function setupTooltipListeners() {{
             const tooltipNode = document.getElementById('customJsTooltip');
-            const tableHeaders = document.querySelectorAll('#playerStandingsTable th');
-            const dataCells = document.querySelectorAll('#playerStandingsTable td[data-songs]');
-
-            tableHeaders.forEach(th => {{
+            
+            // Handle header explanations on hover for all tables dynamically
+            document.querySelectorAll('table th[data-metric]').forEach(th => {{
                 const metricKey = th.getAttribute('data-metric');
                 if (!colExplanations[metricKey]) return;
 
@@ -2152,12 +2212,33 @@ class TourAnalyzer:
                 th.addEventListener('mouseleave', () => {{ tooltipNode.style.display = 'none'; }});
             }});
 
-            dataCells.forEach(td => {{
+            // Handle tour metric rows hover ONLY on the Metric cell itself (like Total 4-0s)
+            document.querySelectorAll('#tourStatsTable tr td:first-child').forEach(td => {{
+                const metricKey = td.innerText.trim();
+                if (!colExplanations[metricKey]) return;
+
+                td.addEventListener('mouseenter', (e) => {{
+                    tooltipNode.innerHTML = colExplanations[metricKey];
+                    tooltipNode.style.display = 'block';
+                }});
+
+                td.addEventListener('mousemove', (e) => {{
+                    let xPos = e.pageX + 15;
+                    let yPos = e.pageY + 15;
+                    if (xPos + 450 > window.innerWidth + window.scrollX) {{ xPos = e.pageX - 465; }}
+                    tooltipNode.style.left = xPos + 'px';
+                    tooltipNode.style.top = yPos + 'px';
+                }});
+
+                td.addEventListener('mouseleave', () => {{ tooltipNode.style.display = 'none'; }});
+            }});
+
+            // Setup granular itemized data list tooltips
+            document.querySelectorAll('td[data-songs]').forEach(td => {{
                 td.addEventListener('mouseenter', (e) => {{
                     try {{
                         const songs = JSON.parse(decodeURIComponent(td.getAttribute('data-songs')));
                         if(songs && songs.length > 0) {{
-                            // --- REPLACE WITH THIS RANDOM SELECTION AND SORT BLOCK ---
                             let displaySongs = [...songs];
                             
                             if (songs.length > 10) {{
@@ -2178,7 +2259,6 @@ class TourAnalyzer:
                             }}
                             
                             tooltipNode.innerHTML = displaySongs.join('<br>');
-                            // ---------------------------------------------------------
                             tooltipNode.style.display = 'block';
                         }}
                     }} catch(err) {{}}
@@ -2196,12 +2276,19 @@ class TourAnalyzer:
             }});
         }}
 
-        function renderTourTable() {{
-            const table = document.getElementById('tourStatsTable');
-            let thead = "<thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody>";
+        function renderTeamTable() {{
+            const table = document.getElementById('teamStatsTable');
+            if(!table || !teamStats.length) return;
+            let headers = Object.keys(teamStats[0]);
+            let thead = "<thead><tr>" + headers.map(h => `<th${{colBorders.has(h) ? ' class="border-col-group"':''}}>${{h.replace(' ', '<br>')}}</th>`).join('') + "</thead><tbody>";
             let tbody = "";
-            tourStats.forEach(row => {{
-                tbody += `<tr><td><b>${{row.Metric}}</b></td><td>${{row.Value}}</td></tr>`;
+            teamStats.forEach(row => {{
+                tbody += "<tr>";
+                headers.forEach(h => {{
+                    let disp = row[h];
+                    tbody += `<td class='${{colBorders.has(h) ? "border-col-group":""}}'>${{h==="Team Leader"?`<b>${{disp}}</b>`:disp}}</td>`;
+                }});
+                tbody += "</tr>";
             }});
             table.innerHTML = thead + tbody + "</tbody>";
         }}
@@ -2240,6 +2327,7 @@ class TourAnalyzer:
         renderTourTable();
         renderTeamTable();
         renderTierTable();
+        setupTooltipListeners();
 
         const matrixBins = {{}};
         songData.forEach(s => {{
