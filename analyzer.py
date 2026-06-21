@@ -1565,6 +1565,90 @@ class TourAnalyzer:
         else: stage = f"R{self.base_exp}"
         prefix = f"{self.tour_label.strip()} Tour: {stage}"
 
+        # Initialize dictionaries to hold lists of song contribution strings for tooltips
+        player_song_details = defaultdict(lambda: defaultdict(list))
+
+        # Re-iterate or track song data dynamically from the JSON paths to construct accurate maps
+        for json_path in self.json_paths:
+            with open(json_path, encoding = "utf-8") as f: data = json.load(f)
+            songs = data.get("songs", [])
+            if not songs: continue
+
+            raw_f_players = set()
+            for s in songs:
+                for p in s.get("correctGuessPlayers", []):
+                    if      isinstance(p, str)                  : raw_f_players.add(p)
+                    elif    isinstance(p, dict) and "name" in p : raw_f_players.add(p["name"])
+                for ls in s.get("listStates", []):
+                    if "name" in ls: raw_f_players.add(ls["name"])
+
+            final_members = set(raw_f_players)
+            if self.use_teams:
+                t_in_f = {self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments}
+                for tid in t_in_f:
+                    ros = self.rosters[tid]
+                    for m_p in ros:
+                        if m_p.lower() not in self.assignments:
+                            for c_p in raw_f_players:
+                                if c_p.lower() in self.assignments and self.assignments[c_p.lower()][0] == tid:
+                                    self.assignments[m_p.lower()] = self.assignments[c_p.lower()]
+                    final_members.update(ros)
+
+            apply_rev = (len(final_members) % 2 == 0)
+
+            for song in songs:
+                si = song.get("songInfo", {})
+                st = si.get("type", 3)
+                t_num = si.get("typeNumber", 0)
+                
+                type_str = "OP" if st == 1 else "ED" if st == 2 else "IN"
+                num_str = "" if type_str == "IN" else str(t_num)
+                romaji_name = si.get("animeNames", {}).get("romaji", "Unknown")
+                s_name = si.get("songName", "Unknown")
+                art_name = si.get("artist", "Unknown")
+                
+                song_line = f"{romaji_name} {type_str}{num_str}: {s_name} by {art_name}"
+
+                raw_correct = song.get("correctGuessPlayers", [])
+                correct = set()
+                for p in raw_correct:
+                    if      isinstance(p, str)                  : correct.add(p)
+                    elif    isinstance(p, dict) and "name" in p : correct.add(p["name"])
+
+                # Filter down to tracked round participants
+                active_correct = correct & final_members
+                amt_correct = len(active_correct)
+
+                if amt_correct == 1:
+                    sw = list(active_correct)[0]
+                    player_song_details[sw]["1/8s"].append(song_line)
+                elif amt_correct == 2:
+                    for sw in active_correct:
+                        player_song_details[sw]["2/8s"].append(song_line)
+                elif apply_rev and len(final_members - active_correct) == 1:
+                    sevens_target = list(final_members - active_correct)[0]
+                    player_song_details[sevens_target]["7/8s"].append(song_line)
+
+                ls = song.get("listStates", [])
+                if ls:
+                    for p in ls:
+                        n = p["name"]
+                        player_song_details[n]["Rigs"].append(song_line)
+
+                if self.use_teams:
+                    t_list = list({self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments})
+                    if len(t_list) == 2:
+                        tA, tB = t_list[0], t_list[1]
+                        cA, cB = active_correct & self.rosters[tA], active_correct & self.rosters[tB]
+                        
+                        for cur, opp, cC, oC in [(tA, tB, cA, cB), (tB, tA, cB, cA)]:
+                            if not oC:
+                                for p in cC:
+                                    player_song_details[p]["Lives Taken"].append(song_line)
+                            if len(cC) == 1 and len(oC) > 0:
+                                player_song_details[list(cC)[0]]["Lives Saved"].append(song_line)
+
+        # Build clean incremental references alongside standard execution
         sorted_players = sorted(self.s_part.keys(), key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0, reverse=True)
 
         for name in sorted_players:
@@ -1616,7 +1700,7 @@ class TourAnalyzer:
                     "Over-8 Delta": float(rig_over8 - avg_over8) if (pd.notnull(rig_over8) and pd.notnull(avg_over8)) else np.nan,
                     "Rig GR": float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
                     "Off GR": float((cor - self.p_rigs_h[name]) / (tot - self.p_rigs[name]) * 100) if (tot - self.p_rigs[name]) else np.nan,
-                    "Rig Delta": float((cor - self.p_rigs[name]) / cor * 100) if cor else np.nan,
+                    "Rig Delta": float((cor - self.p_rigs_h[name]) / cor * 100) if cor else np.nan,
                 })
 
             times = self.p_answer_times.get(name, [])
@@ -1625,6 +1709,16 @@ class TourAnalyzer:
             row["Median Time"] = float(med_time) if pd.notnull(med_time) else np.nan
             chant_gr = (self.p_chan_c[name] / seen_chan * 100) if seen_chan else np.nan
             row["Chant GR"] = float(chant_gr) if pd.notnull(chant_gr) else np.nan
+            
+            # Map structural components into JSON row cells as structured data payloads
+            for key in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]:
+                player_song_details[name][key].sort(key=str.lower)
+                if key in row:
+                    row[key] = {
+                        "count": row[key],
+                        "details": player_song_details[name][key]
+                    }
+                    
             rows.append(row)
 
         df_players = pd.DataFrame(rows)
@@ -1653,12 +1747,15 @@ class TourAnalyzer:
         stats_hl = {}
         elo_ser = df_players["Elo"].fillna(0.0) if "Elo" in df_players.columns else pd.Series(0.0, index=df_players.index)
         gr_ser = df_players["GR"].fillna(0.0)
-        rig_ser = df_players["Rigs"].fillna(0.0) if "Rigs" in df_players.columns else pd.Series(0.0, index=df_players.index)
+        rig_ser = df_players["Rigs"].map(lambda x: x["count"] if isinstance(x, dict) else x).fillna(0.0) if "Rigs" in df_players.columns else pd.Series(0.0, index=df_players.index)
         mask_series = pd.Series(eligibility, index=df_players.index)
 
         for col in df_players.columns:
             if col in desc_cols or col in asc_cols:
-                num = df_players[col]
+                if col in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]:
+                    num = df_players[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
+                else:
+                    num = df_players[col]
                 el_num = num[mask_series].dropna() if col in rest_cols else num.dropna()
 
                 if not num.dropna().empty:
@@ -1691,11 +1788,7 @@ class TourAnalyzer:
 
                     stats_hl[col] = {'best_idx': best_idx, 'worst_idx': worst_idx}
 
-        def fmt_most(names, val):
-            if not names: return "N/A"
-            win = sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]
-            gr = (self.c_counts[win] / self.s_part[win]) * 100 if self.s_part[win] else 0
-            return f"{win} ({val}{f', {gr:.2f}' if len(names) > 1 else ''})"
+        function_fmt_most = lambda names, val: "N/A" if not names else f"{sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]} ({val}{f', {(self.c_counts[sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]] / self.s_part[sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]] * 100):.2f}' if len(names) > 1 else ''})"
 
         tour_stats_raw = [
             ["Median Vintage", format_year(round(np.median(self.all_vint), 2)) if self.all_vint else "N/A"],
@@ -1712,9 +1805,9 @@ class TourAnalyzer:
         tour_stats_raw.extend([
             ["Most Popular Genre", f"{self.genre_c.most_common(1)[0][0]} ({self.genre_c.most_common(1)[0][1]})" if self.genre_c else "N/A"],
             ["Most Popular Tag", f"{self.tag_c.most_common(1)[0][0]} ({self.tag_c.most_common(1)[0][1]})" if self.tag_c else "N/A"],
-            ["Most 1/8s", fmt_most([n for n, v in self.e_counts.items() if v == max(self.e_counts.values(), default=0) and v > 0], max(self.e_counts.values(), default=0))],
-            ["Most 2/8s", fmt_most([n for n, v in self.p_two_e.items() if v == max(self.p_two_e.values(), default=0) and v > 0], max(self.p_two_e.values(), default=0))],
-            ["Most 7/8s", fmt_most([n for n, v in self.p_rev_e.items() if v == max(self.p_rev_e.values(), default=0) and v > 0], max(self.p_rev_e.values(), default=0))]
+            ["Most 1/8s", function_fmt_most([n for n, v in self.e_counts.items() if v == max(self.e_counts.values(), default=0) and v > 0], max(self.e_counts.values(), default=0))],
+            ["Most 2/8s", function_fmt_most([n for n, v in self.p_two_e.items() if v == max(self.p_two_e.values(), default=0) and v > 0], max(self.p_two_e.values(), default=0))],
+            ["Most 7/8s", function_fmt_most([n for n, v in self.p_rev_e.items() if v == max(self.p_rev_e.values(), default=0) and v > 0], max(self.p_rev_e.values(), default=0))]
         ])
         
         plist = list(self.s_part.keys())
@@ -1818,7 +1911,9 @@ class TourAnalyzer:
             row_dict = {}
             for col in headers:
                 val = row[col]
-                if pd.isnull(val) or (isinstance(val, float) and np.isnan(val)):
+                if isinstance(val, dict):
+                    row_dict[col] = val
+                elif pd.isnull(val) or (isinstance(val, float) and np.isnan(val)):
                     row_dict[col] = "N/A"
                 elif col == "Player":
                     row_dict[col] = str(val)
@@ -1895,12 +1990,12 @@ class TourAnalyzer:
             padding: 8px 14px;
             border-radius: 6px;
             font-size: 16px;
-            max-width: 320px;
             z-index: 99999;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
             pointer-events: none;
             line-height: 1.4;
             border: 1px solid #475569;
+            text-align: left;
         }}
     </style>
 </head>
@@ -1996,7 +2091,6 @@ class TourAnalyzer:
             let headers = Object.keys(players[0]);
             let thead = "<thead><tr>" + headers.map(h => {{
                 let styleStr = colBorders.has(h) ? ' class="border-col-group"' : '';
-                // Dynamic mapping matching explicit dictionary tracking IDs
                 return `<th${{styleStr}} data-metric="${{h}}">${{h.replace(' ', '<br>')}}</th>`;
             }}).join('') + "</tr></thead>";
 
@@ -2006,7 +2100,8 @@ class TourAnalyzer:
                 tbody += `<tr class="${{groupLine}}">`;
                 
                 headers.forEach(h => {{
-                    let displayVal = row[h];
+                    let rawCell = row[h];
+                    let displayVal = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
                     let cellStyle = colBorders.has(h) ? "border-col-group " : "";
                     
                     if (hlRules[h]) {{
@@ -2017,7 +2112,13 @@ class TourAnalyzer:
                     }}
 
                     let finalVal = (h === "Player") ? `<b>${{displayVal}}</b>` : displayVal;
-                    tbody += `<td class="${{cellStyle.trim()}}">${{finalVal}}</td>`;
+                    
+                    if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {{
+                        let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
+                        tbody += `<td class="${{cellStyle.trim()}}" data-songs="${{encodedDetails}}">${{finalVal}}</td>`;
+                    }} else {{
+                        tbody += `<td class="${{cellStyle.trim()}}">${{finalVal}}</td>`;
+                    }}
                 }});
                 tbody += "</tr>";
             }});
@@ -2026,10 +2127,10 @@ class TourAnalyzer:
             setupTooltipListeners();
         }}
 
-        // --- ACTIVE MOUSE CONTROLLER FOR FLOATING HOVER CARD ---
         function setupTooltipListeners() {{
             const tooltipNode = document.getElementById('customJsTooltip');
             const tableHeaders = document.querySelectorAll('#playerStandingsTable th');
+            const dataCells = document.querySelectorAll('#playerStandingsTable td[data-songs]');
 
             tableHeaders.forEach(th => {{
                 const metricKey = th.getAttribute('data-metric');
@@ -2041,21 +2142,57 @@ class TourAnalyzer:
                 }});
 
                 th.addEventListener('mousemove', (e) => {{
-                    // Context layout window adjustment safety boundaries
                     let xPos = e.pageX + 15;
                     let yPos = e.pageY + 15;
-                    
-                    if (xPos + 320 > window.innerWidth + window.scrollX) {{
-                        xPos = e.pageX - 335;
-                    }}
-                    
+                    if (xPos + 450 > window.innerWidth + window.scrollX) {{ xPos = e.pageX - 465; }}
                     tooltipNode.style.left = xPos + 'px';
                     tooltipNode.style.top = yPos + 'px';
                 }});
 
-                th.addEventListener('mouseleave', () => {{
-                    tooltipNode.style.display = 'none';
+                th.addEventListener('mouseleave', () => {{ tooltipNode.style.display = 'none'; }});
+            }});
+
+            dataCells.forEach(td => {{
+                td.addEventListener('mouseenter', (e) => {{
+                    try {{
+                        const songs = JSON.parse(decodeURIComponent(td.getAttribute('data-songs')));
+                        if(songs && songs.length > 0) {{
+                            // --- REPLACE WITH THIS RANDOM SELECTION AND SORT BLOCK ---
+                            let displaySongs = [...songs];
+                            
+                            if (songs.length > 10) {{
+                                // Shuffle randomly and take the first 10
+                                displaySongs = displaySongs
+                                    .sort(() => Math.random() - 0.5)
+                                    .slice(0, 10);
+                                    
+                                // Sort just the 10 chosen songs alphabetically
+                                displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                                
+                                // Map with bullets and append the trailing indicator
+                                displaySongs = displaySongs.map(s => `• ${{s}}`);
+                                displaySongs.push(`and more`);
+                            }} else {{
+                                // Fallback if 10 or fewer: just add bullets (already sorted from Python)
+                                displaySongs = displaySongs.map(s => `• ${{s}}`);
+                            }}
+                            
+                            tooltipNode.innerHTML = displaySongs.join('<br>');
+                            // ---------------------------------------------------------
+                            tooltipNode.style.display = 'block';
+                        }}
+                    }} catch(err) {{}}
                 }});
+
+                td.addEventListener('mousemove', (e) => {{
+                    let xPos = e.pageX + 15;
+                    let yPos = e.pageY + 15;
+                    if (xPos + 450 > window.innerWidth + window.scrollX) {{ xPos = e.pageX - 465; }}
+                    tooltipNode.style.left = xPos + 'px';
+                    tooltipNode.style.top = yPos + 'px';
+                }});
+
+                td.addEventListener('mouseleave', () => {{ tooltipNode.style.display = 'none'; }});
             }});
         }}
 
