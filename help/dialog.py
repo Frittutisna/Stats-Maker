@@ -379,7 +379,7 @@ class MismatchedRoundsDialog(UnifiedDialog):
         self.player_configs = {}
         self.fill_color     = "#000000"
 
-        for _, (name, act) in enumerate(mismatched_players.items()):
+        for _, (name, act) in enumerate(sorted(mismatched_players.items())):
             p_frame = ttk.LabelFrame(self.container, text = f" {name} ", padding = 8)
             p_frame.pack(fill = tk.X, pady = 4, anchor = "w")
 
@@ -509,7 +509,7 @@ class SubstitutePromptDialog(UnifiedDialog):
         combo_frame.grid(row = 0, column = 1, pady = 4, sticky = "ew")
         self.container.grid_columnconfigure(1, weight = 1)
 
-        self.entry = tk.Entry(combo_frame, textvariable = self.choice_var, bg = "white", fg = "black", font = ("Segoe UI", 10), bd = 0, state = "readonly")
+        self.entry = tk.Entry(combo_frame, textvariable = self.choice_var, bg = "white", fg = "black", font = ("Segoe UI", 10), justify = "center", bd = 0, state = "readonly")
         self.entry.pack(side = tk.LEFT, fill = tk.X, expand = True, padx = 2)
 
         arrow_btn = tk.Canvas(combo_frame, width = 25, height = 25, bg = "black", highlightthickness = 0, borderwidth = 0, cursor = "hand2")
