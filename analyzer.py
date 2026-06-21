@@ -1383,8 +1383,18 @@ class TourAnalyzer:
         except  : pass
 
     def _create_song_png(self, path):
-        num_x = 5
-        num_y = 5
+        diffs       = [s["difficulty"] for s in self.song_data]
+        max_diff    = max(diffs) if diffs else 0
+
+        if max_diff < 40:
+            num_x   = 4
+            num_y   = 4
+            font_sz = 90
+
+        else:
+            num_x   = 5
+            num_y   = 5
+            font_sz = 75
 
         counts      = np.zeros((num_y, num_x), dtype = int)
         over8_sums  = np.zeros((num_y, num_x), dtype = float)
@@ -1394,8 +1404,13 @@ class TourAnalyzer:
             if vint == 0: continue
 
             diff    = s["difficulty"]
-            x_idx   = min(int(math.floor(diff / 10)), 4)
-            y_idx   = min(max(int(math.floor((vint - 1980) / 10)), 0), 4)
+            x_idx   = min(int(math.floor(diff / 10)), num_x - 1)
+            
+            if num_y == 4:
+                if vint < 2000  : y_idx = 0
+                else            : y_idx = min(int(math.floor((vint - 2000) / 10)) + 1, 3)
+
+            else: y_idx = min(max(int(math.floor((vint - 1980) / 10)), 0), 4)
 
             counts      [y_idx, x_idx] += 1
             over8_sums  [y_idx, x_idx] += s["correct_count"]
@@ -1427,7 +1442,7 @@ class TourAnalyzer:
                     va          = 'center',
                     color       = 'white',
                     weight      = 'bold',
-                    fontsize    = 75,
+                    fontsize    = font_sz,
                     fontname    = "Segoe UI"
                 )
 
@@ -1437,8 +1452,13 @@ class TourAnalyzer:
         ax.set_xticks(np.arange(1, num_x))
         ax.set_yticks(np.arange(1, num_y))
 
-        p_labels = ["10",   "20",   "30",   "40"]
-        y_labels = ["1990", "2000", "2010", "2020"]
+        if num_x == 4:
+            p_labels = ["10",   "20",   "30"]
+            y_labels = ["2000", "2010", "2020"]
+
+        else:
+            p_labels = ["10",   "20",   "30",   "40"]
+            y_labels = ["1990", "2000", "2010", "2020"]
 
         ax.set_xticklabels(p_labels, fontname = "Segoe UI", fontsize = 20)
         ax.set_yticklabels(y_labels, fontname = "Segoe UI", fontsize = 20, rotation = 90, va = 'center')
