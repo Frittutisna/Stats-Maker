@@ -1468,17 +1468,19 @@ class TourAnalyzer:
             apply_rev = (len(final_members) % 2 == 0)
 
             for song in songs:
-                si = song.get("songInfo", {})
-                st = si.get("type", 3)
-                t_num = si.get("typeNumber", 0)
-                
-                type_str = "OP" if st == 1 else "ED" if st == 2 else "IN"
-                num_str = "" if type_str == "IN" else str(t_num)
-                romaji_name = si.get("animeNames", {}).get("romaji", "Unknown")
-                s_name = si.get("songName", "Unknown")
-                art_name = si.get("artist", "Unknown")
-                
-                song_line = f"{romaji_name} {type_str}{num_str}: {s_name} by {art_name}"
+                si      = song  .get("songInfo",    {})
+                st      = si    .get("type",        3)
+                t_num   = si    .get("typeNumber",  0)
+
+                romaji_name = si.get("animeNames",  {})         .get("romaji", "Unknown")
+                s_name      = si.get("songName",    "Unknown")
+                art_name    = si.get("artist",      "Unknown")
+
+                if      st == 1 : type_fmt = f"(OP{t_num})"
+                elif    st == 2 : type_fmt = f"(ED{t_num})"
+                else            : type_fmt = f"(IN)"
+
+                song_line = f"{romaji_name} {type_fmt}: {s_name} by {art_name}"
 
                 raw_correct = song.get("correctGuessPlayers", [])
                 correct = set()
