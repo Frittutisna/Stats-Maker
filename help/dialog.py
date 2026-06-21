@@ -383,8 +383,8 @@ class MismatchedRoundsDialog(UnifiedDialog):
             p_frame.pack(fill = tk.X, pady = 4, anchor = "w")
 
             is_subbed       = name.lower() in subbed_players_set
-            initial_mode    = "json" if is_subbed else "round"
-            mode_var        = tk.StringVar(value=initial_mode)
+            initial_mode    = "round" if is_subbed else "json"
+            mode_var        = tk.StringVar(value = initial_mode)
             boxes           = {}
 
             f_r1 = ttk.Frame(p_frame)
@@ -492,29 +492,21 @@ class SubSelectionDialog(tk.Toplevel):
         if sel: self.result = self.listbox.get(sel[0]); self.destroy()
 
 class SubstitutePromptDialog(UnifiedDialog):
-    def __init__(self, parent, sub_name, suggested_team, suggested_tier, all_teams):
-        super().__init__(parent, "Substitute Setup", f"Configure Team and Tier for Sub: {sub_name}")
+    def __init__(self, parent, sub_name, original_players_list):
+        super().__init__(parent, "Substitute Setup", f"Who is {sub_name} subbing for?")
         self.result = None
-        
-        ttk.Label(self.container, text = "Team:", font = ("Segoe UI", 10)).grid(row = 0, column = 0, padx = (0, 6), pady = 4, sticky = "w")
 
-        self.team_combobox = ttk.Combobox(self.container, values = sorted(list(all_teams)))
-        self.team_combobox.grid(row = 0, column = 1, pady = 4, sticky = "ew")
+        ttk.Label(self.container, text = "Player to be subbed out:", font = ("Segoe UI", 10)).grid(row = 0, column = 0, padx = (0, 6), pady = 4, sticky = "w")
 
-        if      suggested_team in all_teams : self.team_combobox.set(suggested_team)
-        elif    all_teams                   : self.team_combobox.set(sorted(list(all_teams))[0])
+        self.player_combobox = ttk.Combobox(self.container, values = sorted(list(original_players_list)), state = "readonly")
+        self.player_combobox.grid(row = 0, column = 1, pady = 4, sticky = "ew")
 
-        ttk.Label(self.container, text = "Tier:", font = ("Segoe UI", 10)).grid(row = 1, column = 0, padx = (0, 6), pady = 4, sticky = "w")
+        if original_players_list: self.player_combobox.set(sorted(list(original_players_list))[0])
+        self.container.grid_columnconfigure(1, weight = 1)
 
-        self.tier_combobox = ttk.Combobox(self.container, values = ["1", "2", "3", "4"])
-        self.tier_combobox.grid(row = 1, column = 1, pady = 4, sticky = "ew")
-        self.tier_combobox.set(suggested_tier if suggested_tier in ["1", "2", "3", "4"] else "1")
-
-        self.container.grid_columnconfigure(1, weight=1)
-
-        self.grab_set()
-        self.wait_window()
+        self.grab_set       ()
+        self.wait_window    ()
 
     def on_confirm(self):
-        self.result = (self.team_combobox.get(), self.tier_combobox.get())
+        self.result = self.player_combobox.get()
         super().on_confirm()

@@ -614,14 +614,14 @@ class TourAnalyzer:
             if s_match  : s_team, s_tier = assignments[s_match]
             else        : s_team, s_tier = (list(all_team_ids)[0] if all_team_ids else 1), "1"
 
-            s_team_name         = self._get_team_acronym(t1_lookup.get(s_team, ""), s_team)
-            all_team_names_map  = {self._get_team_acronym(t1_lookup.get(tid, ""), tid): tid for tid in all_team_ids}
-            dialog              = SubstitutePromptDialog(None, sub_player, s_team_name, s_tier, all_team_names_map.keys())
+            original_players_display    = [name for tid in rosters for name in rosters[tid] if name.lower() in self.main_roster_names]
+            dialog                      = SubstitutePromptDialog(None, sub_player, original_players_display)
 
             if dialog.result:
-                chosen_team_name, chosen_tier   = dialog.result
-                chosen_team_id                  = all_team_names_map.get(chosen_team_name, s_team)
-                assignments[s_low]              = (chosen_team_id, chosen_tier)
+                replaced_player             = dialog.result
+                chosen_team_id, chosen_tier = assignments[replaced_player.lower()]
+                assignments[s_low]          = (chosen_team_id, chosen_tier)
+
                 rosters[chosen_team_id].add(sub_player)
 
             else:
