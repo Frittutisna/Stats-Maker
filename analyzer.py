@@ -2075,7 +2075,6 @@ class TourAnalyzer:
         <button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'listguess-tab')">List → Guess ⚠︎</button>
     </div>
 
     <div class="max-w-[2400px] mx-auto">
@@ -2113,12 +2112,6 @@ class TourAnalyzer:
                 <div id="plotlyListChart" style="width:100%; height:750px;"></div>
             </div>
         </div>
-
-        <div id="listguess-tab" class="tab-content">
-            <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
-                <div id="plotlyListGuessChart" style="width:100%; height:750px;"></div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -2149,7 +2142,6 @@ class TourAnalyzer:
             window.dispatchEvent(new Event('resize'));
         }}
 
-        // Add this helper near the top of your dashboard script tag
         function get75PercentileHull(pts, xKey, yKey) {{
             if (pts.length < 3) return null;
 
@@ -2511,79 +2503,28 @@ class TourAnalyzer:
                 tickmode: 'array',
                 tickvals: [0, 3, 5, 8],
                 ticktext: ['0', '3', '5', '8'],
-                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}
+                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}
             }}
         }}], {{
             xaxis: {{
-                title: {{ text: '<b>Difficulty</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }},
+                title: {{ text: '<b>Difficulty</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }},
                 tickmode: 'array',
                 tickvals: Array.from({{length: numX - 1}}, (_, i) => i + 0.5),
                 ticktext: xLabels,
-                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }},
+                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }},
                 showgrid: false, zeroline: false, showticklabels: true, ticks: ''
             }},
             yaxis: {{
-                title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }},
+                title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }},
                 tickmode: 'array',
                 tickvals: Array.from({{length: numY - 1}}, (_, i) => i + 0.5),
                 ticktext: yLabels,
-                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }},
+                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }},
                 tickangle: -90,
                 showgrid: false, zeroline: false, showticklabels: true, ticks: ''
             }},
             annotations: annotations,
             margin: {{ l: 60, r: 0, t: 30, b: 55 }}
-        }}, {{responsive: true, displayModeBar: false}});
-
-        // Replaced loop to remove lines/stripes and construct point markers with the new hover format
-        let lgTraces = [{{
-            x: arrowData.map(d => d.x_end),
-            y: arrowData.map(d => d.y_end),
-            text: arrowData.map(d => d.acronym),
-            customdata: arrowData.map(d => [
-                d.name,                           // %{{customdata[0]}} - Full Name
-                d.x_end.toFixed(2),               // %{{customdata[1]}} - Mean Over-8
-                d.x_start.toFixed(2),             // %{{customdata[2]}} - Rig Over-8
-                d.seasonal_vintage_start,         // %{{customdata[3]}} - Rig Vintage (Median)
-                d.seasonal_vintage_end,           // %{{customdata[4]}} - Guess Vintage
-                d.gr.toFixed(2),                  // %{{customdata[5]}} - Guess Rate
-                d.rig_gr.toFixed(2)               // %{{customdata[6]}} - Rig Guess Rate
-            ]),
-            hovertemplate: 
-                '<b>%{{customdata[0]}}</b><br>' +
-                'Mean Over-8: %{{customdata[1]}}<br>' +
-                'Rig Over-8: %{{customdata[2]}}<br>' +
-                'Median Vintage: %{{customdata[3]}}<br>' +
-                'Guess Vintage: %{{customdata[4]}}<br>' +
-                'Guess Rate: %{{customdata[5]}}%<br>' +
-                'Rig Guess Rate: %{{customdata[6]}}%<extra></extra>',
-            mode: 'markers+text',
-            textposition: 'top center',
-            textfont: {{ family: 'Segoe UI', size: 15, weight: 'bold', color: 'black' }},
-            marker: {{
-                size: arrowData.map(d => Math.max(14, d.gr * 0.50)),
-                opacity: 1,
-                color: arrowData.map(d => d.rig_gr),
-                colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]],
-                showscale: true,
-                colorbar: {{
-                    title: {{ text: '<b>Rig GR</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }},
-                    thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
-                    tickmode: 'array', tickvals: [0, 70, 80, 90, 100], ticktext: ['0', '70', '80', '90', '100'],
-                    tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}
-                }},
-                line: {{ color: 'black', width: 1 }},
-                cmin: 0,
-                cmax: 100
-            }},
-            showlegend: false
-        }}];
-
-        Plotly.newPlot('plotlyListGuessChart', lgTraces, {{
-            xaxis: {{ title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, showgrid: true }},
-            yaxis: {{ title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, tickangle: -90, showgrid: true }},
-            margin: {{ l: 60, r: 0, t: 30, b: 55 }},
-            showlegend: false
         }}, {{responsive: true, displayModeBar: false}});
 
         // 0. Titles removed. 1. Style configurations copied explicitly from Song (bold titles, rotation, preserved grid lines)
@@ -2621,15 +2562,15 @@ class TourAnalyzer:
                     title: {{ text: '<b>Rig GR</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }}, 
                     thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
                     tickmode: 'array', tickvals: [0, 70, 80, 90, 100], ticktext: ['0', '70', '80', '90', '100'],
-                    tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}
+                    tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}
                 }},
                 line: {{ color: 'black', width: 1 }}, cmin: 0, cmax: 100
             }}
         }});
 
         Plotly.newPlot('plotlyListChart', listTraces, {{
-            xaxis: {{ title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, showgrid: true }},
-            yaxis: {{ title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, tickangle: -90, showgrid: true }},
+            xaxis: {{ title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, showgrid: true }},
+            yaxis: {{ title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, tickangle: -90, showgrid: true }},
             margin: {{ l: 60, r: 0, t: 30, b: 55 }},
         }}, {{responsive: true, displayModeBar: false}});
 
@@ -2668,15 +2609,15 @@ class TourAnalyzer:
                     title: {{ text: '<b>Performance</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }}, 
                     thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
                     tickmode: 'array', tickvals: [0, 50, 100], ticktext: ['0', '50', '100'],
-                    tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}
+                    tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}
                 }},
                 line: {{ color: 'black', width: 1 }}, cmin: 0, cmax: 100
             }}
         }});
 
         Plotly.newPlot('plotlyGuessChart', guessTraces, {{
-            xaxis: {{ title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, showgrid: true }},
-            yaxis: {{ title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, tickangle: -90, showgrid: true }},
+            xaxis: {{ title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, showgrid: true }},
+            yaxis: {{ title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, tickangle: -90, showgrid: true }},
             margin: {{ l: 60, r: 0, t: 30, b: 55 }}
         }}, {{responsive: true, displayModeBar: false}});
     </script>
