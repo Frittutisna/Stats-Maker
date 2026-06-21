@@ -383,7 +383,7 @@ class MismatchedRoundsDialog(UnifiedDialog):
             p_frame.pack(fill = tk.X, pady = 4, anchor = "w")
 
             is_subbed       = name.lower() in subbed_players_set
-            initial_mode    = "round" if is_subbed else "json"
+            initial_mode    = "json" if is_subbed else "round"
             mode_var        = tk.StringVar(value = initial_mode)
             boxes           = {}
 
