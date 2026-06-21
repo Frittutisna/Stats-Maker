@@ -12,21 +12,9 @@ class CustomSpinbox(tk.Frame):
         self.command            = command
         self.var                = tk.StringVar(value = str(initial_val))
         vcmd                    = (self.register(self._validate_input), "%P")
-        btn_width, btn_height   = 25, 25
 
-        self.btn_dec = tk.Canvas(
-            self,
-            width               = btn_width,
-            height              = btn_height,
-            bg                  = "black",
-            highlightthickness  = 0,
-            borderwidth         = 0,
-            cursor              = "hand2",
-        )
-
-        self.dec_arrow = self.btn_dec.create_polygon(7, 9, 17, 9, 12, 15, fill = "white")
-        self.btn_dec.grid(row = 0, column = 0, sticky = "nsew")
-        self.btn_dec.bind("<Button-1>", lambda _: self._adjust_value(-1))
+        self.btn_dec, self.dec_arrow = self._create_arrow_button(column = 0, coords = (7, 9, 17, 9, 12, 15),    delta = -1)
+        self.btn_inc, self.inc_arrow = self._create_arrow_button(column = 2, coords = (12, 9, 7, 15, 17, 15),   delta = 1)
 
         self.entry = tk.Entry(
             self,
@@ -44,22 +32,24 @@ class CustomSpinbox(tk.Frame):
         )
 
         self.entry.grid(row = 0, column = 1, sticky = "ns")
-        self.grid_columnconfigure(1, minsize = btn_width)
+        self.grid_columnconfigure(1, minsize = 25)
+        self._update_button_states(initial_val)
 
-        self.btn_inc = tk.Canvas(
+    def _create_arrow_button(self, column, coords, delta):
+        btn = tk.Canvas(
             self,
-            width               = btn_width,
-            height              = btn_height,
+            width               = 25,
+            height              = 25,
             bg                  = "black",
             highlightthickness  = 0,
             borderwidth         = 0,
             cursor              = "hand2",
         )
-        self.inc_arrow = self.btn_inc.create_polygon(12, 9, 7, 15, 17, 15, fill = "white")
-        self.btn_inc.grid(row = 0, column = 2, sticky = "nsew")
-        self.btn_inc.bind("<Button-1>", lambda _: self._adjust_value(1))
 
-        self._update_button_states(initial_val)
+        arrow = btn.create_polygon(*coords, fill = "white")
+        btn.grid(row = 0, column = column, sticky = "nsew")
+        btn.bind("<Button-1>", lambda _: self._adjust_value(delta))
+        return btn, arrow
 
     def _update_button_states(self, current_val):
         if current_val <= self.from_:
