@@ -1633,7 +1633,8 @@ class TourAnalyzer:
 
                 # Map song lines into structural coordinates mapping grid
                 try:
-                    vint = int(si.get("vintage", 0))
+                    vint_raw = si.get("vintage", "")
+                    vint = int(extract_year(vint_raw)) if vint_raw else 0
                     raw_diff = si.get("animeDifficulty")
                     safe_diff = float(raw_diff) if raw_diff is not None else 0.0
                 except:
@@ -1843,6 +1844,23 @@ class TourAnalyzer:
 
         function_fmt_most = lambda names, val: "N/A" if not names else f"{sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]} ({val}{f', {(self.c_counts[sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]] / self.s_part[sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]] * 100):.2f}' if len(names) > 1 else ''})"
 
+        # Resolve detailed historical season data context for precise tooltips 
+        raw_vintages_by_player = defaultdict(list)
+        raw_vintages_by_rig = defaultdict(list)
+        for json_path in self.json_paths:
+            with open(json_path, encoding="utf-8") as f: data = json.load(f)
+            for s in data.get("songs", []):
+                v_str = s.get("songInfo", {}).get("vintage", "")
+                if not v_str: continue
+                
+                raw_correct = s.get("correctGuessPlayers", [])
+                for p in raw_correct:
+                    p_name = p if isinstance(p, str) else p.get("name") if isinstance(p, dict) else None
+                    if p_name: raw_vintages_by_player[p_name].append(v_str)
+                    
+                for ls in s.get("listStates", []):
+                    if "name" in ls: raw_vintages_by_rig[ls["name"]].append(v_str)
+
         tour_stats_raw = [
             ["Median Vintage", format_year(round(np.median(self.all_vint), 2)) if self.all_vint else "N/A", []],
             ["Mean Difficulty", f"{np.mean(self.all_diff):.2f}" if self.all_diff else "N/A", []],
@@ -1993,19 +2011,63 @@ class TourAnalyzer:
             if s["vintage"] > 0:
                 song_matrix_list.append({"vintage": int(s["vintage"]), "difficulty": float(s["difficulty"]), "correct_count": int(s["correct_count"])})
 
+        # Re-extract ELO metrics to calculate performance on the fly
+        valid_elos = [float(v) for v in self.elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
+        avg_rank = np.mean(valid_elos) if valid_elos else 1.0
+
+        # Step 1: Pre-calculate the residuals for all valid players to establish the standard deviation
+        pool_data = []
+        for name in self.s_part:
+            if self.c_counts[name] > 0:
+                tot = self.s_part[name]
+                uf_scaled = (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
+                try: elo = float(self.elo_map.get(name.lower(), 0.0))
+                except: elo = 0.0
+                pool_data.append({"name": name, "uf": uf_scaled, "elo": elo})
+
+        # Calculate polyfit variables matches the scatter standalone image rules
+        els = np.array([p["elo"] for p in pool_data])
+        ufs = np.array([p["uf"] for p in pool_data])
+        if len(els) > 1 and np.var(els) > 0:
+            slope, intercept = np.polyfit(els, ufs, 1)
+            res_std = np.std(ufs - (slope * els + intercept))
+            if res_std == 0: res_std = 1
+        else:
+            slope, intercept, res_std = 0, np.mean(ufs) if len(ufs) > 0 else 0, 1
+
+        # Step 2: Build scatter_list with the dynamically calculated performance metrics
         scatter_list, arrow_list = [], []
         for name in self.s_part:
             if self.c_counts[name] > 0:
                 yl = np.median(self.p_l_vint[name]) if self.p_l_vint[name] else np.nan
                 yg = np.median(self.p_c_vint[name]) if self.p_c_vint[name] else np.nan
+                
+                p_vints = raw_vintages_by_player.get(name, [])
+                p_seas = format_year(np.median([extract_year(v) for v in p_vints])) if p_vints else f"Winter {int(yg)}" if pd.notnull(yg) else "N/A"
+                
+                r_vints = raw_vintages_by_rig.get(name, [])
+                r_seas = format_year(np.median([extract_year(v) for v in r_vints])) if r_vints else f"Winter {int(yl)}" if pd.notnull(yl) else "N/A"
+
+                # Compute performance index matching SCALE_PERF logic precisely
+                tot = self.s_part[name]
+                uf_scaled = (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
+                try: elo = float(self.elo_map.get(name.lower(), 0.0))
+                except: elo = 0.0
+                
+                expected_uf = slope * elo + intercept
+                residual = uf_scaled - expected_uf
+                perf_score = (1 / (1 + np.exp(SCALE_PERF * (residual / res_std)))) * 100
 
                 base_node = {
                     "acronym": self._get_player_acronym(name),
                     "name": name,
                     "over8": float(self.p_overs_sum[name] / self.c_counts[name]),
                     "vintage": int(yg) if pd.notnull(yg) else 2010,
+                    "seasonal_vintage": p_seas,
                     "gr": float(self.c_counts[name] / self.s_part[name] * 100) if self.s_part[name] else 0.0,
-                    "rig_gr": float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else 0.0
+                    "rig_gr": float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else 0.0,
+                    "performance": float(perf_score),
+                    "rig_rate": float(self.p_rigs[name] / self.s_part[name] * 100) if self.s_part[name] else 0.0
                 }
                 scatter_list.append(base_node)
 
@@ -2015,10 +2077,13 @@ class TourAnalyzer:
                         "name": name,
                         "x_start": float(np.mean(self.p_l_corr[name])),
                         "y_start": int(yl),
+                        "seasonal_vintage_start": r_seas,
                         "x_end": base_node["over8"],
                         "y_end": base_node["vintage"],
+                        "seasonal_vintage_end": p_seas,
                         "rig_gr": base_node["rig_gr"],
-                        "gr": base_node["gr"]
+                        "gr": base_node["gr"],
+                        "rig_rate": base_node["rig_rate"]
                     })
 
         headers = list(df_players.columns)
@@ -2149,8 +2214,8 @@ class TourAnalyzer:
         {"<button class='tab-btn' onclick='switchDashboardTab(event, \"team-tab\")'>Team</button>" if use_teams else ""}
         <button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess ⚠︎</button>
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List ⚠︎</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'listguess-tab')">List → Guess ⚠︎</button>
     </div>
 
@@ -2515,7 +2580,6 @@ class TourAnalyzer:
             x: Array.from({{length: numX}}, (_, i) => i),
             y: Array.from({{length: numY}}, (_, i) => i),
             text: textLabels, 
-            // FIXED: Using properly escaped %{{text}} and double braces for the trace object
             hovertemplate: '%{{text}}<extra></extra>', 
             type: 'heatmap', 
             colorscale: [[0, col0], [0.375, col1], [0.625, col2], [1, col2]], 
@@ -2537,7 +2601,6 @@ class TourAnalyzer:
             }}
         }}], {{
             xaxis: {{
-                // FIXED: Reduced pad to 2 to slide 'Difficulty' title up
                 title: {{ text: '<b>Difficulty</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }},
                 tickmode: 'array',
                 tickvals: Array.from({{length: numX - 1}}, (_, i) => i + 0.5),
@@ -2546,7 +2609,6 @@ class TourAnalyzer:
                 showgrid: false, zeroline: false, showticklabels: true, ticks: ''
             }},
             yaxis: {{
-                // FIXED: Reduced pad to 2 to pull 'Vintage' title closer to the ticks
                 title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }},
                 tickmode: 'array',
                 tickvals: Array.from({{length: numY - 1}}, (_, i) => i + 0.5),
@@ -2556,7 +2618,6 @@ class TourAnalyzer:
                 showgrid: false, zeroline: false, showticklabels: true, ticks: ''
             }},
             annotations: annotations,
-            // FIXED: Tightened left (l) and bottom (b) chart canvas margins
             margin: {{ l: 60, r: 0, t: 30, b: 55 }}
         }}, {{responsive: true, displayModeBar: false}});
 
@@ -2577,53 +2638,74 @@ class TourAnalyzer:
             text: arrowData.map(d => d.acronym),
             mode: 'markers+text', textposition: 'top center',
             textfont: {{ family: 'Segoe UI', size: 13, weight: 'bold' }},
-            marker: {{ size: 0, color: arrowData.map(d => d.rig_gr), colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]], showscale: true, colorbar: {{ title: 'Rig GR (%)', thickness: 18 }}, cmin: 0, cmax: 100 }},
+            marker: {{ size: 0, color: arrowData.map(d => d.rig_gr), colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]], showscale: true, colorbar: {{ title: '<b>Rig GR</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, thickness: 25, side: 'right', tickfont: {{ family: 'Segoe UI', size: 20 }} }}, cmin: 0, cmax: 100 }},
             hovertemplate: '<b>%{{text}}</b><extra></extra>'
         }});
 
         Plotly.newPlot('plotlyListGuessChart', lgTraces, {{
-            title: {{ text: '<b>List → Guess Node Vector Mapping</b>', font: {{ family: 'Segoe UI', size: 24 }} }},
             xaxis: {{ title: 'Over-8 Shift Variance' }}, yaxis: {{ title: 'Vintage timeline', tickformat: 'd' }},
             showlegend: false
         }}, {{responsive: true, displayModeBar: false}});
 
+        // 0. Titles removed. 1. Style configurations copied explicitly from Song (bold titles, rotation, preserved grid lines)
+        // 4. textposition set to 'auto' enables smart native collision avoidance spacing inside Plotly engine
         Plotly.newPlot('plotlyListChart', [{{
             x: arrowData.map(d => d.x_start),
             y: arrowData.map(d => d.y_start),
             text: arrowData.map(d => d.acronym),
-            mode: 'markers+text', textposition: 'top center',
-            textfont: {{ family: 'Segoe UI', size: 13, weight: 'bold' }},
+            customdata: arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
+            // 3. Custom Hover formatting rules for List View Chart Trace
+            hovertemplate: '<b>%{{customdata[0]}}</b><br>Rig Over-8: %{{customdata[1]}}<br>Rig Vintage: %{{customdata[2]}}<br>Rig Rate: %{{customdata[3]}}<br>Rig Guess Rate: %{{customdata[4]}}<extra></extra>',
+            mode: 'markers+text', textposition: 'top inside',
+            textfont: {{ family: 'Segoe UI', size: 15, weight: 'bold', color: 'black' }},
+            opacity: 1,
             marker: {{
                 size: arrowData.map(d => Math.max(14, d.gr * 0.50)),
                 color: arrowData.map(d => d.rig_gr),
                 colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]],
-                showscale: true, colorbar: {{ title: 'Rig GR (%)', thickness: 18 }},
+                showscale: true, 
+                colorbar: {{ 
+                    title: {{ text: '<b>Rig GR</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }}, 
+                    thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
+                    tickmode: 'array', tickvals: [0, 70, 80, 90, 100], ticktext: ['0', '70', '80', '90', '100'],
+                    tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}
+                }},
                 line: {{ color: 'black', width: 1 }}, cmin: 0, cmax: 100
-            }},
-            hovertemplate: '<b>%{{text}}</b><br>List Over-8: %{{x:.2f}}<br>List Vintage: %{{y}}<extra></extra>'
+            }}
         }}], {{
-            title: {{ text: '<b>List Space Coordinates</b>', font: {{ family: 'Segoe UI', size: 24 }} }},
-            xaxis: {{ title: 'Over-8' }}, yaxis: {{ title: 'Vintage', tickformat: 'd' }}
+            xaxis: {{ title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, showgrid: true }},
+            yaxis: {{ title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, tickangle: -90, showgrid: true }},
+            margin: {{ l: 60, r: 0, t: 30, b: 55 }},
         }}, {{responsive: true, displayModeBar: false}});
 
+        // 0. Titles removed. 1. Style configurations copied explicitly from Song (bold titles, rotation, preserved grid lines)
+        // 4. textposition set to 'auto' enables smart native collision avoidance spacing inside Plotly engine
         Plotly.newPlot('plotlyGuessChart', [{{
             x: scatterData.map(d => d.over8),
             y: scatterData.map(d => d.vintage),
             text: scatterData.map(d => d.acronym),
-            customdata: scatterData.map(d => [d.name, d.gr.toFixed(2), d.rig_gr.toFixed(2)]),
-            hovertemplate: '<b>%{{customdata[0]}}</b><br>Over-8: %{{x:.2f}}<br>Vintage: %{{y}}<br>GR: %{{customdata[1]}}%<br>Rig GR: %{{customdata[2]}}%<extra></extra>',
-            mode: 'markers+text', textposition: 'top center',
-            textfont: {{ family: 'Segoe UI', size: 13, weight: 'bold' }},
+            customdata: scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), d.performance.toFixed(2)]),
+            hovertemplate: '<b>%{{customdata[0]}}</b><br>Mean Over-8: %{{customdata[1]}}<br>Median Vintage: %{{customdata[2]}}<br>Guess Rate: %{{customdata[3]}}<br>Performance: %{{customdata[4]}}<extra></extra>',
+            mode: 'markers+text', textposition: 'top inside',
+            textfont: {{ family: 'Segoe UI', size: 13, weight: 'bold', color: 'black' }},
+            opacity: 1,
             marker: {{
                 size: scatterData.map(d => Math.max(16, d.gr * 0.60)),
-                color: scatterData.map(d => d.rig_gr),
+                color: scatterData.map(d => d.performance),
                 colorscale: [[0, col0], [0.5, col1], [1, col2]],
-                showscale: true, colorbar: {{ title: 'Performance Index', thickness: 18 }},
+                showscale: true, 
+                colorbar: {{ 
+                    title: {{ text: '<b>Performance</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }}, 
+                    thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
+                    tickmode: 'array', tickvals: [0, 50, 100], ticktext: ['0', '50', '100'],
+                    tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}
+                }},
                 line: {{ color: 'black', width: 1 }}, cmin: 0, cmax: 100
             }}
         }}], {{
-            title: {{ text: '<b>Guess Distribution Coordinates</b>', font: {{ family: 'Segoe UI', size: 24 }} }},
-            xaxis: {{ title: 'Over-8' }}, yaxis: {{ title: 'Vintage', tickformat: 'd' }}
+            xaxis: {{ title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, showgrid: true }},
+            yaxis: {{ title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, tickangle: -90, showgrid: true }},
+            margin: {{ l: 60, r: 0, t: 30, b: 55 }}
         }}, {{responsive: true, displayModeBar: false}});
     </script>
 </body>
