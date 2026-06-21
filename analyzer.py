@@ -1556,7 +1556,15 @@ class TourAnalyzer:
         active = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
         if len(active) <= 1: active = []
 
-        # Sort names by GR descending to find border thresholds exactly like the engine does
+        valid_elos = [float(v) for v in self.elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
+        avg_rank = np.mean(valid_elos) if valid_elos else 1.0
+
+        final_threshold = 6 if len(self.s_part) <= 20 else 5
+        if self.base_exp >= final_threshold: stage = "Final"
+        elif self.base_exp == 3: stage = "Mid-Tour"
+        else: stage = f"R{self.base_exp}"
+        prefix = f"{self.tour_label.strip()} Tour: {stage}"
+
         sorted_players = sorted(self.s_part.keys(), key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0, reverse=True)
 
         for name in sorted_players:
@@ -1579,44 +1587,48 @@ class TourAnalyzer:
 
             avg_over8 = self.p_overs_sum[name] / cor if cor else np.nan
             row = {"Player": d_name}
-            if use_teams: row["Elo"] = self.elo_map.get(name.lower(), "N/A")
+            if use_teams: 
+                try: row["Elo"] = float(self.elo_map.get(name.lower(), np.nan))
+                except: row["Elo"] = np.nan
             
             row.update({
-                "GR": (cor / tot * 100) if tot else 0,
-                "UF": (self.p_usefulness_sum[name] * 8) / tot if tot else 0.0, # Simple reference scale fallback
-                "1/8s": self.e_counts[name],
-                "2/8s": self.p_two_e[name],
-                "7/8s": self.p_rev_e[name],
-                "Mean Over-8": avg_over8
+                "GR": float(cor / tot * 100) if tot else 0.0,
+                "UF": float((self.p_usefulness_sum[name] * avg_rank * 8) / tot) if tot else 0.0,
+                "1/8s": int(self.e_counts[name]),
+                "2/8s": int(self.p_two_e[name]),
+                "7/8s": int(self.p_rev_e[name]),
+                "Mean Over-8": float(avg_over8) if pd.notnull(avg_over8) else np.nan
             })
             if use_teams:
-                row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
+                row.update({"Lives Taken": int(self.p_pts[name]), "Lives Saved": int(self.p_blks[name])})
 
             for tid in active:
                 seen = self.p_type_s[name][tid]
-                row[t_labels[tid]] = (self.p_type_c[name][tid] / seen * 100) if seen else np.nan
+                val_type = (self.p_type_c[name][tid] / seen * 100) if seen else np.nan
+                row[t_labels[tid]] = float(val_type) if pd.notnull(val_type) else np.nan
 
             if watched:
                 rig_over8 = np.mean(self.p_l_corr[name]) if self.p_l_corr[name] else np.nan
                 row.update({
-                    "Rigs": self.p_rigs[name],
-                    "Rig Rate": (self.p_rigs[name] / tot * 100) if tot else np.nan,
-                    "Rig Over-8": rig_over8,
-                    "Over-8 Delta": rig_over8 - avg_over8,
-                    "Rig GR": (self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
-                    "Off GR": ((cor - self.p_rigs_h[name]) / (tot - self.p_rigs[name]) * 100) if (tot - self.p_rigs[name]) else np.nan,
-                    "Rig Delta": ((cor - self.p_rigs[name]) / cor * 100) if cor else np.nan,
+                    "Rigs": int(self.p_rigs[name]),
+                    "Rig Rate": float(self.p_rigs[name] / tot * 100) if tot else np.nan,
+                    "Rig Over-8": float(rig_over8) if pd.notnull(rig_over8) else np.nan,
+                    "Over-8 Delta": float(rig_over8 - avg_over8) if (pd.notnull(rig_over8) and pd.notnull(avg_over8)) else np.nan,
+                    "Rig GR": float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
+                    "Off GR": float((cor - self.p_rigs_h[name]) / (tot - self.p_rigs[name]) * 100) if (tot - self.p_rigs[name]) else np.nan,
+                    "Rig Delta": float((cor - self.p_rigs_h[name]) / cor * 100) if cor else np.nan,
                 })
 
             times = self.p_answer_times.get(name, [])
             seen_chan = self.p_chan_s[name]
-            row["Median Time"] = np.median(times) if times else np.nan
-            row["Chant GR"] = (self.p_chan_c[name] / seen_chan * 100) if seen_chan else np.nan
+            med_time = np.median(times) if times else np.nan
+            row["Median Time"] = float(med_time) if pd.notnull(med_time) else np.nan
+            chant_gr = (self.p_chan_c[name] / seen_chan * 100) if seen_chan else np.nan
+            row["Chant GR"] = float(chant_gr) if pd.notnull(chant_gr) else np.nan
             rows.append(row)
 
         df_players = pd.DataFrame(rows)
 
-        # Determine grouping break line thresholds based on configuration engine
         borders = []
         if "GR" in df_players.columns and "Eru" not in self.tour_label:
             th_val = self.val_str if self.val_str != "default" else ("28, 18, 12, 6" if watched else "28, 19, 8")
@@ -1628,30 +1640,77 @@ class TourAnalyzer:
                 f_idx = -1
                 for i, v in enumerate(gv):
                     if pd.notnull(v) and v >= t: f_idx = i
-                if f_idx != -1 and f_idx < len(df_players) - 1: borders.append(f_idx)
+                if f_idx != -1 and f_idx < len(df_players) - 1: borders.append(int(f_idx))
 
-        # ==========================================
-        # 2. PARSE & STRUCTURE TOUR STATS TABLES
-        # ==========================================
+        desc_cols = [
+            "Elo", "GR", "UF", "1/8s", "2/8s", "Lives Taken", "Lives Saved", 
+            "OP GR", "ED GR", "IN GR", "Rigs", "Rig Rate", "Over-8 Delta", 
+            "Rig GR", "Off GR", "Rig Delta", "Chant GR"
+        ]
+        asc_cols = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
+        rest_cols = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]
+        
+        stats_hl = {}
+        elo_ser = df_players["Elo"].fillna(0.0) if "Elo" in df_players.columns else pd.Series(0.0, index=df_players.index)
+        gr_ser = df_players["GR"].fillna(0.0)
+        rig_ser = df_players["Rigs"].fillna(0.0) if "Rigs" in df_players.columns else pd.Series(0.0, index=df_players.index)
+        mask_series = pd.Series(eligibility, index=df_players.index)
+
+        for col in df_players.columns:
+            if col in desc_cols or col in asc_cols:
+                num = df_players[col]
+                el_num = num[mask_series].dropna() if col in rest_cols else num.dropna()
+
+                if not num.dropna().empty:
+                    if col in desc_cols:
+                        best_val = num.dropna().max()
+                        worst_val = el_num.min() if not el_num.empty else None
+                    else:
+                        best_val = num.dropna().min()
+                        if col == "Median Time":
+                            under_limit = el_num[el_num < 20.0]
+                            worst_val = under_limit.max() if not under_limit.empty else None
+                        else:
+                            worst_val = el_num.max() if not el_num.empty else None
+
+                    best_b_idx = num[num == best_val].index if pd.notnull(best_val) else pd.Index([])
+                    worst_b_idx = el_num[el_num == worst_val].index if pd.notnull(worst_val) else pd.Index([])
+
+                    if col in ["Elo"]:
+                        best_idx = int(best_b_idx[0]) if not best_b_idx.empty else None
+                        worst_idx = int(worst_b_idx[0]) if not worst_b_idx.empty else None
+                    elif col in ["OP GR", "ED GR", "IN GR", "Chant GR"]:
+                        best_idx = int(gr_ser.loc[best_b_idx].idxmin()) if not best_b_idx.empty else None
+                        worst_idx = int(gr_ser.loc[worst_b_idx].idxmax()) if not worst_b_idx.empty else None
+                    elif col == "Rig GR":
+                        best_idx = int(rig_ser.loc[best_b_idx].idxmax()) if not best_b_idx.empty else None
+                        worst_idx = int(elo_ser.loc[worst_b_idx].idxmax()) if not worst_b_idx.empty else None
+                    else:
+                        best_idx = int(elo_ser.loc[best_b_idx].idxmin()) if not best_b_idx.empty else None
+                        worst_idx = int(elo_ser.loc[worst_b_idx].idxmax()) if not worst_b_idx.empty else None
+
+                    stats_hl[col] = {'best_idx': best_idx, 'worst_idx': worst_idx}
+
         def fmt_most(names, val):
             if not names: return "N/A"
             win = sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]
             gr = (self.c_counts[win] / self.s_part[win]) * 100 if self.s_part[win] else 0
-            return f"{win} ({val}{f', {gr:.2f}%' if len(names) > 1 else ''})"
+            return f"{win} ({val}{f', {gr:.2f}' if len(names) > 1 else ''})"
 
-        tour_stats = [
+        # --- UNROLLED: STRATEGIC TOUR STATISTICS MATRIX ---
+        tour_stats_raw = [
             ["Median Vintage", format_year(round(np.median(self.all_vint), 2)) if self.all_vint else "N/A"],
             ["Mean Difficulty", f"{np.mean(self.all_diff):.2f}" if self.all_diff else "N/A"],
-            ["Mean GR", f"{(self.global_stats['tot_c'] / sum(self.s_part.values()) * 100):.2f}%" if self.s_part else "0.00%"],
+            ["Mean Guess Rate", f"{(self.global_stats['tot_c'] / sum(self.s_part.values()) * 100):.2f}" if self.s_part else "0.00"],
             ["Total 0/8s", str(self.global_stats["blanks"])],
             ["Total 1/8s", str(self.global_stats["solos"])],
             ["Total 2/8s", str(self.global_stats["doubles"])],
             ["Total 7/8s", str(self.global_stats["sevens"])],
             ["Total 8/8s", str(self.global_stats["fulls"])]
         ]
-        if use_teams: tour_stats.append(["Total 4-0s", str(self.global_stats["sweeps"])])
+        if use_teams: tour_stats_raw.append(["Total 4-0s", str(self.global_stats["sweeps"])])
         
-        tour_stats.extend([
+        tour_stats_raw.extend([
             ["Most Popular Genre", f"{self.genre_c.most_common(1)[0][0]} ({self.genre_c.most_common(1)[0][1]})" if self.genre_c else "N/A"],
             ["Most Popular Tag", f"{self.tag_c.most_common(1)[0][0]} ({self.tag_c.most_common(1)[0][1]})" if self.tag_c else "N/A"],
             ["Most 1/8s", fmt_most([n for n, v in self.e_counts.items() if v == max(self.e_counts.values(), default=0) and v > 0], max(self.e_counts.values(), default=0))],
@@ -1662,20 +1721,11 @@ class TourAnalyzer:
         plist = list(self.s_part.keys())
         no_s = sorted([n for n in plist if self.e_counts[n] == 0 and self.s_part[n] > 0], key=lambda x: self.c_counts[x] / self.s_part[x], reverse=True)
         yes_s = sorted([n for n in plist if self.e_counts[n] > 0 and self.s_part[n] > 0], key=lambda x: self.c_counts[x] / self.s_part[x])
-        if no_s: tour_stats.append(["Highest GR No 1/8s", f"{no_s[0]} ({100 * (self.c_counts[no_s[0]] / self.s_part[no_s[0]]):.2f}%)"])
-        if yes_s: tour_stats.append(["Lowest GR With 1/8s", f"{yes_s[0]} ({100 * (self.c_counts[yes_s[0]] / self.s_part[yes_s[0]]):.2f}%, {self.e_counts[yes_s[0]]})"])
+        if no_s: tour_stats_raw.append(["Highest GR Without 1/8s", f"{no_s[0]} ({100 * (self.c_counts[no_s[0]] / self.s_part[no_s[0]]):.2f})"])
+        if yes_s: tour_stats_raw.append(["Lowest GR With 1/8s", f"{yes_s[0]} ({100 * (self.c_counts[yes_s[0]] / self.s_part[yes_s[0]]):.2f}, {self.e_counts[yes_s[0]]})"])
 
-        # Create structured array matrix for side-by-side splitting style seen in Tour.png
-        half = (len(tour_stats) + 1) // 2
-        left_side, right_side = tour_stats[:half], tour_stats[half:]
-        while len(right_side) < len(left_side): right_side.append(["", ""])
-        split_tour_data = []
-        for l, r in zip(left_side, right_side):
-            split_tour_data.append({"Metric_L": l[0], "Value_L": l[1], "Metric_R": r[0], "Value_R": r[1]})
+        tour_unrolled = [{"Metric": row[0], "Value": row[1]} for row in tour_stats_raw]
 
-        # ==========================================
-        # 3. STRUCTURE TEAM & TIER LIST TABLES
-        # ==========================================
         team_rows = []
         if use_teams:
             for tid in self.t_c_ps:
@@ -1683,111 +1733,226 @@ class TourAnalyzer:
                 t_elos = [float(self.elo_map.get(p.lower(), 0)) for p in self.rosters[tid] if p.lower() in self.elo_map]
                 team_rows.append({
                     "Team Leader": self.t1_lookup.get(tid, f"Team {tid}"),
-                    "Mean Elo": np.mean(t_elos) if t_elos else 0,
-                    "Mean GR": np.mean(self.t_c_ps[tid]) * 100,
-                    "Total 1/8s": self.t_solos[tid],
-                    "Mean Over-8": np.mean(t_overs) if t_overs else 0,
-                    "Rig Synergy": np.mean(self.t_on_syn[tid]) * 100 if self.t_on_syn[tid] else 0,
-                    "Off Synergy": np.mean(self.t_off_syn[tid]) * 100 if self.t_off_syn[tid] else 0,
-                    "Shared Rigs": np.mean(self.t_sh_rig[tid]) * 100 if self.t_sh_rig[tid] else 0
+                    "Mean Elo": f"{np.mean(t_elos):.2f}" if t_elos else "N/A",
+                    "Mean Guess Rate": f"{np.mean(self.t_c_ps[tid]) * 100:.2f}",
+                    "Total 1/8s": int(self.t_solos[tid]),
+                    "Mean Over-8": f"{np.mean(t_overs):.2f}" if t_overs else "N/A",
+                    "Rig Synergy": f"{np.mean(self.t_on_syn[tid]) * 100:.2f}" if self.t_on_syn[tid] else "N/A",
+                    "Off Synergy": f"{np.mean(self.t_off_syn[tid]) * 100:.2f}" if self.t_off_syn[tid] else "N/A",
+                    "Shared Rigs": f"{np.mean(self.t_sh_rig[tid]) * 100:.2f}" if self.t_sh_rig[tid] else "N/A"
                 })
 
-        # ==========================================
-        # 4. PREPARE CHARTS & PLOTLY JSON OBJECTS
-        # ==========================================
+        # --- UNROLLED: MERGED COMPREHENSIVE TIER STANDINGS PANEL ---
+        tier_merged = []
+        for tr in ["1", "2", "3", "4"]:
+            tp = [n for n in self.s_part if n.lower() in self.assignments and self.assignments[n.lower()][1] == tr]
+            if not tp: continue
+
+            gen_players, atk_players, blk_players = [], [], []
+            con_players, spd_players, chn_players = [], [], []
+
+            for p in tp:
+                cor, tot = self.c_counts[p], self.s_part[p]
+                tim, chc, cht = self.p_answer_times.get(p, []), self.p_chan_c[p], self.p_chan_s[p]
+
+                gen_players.append({"player": p, "value": 100 * cor / tot if tot else 0.0})
+                atk_players.append({"player": p, "value": int(self.p_pts[p])})
+                blk_players.append({"player": p, "value": int(self.p_blks[p])})
+                con_players.append({"player": p, "value": 100 * (self.p_pts[p] + self.p_blks[p]) / cor if cor else 0.0})
+                if tim: spd_players.append({"player": p, "value": float(np.median(tim))})
+                if cht: chn_players.append({"player": p, "value": 100 * chc / cht})
+
+            gen_players.sort(key=lambda x: x["value"], reverse=True)
+            atk_players.sort(key=lambda x: x["value"], reverse=True)
+            blk_players.sort(key=lambda x: x["value"], reverse=True)
+            con_players.sort(key=lambda x: x["value"], reverse=True)
+            spd_players.sort(key=lambda x: x["value"])
+            chn_players.sort(key=lambda x: x["value"], reverse=True)
+
+            tier_merged.append({
+                "Tier": int(tr),
+                "Guess Rate": f"{gen_players[0]['player']} ({gen_players[0]['value']:.2f})" if gen_players else "N/A",
+                "Lives Taken": f"{atk_players[0]['player']} ({atk_players[0]['value']})" if atk_players else "N/A",
+                "Lives Saved": f"{blk_players[0]['player']} ({blk_players[0]['value']})" if blk_players else "N/A",
+                "Contribution Rate": f"{con_players[0]['player']} ({con_players[0]['value']:.2f})" if con_players else "N/A",
+                "Median Time": f"{spd_players[0]['player']} ({spd_players[0]['value']:.2f})" if spd_players else "N/A",
+                "Chant GR": f"{chn_players[0]['player']} ({chn_players[0]['value']:.2f})" if chn_players else "N/A"
+            })
+
         song_matrix_list = []
         for s in self.song_data:
             if s["vintage"] > 0:
                 song_matrix_list.append({"vintage": int(s["vintage"]), "difficulty": float(s["difficulty"]), "correct_count": int(s["correct_count"])})
 
-        scatter_list = []
+        scatter_list, arrow_list = [], []
         for name in self.s_part:
             if self.c_counts[name] > 0:
-                times = self.p_answer_times.get(name, [])
-                scatter_list.append({
+                yl = np.median(self.p_l_vint[name]) if self.p_l_vint[name] else np.nan
+                yg = np.median(self.p_c_vint[name]) if self.p_c_vint[name] else np.nan
+
+                base_node = {
                     "acronym": self._get_player_acronym(name),
                     "name": name,
-                    "over8": self.p_overs_sum[name] / self.c_counts[name],
-                    "vintage": np.median(self.p_c_vint[name]) if self.p_c_vint[name] else 2010,
-                    "gr": (self.c_counts[name] / self.s_part[name] * 100) if self.s_part[name] else 0,
-                    "rig_gr": (self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else 0
-                })
+                    "over8": float(self.p_overs_sum[name] / self.c_counts[name]),
+                    "vintage": int(yg) if pd.notnull(yg) else 2010,
+                    "gr": float(self.c_counts[name] / self.s_part[name] * 100) if self.s_part[name] else 0.0,
+                    "rig_gr": float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else 0.0
+                }
+                scatter_list.append(base_node)
 
-        # Converts missing parameters seamlessly to structural clean JSON string sets
-        json_players = df_players.to_json(orient="records")
-        json_tour_stats = json.dumps(split_tour_data)
-        json_teams = json.dumps(team_rows)
-        json_songs = json.dumps(song_matrix_list)
-        json_scatter = json.dumps(scatter_list)
+                if self.p_l_corr[name] and pd.notnull(yl) and pd.notnull(yg):
+                    arrow_list.append({
+                        "acronym": base_node["acronym"],
+                        "name": name,
+                        "x_start": float(np.mean(self.p_l_corr[name])),
+                        "y_start": int(yl),
+                        "x_end": base_node["over8"],
+                        "y_end": base_node["vintage"],
+                        "rig_gr": base_node["rig_gr"],
+                        "gr": base_node["gr"]
+                    })
+
+        headers = list(df_players.columns)
+        html_rows_list = []
+        incremental_cols = {"1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"}
+
+        for idx, row in df_players.iterrows():
+            row_dict = {}
+            for col in headers:
+                val = row[col]
+                if pd.isnull(val) or (isinstance(val, float) and np.isnan(val)):
+                    row_dict[col] = "N/A"
+                elif col == "Player":
+                    row_dict[col] = str(val)
+                elif col in incremental_cols:
+                    row_dict[col] = int(val)
+                else:
+                    row_dict[col] = f"{float(val):.2f}"
+            html_rows_list.append(row_dict)
+
+        json_players = json.dumps(html_rows_list)
+        json_hl_rules = json.dumps(stats_hl)
         json_borders = json.dumps(borders)
         json_eligibility = json.dumps(eligibility)
+        json_tour_stats = json.dumps(tour_unrolled)
+        json_teams = json.dumps(team_rows)
+        json_tier_merged = json.dumps(tier_merged)
+        json_songs = json.dumps(song_matrix_list)
+        json_scatter = json.dumps(scatter_list)
+        json_arrows = json.dumps(arrow_list)
 
         c0, c1, c2 = COLOR_0, COLOR_1, COLOR_2
 
-        # ==========================================
-        # 5. GENERATE COMPREHENSIVE DASHBOARD BUNDLE
-        # ==========================================
         html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{self.tour_label} Tournament Analytics Dashboard</title>
+    <title>{prefix}</title>
     <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         body {{ font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #ffffff; color: #000000; }}
-        .main-table {{ border: 3px solid black; border-collapse: collapse; width: 100%; }}
-        .main-table th {{ background-color: #f0f0f0; border: 1px solid black; border-bottom: 3px solid black; padding: 10px; font-weight: bold; font-size: 14px; text-align: center; }}
-        .main-table td {{ border: 1px solid black; padding: 10px; text-align: center; font-size: 14px; }}
+        .main-table {{ border: 3px solid black; border-collapse: collapse; width: max-content; margin: 0 auto; }}
+        .main-table th {{ background-color: #f0f0f0; border: 1px solid black; border-bottom: 3px solid black; padding: 6px 12px; font-weight: bold; font-size: 25px; text-align: center; }}
+        .main-table td {{ border: 1px solid black; padding: 6px 12px; text-align: center; font-size: 25px; }}
         .main-table tr:nth-child(even) {{ background-color: #f0f0f0; }}
-        .border-group-line {{ border-bottom: 3px solid black !important; }}
+        .border-group-line td {{ border-bottom: 3px solid black !important; }}
         .border-col-group {{ border-right: 3px solid black !important; }}
         .highlight-best {{ background-color: {c2} !important; color: white !important; font-weight: bold; }}
         .highlight-worst {{ background-color: {c0} !important; color: white !important; font-weight: bold; }}
+        
+        /* Interactive Nav Bar Tabs Styling */
+        .tab-btn {{ font-size: 22px; font-weight: 600; padding: 10px 24px; border-bottom: 4px solid transparent; transition: all 0.2s; color: #4b5563; }}
+        .tab-btn:hover {{ color: #000000; background-color: #f3f4f6; }}
+        .tab-btn.active-tab {{ color: #000000; border-bottom-color: #000000; background-color: #f3f4f6; }}
+        .tab-content {{ display: none; }}
+        .tab-content.active-content {{ display: block; }}
     </style>
 </head>
 <body class="p-6">
-    <h2 class="text-3xl font-bold text-center mb-6">{self.tour_label} Tour, Player Statistics Dashboard</h2>
+    <h2 class="text-5xl font-bold text-center mt-4 mb-6">{prefix}</h2>
     
-    <div class="mb-8 overflow-x-auto">
-        <table class="main-table" id="playerStandingsTable"></table>
+    <div class="max-w-[1800px] mx-auto border-b border-gray-300 flex flex-wrap justify-center gap-2 mb-8">
+        <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
+        {"<button class='tab-btn' onclick='switchDashboardTab(event, \"team-tab\")'>Team</button>" if use_teams else ""}
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'listguess-tab')">List → Guess</button>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <div class="max-w-[2400px] mx-auto">
         
-        <div class="lg:col-span-5 space-y-6">
-            <div>
-                <h3 class="text-xl font-bold text-center mb-2">Tour Statistics</h3>
-                <table class="main-table" id="tourStatsTable"></table>
-            </div>
-            
-            {"<div><h3 class='text-xl font-bold text-center mb-2'>Team Statistics</h3><table class='main-table' id='teamStatsTable'></table></div>" if use_teams else ""}
+        <div id="player-tab" class="tab-content active-content overflow-x-auto">
+            <table class="main-table" id="playerStandingsTable"></table>
         </div>
 
-        <div class="lg:col-span-7 grid grid-cols-1 gap-6">
-            <div class="border border-gray-300 p-2 bg-white rounded shadow-sm">
-                <div id="plotlySongChart" style="width:100%; height:450px;"></div>
+        <div id="tour-tab" class="tab-content overflow-x-auto">
+            <table class="main-table" id="tourStatsTable"></table>
+        </div>
+
+        <div id="team-tab" class="tab-content overflow-x-auto">
+            <table class="main-table" id="teamStatsTable"></table>
+        </div>
+
+        <div id="tier-tab" class="tab-content overflow-x-auto">
+            <table class="main-table" id="tierStatsTable"></table>
+        </div>
+
+        <div id="song-tab" class="tab-content">
+            <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
+                <div id="plotlySongChart" style="width:100%; height:750px;"></div>
             </div>
-            <div class="border border-gray-300 p-2 bg-white rounded shadow-sm">
-                <div id="plotlyScatterChart" style="width:100%; height:450px;"></div>
+        </div>
+
+        <div id="guess-tab" class="tab-content">
+            <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
+                <div id="plotlyGuessChart" style="width:100%; height:750px;"></div>
+            </div>
+        </div>
+
+        <div id="list-tab" class="tab-content">
+            <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
+                <div id="plotlyListChart" style="width:100%; height:750px;"></div>
+            </div>
+        </div>
+
+        <div id="listguess-tab" class="tab-content">
+            <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
+                <div id="plotlyListGuessChart" style="width:100%; height:750px;"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Bind serialized python payloads
         const players = {json_players};
         const tourStats = {json_tour_stats};
         const teamStats = {json_teams};
+        const tierStats = {json_tier_merged};
         const songData = {json_songs};
         const scatterData = {json_scatter};
+        const arrowData = {json_arrows};
         const groupBorders = {json_borders};
         const eligibility = {json_eligibility};
+        const hlRules = {json_hl_rules};
 
         const col0 = "{c0}", col1 = "{c1}", col2 = "{c2}";
-        const colBorders = new Set(["Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric_L", "Value_L", "Metric_R", "Value_R", "Team Leader"]);
+        const colBorders = new Set(["Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier"]);
 
-        // --- PANEL 1: PLAYER STATISTICS RENDERER ---
+        // --- INTERACTIVE NAVIGATION PANEL CONTROLLER ---
+        function switchDashboardTab(evt, tabId) {{
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active-tab'));
+            
+            document.getElementById(tabId).classList.add('active-content');
+            evt.currentTarget.classList.add('active-tab');
+            
+            // Re-trigger layout calculations to update width parameters inside current tab view bounds
+            window.dispatchEvent(new Event('resize'));
+        }}
+
         function renderPlayerTable() {{
             const table = document.getElementById('playerStandingsTable');
             if(!players.length) return;
@@ -1798,41 +1963,23 @@ class TourAnalyzer:
                 return `<th${{styleStr}}>${{h.replace(' ', '<br>')}}</th>`;
             }}).join('') + "</tr></thead>";
 
-            // Establish standard optimization boundary metrics
-            let limits = {{}};
-            const excludedHighlightCols = new Set(["Player", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]);
-            headers.forEach(h => {{
-                if(!excludedHighlightCols.has(h)) {{
-                    let rawVals = players.map(p => p[h]).filter(v => v !== null && typeof v === 'number');
-                    limits[h] = {{ max: Math.max(...rawVals), min: Math.min(...rawVals) }};
-                }}
-            }});
-
             let tbody = "<tbody>";
             players.forEach((row, idx) => {{
                 let groupLine = groupBorders.includes(idx) ? " border-group-line" : "";
                 tbody += `<tr class="${{groupLine}}">`;
                 
                 headers.forEach(h => {{
-                    let val = row[h];
-                    let displayVal = val;
-                    if(val === null || val === undefined) displayVal = "N/A";
-                    else if(typeof val === 'number') {{
-                        if (h.includes('GR') || h === 'Rig Rate' || h === 'Rig Delta' || h === 'Off GR') displayVal = val.toFixed(2) + "%";
-                        else displayVal = val.toFixed(2);
-                    }}
-
+                    let displayVal = row[h];
                     let cellStyle = colBorders.has(h) ? "border-col-group " : "";
-                    if(!excludedHighlightCols.has(h) && limits[h] && typeof val === 'number') {{
-                        let isBest = (h === "Median Time") ? (val === limits[h].min) : (val === limits[h].max);
-                        let isWorst = (h === "Median Time") ? (val === limits[h].max) : (val === limits[h].min);
-                        let isElig = eligibility[idx];
-
-                        if(isBest) cellStyle += "highlight-best ";
-                        else if(isWorst && isElig) cellStyle += "highlight-worst ";
+                    
+                    if (hlRules[h]) {{
+                        let isBest = (hlRules[h].best_idx === idx);
+                        let isWorst = (hlRules[h].worst_idx === idx);
+                        if (isBest) cellStyle += "highlight-best ";
+                        else if (isWorst) cellStyle += "highlight-worst ";
                     }}
 
-                    let finalVal = (h === "Player" || h === "Metric_L" || h === "Team Leader") ? `<b>${{displayVal}}</b>` : displayVal;
+                    let finalVal = (h === "Player") ? `<b>${{displayVal}}</b>` : displayVal;
                     tbody += `<td class="${{cellStyle.trim()}}">${{finalVal}}</td>`;
                 }});
                 tbody += "</tr>";
@@ -1840,33 +1987,26 @@ class TourAnalyzer:
             table.innerHTML = thead + tbody + "</tbody>";
         }}
 
-        // --- PANEL 2: TOUR STATISTICS SPLIT TABLE ---
         function renderTourTable() {{
             const table = document.getElementById('tourStatsTable');
-            let thead = "<thead><tr><th>Metric</th><th class='border-col-group'>Value</th><th>Metric</th><th>Value</th></tr></thead><tbody>";
+            let thead = "<thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody>";
             let tbody = "";
             tourStats.forEach(row => {{
-                tbody += `<tr>
-                    <td><b>${{row.Metric_L}}</b></td><td class='border-col-group'>${{row.Value_L}}</td>
-                    <td><b>${{row.Metric_R}}</b></td><td>${{row.Value_R}}</td>
-                </tr>`;
+                tbody += `<tr><td><b>${{row.Metric}}</b></td><td>${{row.Value}}</td></tr>`;
             }});
             table.innerHTML = thead + tbody + "</tbody>";
         }}
 
-        // --- PANEL 3: TEAM STATISTICS VIEW PANEL ---
         function renderTeamTable() {{
             const table = document.getElementById('teamStatsTable');
             if(!table || !teamStats.length) return;
             let headers = Object.keys(teamStats[0]);
-            let thead = "<thead><tr>" + headers.map(h => `<th${{colBorders.has(h) ? ' class="border-col-group"':''}}>${{h}}</th>`).join('') + "</tr></thead><tbody>";
+            let thead = "<thead><tr>" + headers.map(h => `<th${{colBorders.has(h) ? ' class="border-col-group"':''}}>${{h.replace(' ', '<br>')}}</th>`).join('') + "</tr></thead><tbody>";
             let tbody = "";
             teamStats.forEach(row => {{
                 tbody += "<tr>";
                 headers.forEach(h => {{
-                    let val = row[h];
-                    let disp = (typeof val === 'number') ? val.toFixed(2) : val;
-                    if(h.includes('GR') || h.includes('Synergy') || h.includes('Rigs') && h !== 'Shared Rigs') disp += "%";
+                    let disp = row[h];
                     tbody += `<td class='${{colBorders.has(h) ? "border-col-group":""}}'>${{h==="Team Leader"?`<b>${{disp}}</b>`:disp}}</td>`;
                 }});
                 tbody += "</tr>";
@@ -1874,16 +2014,27 @@ class TourAnalyzer:
             table.innerHTML = thead + tbody + "</tbody>";
         }}
 
-        // Run element execution mappings
+        function renderTierTable() {{
+            const table = document.getElementById('tierStatsTable');
+            if(!tierStats.length) return;
+
+            let headers = Object.keys(tierStats[0]);
+            let thead = "<thead><tr>" + headers.map(h => `<th${{colBorders.has(h)?' class="border-col-group"':''}}>${{h.replace(' ', '<br>')}}</th>`).join('') + "</tr></thead><tbody>";
+            let tbody = "";
+            tierStats.forEach(r => {{
+                tbody += "<tr>" + headers.map(h => `<td class='${{colBorders.has(h)?"border-col-group":""}}'>${{h==="Tier"?`<b>${{r[h]}}</b>`:r[h]}}</td>`).join('') + "</tr>";
+            }});
+            table.innerHTML = thead + tbody + "</tbody>";
+        }}
+
         renderPlayerTable();
         renderTourTable();
         renderTeamTable();
+        renderTierTable();
 
         // ==========================================
-        // PLOTLY GRAPH INTERACTIVE BINDINGS
+        // GRAPH INTERACTIVE DEFINITIONS
         // ==========================================
-        
-        // --- CHART A: INTERACTIVE DISTRIBUTION MATRICES ---
         const matrixBins = {{}};
         songData.forEach(s => {{
             let xIdx = Math.min(Math.floor(s.difficulty / 10), 4);
@@ -1915,36 +2066,78 @@ class TourAnalyzer:
         Plotly.newPlot('plotlySongChart', [{{
             z: zValues, x: xLabels, y: yLabels, text: textLabels, hoverinfo: 'text',
             type: 'heatmap', colorscale: [[0, col0], [0.5, col1], [1, col2]], showscale: true,
-            colorbar: {{ title: 'Over-8 Count Scale', thickness: 15 }}
+            colorbar: {{ title: 'Over-8 Count Scale', thickness: 18 }}
         }}], {{
-            title: {{ text: '<b>Song Matrix Statistics</b>', font: {{ family: 'Segoe UI', size: 20 }} }},
-            xaxis: {{ title: 'Difficulty', font: {{ weight: 'bold' }} }},
-            yaxis: {{ title: 'Vintage', tickmode: 'array', tickvals: yLabels }},
-            margin: {{ t: 40, b: 40, l: 50, r: 10 }}
-        }}, {{displayModeBar: false}});
+            title: {{ text: '<b>Song Matrix Spectrum</b>', font: {{ family: 'Segoe UI', size: 24 }} }},
+            xaxis: {{ title: 'Difficulty', font: {{ size: 16 }} }},
+            yaxis: {{ title: 'Vintage', tickmode: 'array', tickvals: yLabels, font: {{ size: 16 }} }}
+        }}, {{responsive: true, displayModeBar: false}});
 
-        // --- CHART B: INTERACTIVE COMPREHENSIVE SCATTER PLOTS ---
-        Plotly.newPlot('plotlyScatterChart', [{{
+        let lgTraces = [];
+        arrowData.forEach(d => {{
+            lgTraces.push({{
+                x: [d.x_start, d.x_end], y: [d.y_start, d.y_end],
+                type: 'scatter', mode: 'lines+markers',
+                marker: {{ size: [5, 12], symbol: ["circle", "triangle-up"], color: d.rig_gr, colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]], cmin: 0, cmax: 100 }},
+                line: {{ width: Math.max(1.5, d.gr * 0.05), color: col1 }},
+                hoverinfo: 'skip'
+            }});
+        }});
+        
+        lgTraces.push({{
+            x: arrowData.map(d => (d.x_start + d.x_end) / 2),
+            y: arrowData.map(d => (d.y_start + d.y_end) / 2),
+            text: arrowData.map(d => d.acronym),
+            mode: 'markers+text', textposition: 'top center',
+            textfont: {{ family: 'Segoe UI', size: 13, weight: 'bold' }},
+            marker: {{ size: 0, color: arrowData.map(d => d.rig_gr), colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]], showscale: true, colorbar: {{ title: 'Rig GR (%)', thickness: 18 }}, cmin: 0, cmax: 100 }},
+            hovertemplate: '<b>%{{text}}</b><extra></extra>'
+        }});
+
+        Plotly.newPlot('plotlyListGuessChart', lgTraces, {{
+            title: {{ text: '<b>List → Guess Node Vector Mapping</b>', font: {{ family: 'Segoe UI', size: 24 }} }},
+            xaxis: {{ title: 'Over-8 Shift Variance' }}, yaxis: {{ title: 'Vintage timeline', tickformat: 'd' }},
+            showlegend: false
+        }}, {{responsive: true, displayModeBar: false}});
+
+        Plotly.newPlot('plotlyListChart', [{{
+            x: arrowData.map(d => d.x_start),
+            y: arrowData.map(d => d.y_start),
+            text: arrowData.map(d => d.acronym),
+            mode: 'markers+text', textposition: 'top center',
+            textfont: {{ family: 'Segoe UI', size: 13, weight: 'bold' }},
+            marker: {{
+                size: arrowData.map(d => Math.max(14, d.gr * 0.50)),
+                color: arrowData.map(d => d.rig_gr),
+                colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]],
+                showscale: true, colorbar: {{ title: 'Rig GR (%)', thickness: 18 }},
+                line: {{ color: 'black', width: 1 }}, cmin: 0, cmax: 100
+            }},
+            hovertemplate: '<b>%{{text}}</b><br>List Over-8: %{{x:.2f}}<br>List Vintage: %{{y}}<extra></extra>'
+        }}], {{
+            title: {{ text: '<b>List Space Coordinates</b>', font: {{ family: 'Segoe UI', size: 24 }} }},
+            xaxis: {{ title: 'Over-8' }}, yaxis: {{ title: 'Vintage', tickformat: 'd' }}
+        }}, {{responsive: true, displayModeBar: false}});
+
+        Plotly.newPlot('plotlyGuessChart', [{{
             x: scatterData.map(d => d.over8),
             y: scatterData.map(d => d.vintage),
             text: scatterData.map(d => d.acronym),
             customdata: scatterData.map(d => [d.name, d.gr.toFixed(2), d.rig_gr.toFixed(2)]),
             hovertemplate: '<b>%{{customdata[0]}}</b><br>Over-8: %{{x:.2f}}<br>Vintage: %{{y}}<br>GR: %{{customdata[1]}}%<br>Rig GR: %{{customdata[2]}}%<extra></extra>',
             mode: 'markers+text', textposition: 'top center',
-            textfont: {{ family: 'Segoe UI', size: 11, weight: 'bold' }},
+            textfont: {{ family: 'Segoe UI', size: 13, weight: 'bold' }},
             marker: {{
-                size: scatterData.map(d => Math.max(14, d.gr * 0.55)),
+                size: scatterData.map(d => Math.max(16, d.gr * 0.60)),
                 color: scatterData.map(d => d.rig_gr),
                 colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]],
-                showscale: true, colorbar: {{ title: 'Rig GR (%)', thickness: 15 }},
-                line: {{ color: 'black', width: 1 }}
+                showscale: true, colorbar: {{ title: 'Performance Index', thickness: 18 }},
+                line: {{ color: 'black', width: 1 }}, cmin: 0, cmax: 100
             }}
         }}], {{
-            title: {{ text: '<b>Guess Statistics Map</b>', font: {{ family: 'Segoe UI', size: 20 }} }},
-            xaxis: {{ title: 'Over-8' }}, yaxis: {{ title: 'Vintage', tickformat: 'd' }},
-            plot_bgcolor: '#ffffff', paper_bgcolor: '#ffffff',
-            margin: {{ t: 40, b: 40, l: 50, r: 10 }}
-        }}, {{displayModeBar: false}});
+            title: {{ text: '<b>Guess Distribution Coordinates</b>', font: {{ family: 'Segoe UI', size: 24 }} }},
+            xaxis: {{ title: 'Over-8' }}, yaxis: {{ title: 'Vintage', tickformat: 'd' }}
+        }}, {{responsive: true, displayModeBar: false}});
     </script>
 </body>
 </html>
