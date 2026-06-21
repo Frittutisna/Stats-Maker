@@ -1271,7 +1271,7 @@ class TourAnalyzer:
                 arrowprops              = dict(arrowstyle = "-", color = 'black', shrinkA = 15)
             )
 
-            ax.set_title    (cfg["title"],  weight = 'bold', fontname = "Segoe UI", fontsize = 35, pad      = 15)
+            ax.set_title    (cfg["title"],  weight = 'bold', fontname = "Segoe UI", fontsize = 50, pad      = 15)
             ax.set_xlabel   ("Over-8",      weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
             ax.set_ylabel   ("Vintage",     weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
 
@@ -1382,7 +1382,7 @@ class TourAnalyzer:
         ax.set_xticklabels(p_labels, fontname = "Segoe UI", fontsize = 20)
         ax.set_yticklabels(y_labels, fontname = "Segoe UI", fontsize = 20, rotation = 90, va = 'center')
 
-        ax.set_title    ("Song Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 35, pad      = 15)
+        ax.set_title    ("Song Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 50, pad      = 15)
         ax.set_xlabel   ("Difficulty",      weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
         ax.set_ylabel   ("Vintage",         weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
 
