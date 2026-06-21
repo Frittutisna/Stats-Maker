@@ -1,5 +1,5 @@
-import gspread, os
-import tkinter      as tk
+import gspread, os, sys
+import tkinter as tk
 
 from analyzer       import TourAnalyzer
 from help.config    import DIR_CREDS, DIR_TOURS, FILE_CHANT
@@ -48,5 +48,10 @@ if __name__ == "__main__":
             is_valid = analyzer.prepare_configuration()
 
             if is_valid: analyzer_pool.append(analyzer)
+
+            else:
+                print(f"Tour {tour_id} failed configuration checks, halting pipeline execution")
+                root.destroy()
+                sys.exit(1)
                 
         for analyzer in analyzer_pool: analyzer.process_and_generate()

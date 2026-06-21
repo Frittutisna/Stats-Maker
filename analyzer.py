@@ -1,4 +1,4 @@
-import json, logging, math, matplotlib, os, re
+import hashlib, json, logging, math, matplotlib, os, re
 
 logging     .getLogger  ("adjustText").setLevel(logging.ERROR)
 matplotlib  .use        ('Agg')
@@ -19,6 +19,8 @@ from pathlib        import Path
 from PIL            import Image
 from scipy.spatial  import ConvexHull
 from tkinter        import messagebox
+
+TEAMS_RE = r"([^\s(]+)\s*\(([-]?\d+(?:\.\d+)?)\)"
 
 def _nested_defaultdict(): return defaultdict(int)
 
@@ -138,11 +140,47 @@ class TourAnalyzer:
             messagebox.showerror("Error", f"Folder not found or empty: {json_dir}")
             return False
 
-        self.json_paths         = list(json_dir.glob("*.json"))
-        all_known, self.apps    = self._scan_players(self.json_paths)
+        self.json_paths = list(json_dir.glob("*.json"))
+        fingerprints    = defaultdict(list)
 
+        for path in self.json_paths:
+            try:
+                with open(path, encoding = "utf-8") as f: data = json.load(f)
+
+            except Exception as e:
+                messagebox.showerror("JSON corrupted", f"Could not read {path.name}: {e}")
+                return False
+
+            songs = data.get("songs", [])
+
+            if not isinstance(songs, list) or not songs:
+                messagebox.showerror("Disconnected Player JSON", f"Error in {path.name}: The exporter likely disconnected; ask someone else to re-upload this JSON")
+                return False
+
+            for _, song in enumerate(songs, 1):
+                if not isinstance(song, dict) or "videoUrl" not in song:
+                    messagebox.showerror("Disconnected Player JSON", f"Error in {path.name}: The exporter likely disconnected; ask someone else to re-upload this JSON")
+                    return False
+
+            payload = json.dumps(songs, sort_keys = True, ensure_ascii = False, default = str)
+            fp      = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+            fingerprints[fp].append(path.name)
+
+        duplicates = [names for names in fingerprints.values() if len(names) > 1]
+
+        if duplicates:
+            msg = "\n".join([f"• {', '.join(set_files)}" for set_files in duplicates])
+            messagebox.showerror("Identical JSONs", f"The following files are from the same match:\n{msg}\nDelete one")
+            return False
+
+        all_known, self.apps = self._scan_players(self.json_paths)
         self._generate_acronyms(all_known)
-        self.use_teams, self.elo_map, self.assignments, self.t1_lookup, self.rosters, all_known = self._load_team_data(all_known)
+        
+        loaded = self._load_team_data(all_known)
+        if not loaded: return False
+
+        self.use_teams, self.elo_map, self.assignments, self.t1_lookup, self.rosters, all_known = loaded
 
         self.missing_list_count = 0
         self.tour_types         = set()
@@ -460,7 +498,7 @@ class TourAnalyzer:
 
         tasks = []
 
-        tasks.append((self._create_player_png,  (self.use_teams, self.elo_map, watched_valid, stage, out_path, self.apps, prefix, self.exp_map, self.base_exp, self.assignments, self.new_players, self.t1_lookup, self.val_str)))
+        tasks.append((self._create_player_png,  (self.use_teams, self.elo_map, watched_valid, stage, out_path, self.apps, prefix, self.exp_map, self.base_exp, self.new_players, self.val_str)))
         tasks.append((self._create_tour_png,    (self.use_teams, watched_valid, out_path)))
         tasks.append((self._create_scatter_png, (out_path, False, self.elo_map)))
         tasks.append((self._create_song_png,    (out_path, )))
@@ -519,10 +557,31 @@ class TourAnalyzer:
     def _load_team_data(self, all_known):
         codes = self.tour_dir / FILE_CODES
         if not codes.exists() or os.path.getsize(codes) == 0: return False, {}, {}, {}, defaultdict(set), all_known
+        with open(codes, "r", encoding = "utf-8") as f: lines = [line.strip() for line in f if line.strip()]
+
+        has_avg     = any(l.lower().startswith(("average", "avg")) for l in lines)
+        team_lines  = 0
+        bad_lines   = []
+
+        for line in lines:
+            if line.lower().startswith(("average", "avg", "sub")) or line.startswith("http"): continue
+            team_text = line.split("|", 1)[0].strip()
+
+            if not re.findall(TEAMS_RE, team_text)  : bad_lines.append(line)
+            else                                    : team_lines += 1
+
+        if bad_lines or team_lines == 0 or not has_avg:
+            error_details = ["Broken codes.txt"]
+
+            if bad_lines    : error_details.append(f"Cannot parse line structure: '{bad_lines[0]}'")
+            if not has_avg  : error_details.append("Missing (Average: Elo) line")
+
+            messagebox.showerror("Invalid Code File", "\n".join(error_details))
+            return False
 
         self.main_roster_names                      = set()
         elo_map, assignments, rosters, t1_lookup    = {}, {}, defaultdict(set), {}
-        avail                                       = sorted(list(all_known)) 
+        avail                                       = sorted(list(all_known))
         alias_path                                  = self.script_dir / DIR_TOURS / FILE_ALIAS
         local_aliases                               = {}
 
@@ -551,40 +610,37 @@ class TourAnalyzer:
                     target_id   = self.id_database[p_low]
                     match       = next((n for n in all_known if self.id_database.get(n.lower()) == target_id), None)
 
-            if not match and allow_manual and ("[" in line_text or "Subs:" in line_text)    : match = ManualMatchDialog(None, p_in, avail).result
+            if not match and allow_manual and ("[" in line_text or "Subs:" in line_text)    : match             = ManualMatchDialog(None, p_in, avail).result
             if match                                                                        : new_aliases[p_in] = match
 
             return match
 
-        with open(codes, "r", encoding = "utf-8") as f: lines = f.readlines()
-
         for line in lines:
-            matches = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', line)
+            matches = re.findall(TEAMS_RE, line)
 
             for p_in, val in matches:
-                match = find_best_match(p_in, allow_manual = True, line_text = line)
-                if match: elo_map[match.lower()] = val
+                if not line.lower().startswith("subs:"):
+                    match = find_best_match(p_in, allow_manual=True, line_text=line)
+                    if match: elo_map[match.lower()] = val
 
         idx                 = 1
         sub_candidates_raw  = []
 
         for line in lines:
-            if "Subs:" in line or "subs:" in line:
-                mems_subs = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', line)
+            if line.lower().startswith("subs:"):
+                mems_subs = re.findall(TEAMS_RE, line)
 
-                for p_sub, _ in mems_subs:
+                for p_sub, val_s in mems_subs:
                     m_sub = find_best_match(p_sub)
 
                     if m_sub:
                         self.subbed_players_set.add(m_sub.lower())
                         sub_candidates_raw.append(m_sub)
+                        elo_map[m_sub.lower()] = val_s
 
                 continue
 
-            if "|" in line  : sec = line.split("|")[0]
-            else            : sec = line
-
-            mems = re.findall(r'([^\s(]+)\s*\(([-]?\d+\.\d+)\)', sec)
+            mems = re.findall(TEAMS_RE, line.split("|")[0])
             if not mems: continue
 
             p_captain, _    = mems[0]
@@ -609,11 +665,9 @@ class TourAnalyzer:
         for sub_player in sub_candidates_raw:
             s_low = sub_player.lower()
             if s_low in assignments: continue
-            s_match = next((m for m in assignments if m in s_low or s_low in m), None)
 
-            if s_match  : s_team, s_tier = assignments[s_match]
-            else        : s_team, s_tier = (list(all_team_ids)[0] if all_team_ids else 1), "1"
-
+            s_match                     = next((m for m in assignments if m in s_low or s_low in m), None)
+            s_team, s_tier              = assignments[s_match] if s_match else (list(all_team_ids)[0] if all_team_ids else 1, "1")
             original_players_display    = [name for tid in rosters for name in rosters[tid] if name.lower() in self.main_roster_names]
             dialog                      = SubstitutePromptDialog(None, sub_player, original_players_display)
 
@@ -627,6 +681,12 @@ class TourAnalyzer:
             else:
                 assignments[s_low] = (s_team, s_tier)
                 rosters[s_team].add(sub_player)
+
+        unresolved_players = [p for p in all_known if p.lower() not in assignments]
+
+        if unresolved_players:
+            messagebox.showerror("Roster Mismatch", f"These players are in the JSONs but not in codes.txt: {', '.join(unresolved_players)}")
+            return False
 
         if new_aliases:
             existing_entries = []
@@ -644,7 +704,7 @@ class TourAnalyzer:
 
         return True, elo_map, assignments, t1_lookup, rosters, all_known
 
-    def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, assigns, new_players, t1_lookup, val_str):
+    def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, new_players, val_str):
         rows, eligibility   = [], []
         t_labels            = {1: "OP GR", 2: "ED GR", 3: "IN GR"}
         active              = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
