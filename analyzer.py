@@ -507,9 +507,7 @@ class TourAnalyzer:
             tasks.append((self._create_tier_png, (self.assignments, out_path, any(self.p_chan_s.values()))))
             if watched_valid: tasks.append((self._create_team_png, (self.assignments, self.t1_lookup, out_path)))
 
-        if watched_valid:
-            tasks.append((self._create_scatter_png,     (out_path, True, self.elo_map)))
-            tasks.append((self._create_list_guess_png,  (out_path, )))
+        if watched_valid: tasks.append((self._create_scatter_png, (out_path, True, self.elo_map)))
 
         with fut.ProcessPoolExecutor() as executor:
             task = {executor.submit(func, *args): func.__name__ for func, args in tasks}
@@ -1300,147 +1298,6 @@ class TourAnalyzer:
 
             try     : trim_whitespace(path / cfg["filename"])
             except  : pass
-
-    def _create_list_guess_png(self, path):
-        plist               = []
-        x_start, y_start    = [], []
-        x_end, y_end        = [], []
-        gr_vals, grid_grs   = [], []
-
-        for name in self.s_part:
-            if self.p_l_corr[name] and self.c_counts[name] > 0:
-                yl = np.median(self.p_l_vint[name]) if self.p_l_vint[name] else np.nan
-                yg = np.median(self.p_c_vint[name]) if self.p_c_vint[name] else np.nan
-
-                if not np.isnan(yl) and not np.isnan(yg):
-                    plist.append(name)
-
-                    x_start.append(np.mean(self.p_l_corr[name]))
-                    y_start.append(yl)
-
-                    x_end.append(self.p_overs_sum[name] / self.c_counts[name])
-                    y_end.append(yg)
-
-                    gr_vals     .append(self.c_counts[name] / self.s_part[name] if self.s_part[name] else 0.0)
-                    grid_grs    .append(self.p_rigs_h[name] / self.p_rigs[name] if self.p_rigs[name] else 0.0)
-
-        if not plist: return
-
-        all_x = x_start + x_end
-        all_y = y_start + y_end
-
-        x_min = math.floor  ((min   (all_x) - 0.5) * 2) / 2
-        x_max = math.ceil   ((max   (all_x) + 0.5) * 2) / 2
-        y_min = math.floor  (min    (all_y) - 1.0)
-        y_max = math.ceil   (max    (all_y) + 1.0)
-
-        while True:
-            r = y_max - y_min
-
-            if r % 4 == 0:
-                step = r // 4
-                break
-
-            elif r % 3 == 0:
-                step = r // 3
-                break
-
-            if r % 2 != 0 or y_max >= 2026  : y_min -= 1
-            else                            : y_max += 1
-
-        fig, ax = plt.subplots(figsize = (10, 10))
-
-        ax.set_xlim(x_min, x_max)
-        ax.set_ylim(y_min, y_max)
-
-        ax.set_xticks(range(math.ceil(x_min)    + 1,    math.floor(x_max)   + 1,    1))
-        ax.set_yticks(range(y_min               + step, y_max               + step, step))
-
-        cmap_l = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [
-            (0.0, COLOR_0),
-            (0.7, COLOR_0),
-            (0.8, COLOR_1),
-            (0.9, COLOR_2),
-            (1.0, COLOR_2)
-        ])
-
-        norm    = mc.Normalize(vmin = 0.0, vmax = 1.0)
-        texts   = []
-
-        for name, xl, yl, xg, yg, gr, rig_gr in zip(plist, x_start, y_start, x_end, y_end, gr_vals, grid_grs):
-            label = self._get_player_acronym(name)
-            if not label: continue
-
-            line_thickness  = min(2, gr * 4) ** 2
-            arrow_color     = cmap_l(norm(rig_gr))
-
-            ax.annotate(
-                "", 
-                xy          = (xg, yg), 
-                xytext      = (xl, yl),
-                arrowprops  = dict(arrowstyle = "->", color = arrow_color, linewidth = line_thickness),
-                zorder      = 3
-            )
-
-            xm = (xl + xg) / 2
-            ym = (yl + yg) / 2
-
-            ha_align = "left"   if xm >= ((x_min + x_max) / 2) else "right"
-            va_align = "bottom" if ym >= ((y_min + y_max) / 2) else "top"
-
-            texts.append(ax.text(
-                xm, ym, label,
-                size        = 20,
-                weight      = "bold",
-                fontname    = "Segoe UI",
-                ha          = ha_align,
-                va          = va_align,
-                zorder      = 4
-            ))
-
-        if texts: 
-            adjust_text(
-                texts,
-                ax                      = ax,
-                avoid_self              = True,
-                add_objects_to_edges    = True,
-                force_text              = (1.00, 1.00),
-                expand                  = (2.00, 2.00),
-                arrowprops              = dict(arrowstyle = "-", color = 'black', shrinkA = 15)
-            )
-
-        ax.set_title    ("List → Guess Statistics", weight = 'bold', fontname = "Segoe UI", fontsize = 35, pad      = 15)
-        ax.set_xlabel   ("Over-8",                  weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
-        ax.set_ylabel   ("Vintage",                 weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = 5)
-
-        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: str(int(val))))
-        plt.setp(ax.get_yticklabels(), rotation = 90, va = 'center')
-
-        ax.tick_params(axis = 'x', which = 'both', length = 0, labelsize = 20, pad = 5)
-        ax.tick_params(axis = 'y', which = 'both', length = 0, labelsize = 20, pad = 2.5)
-
-        sm = plt.cm.ScalarMappable(cmap = cmap_l, norm = norm)
-        sm.set_array([])
-
-        cbar = fig.colorbar(sm, ax = ax, pad = 0.005, aspect = 40, ticks = [0, 0.7, 0.8, 0.9, 1])
-        cbar.set_label("Rig GR", weight = 'bold', fontname = "Segoe UI", fontsize = 25, labelpad = -35)
-
-        cbar.ax.set_yticklabels(['0', '70', '80', '90', '100'])
-        cbar.ax.tick_params(labelsize = 20, length = 0)
-
-        ax.text(0.01, 0.99, "New\nHard", transform = ax.transAxes, color = "black", fontsize = 15, va = "top",      ha = "left",    weight = "bold", alpha = 0.75)
-        ax.text(0.99, 0.99, "New\nEasy", transform = ax.transAxes, color = "black", fontsize = 15, va = "top",      ha = "right",   weight = "bold", alpha = 0.75)
-        ax.text(0.01, 0.01, "Old\nHard", transform = ax.transAxes, color = "black", fontsize = 15, va = "bottom",   ha = "left",    weight = "bold", alpha = 0.75)
-        ax.text(0.99, 0.01, "Old\nEasy", transform = ax.transAxes, color = "black", fontsize = 15, va = "bottom",   ha = "right",   weight = "bold", alpha = 0.75)
-
-        ax.grid(False)
-
-        plt.tight_layout    ()
-        plt.savefig         (path / "List-Guess.png", dpi = 100)
-        plt.close           (fig)
-
-        try     : trim_whitespace(path / "List-Guess.png")
-        except  : pass
 
     def _create_song_png(self, path):
         diffs       = [s["difficulty"] for s in self.song_data]
@@ -3009,63 +2866,54 @@ class TourAnalyzer:
         except  : pass
 
     def _fuse(self, path):
-        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Guess": "Guess.png", "List": "List.png", "List-Guess": "List-Guess.png", "Song": "Song.png"}
+        f       = {"Tour": "Tour.png", "Team": "Team.png", "Tier": "Tier.png", "Guess": "Guess.png", "List": "List.png", "Song": "Song.png"}
         ps      = {k: path / v for k, v in f.items() if (path / v).exists()}
         imgs    = {k: Image.open(v) for k, v in ps.items()}
 
         if "Tour" not in imgs:
             for k, p in ps.items():
-                if k not in ["List", "Guess", "List-Guess", "Song"]:
+                if k not in ["List", "Guess", "Song"]:
                     try     : os.remove(p)
                     except  : pass
 
             return
 
-        img_tour        = imgs.get("Tour")
-        img_team        = imgs.get("Team")
-        img_tier        = imgs.get("Tier")
-        img_song        = imgs.get("Song")
-        img_guess       = imgs.get("Guess")
-        img_list        = imgs.get("List")
-        img_list_guess  = imgs.get("List-Guess")
-
-        plots_img = None
+        img_tour    = imgs.get("Tour")
+        img_team    = imgs.get("Team")
+        img_tier    = imgs.get("Tier")
+        img_song    = imgs.get("Song")
+        img_guess   = imgs.get("Guess")
+        img_list    = imgs.get("List")
+        img_plots   = None
 
         if img_song and img_guess:
-            if img_list and img_list_guess:
-                w, h = img_song.width, img_song.height
+            w, h                = img_song.width, img_song.height
+            img_guess_scaled    = img_guess.resize((w, h), Image.Resampling.LANCZOS)
 
-                img_guess_scaled        = img_guess         .resize((w, h), Image.Resampling.LANCZOS)
-                img_list_scaled         = img_list          .resize((w, h), Image.Resampling.LANCZOS)
-                img_list_guess_scaled   = img_list_guess    .resize((w, h), Image.Resampling.LANCZOS)
+            if img_list:
+                img_list_scaled     = img_list.resize((w, h), Image.Resampling.LANCZOS)
+                plots_w, plots_h    = w, h + 10 + h + 10 + h
+                img_plots           = Image.new("RGB", (plots_w, plots_h), "white")
 
-                plots_w, plots_h    = w + 10 + w, h + 10 + h
-                plots_img           = Image.new("RGB", (plots_w, plots_h), "white")
-
-                plots_img.paste(img_song,               (0,         0))
-                plots_img.paste(img_list_guess_scaled,  (w + 10,    0))
-                plots_img.paste(img_list_scaled,        (0,         h + 10))
-                plots_img.paste(img_guess_scaled,       (w + 10,    h + 10))
+                img_plots.paste(img_song,           (0, 0))
+                img_plots.paste(img_guess_scaled,   (0, h + 10))
+                img_plots.paste(img_list_scaled,    (0, h + 10 + h + 10))
 
             else:
-                plots_h             = img_song.height
-                guess_w_scaled      = int(plots_h * (img_guess.width / img_guess.height))
-                img_guess_scaled    = img_guess.resize((guess_w_scaled, plots_h), Image.Resampling.LANCZOS)
+                plots_w, plots_h    = w, h + 10 + h
+                img_plots           = Image.new("RGB", (plots_w, plots_h), "white")
 
-                plots_w     = img_song.width + 10 + guess_w_scaled
-                plots_img   = Image.new("RGB", (plots_w, plots_h), "white")
+                img_plots.paste(img_song,           (0, 0))
+                img_plots.paste(img_guess_scaled,   (0, h + 10))
 
-                plots_img.paste(img_song, (0, 0))
-                plots_img.paste(img_guess_scaled, (img_song.width + 10, 0))
+        if img_plots:
+            plots_out_p = path / "Plots.png"
+            img_plots.save(plots_out_p, compress_level = 9, optimize = True)
 
-            if plots_img:
-                plots_out_p = path / "Plots.png"
-                plots_img.save(plots_out_p, compress_level = 9, optimize = True)
+            try     : trim_whitespace(plots_out_p)
+            except  : pass
 
-                try     : trim_whitespace(plots_out_p)
-                except  : pass
-
-                plots_img = Image.open(plots_out_p)
+            img_plots = Image.open(plots_out_p)
 
         left_components = [img_tour]
 
@@ -3077,51 +2925,49 @@ class TourAnalyzer:
         left_h_raw  = sum(img.height   for img in left_components) + total_gaps
         left_w_max  = max(img.width    for img in left_components)
 
-        if plots_img:
-            plots_aspect        = plots_img.width / plots_img.height
+        if img_plots:
+            plots_aspect        = img_plots.width / img_plots.height
             plots_h_scaled      = left_h_raw
             plots_w_scaled      = int(plots_h_scaled * plots_aspect)
-            plots_img_scaled    = plots_img.resize((plots_w_scaled, plots_h_scaled), Image.Resampling.LANCZOS)
+            img_plots_scaled    = img_plots.resize((plots_w_scaled, plots_h_scaled), Image.Resampling.LANCZOS)
 
         else: plots_w_scaled = 0
 
-        w_extra     = left_w_max + (gap_size + plots_w_scaled if plots_img else 0)
+        w_extra     = left_w_max + (gap_size + plots_w_scaled if img_plots else 0)
         h_extra     = left_h_raw
-        extra_img   = Image.new("RGB", (w_extra, h_extra), "white")
+        img_extra   = Image.new("RGB", (w_extra, h_extra), "white")
         current_y   = 0
 
         for img in left_components:
             centered_x = (left_w_max - img.width) // 2
-            extra_img.paste(img, (centered_x, current_y))
+            img_extra.paste(img, (centered_x, current_y))
             current_y += img.height + gap_size
 
-        if plots_img: extra_img.paste(plots_img_scaled, (left_w_max + gap_size, 0))
+        if img_plots: img_extra.paste(img_plots_scaled, (left_w_max + gap_size, 0))
         extra_out_p = path / "Extra.png"
-        extra_img.save(extra_out_p, compress_level = 9, optimize = True)
+        img_extra.save(extra_out_p, compress_level = 9, optimize = True)
 
         try     : trim_whitespace(extra_out_p)
         except  : pass
 
-        extra_img = Image.open(extra_out_p)
+        img_extra = Image.open(extra_out_p)
         p_path = path / "Player.png"
 
         if p_path.exists():
-            img_player = Image.open(p_path)
-
+            img_player          = Image.open(p_path)
             player_aspect       = img_player.width / img_player.height
-            player_w_scaled     = extra_img.width
+            player_w_scaled     = img_extra.width
             player_h_scaled     = int(player_w_scaled / player_aspect)
             img_player_scaled   = img_player.resize((player_w_scaled, player_h_scaled), Image.Resampling.LANCZOS)
+            gen_w               = img_extra.width
+            gen_h               = player_h_scaled + 10 + img_extra.height
+            img_general         = Image.new("RGB", (gen_w, gen_h), "white")
 
-            gen_w = extra_img.width
-            gen_h = player_h_scaled + 10 + extra_img.height
-
-            general_img = Image.new("RGB", (gen_w, gen_h), "white")
-            general_img.paste(img_player_scaled, (0, 0))
-            general_img.paste(extra_img, (0, player_h_scaled + 10))
+            img_general.paste(img_player_scaled, (0, 0))
+            img_general.paste(img_extra, (0, player_h_scaled + 10))
 
             gen_out_p = path / "General.png"
-            general_img.save(gen_out_p, compress_level = 9, optimize = True)
+            img_general.save(gen_out_p, compress_level = 9, optimize = True)
 
             try     : trim_whitespace(gen_out_p)
             except  : pass
