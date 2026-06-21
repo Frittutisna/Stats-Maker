@@ -2290,6 +2290,61 @@ class TourAnalyzer:
             window.dispatchEvent(new Event('resize'));
         }}
 
+        // Add this helper near the top of your dashboard script tag
+        function get75PercentileHull(pts, xKey, yKey) {{
+            if (pts.length < 3) return null;
+
+            // 1. Calculate Center of Mass (Medians)
+            const xVals = pts.map(p => p[xKey]).sort((a,b) => a-b);
+            const yVals = pts.map(p => p[yKey]).sort((a,b) => a-b);
+            const medX = xVals[Math.floor(xVals.length / 2)];
+            const medY = yVals[Math.floor(yVals.length / 2)];
+
+            // 2. Normalize ranges for uniform distance calculations
+            const xRange = (Math.max(...xVals) - Math.min(...xVals)) || 1;
+            const yRange = (Math.max(...yVals) - Math.min(...yVals)) || 1;
+
+            // 3. Compute distances from Center of Mass
+            const withDist = pts.map(p => {{
+                const dx = (p[xKey] - medX) / xRange;
+                const dy = (p[yKey] - medY) / yRange;
+                return {{ p, d: Math.sqrt(dx*dx + dy*dy) }};
+            }});
+
+            // 4. Filter down to the 75th percentile packed group
+            const sortedDist = withDist.map(item => item.d).sort((a,b) => a-b);
+            const threshD = sortedDist[Math.floor(sortedDist.length * 0.75)];
+            const packedPts = withDist.filter(item => item.d < threshD).map(item => item.p);
+
+            if (packedPts.length < 3) return null;
+
+            // 5. Monotone Chain Convex Hull Algorithm
+            packedPts.sort((a, b) => a[xKey] == b[xKey] ? a[yKey] - b[yKey] : a[xKey] - b[xKey]);
+            
+            const lower = [];
+            for (let p of packedPts) {{
+                while (lower.length >= 2 && crossProduct(lower[lower.length-2], lower[lower.length-1], p) <= 0) lower.pop();
+                lower.push(p);
+            }}
+            const upper = [];
+            for (let i = packedPts.length - 1; i >= 0; i--) {{
+                let p = packedPts[i];
+                while (upper.length >= 2 && crossProduct(upper[upper.length-2], upper[upper.length-1], p) <= 0) upper.pop();
+                upper.push(p);
+            }}
+            upper.pop(); lower.pop();
+            const hull = lower.concat(upper);
+
+            function crossProduct(o, a, b) {{
+                return (a[xKey] - o[xKey]) * (b[yKey] - o[yKey]) - (a[yKey] - o[yKey]) * (b[xKey] - o[xKey]);
+            }}
+
+            return {{
+                x: hull.map(p => p[xKey]).concat(hull[0][xKey]),
+                y: hull.map(p => p[yKey]).concat(hull[0][yKey])
+            }};
+        }}
+
         function renderPlayerTable() {{
             const table = document.getElementById('playerStandingsTable');
             if(!players.length) return;
@@ -2621,46 +2676,85 @@ class TourAnalyzer:
             margin: {{ l: 60, r: 0, t: 30, b: 55 }}
         }}, {{responsive: true, displayModeBar: false}});
 
-        let lgTraces = [];
-        arrowData.forEach(d => {{
-            lgTraces.push({{
-                x: [d.x_start, d.x_end], y: [d.y_start, d.y_end],
-                type: 'scatter', mode: 'lines+markers',
-                marker: {{ size: [5, 12], symbol: ["circle", "triangle-up"], color: d.rig_gr, colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]], cmin: 0, cmax: 100 }},
-                line: {{ width: Math.max(1.5, d.gr * 0.05), color: col1 }},
-                hoverinfo: 'skip'
-            }});
-        }});
-        
-        lgTraces.push({{
-            x: arrowData.map(d => (d.x_start + d.x_end) / 2),
-            y: arrowData.map(d => (d.y_start + d.y_end) / 2),
+        // Replaced loop to remove lines/stripes and construct point markers with the new hover format
+        let lgTraces = [{{
+            x: arrowData.map(d => d.x_end),
+            y: arrowData.map(d => d.y_end),
             text: arrowData.map(d => d.acronym),
-            mode: 'markers+text', textposition: 'top center',
-            textfont: {{ family: 'Segoe UI', size: 13, weight: 'bold' }},
-            marker: {{ size: 0, color: arrowData.map(d => d.rig_gr), colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]], showscale: true, colorbar: {{ title: '<b>Rig GR</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, thickness: 25, side: 'right', tickfont: {{ family: 'Segoe UI', size: 20 }} }}, cmin: 0, cmax: 100 }},
-            hovertemplate: '<b>%{{text}}</b><extra></extra>'
-        }});
+            customdata: arrowData.map(d => [
+                d.name,                           // %{{customdata[0]}} - Full Name
+                d.x_end.toFixed(2),               // %{{customdata[1]}} - Mean Over-8
+                d.x_start.toFixed(2),             // %{{customdata[2]}} - Rig Over-8
+                d.seasonal_vintage_start,         // %{{customdata[3]}} - Rig Vintage (Median)
+                d.seasonal_vintage_end,           // %{{customdata[4]}} - Guess Vintage
+                d.gr.toFixed(2),                  // %{{customdata[5]}} - Guess Rate
+                d.rig_gr.toFixed(2)               // %{{customdata[6]}} - Rig Guess Rate
+            ]),
+            hovertemplate: 
+                '<b>%{{customdata[0]}}</b><br>' +
+                'Mean Over-8: %{{customdata[1]}}<br>' +
+                'Rig Over-8: %{{customdata[2]}}<br>' +
+                'Median Vintage: %{{customdata[3]}}<br>' +
+                'Guess Vintage: %{{customdata[4]}}<br>' +
+                'Guess Rate: %{{customdata[5]}}%<br>' +
+                'Rig Guess Rate: %{{customdata[6]}}%<extra></extra>',
+            mode: 'markers+text',
+            textposition: 'top center',
+            textfont: {{ family: 'Segoe UI', size: 15, weight: 'bold', color: 'black' }},
+            marker: {{
+                size: arrowData.map(d => Math.max(14, d.gr * 0.50)),
+                opacity: 1,
+                color: arrowData.map(d => d.rig_gr),
+                colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]],
+                showscale: true,
+                colorbar: {{
+                    title: {{ text: '<b>Rig GR</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }},
+                    thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
+                    tickmode: 'array', tickvals: [0, 70, 80, 90, 100], ticktext: ['0', '70', '80', '90', '100'],
+                    tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}
+                }},
+                line: {{ color: 'black', width: 1 }},
+                cmin: 0,
+                cmax: 100
+            }},
+            showlegend: false
+        }}];
 
         Plotly.newPlot('plotlyListGuessChart', lgTraces, {{
-            xaxis: {{ title: 'Over-8 Shift Variance' }}, yaxis: {{ title: 'Vintage timeline', tickformat: 'd' }},
+            xaxis: {{ title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, showgrid: true }},
+            yaxis: {{ title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, tickangle: -90, showgrid: true }},
+            margin: {{ l: 60, r: 0, t: 30, b: 55 }},
             showlegend: false
         }}, {{responsive: true, displayModeBar: false}});
 
         // 0. Titles removed. 1. Style configurations copied explicitly from Song (bold titles, rotation, preserved grid lines)
         // 4. textposition set to 'auto' enables smart native collision avoidance spacing inside Plotly engine
-        Plotly.newPlot('plotlyListChart', [{{
+        const listHull = get75PercentileHull(arrowData, 'x_start', 'y_start');
+        let listTraces = [];
+        
+        if (listHull) {{
+            listTraces.push({{
+                x: listHull.x,
+                y: listHull.y,
+                type: 'scatter',
+                mode: 'lines',
+                line: {{ color: 'black', width: 0.5, dash: 'solid' }},
+                hoverinfo: 'skip',
+                showlegend: false
+            }});
+        }}
+
+        listTraces.push({{
             x: arrowData.map(d => d.x_start),
             y: arrowData.map(d => d.y_start),
             text: arrowData.map(d => d.acronym),
             customdata: arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
-            // 3. Custom Hover formatting rules for List View Chart Trace
             hovertemplate: '<b>%{{customdata[0]}}</b><br>Rig Over-8: %{{customdata[1]}}<br>Rig Vintage: %{{customdata[2]}}<br>Rig Rate: %{{customdata[3]}}<br>Rig Guess Rate: %{{customdata[4]}}<extra></extra>',
             mode: 'markers+text', textposition: 'top inside',
             textfont: {{ family: 'Segoe UI', size: 15, weight: 'bold', color: 'black' }},
-            opacity: 1,
             marker: {{
                 size: arrowData.map(d => Math.max(14, d.gr * 0.50)),
+                opacity: 1,
                 color: arrowData.map(d => d.rig_gr),
                 colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]],
                 showscale: true, 
@@ -2672,7 +2766,9 @@ class TourAnalyzer:
                 }},
                 line: {{ color: 'black', width: 1 }}, cmin: 0, cmax: 100
             }}
-        }}], {{
+        }});
+
+        Plotly.newPlot('plotlyListChart', listTraces, {{
             xaxis: {{ title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, showgrid: true }},
             yaxis: {{ title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, tickangle: -90, showgrid: true }},
             margin: {{ l: 60, r: 0, t: 30, b: 55 }},
@@ -2680,7 +2776,22 @@ class TourAnalyzer:
 
         // 0. Titles removed. 1. Style configurations copied explicitly from Song (bold titles, rotation, preserved grid lines)
         // 4. textposition set to 'auto' enables smart native collision avoidance spacing inside Plotly engine
-        Plotly.newPlot('plotlyGuessChart', [{{
+        const guessHull = get75PercentileHull(scatterData, 'over8', 'vintage');
+        let guessTraces = [];
+
+        if (guessHull) {{
+            guessTraces.push({{
+                x: guessHull.x,
+                y: guessHull.y,
+                type: 'scatter',
+                mode: 'lines',
+                line: {{ color: 'black', width: 0.5, dash: 'solid' }},
+                hoverinfo: 'skip',
+                showlegend: false
+            }});
+        }}
+
+        guessTraces.push({{
             x: scatterData.map(d => d.over8),
             y: scatterData.map(d => d.vintage),
             text: scatterData.map(d => d.acronym),
@@ -2688,9 +2799,9 @@ class TourAnalyzer:
             hovertemplate: '<b>%{{customdata[0]}}</b><br>Mean Over-8: %{{customdata[1]}}<br>Median Vintage: %{{customdata[2]}}<br>Guess Rate: %{{customdata[3]}}<br>Performance: %{{customdata[4]}}<extra></extra>',
             mode: 'markers+text', textposition: 'top inside',
             textfont: {{ family: 'Segoe UI', size: 13, weight: 'bold', color: 'black' }},
-            opacity: 1,
             marker: {{
                 size: scatterData.map(d => Math.max(16, d.gr * 0.60)),
+                opacity: 1,
                 color: scatterData.map(d => d.performance),
                 colorscale: [[0, col0], [0.5, col1], [1, col2]],
                 showscale: true, 
@@ -2702,7 +2813,9 @@ class TourAnalyzer:
                 }},
                 line: {{ color: 'black', width: 1 }}, cmin: 0, cmax: 100
             }}
-        }}], {{
+        }});
+
+        Plotly.newPlot('plotlyGuessChart', guessTraces, {{
             xaxis: {{ title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, showgrid: true }},
             yaxis: {{ title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}, tickangle: -90, showgrid: true }},
             margin: {{ l: 60, r: 0, t: 30, b: 55 }}
