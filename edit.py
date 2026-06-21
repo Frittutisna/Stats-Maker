@@ -394,7 +394,7 @@ class JSONEditor(tk.Tk):
 
     def save_and_reload(self, success_message):
         try:
-            with open(self.output_path, "w", encoding = "utf-8") as f: json.dump(self.data, f, indent = 4, ensure_ascii = False)
+            with open(self.output_path, "w", encoding = "utf-8") as f: json.dump(self.data, f, ensure_ascii = False)
             messagebox.showinfo("Success", success_message)
             self.file_path = self.output_path
             with open(self.file_path, "r", encoding = "utf-8") as f: self.data = json.load(f)
