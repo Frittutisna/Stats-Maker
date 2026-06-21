@@ -1616,7 +1616,7 @@ class TourAnalyzer:
                     "Over-8 Delta": float(rig_over8 - avg_over8) if (pd.notnull(rig_over8) and pd.notnull(avg_over8)) else np.nan,
                     "Rig GR": float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
                     "Off GR": float((cor - self.p_rigs_h[name]) / (tot - self.p_rigs[name]) * 100) if (tot - self.p_rigs[name]) else np.nan,
-                    "Rig Delta": float((cor - self.p_rigs_h[name]) / cor * 100) if cor else np.nan,
+                    "Rig Delta": float((cor - self.p_rigs[name]) / cor * 100) if cor else np.nan,
                 })
 
             times = self.p_answer_times.get(name, [])
@@ -1697,7 +1697,6 @@ class TourAnalyzer:
             gr = (self.c_counts[win] / self.s_part[win]) * 100 if self.s_part[win] else 0
             return f"{win} ({val}{f', {gr:.2f}' if len(names) > 1 else ''})"
 
-        # --- UNROLLED: STRATEGIC TOUR STATISTICS MATRIX ---
         tour_stats_raw = [
             ["Median Vintage", format_year(round(np.median(self.all_vint), 2)) if self.all_vint else "N/A"],
             ["Mean Difficulty", f"{np.mean(self.all_diff):.2f}" if self.all_diff else "N/A"],
@@ -1742,7 +1741,6 @@ class TourAnalyzer:
                     "Shared Rigs": f"{np.mean(self.t_sh_rig[tid]) * 100:.2f}" if self.t_sh_rig[tid] else "N/A"
                 })
 
-        # --- UNROLLED: MERGED COMPREHENSIVE TIER STANDINGS PANEL ---
         tier_merged = []
         for tr in ["1", "2", "3", "4"]:
             tp = [n for n in self.s_part if n.lower() in self.assignments and self.assignments[n.lower()][1] == tr]
@@ -1843,6 +1841,26 @@ class TourAnalyzer:
 
         c0, c1, c2 = COLOR_0, COLOR_1, COLOR_2
 
+        explanations = {
+            "Player"        : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
+            "GR"            : "Guess Rate",
+            "UF"            : "Usefulness",
+            "Mean Over-8"   : "Average of correct guessers across songs this player guessed correctly",
+            "Lives Taken"   : "Count of points won against the opposing team; correct guessers exclusively on their team",
+            "Lives Saved"   : "Count of blocks achieved against the opposing team; lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
+            "OP GR"         : "Opening Guess Rate",
+            "ED GR"         : "Ending Guess Rate",
+            "IN GR"         : "Insert Guess Rate",
+            "Rig Over-8"    : "Average of correct guessers across songs from this player's list",
+            "Over-8 Delta"  : "Rig Over-8 - Mean Over-8",
+            "Rig GR"        : "Rig Guess Rate",
+            "Off GR"        : "Off-Rig Guess Rate",
+            "Rig Delta"     : "100 * (Correct - Rig) / Correct: Calculates this player's performance against their own list",
+            "Median Time"   : "Median guess time across songs this player guessed correctly",
+            "Chant GR"      : "Chanting Guess Rate"
+        }
+        json_explanations = json.dumps(explanations)
+
         html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1867,9 +1885,28 @@ class TourAnalyzer:
         .tab-btn.active-tab {{ color: #000000; border-bottom-color: #000000; background-color: #f3f4f6; }}
         .tab-content {{ display: none; }}
         .tab-content.active-content {{ display: block; }}
+
+        /* Dynamic Tooltip Frame Styling */
+        #customJsTooltip {{
+            position: absolute;
+            display: none;
+            background-color: #1e293b;
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 16px;
+            max-width: 320px;
+            z-index: 99999;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            pointer-events: none;
+            line-height: 1.4;
+            border: 1px solid #475569;
+        }}
     </style>
 </head>
 <body class="p-6">
+    <div id="customJsTooltip"></div>
+
     <h2 class="text-5xl font-bold text-center mt-4 mb-6">{prefix}</h2>
     
     <div class="max-w-[1800px] mx-auto border-b border-gray-300 flex flex-wrap justify-center gap-2 mb-8">
@@ -1937,11 +1974,11 @@ class TourAnalyzer:
         const groupBorders = {json_borders};
         const eligibility = {json_eligibility};
         const hlRules = {json_hl_rules};
+        const colExplanations = {json_explanations};
 
         const col0 = "{c0}", col1 = "{c1}", col2 = "{c2}";
         const colBorders = new Set(["Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier"]);
 
-        // --- INTERACTIVE NAVIGATION PANEL CONTROLLER ---
         function switchDashboardTab(evt, tabId) {{
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active-tab'));
@@ -1949,7 +1986,6 @@ class TourAnalyzer:
             document.getElementById(tabId).classList.add('active-content');
             evt.currentTarget.classList.add('active-tab');
             
-            // Re-trigger layout calculations to update width parameters inside current tab view bounds
             window.dispatchEvent(new Event('resize'));
         }}
 
@@ -1960,7 +1996,8 @@ class TourAnalyzer:
             let headers = Object.keys(players[0]);
             let thead = "<thead><tr>" + headers.map(h => {{
                 let styleStr = colBorders.has(h) ? ' class="border-col-group"' : '';
-                return `<th${{styleStr}}>${{h.replace(' ', '<br>')}}</th>`;
+                // Dynamic mapping matching explicit dictionary tracking IDs
+                return `<th${{styleStr}} data-metric="${{h}}">${{h.replace(' ', '<br>')}}</th>`;
             }}).join('') + "</tr></thead>";
 
             let tbody = "<tbody>";
@@ -1985,6 +2022,41 @@ class TourAnalyzer:
                 tbody += "</tr>";
             }});
             table.innerHTML = thead + tbody + "</tbody>";
+            
+            setupTooltipListeners();
+        }}
+
+        // --- ACTIVE MOUSE CONTROLLER FOR FLOATING HOVER CARD ---
+        function setupTooltipListeners() {{
+            const tooltipNode = document.getElementById('customJsTooltip');
+            const tableHeaders = document.querySelectorAll('#playerStandingsTable th');
+
+            tableHeaders.forEach(th => {{
+                const metricKey = th.getAttribute('data-metric');
+                if (!colExplanations[metricKey]) return;
+
+                th.addEventListener('mouseenter', (e) => {{
+                    tooltipNode.innerHTML = colExplanations[metricKey];
+                    tooltipNode.style.display = 'block';
+                }});
+
+                th.addEventListener('mousemove', (e) => {{
+                    // Context layout window adjustment safety boundaries
+                    let xPos = e.pageX + 15;
+                    let yPos = e.pageY + 15;
+                    
+                    if (xPos + 320 > window.innerWidth + window.scrollX) {{
+                        xPos = e.pageX - 335;
+                    }}
+                    
+                    tooltipNode.style.left = xPos + 'px';
+                    tooltipNode.style.top = yPos + 'px';
+                }});
+
+                th.addEventListener('mouseleave', () => {{
+                    tooltipNode.style.display = 'none';
+                }});
+            }});
         }}
 
         function renderTourTable() {{
@@ -2001,7 +2073,7 @@ class TourAnalyzer:
             const table = document.getElementById('teamStatsTable');
             if(!table || !teamStats.length) return;
             let headers = Object.keys(teamStats[0]);
-            let thead = "<thead><tr>" + headers.map(h => `<th${{colBorders.has(h) ? ' class="border-col-group"':''}}>${{h.replace(' ', '<br>')}}</th>`).join('') + "</tr></thead><tbody>";
+            let thead = "<thead><tr>" + headers.map(h => `<th${{colBorders.has(h) ? ' class="border-col-group"':''}}>${{h.replace(' ', '<br>')}}</th>`).join('') + "</thead><tbody>";
             let tbody = "";
             teamStats.forEach(row => {{
                 tbody += "<tr>";
@@ -2019,7 +2091,7 @@ class TourAnalyzer:
             if(!tierStats.length) return;
 
             let headers = Object.keys(tierStats[0]);
-            let thead = "<thead><tr>" + headers.map(h => `<th${{colBorders.has(h)?' class="border-col-group"':''}}>${{h.replace(' ', '<br>')}}</th>`).join('') + "</tr></thead><tbody>";
+            let thead = "<thead><tr>" + headers.map(h => `<th${{colBorders.has(h)?' class="border-col-group"':''}}>${{h.replace(' ', '<br>')}}</th>`).join('') + "</thead><tbody>";
             let tbody = "";
             tierStats.forEach(r => {{
                 tbody += "<tr>" + headers.map(h => `<td class='${{colBorders.has(h)?"border-col-group":""}}'>${{h==="Tier"?`<b>${{r[h]}}</b>`:r[h]}}</td>`).join('') + "</tr>";
@@ -2032,9 +2104,6 @@ class TourAnalyzer:
         renderTeamTable();
         renderTierTable();
 
-        // ==========================================
-        // GRAPH INTERACTIVE DEFINITIONS
-        // ==========================================
         const matrixBins = {{}};
         songData.forEach(s => {{
             let xIdx = Math.min(Math.floor(s.difficulty / 10), 4);
