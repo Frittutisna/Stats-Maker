@@ -1569,6 +1569,16 @@ class TourAnalyzer:
         player_song_details = defaultdict(lambda: defaultdict(list))
         tour_song_details = defaultdict(list)
         team_song_details = defaultdict(lambda: defaultdict(list))
+        
+        # Track individual songs falling within specific granularity matrix bins
+        diffs = [s["difficulty"] for s in self.song_data]
+        max_diff = max(diffs) if diffs else 0
+        
+        # Dynamic step distribution layout mapping (Steps of 5 instead of 10)
+        num_x = 8 if max_diff < 40 else 9
+        num_y = 8 if max_diff < 40 else 9
+        
+        matrix_song_lists = defaultdict(list)
 
         # Re-iterate or track song data dynamically from the JSON paths to construct accurate maps
         for json_path in self.json_paths:
@@ -1620,6 +1630,25 @@ class TourAnalyzer:
                 # Filter down to tracked round participants
                 active_correct = correct & final_members
                 amt_correct = len(active_correct)
+
+                # Map song lines into structural coordinates mapping grid
+                try:
+                    vint = int(si.get("vintage", 0))
+                    raw_diff = si.get("animeDifficulty")
+                    safe_diff = float(raw_diff) if raw_diff is not None else 0.0
+                except:
+                    vint = 0
+                    safe_diff = 0.0
+
+                if vint > 0:
+                    x_idx = min(int(math.floor(safe_diff / 5)), num_x - 1)
+                    if num_y == 8:
+                        y_idx = 0 if vint < 1990 else min(int(math.floor((vint - 1990) / 5)) + 1, 7)
+                    else:
+                        y_idx = min(max(int(math.floor((vint - 1985) / 5)), 0), 8)
+                    
+                    matrix_key = f"{x_idx}-{y_idx}"
+                    matrix_song_lists[matrix_key].append(song_line)
 
                 # Track tour total groupings
                 if amt_correct == 0:
@@ -2035,6 +2064,7 @@ class TourAnalyzer:
         json_team_hl_rules = json.dumps(team_hl_rules)
         json_tier_merged = json.dumps(tier_merged)
         json_songs = json.dumps(song_matrix_list)
+        json_matrix_songs = json.dumps(matrix_song_lists)
         json_scatter = json.dumps(scatter_list)
         json_arrows = json.dumps(arrow_list)
 
@@ -2118,7 +2148,7 @@ class TourAnalyzer:
         <button class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
         {"<button class='tab-btn' onclick='switchDashboardTab(event, \"team-tab\")'>Team</button>" if use_teams else ""}
         <button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song ⚠︎</button>
+        <button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess ⚠︎</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List ⚠︎</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'listguess-tab')">List → Guess ⚠︎</button>
@@ -2143,8 +2173,8 @@ class TourAnalyzer:
         </div>
 
         <div id="song-tab" class="tab-content">
-            <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
-                <div id="plotlySongChart" style="width:100%; height:750px;"></div>
+            <div class="max-w-[950px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
+                <div id="plotlySongChart" style="width:100%; height:820px;"></div>
             </div>
         </div>
 
@@ -2174,6 +2204,7 @@ class TourAnalyzer:
         const teamHlRules = {json_team_hl_rules};
         const tierStats = {json_tier_merged};
         const songData = {json_songs};
+        const matrixSongs = {json_matrix_songs};
         const scatterData = {json_scatter};
         const arrowData = {json_arrows};
         const groupBorders = {json_borders};
@@ -2430,42 +2461,103 @@ class TourAnalyzer:
         renderTierTable();
         setupTooltipListeners();
 
+        // 6. Restructure Matrix bins with an updated 5-interval step matching configuration criteria (8x8 or 9x9 Layout)
+        const numX = {num_x}, numY = {num_y};
+        const xLabels = (numX === 8) ? ['5', '10', '15', '20', '25', '30', '35'] : ['5', '10', '15', '20', '25', '30', '35', '40'];
+        const yLabels = (numY === 8) ? [1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025] : [1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025];
+
         const matrixBins = {{}};
         songData.forEach(s => {{
-            let xIdx = Math.min(Math.floor(s.difficulty / 10), 4);
-            let yBin = Math.floor(s.vintage / 10) * 10;
-            let key = `${{xIdx * 10}}-${{yBin}}`;
+            let xIdx = Math.min(Math.floor(s.difficulty / 5), numX - 1);
+            let yIdx = 0;
+            if (numY === 8) {{
+                yIdx = (s.vintage < 1990) ? 0 : Math.min(Math.floor((s.vintage - 1990) / 5) + 1, 7);
+            }} else {{
+                yIdx = Math.min(Math.max(Math.floor((s.vintage - 1985) / 5), 0), 8);
+            }}
+            let key = `${{xIdx}}-${{yIdx}}`;
             if(!matrixBins[key]) matrixBins[key] = {{ count: 0, over8Sum: 0 }};
             matrixBins[key].count++;
             matrixBins[key].over8Sum += s.correct_count;
         }});
 
-        const xLabels = ['0-9', '10-19', '20-29', '30-39', '40+'];
-        const yLabels = [1990, 2000, 2010, 2020];
-        let zValues = [], textLabels = [];
+        let zValues = [], textLabels = [], annotations = [];
 
-        for(let i=0; i<yLabels.length; i++) {{
+        for(let i=0; i<numY; i++) {{
             let rowZ = [], rowText = [];
-            for(let j=0; j<xLabels.length; j++) {{
-                let key = `${{j * 10}}-${{yLabels[i]}}`;
+            for(let j=0; j<numX; j++) {{
+                let key = `${{j}}-${{i}}`;
                 if(matrixBins[key]) {{
                     let val = matrixBins[key].over8Sum / matrixBins[key].count;
                     rowZ.push(val);
-                    rowText.push(`<b>Count:</b> ${{matrixBins[key].count}}<br><b>Avg Over-8:</b> ${{val.toFixed(2)}}`);
-                }} else {{ rowZ.push(null); rowText.push(''); }}
+                    
+                    rowText.push(`Mean Over-8: ${{val.toFixed(2)}}`);
+
+                    // 2 & 3. Make in-cell numbers bigger and bold
+                    annotations.push({{
+                        x: j, y: i,
+                        text: `<b>${{matrixBins[key].count}}</b>`,
+                        font: {{ family: 'Segoe UI', size: (numX <= 8 ? 55 : 48), color: 'white' }},
+                        showarrow: false,
+                        captureevents: false // 1. Pass pointer interactions through to underlying trace so hovers trigger cleanly
+                    }});
+                }} else {{ 
+                    rowZ.push(null); 
+                    rowText.push(''); 
+                }}
             }}
             zValues.push(rowZ);
             textLabels.push(rowText);
         }}
 
         Plotly.newPlot('plotlySongChart', [{{
-            z: zValues, x: xLabels, y: yLabels, text: textLabels, hoverinfo: 'text',
-            type: 'heatmap', colorscale: [[0, col0], [0.5, col1], [1, col2]], showscale: true,
-            colorbar: {{ title: 'Over-8 Count Scale', thickness: 18 }}
+            z: zValues,
+            x: Array.from({{length: numX}}, (_, i) => i),
+            y: Array.from({{length: numY}}, (_, i) => i),
+            text: textLabels, 
+            // FIXED: Using properly escaped %{{text}} and double braces for the trace object
+            hovertemplate: '%{{text}}<extra></extra>', 
+            type: 'heatmap', 
+            colorscale: [[0, col0], [0.375, col1], [0.625, col2], [1, col2]], 
+            zmin: 0, 
+            zmax: 8,
+            showscale: true,
+            colorbar: {{
+                title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }},
+                thickness: 25,
+                len: 1.0,
+                y: 0.5,
+                yanchor: 'middle',
+                x: 1,
+                xpad: -20,
+                tickmode: 'array',
+                tickvals: [0, 3, 5, 8],
+                ticktext: ['0', '3', '5', '8'],
+                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }}
+            }}
         }}], {{
-            title: {{ text: '<b>Song Matrix Spectrum</b>', font: {{ family: 'Segoe UI', size: 24 }} }},
-            xaxis: {{ title: 'Difficulty', font: {{ size: 16 }} }},
-            yaxis: {{ title: 'Vintage', tickmode: 'array', tickvals: yLabels, font: {{ size: 16 }} }}
+            xaxis: {{
+                // FIXED: Reduced pad to 2 to slide 'Difficulty' title up
+                title: {{ text: '<b>Difficulty</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }},
+                tickmode: 'array',
+                tickvals: Array.from({{length: numX - 1}}, (_, i) => i + 0.5),
+                ticktext: xLabels,
+                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }},
+                showgrid: false, zeroline: false, showticklabels: true, ticks: ''
+            }},
+            yaxis: {{
+                // FIXED: Reduced pad to 2 to pull 'Vintage' title closer to the ticks
+                title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black' }}, pad: 5 }},
+                tickmode: 'array',
+                tickvals: Array.from({{length: numY - 1}}, (_, i) => i + 0.5),
+                ticktext: yLabels,
+                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black' }},
+                tickangle: -90,
+                showgrid: false, zeroline: false, showticklabels: true, ticks: ''
+            }},
+            annotations: annotations,
+            // FIXED: Tightened left (l) and bottom (b) chart canvas margins
+            margin: {{ l: 60, r: 0, t: 30, b: 55 }}
         }}, {{responsive: true, displayModeBar: false}});
 
         let lgTraces = [];
@@ -2525,7 +2617,7 @@ class TourAnalyzer:
             marker: {{
                 size: scatterData.map(d => Math.max(16, d.gr * 0.60)),
                 color: scatterData.map(d => d.rig_gr),
-                colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]],
+                colorscale: [[0, col0], [0.5, col1], [1, col2]],
                 showscale: true, colorbar: {{ title: 'Performance Index', thickness: 18 }},
                 line: {{ color: 'black', width: 1 }}, cmin: 0, cmax: 100
             }}
