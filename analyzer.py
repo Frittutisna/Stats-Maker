@@ -1901,11 +1901,13 @@ class TourAnalyzer:
                 yl = np.median(self.p_l_vint[name]) if self.p_l_vint[name] else np.nan
                 yg = np.median(self.p_c_vint[name]) if self.p_c_vint[name] else np.nan
                 
-                p_vints = raw_vintages_by_player.get(name, [])
-                p_seas = format_year(np.median([extract_year(v) for v in p_vints])) if p_vints else f"Winter {int(yg)}" if pd.notnull(yg) else "N/A"
+                p_vints     = raw_vintages_by_player.get(name, [])
+                p_vint_med  = np.median([extract_year(v) for v in p_vints]) if p_vints else (yg if pd.notnull(yg) else 2010)
+                p_seas      = format_year(p_vint_med) if p_vints else f"Winter {int(yg)}" if pd.notnull(yg) else "N/A"
                 
-                r_vints = raw_vintages_by_rig.get(name, [])
-                r_seas = format_year(np.median([extract_year(v) for v in r_vints])) if r_vints else f"Winter {int(yl)}" if pd.notnull(yl) else "N/A"
+                r_vints     = raw_vintages_by_rig.get(name, [])
+                r_vint_med  = np.median([extract_year(v) for v in r_vints]) if r_vints else (yl if pd.notnull(yl) else 2010)
+                r_seas      = format_year(r_vint_med) if r_vints else f"Winter {int(yl)}" if pd.notnull(yl) else "N/A"
 
                 # Compute performance index matching SCALE_PERF logic precisely
                 tot = self.s_part[name]
@@ -1921,7 +1923,7 @@ class TourAnalyzer:
                     "acronym": self._get_player_acronym(name),
                     "name": name,
                     "over8": float(self.p_overs_sum[name] / self.c_counts[name]),
-                    "vintage": int(yg) if pd.notnull(yg) else 2010,
+                    "vintage": float(p_vint_med),
                     "seasonal_vintage": p_seas,
                     "gr": float(self.c_counts[name] / self.s_part[name] * 100) if self.s_part[name] else 0.0,
                     "rig_gr": float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else 0.0,
@@ -1935,7 +1937,7 @@ class TourAnalyzer:
                         "acronym": base_node["acronym"],
                         "name": name,
                         "x_start": float(np.mean(self.p_l_corr[name])),
-                        "y_start": int(yl),
+                        "y_start": float(r_vint_med),
                         "seasonal_vintage_start": r_seas,
                         "x_end": base_node["over8"],
                         "y_end": base_node["vintage"],
@@ -2645,6 +2647,7 @@ class TourAnalyzer:
 </html>
 """
         with open(path / "Dashboard.html", "w", encoding="utf-8") as f: f.write(html_content)
+        print(f"Push to GitHub to update the online Dashboard: https://raw.githack.com/Frittutisna/Stats-Maker/main/tour/{self.tour_id}/hakohoka/Dashboard.html")
 
     def _export_png(self, df, path, fname, title, mask = None, val_str = "default"):
         if not self.browser_path: return
