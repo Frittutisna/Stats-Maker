@@ -2454,31 +2454,48 @@ class TourAnalyzer:
 
         let zValues = [], textLabels = [], annotations = [];
 
-        for(let i=0; i<numY; i++) {{
-            let rowZ = [], rowText = [];
-            for(let j=0; j<numX; j++) {{
+        for (let i = 0; i < numY; i++) {{
+            let let_rowZ = [];
+            let let_rowText = [];
+            for (let j = 0; j < numX; j++) {{
                 let key = `${{j}}-${{i}}`;
-                if(matrixBins[key]) {{
+                if (key in matrixBins) {{
                     let val = matrixBins[key].over8Sum / matrixBins[key].count;
-                    rowZ.push(val);
+                    let_rowZ.push(val);
                     
-                    rowText.push(`Mean Over-8: ${{val.toFixed(2)}}`);
+                    // 1. Pull list of match strings belonging to this bin
+                    let bin_songs = matrixSongs[key] ? [...matrixSongs[key]] : [];
+                    let song_hover_str = "";
+                    
+                    if (bin_songs.length > 10) {{
+                        // Randomly sample 10 items using JavaScript math
+                        bin_songs = bin_songs
+                            .sort(() => Math.random() - 0.5)
+                            .slice(0, 10);
+                        bin_songs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                        song_hover_str = "<br>• " + bin_songs.join("<br>• ") + "<br>and more";
+                    }} else if (bin_songs.length > 0) {{
+                        bin_songs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                        song_hover_str = "<br>• " + bin_songs.join("<br>• ");
+                    }}
 
-                    // 2 & 3. Make in-cell numbers bigger and bold
+                    // 2. Append text layout formatting variables
+                    let_rowText.push(`Mean Over-8: ${{val.toFixed(2)}}${{song_hover_str}}`);
+
                     annotations.push({{
-                        x: j, y: i,
-                        text: `<b>${{matrixBins[key].count}}</b>`,
-                        font: {{ family: 'Segoe UI', size: (numX <= 8 ? 55 : 48), color: 'white' }},
-                        showarrow: false,
-                        captureevents: false // 1. Pass pointer interactions through to underlying trace so hovers trigger cleanly
+                        "x": j, "y": i,
+                        "text": `<b>${{matrixBins[key].count}}</b>`,
+                        "font": {{ "family": 'Segoe UI', "size": (numX > 8 ? 48 : 55), "color": 'white' }},
+                        "showarrow": false,
+                        "captureevents": false
                     }});
                 }} else {{ 
-                    rowZ.push(null); 
-                    rowText.push(''); 
+                    let_rowZ.push(null); 
+                    let_rowText.push(''); 
                 }}
             }}
-            zValues.push(rowZ);
-            textLabels.push(rowText);
+            zValues.push(let_rowZ);
+            textLabels.push(let_rowText);
         }}
 
         Plotly.newPlot('plotlySongChart', [{{
@@ -2486,7 +2503,8 @@ class TourAnalyzer:
             x: Array.from({{length: numX}}, (_, i) => i),
             y: Array.from({{length: numY}}, (_, i) => i),
             text: textLabels, 
-            hovertemplate: '%{{text}}<extra></extra>', 
+            hovertemplate: '<span style="text-align: left; display: block;">%{{text}}</span><extra></extra>',
+            hoverlabel: {{ align: 'left' }},
             type: 'heatmap', 
             colorscale: [[0, col0], [0.375, col1], [0.625, col2], [1, col2]], 
             zmin: 0, 
@@ -2512,7 +2530,7 @@ class TourAnalyzer:
                 tickvals: Array.from({{length: numX - 1}}, (_, i) => i + 0.5),
                 ticktext: xLabels,
                 tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }},
-                showgrid: false, zeroline: false, showticklabels: true, ticks: ''
+                showgrid: true, zeroline: false, showticklabels: true, ticks: ''
             }},
             yaxis: {{
                 title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }},
@@ -2521,7 +2539,7 @@ class TourAnalyzer:
                 ticktext: yLabels,
                 tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }},
                 tickangle: -90,
-                showgrid: false, zeroline: false, showticklabels: true, ticks: ''
+                showgrid: true, zeroline: false, showticklabels: true, ticks: ''
             }},
             annotations: annotations,
             margin: {{ l: 60, r: 0, t: 30, b: 55 }}
@@ -2551,7 +2569,8 @@ class TourAnalyzer:
             customdata: arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
             hovertemplate: '<b>%{{customdata[0]}}</b><br>Rig Over-8: %{{customdata[1]}}<br>Rig Vintage: %{{customdata[2]}}<br>Rig Rate: %{{customdata[3]}}<br>Rig Guess Rate: %{{customdata[4]}}<extra></extra>',
             mode: 'markers+text', textposition: 'top inside',
-            textfont: {{ family: 'Segoe UI', size: 15, weight: 'bold', color: 'black' }},
+            textfont: {{ family: 'Segoe UI', size: 20, weight: 'bold', color: 'black' }},
+            showlegend: false,
             marker: {{
                 size: arrowData.map(d => Math.max(14, d.gr * 0.50)),
                 opacity: 1,
@@ -2598,7 +2617,8 @@ class TourAnalyzer:
             customdata: scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), d.performance.toFixed(2)]),
             hovertemplate: '<b>%{{customdata[0]}}</b><br>Mean Over-8: %{{customdata[1]}}<br>Median Vintage: %{{customdata[2]}}<br>Guess Rate: %{{customdata[3]}}<br>Performance: %{{customdata[4]}}<extra></extra>',
             mode: 'markers+text', textposition: 'top inside',
-            textfont: {{ family: 'Segoe UI', size: 13, weight: 'bold', color: 'black' }},
+            textfont: {{ family: 'Segoe UI', size: 20, weight: 'bold', color: 'black' }},
+            showlegend: false,
             marker: {{
                 size: scatterData.map(d => Math.max(16, d.gr * 0.60)),
                 opacity: 1,
@@ -2624,8 +2644,7 @@ class TourAnalyzer:
 </body>
 </html>
 """
-        with open(path / "Dashboard.html", "w", encoding="utf-8") as f:
-            f.write(html_content)
+        with open(path / "Dashboard.html", "w", encoding="utf-8") as f: f.write(html_content)
 
     def _export_png(self, df, path, fname, title, mask = None, val_str = "default"):
         if not self.browser_path: return
