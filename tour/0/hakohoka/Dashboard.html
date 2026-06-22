@@ -62,12 +62,23 @@
 
         <div id="guess-tab" class="tab-content">
             <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
+                <div class="mb-4 text-sm text-gray-800 space-y-1">
+                    <p><b>X-Axis:</b> Mean of correct guessers across songs this player guessed correctly</p>
+                    <p><b>Y-Axis:</b> Median vintage across songs this player guessed correctly</p>
+                    <p><b>Size (Guess Rate)</b></p>
+                    <p><b>Color:</b> Calculates this player's value (Usefulness) against what's expected from their Elo; 50 means this player is playing to expectations</p>
+                </div>
                 <div id="plotlyGuessChart" style="width:100%; height:750px;"></div>
             </div>
         </div>
 
         <div id="list-tab" class="tab-content">
             <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
+                <div class="mb-4 text-sm text-gray-800 space-y-1">
+                    <p><b>X-Axis:</b> Mean of correct guessers across songs from this player's list</p>
+                    <p><b>Y-Axis:</b> Median vintage across songs from this player's list</p>
+                    <p><b>Size (Rig Guess Rate)</b></p>
+                </div>
                 <div id="plotlyListChart" style="width:100%; height:750px;"></div>
             </div>
         </div>

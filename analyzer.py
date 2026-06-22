@@ -2275,12 +2275,23 @@ class TourAnalyzer:
 
         <div id="guess-tab" class="tab-content">
             <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
+                <div class="mb-4 text-sm text-gray-800 space-y-1">
+                    <p><b>X-Axis:</b> Mean of correct guessers across songs this player guessed correctly</p>
+                    <p><b>Y-Axis:</b> Median vintage across songs this player guessed correctly</p>
+                    <p><b>Size (Guess Rate)</b></p>
+                    <p><b>Color:</b> Calculates this player's value (Usefulness) against what's expected from their Elo; 50 means this player is playing to expectations</p>
+                </div>
                 <div id="plotlyGuessChart" style="width:100%; height:750px;"></div>
             </div>
         </div>
 
         <div id="list-tab" class="tab-content">
             <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
+                <div class="mb-4 text-sm text-gray-800 space-y-1">
+                    <p><b>X-Axis:</b> Mean of correct guessers across songs from this player's list</p>
+                    <p><b>Y-Axis:</b> Median vintage across songs from this player's list</p>
+                    <p><b>Size (Rig Guess Rate)</b></p>
+                </div>
                 <div id="plotlyListChart" style="width:100%; height:750px;"></div>
             </div>
         </div>
@@ -3058,11 +3069,11 @@ listTraces.push({{
     text: arrowData.map(d => d.acronym),
     customdata: arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
     hovertemplate: '<b>%{{customdata[0]}}</b><br>Rig Over-8: %{{customdata[1]}}<br>Rig Vintage: %{{customdata[2]}}<br>Rig Rate: %{{customdata[3]}}<br>Rig Guess Rate: %{{customdata[4]}}<extra></extra>',
-    mode: 'markers+text', textposition: 'top inside',
+    mode: 'markers+text', textposition: 'top center',
     textfont: {{ family: 'Segoe UI', size: 20, weight: 'bold', color: 'black' }},
     showlegend: false,
     marker: {{
-        size: arrowData.map(d => Math.max(14, d.gr * 0.50)),
+        size: arrowData.map(d => Math.max(25, Math.pow(d.rig_rate, 2) * 0.025)),
         opacity: 1,
         color: arrowData.map(d => d.grid_grs || d.rig_gr),
         colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]],
@@ -3119,11 +3130,11 @@ guessTraces.push({{
     text: scatterData.map(d => d.acronym),
     customdata: scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), d.performance.toFixed(2)]),
     hovertemplate: '<b>%{{customdata[0]}}</b><br>Mean Over-8: %{{customdata[1]}}<br>Median Vintage: %{{customdata[2]}}<br>Guess Rate: %{{customdata[3]}}<br>Score: %{{customdata[4]}}<extra></extra>',
-    mode: 'markers+text', textposition: 'top inside',
+    mode: 'markers+text', textposition: 'top center',
     textfont: {{ family: 'Segoe UI', size: 20, weight: 'bold', color: 'black' }},
     showlegend: false,
     marker: {{
-        size: scatterData.map(d => Math.max(16, d.gr * 0.60)),
+        size: scatterData.map(d => Math.max(25, Math.pow(d.gr, 2) * 0.025)),
         opacity: 1,
         color: scatterData.map(d => d.performance),
         colorscale: [[0, col0], [0.5, col1], [1, col2]],
