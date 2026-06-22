@@ -706,7 +706,7 @@ class TourAnalyzer:
 
     def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, new_players, val_str):
         rows, eligibility   = [], []
-        t_labels            = {1: "OP GR", 2: "ED GR", 3: "IN GR"}
+        t_labels            = {1: "OP Guess Rate", 2: "ED Guess Rate", 3: "IN Guess Rate"}
         active              = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
 
         if len(active) <= 1 : active = []
@@ -735,9 +735,9 @@ class TourAnalyzer:
 
             row = {"Player": d_name}
             if use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
-            avg_over8 = self.p_overs_sum[name] / cor if cor else np.nan
-            row.update({"GR": cor / tot if tot else 0})
+            row.update({"Guess Rate": cor / tot if tot else 0})
             if use_teams: row.update({"UF": (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0})
+            avg_over8 = self.p_overs_sum[name] / cor if cor else np.nan
             row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name], "Mean Over-8": avg_over8})
             if use_teams: row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
 
@@ -749,22 +749,22 @@ class TourAnalyzer:
                 rig_over8 = np.mean(self.p_l_corr[name]) if self.p_l_corr[name] else np.nan
 
                 row.update({
-                    "Rigs"          : self.p_rigs[name],
-                    "Rig Rate"      : self.p_rigs[name]             / tot                       if tot                          else np.nan,
-                    "Solo Rigs"     : self.p_l_solos[name],
-                    "Solo Rig Rate" : self.p_l_solos[name]          / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
-                    "Rig Over-8"    : rig_over8,
-                    "Over-8 Delta"  : rig_over8 - avg_over8,
-                    "Rig GR"        : self.p_rigs_h[name]           / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
-                    "Off GR"        : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
-                    "Rig Delta"     : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
+                    "Rigs"              : self.p_rigs[name],
+                    "Rig Rate"          : self.p_rigs[name]             / tot                       if tot                          else np.nan,
+                    "Solo Rigs"         : self.p_l_solos[name],
+                    "Solo Rig Rate"     : self.p_l_solos[name]          / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
+                    "Rig Over-8"        : rig_over8,
+                    "Over-8 Delta"      : rig_over8 - avg_over8,
+                    "Rig Guess Rate"    : self.p_rigs_h[name]           / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
+                    "Off Guess Rate"    : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
+                    "Rig Delta"         : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
                 })
 
             times       = self.p_answer_times.get(name, [])
             seen_chan   = self.p_chan_s[name]
 
-            row["Median Time"]  = np.median(times) if times else np.nan
-            row["Chant GR"]     = self.p_chan_c[name] / seen_chan if seen_chan else np.nan
+            row["Median Time"]      = np.median(times) if times else np.nan
+            row["Chant Guess Rate"] = self.p_chan_c[name] / seen_chan if seen_chan else np.nan
 
             rows.append(row)
 
@@ -772,12 +772,12 @@ class TourAnalyzer:
 
         if "Elo" in df.columns:
             df["_sort_elo"] = pd.to_numeric(df["Elo"], errors = 'coerce')
-            df = df.sort_values(by=["GR", "_sort_elo"], ascending = [False, True]).drop(columns = ["_sort_elo"])
+            df = df.sort_values(by=["Guess Rate", "_sort_elo"], ascending = [False, True]).drop(columns = ["_sort_elo"])
 
-        else: df = df.sort_values("GR", ascending = False)
-            
+        else: df = df.sort_values("Guess Rate", ascending = False)
+
         mask = pd.Series(eligibility, index = pd.DataFrame(rows).index).reindex(df.index).values
-        pcts = ["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"]
+        pcts = ["Guess Rate"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Delta", "Rig Guess Rate", "Off Guess Rate"] if watched else []) + ["Chant Guess Rate"]
 
         if "Elo"            in df.columns: df["Elo"]            = pd.to_numeric(df["Elo"],          errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "UF"             in df.columns: df["UF"]             = pd.to_numeric(df["UF"],           errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -1422,7 +1422,7 @@ class TourAnalyzer:
     def _create_dashboard_html(self, path, use_teams, watched):
         rows = []
         eligibility = []
-        t_labels = {1: "OP GR", 2: "ED GR", 3: "IN GR"}
+        t_labels = {1: "OP Guess Rate", 2: "ED Guess Rate", 3: "IN Guess Rate"}
         active = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
         if len(active) <= 1: active = []
 
@@ -1623,7 +1623,7 @@ class TourAnalyzer:
                 except: row["Elo"] = np.nan
             
             row.update({
-                "GR": float(cor / tot * 100) if tot else 0.0,
+                "Guess Rate": float(cor / tot * 100) if tot else 0.0,
                 "UF": float((self.p_usefulness_sum[name] * avg_rank * 8) / tot) if tot else 0.0,
                 "1/8s": int(self.e_counts[name]),
                 "2/8s": int(self.p_two_e[name]),
@@ -1647,8 +1647,8 @@ class TourAnalyzer:
                     "Solo Rig Rate": float(self.p_l_solos[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
                     "Rig Over-8": float(rig_over8) if pd.notnull(rig_over8) else np.nan,
                     "Over-8 Delta": float(rig_over8 - avg_over8) if (pd.notnull(rig_over8) and pd.notnull(avg_over8)) else np.nan,
-                    "Rig GR": float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
-                    "Off GR": float((cor - self.p_rigs_h[name]) / (tot - self.p_rigs_h[name]) * 100) if (tot - self.p_rigs[name]) else np.nan,
+                    "Rig Guess Rate": float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
+                    "Off Guess Rate": float((cor - self.p_rigs_h[name]) / (tot - self.p_rigs_h[name]) * 100) if (tot - self.p_rigs[name]) else np.nan,
                     "Rig Delta": float((cor - self.p_rigs[name]) / cor * 100) if cor else np.nan,
                 })
 
@@ -1657,7 +1657,7 @@ class TourAnalyzer:
             med_time = np.median(times) if times else np.nan
             row["Median Time"] = float(med_time) if pd.notnull(med_time) else np.nan
             chant_gr = (self.p_chan_c[name] / seen_chan * 100) if seen_chan else np.nan
-            row["Chant GR"] = float(chant_gr) if pd.notnull(chant_gr) else np.nan
+            row["Chant Guess Rate"] = float(chant_gr) if pd.notnull(chant_gr) else np.nan
             
             # Map structural components into JSON row cells as structured data payloads
             for key in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]:
@@ -1677,12 +1677,12 @@ class TourAnalyzer:
         df_players = pd.DataFrame(rows)
 
         borders = []
-        if "GR" in df_players.columns and "Eru" not in self.tour_label:
+        if "Guess Rate" in df_players.columns and "Eru" not in self.tour_label:
             th_val = self.val_str if self.val_str != "default" else ("28, 18, 12, 6" if watched else "28, 19, 8")
             try: th = [float(x.strip()) for x in th_val.split(",")] if th_val else []
             except: th = [28.0, 18.0, 12.0, 6.0]
             
-            gv = df_players["GR"].tolist()
+            gv = df_players["Guess Rate"].tolist()
             for t in th:
                 f_idx = -1
                 for i, v in enumerate(gv):
@@ -1690,16 +1690,16 @@ class TourAnalyzer:
                 if f_idx != -1 and f_idx < len(df_players) - 1: borders.append(int(f_idx))
 
         desc_cols = [
-            "Elo", "GR", "UF", "1/8s", "2/8s", "Lives Taken", "Lives Saved", 
-            "OP GR", "ED GR", "IN GR", "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate", "Over-8 Delta", 
-            "Rig GR", "Off GR", "Rig Delta", "Chant GR"
+            "Elo", "Guess Rate", "UF", "1/8s", "2/8s", "Lives Taken", "Lives Saved", 
+            "OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate", "Over-8 Delta", 
+            "Rig Guess Rate", "Off Guess Rate", "Rig Delta", "Chant Guess Rate"
         ]
         asc_cols = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
         rest_cols = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
         
         stats_hl = {}
         elo_ser = df_players["Elo"].fillna(0.0) if "Elo" in df_players.columns else pd.Series(0.0, index=df_players.index)
-        gr_ser = df_players["GR"].fillna(0.0)
+        gr_ser = df_players["Guess Rate"].fillna(0.0)
         rig_ser = df_players["Rigs"].map(lambda x: x["count"] if isinstance(x, dict) else x).fillna(0.0) if "Rigs" in df_players.columns else pd.Series(0.0, index=df_players.index)
         mask_series = pd.Series(eligibility, index=df_players.index)
 
@@ -1735,10 +1735,10 @@ class TourAnalyzer:
                     elif col in ["Elo"]:
                         best_idx = int(best_b_idx[0]) if not best_b_idx.empty else None
                         worst_idx = int(worst_b_idx[0]) if not worst_b_idx.empty else None
-                    elif col in ["OP GR", "ED GR", "IN GR", "Chant GR"]:
+                    elif col in ["OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Chant Guess Rate"]:
                         best_idx = int(gr_ser.loc[best_b_idx].idxmin()) if not best_b_idx.empty else None
                         worst_idx = int(gr_ser.loc[worst_b_idx].idxmax()) if not worst_b_idx.empty else None
-                    elif col == "Rig GR":
+                    elif col == "Rig Guess Rate":
                         best_idx = int(rig_ser.loc[best_b_idx].idxmax()) if not best_b_idx.empty else None
                         worst_idx = int(elo_ser.loc[worst_b_idx].idxmax()) if not worst_b_idx.empty else None
                     else:
@@ -2083,22 +2083,15 @@ class TourAnalyzer:
 
         explanations = {
             "Player"                    : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
-            "GR"                        : "Guess Rate",
             "UF"                        : "Usefulness",
             "Mean Over-8"               : "Average of correct guessers across songs this player/team guessed correctly",
             "Lives Taken"               : "Count of points won against the opposing team; correct guessers exclusively on their team",
             "Lives Saved"               : "Count of blocks achieved against the opposing team; lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
-            "OP GR"                     : "Opening Guess Rate",
-            "ED GR"                     : "Ending Guess Rate",
-            "IN GR"                     : "Insert Guess Rate",
             "Solo Rigs"                 : "Count of songs exclusively from this player's list",
             "Rig Over-8"                : "Average of correct guessers across songs from this player's list",
-            "Over-8 Delta"              : "Rig Over-8 - Mean Over-8",
-            "Rig GR"                    : "Rig Guess Rate",
-            "Off GR"                    : "Off-Rig Guess Rate",
+            "Over-8 Delta"              : "Rig Over-8 - Mean Over-8: Calculates the difficulty gap between this player's list and correct guesses",
             "Rig Delta"                 : "100 * (Correct - Rig) / Correct: Calculates this player's performance against their own list",
             "Median Time"               : "Median guess time across songs this player guessed correctly",
-            "Chant GR"                  : "Chanting Guess Rate",
             "Total 4-0s"                : "Count of songs where all players from one team guessed correctly and all players from the other team missed",
             "Rig Synergy"               : "Average team guess rate across songs from its own members' lists",
             "Off Synergy"               : "Average team guess rate across songs from the opposing team member's lists",
@@ -2218,7 +2211,7 @@ class TourAnalyzer:
         const colExplanations = {json_explanations};
 
         const col0 = "{c0}", col1 = "{c1}", col2 = "{c2}";
-        const colBorders = new Set(["Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier", "Lives Saved", "Chanting Guess Rate"]);
+        const colBorders = new Set(["Player", "UF", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier", "Lives Saved", "Chanting Guess Rate"]);
 
         function switchDashboardTab(evt, tabId) {{
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
@@ -2657,7 +2650,7 @@ class TourAnalyzer:
                 colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]],
                 showscale: true, 
                 colorbar: {{ 
-                    title: {{ text: '<b>Rig GR</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }}, 
+                    title: {{ text: '<b>Rig Guess Rate</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }}, 
                     thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
                     tickmode: 'array', tickvals: [0, 70, 80, 90, 100], ticktext: ['0', '70', '80', '90', '100'],
                     tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}
@@ -2728,16 +2721,16 @@ class TourAnalyzer:
         df = df.reset_index(drop = True)
 
         desc = [
-            "Elo",          "GR",               "UF",
-            "1/8s",         "2/8s",
-            "Lives Taken",  "Lives Saved",
-            "OP GR",        "ED GR",            "IN GR",
-            "Rigs",         "Rig Rate",
-            "Solo Rigs",    "Solo Rig Rate",    "Over-8 Delta",
-            "Rig GR",       "Off GR",           "Rig Delta", 
-            "Chant GR",
-            "Mean Elo",     "Mean GR",          "Total 1/8s",
-            "Rig Synergy",  "Off Synergy",      "Shared Rigs"
+            "Elo",              "Guess Rate",       "UF",
+            "1/8s",             "2/8s",
+            "Lives Taken",      "Lives Saved",
+            "OP Guess Rate",    "ED Guess Rate",    "IN Guess Rate",
+            "Rigs",             "Rig Rate",
+            "Solo Rigs",        "Solo Rig Rate",
+            "Over-8 Delta",     "Rig Guess Rate",   "Off Guess Rate",
+            "Rig Delta",        "Chant Guess Rate",
+            "Mean Elo",         "Mean GR",          "Total 1/8s",
+            "Rig Synergy",      "Off Synergy",      "Shared Rigs"
         ]
 
         asc     = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
@@ -2769,8 +2762,8 @@ class TourAnalyzer:
                     worst_b_indices = el_num    [el_num == worst_val]   .index if pd.notnull(worst_val) else pd.Index([])
 
                     el_cols = ["Elo", "Mean Elo"]
-                    gr_cols = ["OP GR", "ED GR", "IN GR", "Chant GR"]
-                    rig_ser = pd.to_numeric(df["Rigs"], errors = 'coerce').fillna(0)
+                    gr_cols = ["OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Chant Guess Rate"]
+                    rig_ser = pd.to_numeric(df["Rigs"], errors = 'coerce').fillna(0) if "Rigs" in df.columns else pd.Series(0, index = df.index)
 
                     if col == "Solo Rigs":
                         best_idx    = rig_ser.loc[best_b_indices]   .idxmin() if not best_b_indices     .empty else None
@@ -2785,10 +2778,10 @@ class TourAnalyzer:
                         worst_idx   = worst_b_indices   [0] if not worst_b_indices  .empty else None
 
                     elif col in gr_cols:
-                        best_idx    = pd.to_numeric(df["GR"], errors = 'coerce').fillna(0).loc[best_b_indices]  .idxmin() if not best_b_indices     .empty else None
-                        worst_idx   = pd.to_numeric(df["GR"], errors = 'coerce').fillna(0).loc[worst_b_indices] .idxmax() if not worst_b_indices    .empty else None
+                        best_idx    = pd.to_numeric(df["Guess Rate"], errors = 'coerce').fillna(0).loc[best_b_indices]  .idxmin() if not best_b_indices     .empty else None
+                        worst_idx   = pd.to_numeric(df["Guess Rate"], errors = 'coerce').fillna(0).loc[worst_b_indices] .idxmax() if not worst_b_indices    .empty else None
 
-                    elif col == "Rig GR" and "Rigs" in df.columns:
+                    elif col == "Rig Guess Rate" and "Rigs" in df.columns:
                         best_idx    = rig_ser.loc[best_b_indices]   .idxmax() if not best_b_indices     .empty else None
                         worst_idx   = elo_ser.loc[worst_b_indices]  .idxmax() if not worst_b_indices    .empty else None
 
@@ -2800,7 +2793,7 @@ class TourAnalyzer:
 
         borders = []
 
-        if "GR" in df.columns:
+        if "Guess Rate" in df.columns:
             if "Eru" in self.tour_label: th = []
 
             else:
@@ -2816,7 +2809,7 @@ class TourAnalyzer:
                 try     : th = [float(x.strip()) for x in th_val.split(",")] if th_val else []
                 except  : th = [28.0, 18.0, 12.0, 6.0]
 
-            gv = pd.to_numeric(df["GR"].astype(str).str.replace('%',''), errors = 'coerce').tolist()
+            gv = pd.to_numeric(df["Guess Rate"].astype(str).str.replace('%',''), errors = 'coerce').tolist()
 
             for t in th:
                 f_idx = -1
@@ -2826,7 +2819,7 @@ class TourAnalyzer:
 
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
-        col_borders = {"Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Mean Over-8"}
+        col_borders = {"Player", "UF", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Mean Over-8"}
         th_cells    = []
 
         for c in df.columns:
