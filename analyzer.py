@@ -1846,50 +1846,29 @@ class TourAnalyzer:
         return formatted_team_rows, team_hl_rules
 
     def _render_dashboard_tiers(self, p_song_details):
-        tier_merged = []
+        tier_data = {}
         for tr in ["1", "2", "3", "4"]:
             tp = [n for n in self.s_part if n.lower() in self.assignments and self.assignments[n.lower()][1] == tr]
             if not tp: continue
-
-            gen_players, atk_players, blk_players = [], [], []
-            con_players, spd_players, chn_players = [], [], []
-
+            tier_data[tr] = []
             for p in tp:
                 cor, tot = self.c_counts[p], self.s_part[p]
                 tim, chc, cht = self.p_answer_times.get(p, []), self.p_chan_c[p], self.p_chan_s[p]
                 p_song_details[p]["Lives Taken"].sort(key=str.lower)
                 p_song_details[p]["Lives Saved"].sort(key=str.lower)
-
-                gen_players.append({"player": p, "value": 100 * cor / tot if tot else 0.0})
-                atk_players.append({"player": p, "value": int(self.p_pts[p]), "details": p_song_details[p]["Lives Taken"]})
-                blk_players.append({"player": p, "value": float(self.p_blks[p]), "details": p_song_details[p]["Lives Saved"]})
-                con_players.append({"player": p, "value": 100 * (self.p_pts[p] + self.p_blks[p]) / cor if cor else 0.0})
-                if tim: spd_players.append({"player": p, "value": float(np.median(tim))})
-                if cht: chn_players.append({"player": p, "value": 100 * chc / cht})
-
-            gen_players.sort(key=lambda x: x["value"], reverse=True)
-            atk_players.sort(key=lambda x: x["value"], reverse=True)
-            blk_players.sort(key=lambda x: x["value"], reverse=True)
-            con_players.sort(key=lambda x: x["value"], reverse=True)
-            spd_players.sort(key=lambda x: x["value"])
-            chn_players.sort(key=lambda x: x["value"], reverse=True)
-
-            tier_merged.append({
-                "Tier"                  : int(tr),
-                "Guess Rate"            : f"{gen_players[0]['player']} ({gen_players[0]['value']:.2f})",
-                "Lives Taken"           : {"count": f"{atk_players[0]['player']} ({atk_players[0]['value']})", "details": atk_players[0]['details']} if atk_players else {"count": "N/A", "details": []},
-                "Lives Saved"           : {"count": f"{blk_players[0]['player']} ({blk_players[0]['value']:g})", "details": blk_players[0]['details']} if blk_players else {"count": "N/A", "details": []},
-                "Contribution Rate"     : f"{con_players[0]['player']} ({con_players[0]['value']:.2f})" if con_players else "N/A",
-                "Median Time"           : f"{spd_players[0]['player']} ({spd_players[0]['value']:.2f})" if spd_players else "N/A",
-                "Chanting Guess Rate"   : f"{chn_players[0]['player']} ({chn_players[0]['value']:.2f})" if chn_players else "N/A",
-                "gen_val"               : gen_players[0]['value'] if gen_players else 0,
-                "atk_val"               : atk_players[0]['value'] if atk_players else 0,
-                "blk_val"               : blk_players[0]['value'] if blk_players else 0,
-                "con_val"               : con_players[0]['value'] if con_players else 0,
-                "spd_val"               : spd_players[0]['value'] if spd_players else float('inf'),
-                "chn_val"               : chn_players[0]['value'] if chn_players else 0
-            })
-        return tier_merged
+                
+                tier_data[tr].append({
+                    "player": p,
+                    "Guess Rate": float(round(100 * cor / tot, 2)) if tot else 0.0,
+                    "Lives Taken": int(self.p_pts[p]),
+                    "Lives Taken Details": p_song_details[p]["Lives Taken"],
+                    "Lives Saved": float(round(self.p_blks[p], 2)),
+                    "Lives Saved Details": p_song_details[p]["Lives Saved"],
+                    "Contribution Rate": float(round(100 * (self.p_pts[p] + self.p_blks[p]) / cor, 2)) if cor else 0.0,
+                    "Median Time": float(round(np.median(tim), 2)) if tim else None,
+                    "Chanting Guess Rate": float(round(100 * chc / cht, 2)) if cht else 0.0
+                })
+        return tier_data
 
     def _render_dashboard_songs(self):
         song_matrix_list = []
@@ -2099,8 +2078,15 @@ class TourAnalyzer:
             <table class="main-table" id="teamStatsTable"></table>
         </div>
 
-        <div id="tier-tab" class="tab-content overflow-x-auto">
-            <table class="main-table" id="tierStatsTable"></table>
+        <div id="tier-tab" class="tab-content">
+            <div class="max-w-[1200px] mx-auto space-y-8 bg-white p-6 rounded shadow-md border border-gray-300">
+                <div id="tierChart_GuessRate"></div>
+                <div id="tierChart_LivesTaken"></div>
+                <div id="tierChart_LivesSaved"></div>
+                <div id="tierChart_ContributionRate"></div>
+                <div id="tierChart_MedianTime"></div>
+                <div id="tierChart_ChantingGuessRate"></div>
+            </div>
         </div>
 
         <div id="song-tab" class="tab-content">
@@ -2387,54 +2373,177 @@ class TourAnalyzer:
             table.innerHTML = thead + tbody + "</tbody>";
         }}
 
-        function renderTierTable() {{
-            const table = document.getElementById('tierStatsTable');
-            if(!tierStats.length) return;
+        function renderTierCharts() {{
+            const metrics = [
+                {{ key: "Guess Rate", title: "Guess Rate", isAsc: false, isRate: true, hoverDisabled: true }},
+                {{ key: "Lives Taken", title: "Lives Taken", isAsc: false, isRate: false, isInt: true }},
+                {{ key: "Lives Saved", title: "Lives Saved", isAsc: false, isRate: false, isInt: true }},
+                {{ key: "Contribution Rate", title: "Contribution Rate", isAsc: false, isRate: true, hoverDisabled: true }},
+                {{ key: "Median Time", title: "Median Time", isAsc: true, isRate: false, isTime: true, hoverDisabled: true }},
+                {{ key: "Chanting Guess Rate", title: "Chanting Guess Rate", isAsc: false, isRate: true, hoverDisabled: true }}
+            ];
 
-            let baseHeaders = ["Tier", "Guess Rate", "Lives Taken", "Lives Saved", "Contribution Rate", "Median Time", "Chanting Guess Rate"];
-            let thead = "<thead><tr>" + baseHeaders.map(h => {{
-                let borderClass = colBorders.has(h) ? ' class="border-col-group"' : '';
-                return `<th${{borderClass}} data-metric="${{h}}">${{h}}</th>`;
-            }}).join('') + "</tr></thead>";
+            const divIds = [
+                "tierChart_GuessRate", "tierChart_LivesTaken", "tierChart_LivesSaved",
+                "tierChart_ContributionRate", "tierChart_MedianTime", "tierChart_ChantingGuessRate"
+            ];
 
-            let bestIndices = {{
-                "Guess Rate": tierStats.reduce((maxIdx, current, idx, arr) => current.gen_val > arr[maxIdx].gen_val ? idx : maxIdx, 0),
-                "Lives Taken": tierStats.reduce((maxIdx, current, idx, arr) => current.atk_val > arr[maxIdx].atk_val ? idx : maxIdx, 0),
-                "Lives Saved": tierStats.reduce((maxIdx, current, idx, arr) => current.blk_val > arr[maxIdx].blk_val ? idx : maxIdx, 0),
-                "Contribution Rate": tierStats.reduce((maxIdx, current, idx, arr) => current.con_val > arr[maxIdx].con_val ? idx : maxIdx, 0),
-                "Median Time": tierStats.reduce((minIdx, current, idx, arr) => current.spd_val < arr[minIdx].spd_val ? idx : minIdx, 0),
-                "Chanting Guess Rate": tierStats.reduce((maxIdx, current, idx, arr) => current.chn_val > arr[maxIdx].chn_val ? idx : maxIdx, 0)
-            }};
+            let gapCounter = 0;
 
-            let tbody = "<tbody>";
-            tierStats.forEach((r, idx) => {{
-                tbody += "<tr>";
-                baseHeaders.forEach(h => {{
-                    let cellStyle = colBorders.has(h) ? "border-col-group " : "";
-                    if (h !== "Tier" && bestIndices[h] === idx) {{
-                        cellStyle += "highlight-best ";
+            metrics.forEach((metric, mIdx) => {{
+                let xVals = [];
+                let yVals = [];
+                let customHovers = [];
+
+                ["1", "2", "3", "4"].forEach((tr, tIdx) => {{
+                    if (!tierStats[tr] || tierStats[tr].length === 0) return;
+
+                    let playersInTier = [...tierStats[tr]];
+                    playersInTier.sort((a, b) => {{
+                        let va = a[metric.key];
+                        let vb = b[metric.key];
+                        if (va === null || va === undefined) return 1;
+                        if (vb === null || vb === undefined) return -1;
+                        return metric.isAsc ? va - vb : vb - va;
+                    }});
+
+                    // Inject tiny layout tier boundary separation
+                    if (xVals.length > 0) {{
+                        xVals.push(null);
+                        yVals.push(" ".repeat(gapCounter++));
+                        customHovers.push("");
                     }}
 
-                    let rawCell = r[h];
-                    let displayVal = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
-                    let finalVal = (h === "Tier") ? `<b>${{displayVal}}</b>` : displayVal;
+                    playersInTier.forEach(p => {{
+                        let val = p[metric.key];
+                        let finalVal = 0;
+                        if (val !== null && val !== undefined && val !== Infinity) {{
+                            finalVal = metric.isInt ? Math.round(val) : Number(val.toFixed(2));
+                        }}
 
-                    if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {{
-                        let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-                        tbody += `<td class="${{cellStyle.trim()}}" data-songs="${{encodedDetails}}">${{finalVal}}</td>`;
-                    }} else {{
-                        tbody += `<td class="${{cellStyle.trim()}}">${{finalVal}}</td>`;
-                    }}
+                        xVals.push(finalVal);
+                        yVals.push(p.player);
+
+                        // Handle itemized context lines exclusively for Lives Taken & Saved
+                        if (!metric.hoverDisabled) {{
+                            let detailKey = metric.key + " Details";
+                            let songs = p[detailKey] || [];
+                            if (songs.length > 0) {{
+                                let displaySongs = [...songs];
+                                if (songs.length > 10) {{
+                                    // Take a random sample of 10 and sort them
+                                    displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
+                                    displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                                    customHovers.push("• " + displaySongs.join("<br>• ") + "<br>and more");
+                                }} else {{
+                                    displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                                    customHovers.push("• " + displaySongs.join("<br>• "));
+                                }}
+                            }} else {{
+                                customHovers.push("• No songs logged");
+                            }}
+                        }} else {{
+                            customHovers.push("");
+                        }}
+                    }});
                 }});
-                tbody += "</tr>";
+
+                // Invert constraints: T1 matches first at the visual top sequence
+                xVals.reverse();
+                yVals.reverse();
+                customHovers.reverse();
+
+                const trace = {{
+                    x: xVals,
+                    y: yVals,
+                    type: 'bar',
+                    orientation: 'h',
+                    text: xVals.map(v => v === null ? "" : (metric.isInt ? v.toFixed(0) : v.toFixed(2))),
+                    textposition: 'inside',
+                    insidetextanchor: 'end',
+                    textfont: {{ family: 'Segoe UI', size: 14, color: 'black', weight: 'bold' }},
+                    marker: {{
+                        color: 'white',
+                        line: {{ color: 'black', width: 2 }} // Changed from 0 to 2 to show outer outline
+                    }}
+                }};
+
+                if (metric.hoverDisabled) {{
+                    trace.hoverinfo = 'skip'; // Complete isolation from interactive target tracking
+                }} else {{
+                    trace.hovertext = customHovers;
+                    trace.hoverinfo = 'text';
+                }}
+
+                const layout = {{
+                    title: {{
+                        text: `<b>${{metric.title}}</b>`,
+                        font: {{ family: 'Segoe UI', size: 26, color: 'black' }}
+                    }},
+                    xaxis: {{
+                        tickfont: {{ family: 'Segoe UI', size: 16, color: 'black', weight: 'bold' }},
+                        showgrid: true,
+                        zeroline: true,
+                        fixedrange: true 
+                    }},
+                    yaxis: {{
+                        tickfont: {{ family: 'Segoe UI', size: 16, color: 'black', weight: 'bold' }},
+                        type: 'category',
+                        fixedrange: true,
+                        ticksuffix: "  " // Injects solid layout alignment padding between labels and axis line
+                    }},
+                    bargap: 0.0, // Removes spacing inside tiers to construct a clean structural step visual
+                    margin: {{ l: 200, r: 40, t: 60, b: 60 }},
+                    height: 140 + (yVals.length * 30),
+                    hoverlabel: {{ align: 'left', font: {{ family: 'Segoe UI', size: 15 }} }}
+                }};
+
+                if (metric.isRate) {{
+                    layout.xaxis.tickmode = 'array';
+                    layout.xaxis.tickvals = [0, 20, 40, 60, 80, 100];
+                    layout.xaxis.range = [0, 105];
+                }} else if (metric.isTime) {{
+                    layout.xaxis.tickmode = 'array';
+                    layout.xaxis.tickvals = [0, 4, 8, 12, 16, 20];
+                    layout.xaxis.range = [0, 21];
+                }}
+
+                Plotly.newPlot(divIds[mIdx], [trace], layout, {{ responsive: true, displayModeBar: false }});
+
+                // Attach description hook-ins directly onto title text strings
+                if (colExplanations[metric.key]) {{
+                    const titleSelector = `#${{divIds[mIdx]}} .g-title`;
+                    setTimeout(() => {{
+                        const titleEl = document.querySelector(titleSelector);
+                        if (titleEl) {{
+                            titleEl.style.cursor = 'help';
+                            titleEl.style.pointerEvents = 'all';
+                            titleEl.addEventListener('mouseenter', (e) => {{
+                                const tooltipNode = document.getElementById('customJsTooltip');
+                                tooltipNode.innerHTML = colExplanations[metric.key];
+                                tooltipNode.style.display = 'block';
+                            }});
+                            titleEl.addEventListener('mousemove', (e) => {{
+                                const tooltipNode = document.getElementById('customJsTooltip');
+                                let xPos = e.pageX + 15;
+                                let yPos = e.pageY + 15;
+                                if (xPos + 450 > window.innerWidth + window.scrollX) {{ xPos = e.pageX - 465; }}
+                                tooltipNode.style.left = xPos + 'px';
+                                tooltipNode.style.top = yPos + 'px';
+                            }});
+                            titleEl.addEventListener('mouseleave', () => {{
+                                document.getElementById('customJsTooltip').style.display = 'none';
+                            }});
+                        }}
+                    }}, 300);
+                }}
             }});
-            table.innerHTML = thead + tbody + "</tbody>";
         }}
 
         renderPlayerTable();
         renderTourTable();
         renderTeamTable();
-        renderTierTable();
+        renderTierCharts();
         setupTooltipListeners();
 
         const numX = {num_x}, numY = {num_y};
@@ -2531,7 +2640,8 @@ class TourAnalyzer:
                 tickvals: Array.from({{length: numX - 1}}, (_, i) => i + 0.5),
                 ticktext: xLabels,
                 tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }},
-                showgrid: true, zeroline: false, showticklabels: true, ticks: ''
+                showgrid: true, zeroline: false, showticklabels: true, ticks: '',
+                fixedrange: true
             }},
             yaxis: {{
                 title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }},
@@ -2540,7 +2650,8 @@ class TourAnalyzer:
                 ticktext: yLabels,
                 tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }},
                 tickangle: -90,
-                showgrid: true, zeroline: false, showticklabels: true, ticks: ''
+                showgrid: true, zeroline: false, showticklabels: true, ticks: '',
+                fixedrange: true
             }},
             annotations: annotations,
             margin: {{ l: 60, r: 0, t: 30, b: 55 }}
@@ -2592,7 +2703,8 @@ class TourAnalyzer:
                 tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, 
                 showgrid: true,
                 tickformat: '.1f',
-                dtick: 0.5
+                dtick: 0.5,
+                fixedrange: true
             }},
             yaxis: {{ 
                 title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
@@ -2600,7 +2712,8 @@ class TourAnalyzer:
                 tickangle: -90, 
                 showgrid: true,
                 tickformat: '.0f',
-                dtick: 2
+                dtick: 2,
+                fixedrange: true
             }},
             margin: {{ l: 60, r: 0, t: 30, b: 55 }},
         }}, {{responsive: true, displayModeBar: false}});
@@ -2651,7 +2764,8 @@ class TourAnalyzer:
                 tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, 
                 showgrid: true,
                 tickformat: '.1f',
-                dtick: 0.5
+                dtick: 0.5,
+                fixedrange: true
             }},
             yaxis: {{ 
                 title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
@@ -2659,7 +2773,8 @@ class TourAnalyzer:
                 tickangle: -90, 
                 showgrid: true,
                 tickformat: '.0f',
-                dtick: 2
+                dtick: 2,
+                fixedrange: true
             }},
             margin: {{ l: 60, r: 0, t: 30, b: 55 }}
         }}, {{responsive: true, displayModeBar: false}});
