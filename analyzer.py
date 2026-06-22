@@ -1533,7 +1533,15 @@ class TourAnalyzer:
                             for c_p in raw_f_players:
                                 if c_p.lower() in self.assignments and self.assignments[c_p.lower()][0] == tid:
                                     self.assignments[m_p.lower()] = self.assignments[c_p.lower()]
-                    final_members.update(ros)
+                    
+                    if len([p for p in ros if p in raw_f_players]) == 3:
+                        missing = [p for p in ros if p not in raw_f_players]
+                        if missing:
+                            final_members.add(missing[0])
+
+                if len(final_members) < 8:
+                    for tid in t_in_f:
+                        final_members.update(self.rosters[tid])
 
             apply_rev = (len(final_members) % 2 == 0)
 
@@ -1564,11 +1572,14 @@ class TourAnalyzer:
                 try:
                     vint_raw    = si.get("vintage", "")
                     vint        = int(extract_year(vint_raw)) if vint_raw else 0
+
+                except: vint = 0
+
+                try:
                     raw_diff    = si.get("animeDifficulty")
                     safe_diff   = float(raw_diff) if raw_diff is not None else 0.0
-                except:
-                    vint        = 0
-                    safe_diff   = 0.0
+
+                except: safe_diff = 0.0
 
                 if vint > 0:
                     x_idx = min(int(math.floor(safe_diff / 5)), num_x - 1)
@@ -1579,21 +1590,21 @@ class TourAnalyzer:
                     
                     m_song_lists[f"{x_idx}-{y_idx}"].append(song_line)
 
-                if amt_correct == 0:
+                if len(correct) == 0:
                     t_song_details["Total 0/8s"].append(song_line)
-                elif amt_correct == 1:
-                    sw = list(active_correct)[0]
+                elif len(correct) == 1:
+                    sw = list(correct)[0]
                     t_song_details["Total 1/8s"].append(f"{song_line} ({sw})")
                     if sw.lower() in self.assignments:
                         tm_song_details[self.assignments[sw.lower()][0]]["Total 1/8s"].append(song_line)
-                elif amt_correct == 2:
-                    p_list = list(active_correct)
+                elif len(correct) == 2:
+                    p_list = list(correct)
                     p1, p2 = p_list[0], p_list[1]
                     t_song_details["Total 2/8s"].append(f"{song_line} ({p1} and {p2})")
-                elif apply_rev and len(final_members - active_correct) == 1:
-                    missing_player = list(final_members - active_correct)[0]
+                elif apply_rev and len(final_members - correct) == 1:
+                    missing_player = list(final_members - correct)[0]
                     t_song_details["Total 7/8s"].append(f"{song_line} ({missing_player})")
-                elif amt_correct == len(final_members):
+                elif len(final_members - correct) == 0:
                     t_song_details["Total 8/8s"].append(song_line)
 
                 for sw in active_correct:
@@ -1611,8 +1622,8 @@ class TourAnalyzer:
                         else:
                             p_song_details[sw]["2/8s"].append(f"{song_line} (blocked by {opp_player})")
                 
-                if apply_rev and len(final_members - active_correct) == 1:
-                    missing_player = list(final_members - active_correct)[0]
+                if apply_rev and len(final_members - correct) == 1:
+                    missing_player = list(final_members - correct)[0]
                     p_song_details[missing_player]["7/8s"].append(song_line)
 
                 if isinstance(si.get("animeGenre"), list):
