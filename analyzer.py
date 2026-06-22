@@ -2016,21 +2016,28 @@ class TourAnalyzer:
     <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        body {{ font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #ffffff; color: #000000; }}
-        .main-table {{ border: 3px solid black; border-collapse: collapse; width: max-content; margin: 0 auto; }}
-        .main-table th {{ background-color: #f0f0f0; border: 1px solid black; border-bottom: 3px solid black; padding: 6px 12px; font-weight: bold; font-size: 25px; text-align: center; }}
-        .main-table td {{ border: 1px solid black; padding: 6px 12px; text-align: center; font-size: 25px; }}
+        body {{ font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #ffffff; color: #000000; overflow-x: hidden; }}
+        
+        /* Naturally compact size; keeps narrow tables crisp */
+        .main-table {{ border: 3px solid black; border-collapse: collapse; width: max-content; max-width: 100%; margin: 0 auto; table-layout: auto; }}
+        .main-table th {{ background-color: #f0f0f0; border: 1px solid black; border-bottom: 3px solid black; padding: 5px 6px; font-weight: bold; font-size: clamp(10px, 1vw, 25px); text-align: center; white-space: normal; }}
+        .main-table td {{ border: 1px solid black; padding: 4px 6px; text-align: center; font-size: clamp(9px, 0.9vw, 22.5px); white-space: normal; }}
+        
         .main-table tr:nth-child(even) {{ background-color: #f0f0f0; }}
         .border-group-line td {{ border-bottom: 3px solid black !important; }}
         .border-col-group {{ border-right: 3px solid black !important; }}
         .highlight-best {{ background-color: {c2} !important; color: white !important; font-weight: bold; }}
         .highlight-worst {{ background-color: {c0} !important; color: white !important; font-weight: bold; }}
-        
-        .tab-btn {{ font-size: 22px; font-weight: 600; padding: 10px 24px; border-bottom: 4px solid transparent; transition: all 0.2s; color: #4b5563; }}
+        .tab-btn {{ font-size: clamp(14px, 1.2vw, 22px); font-weight: 600; padding: 10px 24px; border-bottom: 4px solid transparent; transition: all 0.2s; color: #4b5563; cursor: pointer; }}
         .tab-btn:hover {{ color: #000000; background-color: #f3f4f6; }}
         .tab-btn.active-tab {{ color: #000000; border-bottom-color: #000000; background-color: #f3f4f6; }}
-        .tab-content {{ display: none; }}
+        
+        /* Reverted back to stable block layout so Plotly correctly maps parent sizes */
+        .tab-content {{ display: none; width: 100%; max-width: 100%; }}
         .tab-content.active-content {{ display: block; }}
+
+        /* Isolated helper wrapper exclusively used to keep standalone tables centered */
+        .table-center-wrapper {{ display: flex; flex-direction: column; align-items: center; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }}
 
         #customJsTooltip {{
             position: absolute;
@@ -2039,7 +2046,7 @@ class TourAnalyzer:
             color: #ffffff;
             padding: 8px 14px;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: clamp(8px, 0.8vw, 20px;
             z-index: 99999;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
             pointer-events: none;
@@ -2049,12 +2056,12 @@ class TourAnalyzer:
         }}
     </style>
 </head>
-<body class="p-6">
+<body class="p-6 w-screen max-w-full m-0 box-border">
     <div id="customJsTooltip"></div>
 
     <h2 class="text-5xl font-bold text-center mt-4 mb-6">{prefix}</h2>
     
-    <div class="max-w-[1800px] mx-auto border-b border-gray-300 flex flex-wrap justify-center gap-2 mb-8">
+    <div class="w-full max-w-full border-b border-gray-300 flex flex-wrap justify-center gap-2 mb-8">
         <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
         {"<button class='tab-btn' onclick='switchDashboardTab(event, \"team-tab\")'>Team</button>" if use_teams else ""}
@@ -2064,20 +2071,28 @@ class TourAnalyzer:
         <button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>
     </div>
 
-    <div class="max-w-[2400px] mx-auto">
+    <div class="w-full max-w-full block box-border overflow-hidden">
         
-        <div id="player-tab" class="tab-content active-content overflow-x-auto">
-            <table class="main-table" id="playerStandingsTable"></table>
+        <div id="player-tab" class="tab-content active-content">
+            <div class="table-center-wrapper">
+                <table class="main-table" id="playerStandingsTable"></table>
+            </div>
         </div>
 
-        <div id="tour-tab" class="tab-content overflow-x-auto">
-            <table class="main-table" id="tourStatsTable"></table>
+        <div id="tour-tab" class="tab-content">
+            <div class="table-center-wrapper">
+                <table class="main-table" id="tourStatsTable"></table>
+            </div>
         </div>
 
-        <div id="team-tab" class="tab-content overflow-x-auto">
-            <table class="main-table" id="teamStatsTable"></table>
+        <div id="team-tab" class="tab-content">
+            <div class="table-center-wrapper">
+                <table class="main-table" id="teamStatsTable"></table>
+            </div>
         </div>
-
+    </div>
+    
+    <div class="max-w-[2400px] mx-auto mt-4"> 
         <div id="tier-tab" class="tab-content">
             <div class="max-w-[1200px] mx-auto space-y-8 bg-white p-6 rounded shadow-md border border-gray-300">
                 <div id="tierChart_GuessRate"></div>
