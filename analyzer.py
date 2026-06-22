@@ -526,6 +526,8 @@ class TourAnalyzer:
                 try                 : file_path.unlink()
                 except Exception    : pass
 
+        print(f"Push to GitHub to update the online Dashboard: https://raw.githack.com/Frittutisna/Stats-Maker/main/tour/{self.tour_id}/hakohoka/Dashboard.html")
+
     def _scan_players(self, paths):
         players = set           ()
         apps    = defaultdict   (set)
@@ -764,9 +766,16 @@ class TourAnalyzer:
 
             rows.append(row)
 
-        df      = pd.DataFrame(rows).sort_values("GR", ascending = False)
-        mask    = pd.Series(eligibility, index = pd.DataFrame(rows).index).reindex(df.index).values
-        pcts    = ["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"]
+        df = pd.DataFrame(rows)
+
+        if "Elo" in df.columns:
+            df["_sort_elo"] = pd.to_numeric(df["Elo"], errors = 'coerce')
+            df = df.sort_values(by=["GR", "_sort_elo"], ascending = [False, True]).drop(columns = ["_sort_elo"])
+
+        else: df = df.sort_values("GR", ascending = False)
+            
+        mask = pd.Series(eligibility, index = pd.DataFrame(rows).index).reindex(df.index).values
+        pcts = ["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"]
 
         if "Elo"            in df.columns: df["Elo"]            = pd.to_numeric(df["Elo"],          errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "UF"             in df.columns: df["UF"]             = pd.to_numeric(df["UF"],           errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -881,7 +890,7 @@ class TourAnalyzer:
                 "Shared Rigs"   : np.mean(self.t_sh_rig     [tid]) * 100,
             })
 
-        df          = pd.DataFrame(res).sort_values("Mean GR", ascending = False)
+        df          = pd.DataFrame(res).sort_values(by = ["Mean GR", "Mean Elo"], ascending = [False, True])
         num_cols    = ["Mean Elo", "Mean GR", "Mean Over-8", "Rig Synergy", "Off Synergy", "Shared Rigs"]
 
         for c in num_cols: df[c] = pd.to_numeric(df[c], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -1426,6 +1435,7 @@ class TourAnalyzer:
 
         # Initialize tracking dictionaries for tooltips
         player_song_details = defaultdict(lambda: defaultdict(list))
+        player_true_solo_rigs = defaultdict(list) # NEW: Dedicated tracker for solo rigs + outcomes
         tour_song_details = defaultdict(list)
         team_song_details = defaultdict(lambda: defaultdict(list))
         
@@ -1543,9 +1553,26 @@ class TourAnalyzer:
 
                 ls = song.get("listStates", [])
                 if ls:
+                    # Keep track of true solo rigs separately for the Solo Rig Converter tab metrics
+                    is_true_solo_rig = (len(ls) == 1)
+                    if is_true_solo_rig:
+                        solo_rigger = ls[0]["name"]
+
                     for p in ls:
                         n = p["name"]
-                        player_song_details[n]["Rigs"].append(song_line)
+                        
+                        # CHANGED: Give a checkmark as long as THIS specific player guessed it right.
+                        # They no longer need a global 1/8 solo to get a checkmark on their personal list!
+                        is_rig_guessed_correctly = (n in active_correct)
+                        marker = "✓" if is_rig_guessed_correctly else "✗"
+                            
+                        player_song_details[n]["Rigs"].append(f"{marker} {song_line}")
+                    
+                    # Keep the strict solo-converter logic intact for the Tour tab calculation metrics
+                    if is_true_solo_rig:
+                        is_converted = (solo_rigger in active_correct) and (amt_correct == 1)
+                        solo_marker = "✓" if is_converted else "✗"
+                        player_true_solo_rigs[solo_rigger].append(f"{solo_marker} {song_line}")
 
                 if self.use_teams:
                     t_list = list({self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments})
@@ -1563,8 +1590,15 @@ class TourAnalyzer:
                             if len(cC) == 1 and len(oC) > 0:
                                 player_song_details[list(cC)[0]]["Lives Saved"].append(song_line)
 
-        # Build clean incremental references alongside standard execution
-        sorted_players = sorted(self.s_part.keys(), key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0, reverse=True)
+        def player_sort_key(x):
+            gr = (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0.0
+
+            try     : elo = float(self.elo_map.get(x.lower(), float('inf')))
+            except  : elo = float('inf')
+
+            return (gr, -elo)
+
+        sorted_players = sorted(self.s_part.keys(), key = player_sort_key, reverse = True)
 
         for name in sorted_players:
             tot, cor = self.s_part[name], self.c_counts[name]
@@ -1615,7 +1649,7 @@ class TourAnalyzer:
                     "Over-8 Delta": float(rig_over8 - avg_over8) if (pd.notnull(rig_over8) and pd.notnull(avg_over8)) else np.nan,
                     "Rig GR": float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
                     "Off GR": float((cor - self.p_rigs_h[name]) / (tot - self.p_rigs_h[name]) * 100) if (tot - self.p_rigs[name]) else np.nan,
-                    "Rig Delta": float((cor - self.p_rigs_h[name]) / cor * 100) if cor else np.nan,
+                    "Rig Delta": float((cor - self.p_rigs[name]) / cor * 100) if cor else np.nan,
                 })
 
             times = self.p_answer_times.get(name, [])
@@ -1627,7 +1661,11 @@ class TourAnalyzer:
             
             # Map structural components into JSON row cells as structured data payloads
             for key in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]:
-                player_song_details[name][key].sort(key=str.lower)
+                if key == "Rigs":
+                    player_song_details[name][key].sort(key=lambda s: s[2:].strip().lower())
+                else:
+                    player_song_details[name][key].sort(key=str.lower)
+                    
                 if key in row:
                     row[key] = {
                         "count": row[key],
@@ -1721,6 +1759,43 @@ class TourAnalyzer:
                     
                 for ls in s.get("listStates", []):
                     if "name" in ls: raw_vintages_by_rig[ls["name"]].append(v_str)
+        
+        best_converter_str, worst_converter_str = "N/A", "N/A"
+        best_converter_details, worst_converter_details = [], []
+        
+        if watched:
+            conv = []
+            eligible_players = [p for p in sorted_players if len(player_true_solo_rigs[p]) > 0]
+
+            if eligible_players:
+                total_hits = sum((self.p_l_solos[p] - self.p_m_erigs[p]) for p in eligible_players)
+                total_attempts = sum(self.p_l_solos[p] for p in eligible_players)
+                global_avg = total_hits / total_attempts if total_attempts > 0 else 0
+                constant = 3
+
+                for n in eligible_players:
+                    t = self.p_l_solos[n] # Total true solo rigs (t)
+                    h = t - self.p_m_erigs[n] # Converted solo rigs (h)
+                    weighted_score = (h + constant * global_avg) / (t + constant)
+                    
+                    conv.append({
+                        'n': n, 
+                        'score': weighted_score, 
+                        'p': 100 * h / t, 
+                        'h': h, 
+                        't': t,
+                        'details': player_true_solo_rigs[n]
+                    })
+
+                if conv:
+                    b = sorted(conv, key=lambda x: x['score'], reverse=True)[0]
+                    w = sorted(conv, key=lambda x: x['score'])[0]
+
+                    best_converter_str = f"{b['n']} ({b['p']:.2f}%, {b['h']}/{b['t']})"
+                    worst_converter_str = f"{w['n']} ({w['p']:.2f}%, {w['h']}/{w['t']})"
+                    
+                    best_converter_details = sorted(b['details'], key=lambda s: s[2:].strip().lower())
+                    worst_converter_details = sorted(w['details'], key=lambda s: s[2:].strip().lower())
 
         tour_stats_raw = [
             ["Median Vintage", format_year(round(np.median(self.all_vint), 2)) if self.all_vint else "N/A", []],
@@ -1759,8 +1834,11 @@ class TourAnalyzer:
         no_s = sorted([n for n in plist if self.e_counts[n] == 0 and self.s_part[n] > 0], key=lambda x: self.c_counts[x] / self.s_part[x], reverse=True)
         yes_s = sorted([n for n in plist if self.e_counts[n] > 0 and self.s_part[n] > 0], key=lambda x: self.c_counts[x] / self.s_part[x])
         if no_s: tour_stats_raw.append(["Highest GR Without 1/8s", f"{no_s[0]} ({100 * (self.c_counts[no_s[0]] / self.s_part[no_s[0]]):.2f})", []])
-        if yes_s: 
-            tour_stats_raw.append(["Lowest GR With 1/8s", f"{yes_s[0]} ({100 * (self.c_counts[yes_s[0]] / self.s_part[yes_s[0]]):.2f}, {self.e_counts[yes_s[0]]})", player_song_details[yes_s[0]]["1/8s"]])
+        if yes_s: tour_stats_raw.append(["Lowest GR With 1/8s", f"{yes_s[0]} ({100 * (self.c_counts[yes_s[0]] / self.s_part[yes_s[0]]):.2f}, {self.e_counts[yes_s[0]]})", player_song_details[yes_s[0]]["1/8s"]])
+
+        if watched:
+            tour_stats_raw.append(["Best Solo Rig Converter", best_converter_str, best_converter_details])
+            tour_stats_raw.append(["Worst Solo Rig Converter", worst_converter_str, worst_converter_details])
 
         tour_unrolled = []
         for row in tour_stats_raw:
@@ -1793,8 +1871,7 @@ class TourAnalyzer:
                     "Shared Rigs": float(np.mean(self.t_sh_rig[tid]) * 100) if self.t_sh_rig[tid] else np.nan
                 })
             
-            # Sort teams descending by Mean GR matching the standalone PNG logic
-            team_rows = sorted(team_rows, key=lambda x: x["Mean GR"], reverse=True)
+            team_rows = sorted(team_rows, key = lambda x: (-x["Mean GR"], x["Mean Elo"] if pd.notnull(x["Mean Elo"]) else float('inf')))
 
         # Build Rule Map for Team Highlights Matrix
         team_hl_rules = {}
@@ -1999,27 +2076,29 @@ class TourAnalyzer:
         c0, c1, c2 = COLOR_0, COLOR_1, COLOR_2
 
         explanations = {
-            "Player"                : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
-            "GR"                    : "Guess Rate",
-            "UF"                    : "Usefulness",
-            "Mean Over-8"           : "Average of correct guessers across songs this player/team guessed correctly",
-            "Lives Taken"           : "Count of points won against the opposing team; correct guessers exclusively on their team",
-            "Lives Saved"           : "Count of blocks achieved against the opposing team; lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
-            "OP GR"                 : "Opening Guess Rate",
-            "ED GR"                 : "Ending Guess Rate",
-            "IN GR"                 : "Insert Guess Rate",
-            "Rig Over-8"            : "Average of correct guessers across songs from this player's list",
-            "Over-8 Delta"          : "Rig Over-8 - Mean Over-8",
-            "Rig GR"                : "Rig Guess Rate",
-            "Off GR"                : "Off-Rig Guess Rate",
-            "Rig Delta"             : "100 * (Correct - Rig) / Correct: Calculates this player's performance against their own list",
-            "Median Time"           : "Median guess time across songs this player guessed correctly",
-            "Chant GR"              : "Chanting Guess Rate",
-            "Total 4-0s"            : "Count of songs where all players from one team guessed correctly and all players from the other team missed",
-            "Rig Synergy"           : "Average team guess rate across songs from its own members' lists",
-            "Off Synergy"           : "Average team guess rate across songs from the opposing team member's lists",
-            "Shared Rigs"           : "Calculates how much songs are shared across its own members' lists",
-            "Contribution Rate"     : "100 * (Lives Taken + Saved) / Correct: Calculates how much of this player's correct guesses directly contributed to the scoreline",
+            "Player"                    : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
+            "GR"                        : "Guess Rate",
+            "UF"                        : "Usefulness",
+            "Mean Over-8"               : "Average of correct guessers across songs this player/team guessed correctly",
+            "Lives Taken"               : "Count of points won against the opposing team; correct guessers exclusively on their team",
+            "Lives Saved"               : "Count of blocks achieved against the opposing team; lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
+            "OP GR"                     : "Opening Guess Rate",
+            "ED GR"                     : "Ending Guess Rate",
+            "IN GR"                     : "Insert Guess Rate",
+            "Rig Over-8"                : "Average of correct guessers across songs from this player's list",
+            "Over-8 Delta"              : "Rig Over-8 - Mean Over-8",
+            "Rig GR"                    : "Rig Guess Rate",
+            "Off GR"                    : "Off-Rig Guess Rate",
+            "Rig Delta"                 : "100 * (Correct - Rig) / Correct: Calculates this player's performance against their own list",
+            "Median Time"               : "Median guess time across songs this player guessed correctly",
+            "Chant GR"                  : "Chanting Guess Rate",
+            "Total 4-0s"                : "Count of songs where all players from one team guessed correctly and all players from the other team missed",
+            "Rig Synergy"               : "Average team guess rate across songs from its own members' lists",
+            "Off Synergy"               : "Average team guess rate across songs from the opposing team member's lists",
+            "Shared Rigs"               : "Calculates how much songs are shared across its own members' lists",
+            "Contribution Rate"         : "100 * (Lives Taken + Saved) / Correct: Calculates how much of this player's correct guesses directly contributed to the scoreline",
+            "Best Solo Rig Converter"   : "100 * Solo from Solo Rig / Solo Rig: Shows the best player at converting their own solo rig into a solo",
+            "Worst Solo Rig Converter"  : "100 * Solo from Solo Rig / Solo Rig: Shows the worst player at converting their own solo rig into a solo"
         }
         json_explanations = json.dumps(explanations)
 
@@ -2319,14 +2398,24 @@ class TourAnalyzer:
                                     .slice(0, 10);
                                     
                                 // Sort just the 10 chosen songs alphabetically
-                                displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                                displaySongs.sort((a, b) => {{
+                                    // Strip the indicator prefix if present for clean alphabetic matching
+                                    const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
+                                    const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
+                                    return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
+                                }});
                                 
-                                // Map with bullets and append the trailing indicator
-                                displaySongs = displaySongs.map(s => `• ${{s}}`);
+                                // Map conditionally: add bullet ONLY if it doesn't start with a check or cross
+                                displaySongs = displaySongs.map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : `• ${{s}}`);
                                 displaySongs.push(`and more`);
                             }} else {{
-                                // Fallback if 10 or fewer: just add bullets (already sorted from Python)
-                                displaySongs = displaySongs.map(s => `• ${{s}}`);
+                                // Fallback if 10 or fewer: map conditionally (already sorted from Python)
+                                displaySongs.sort((a, b) => {{
+                                    const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
+                                    const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
+                                    return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
+                                }});
+                                displaySongs = displaySongs.map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : `• ${{s}}`);
                             }}
                             
                             tooltipNode.innerHTML = displaySongs.join('<br>');
@@ -2649,7 +2738,6 @@ class TourAnalyzer:
 </html>
 """
         with open(path / "Dashboard.html", "w", encoding="utf-8") as f: f.write(html_content)
-        print(f"Push to GitHub to update the online Dashboard: https://raw.githack.com/Frittutisna/Stats-Maker/main/tour/{self.tour_id}/hakohoka/Dashboard.html")
 
     def _export_png(self, df, path, fname, title, mask = None, val_str = "default"):
         if not self.browser_path: return
