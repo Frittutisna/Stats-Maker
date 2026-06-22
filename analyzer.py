@@ -1551,8 +1551,8 @@ class TourAnalyzer:
                 if amt_correct == 0:
                     t_song_details["Total 0/8s"].append(song_line)
                 elif amt_correct == 1:
-                    t_song_details["Total 1/8s"].append(song_line)
                     sw = list(active_correct)[0]
+                    t_song_details["Total 1/8s"].append(f"{song_line} ({sw})")
                     if sw.lower() in self.assignments:
                         tm_song_details[self.assignments[sw.lower()][0]]["Total 1/8s"].append(song_line)
                 elif amt_correct == 2:
@@ -1560,7 +1560,8 @@ class TourAnalyzer:
                     p1, p2 = p_list[0], p_list[1]
                     t_song_details["Total 2/8s"].append(f"{song_line} ({p1} and {p2})")
                 elif apply_rev and len(final_members - active_correct) == 1:
-                    t_song_details["Total 7/8s"].append(song_line)
+                    missing_player = list(final_members - active_correct)[0]
+                    t_song_details["Total 7/8s"].append(f"{song_line} ({missing_player})")
                 elif amt_correct == len(final_members):
                     t_song_details["Total 8/8s"].append(song_line)
 
