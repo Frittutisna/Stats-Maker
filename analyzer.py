@@ -774,7 +774,35 @@ class TourAnalyzer:
             row = {"Player": d_name}
             if use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
             row.update({"Guess Rate": cor / tot if tot else 0})
-            if use_teams: row.update({"UF": (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0})
+
+            if use_teams: 
+                uf_val = (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
+                row.update({"UF": uf_val})
+                
+                try     : elo = float(elo_map.get(name.lower(), 0.0))
+                except  : elo = 0.0
+
+                valid_elos  = [float(v) for v in elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
+                all_ufs     = [(self.p_usefulness_sum[p] * avg_rank * 8) / self.s_part[p] if self.s_part[p] else 0.0 for p in self.s_part]
+                all_elos    = []
+
+                for p in self.s_part:
+                    try     : all_elos.append(float(elo_map.get(p.lower(), 0.0)))
+                    except  : all_elos.append(0.0)
+
+                if len(all_elos) > 1 and np.var(all_elos) > 0:
+                    slope, intercept    = np.polyfit(all_elos, all_ufs, 1)
+                    res_std             = np.std(np.array(all_ufs) - (slope * np.array(all_elos) + intercept))
+
+                    if res_std == 0: res_std = 1
+
+                else: slope, intercept, res_std = 0, np.mean(all_ufs) if all_ufs else 0, 1
+
+                residual    = uf_val - (slope * elo + intercept)
+                perf_score  = (1 / (1 + np.exp(SCALE_PERF * (residual / res_std)))) * 100
+
+                row.update({"Rating": perf_score})
+
             avg_over8 = self.p_overs_sum[name] / cor if cor else np.nan
             row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name], "Mean Over-8": avg_over8})
             if use_teams: row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
@@ -808,9 +836,11 @@ class TourAnalyzer:
 
         df = pd.DataFrame(rows)
 
-        if "Elo" in df.columns:
+        if "Rating" in df.columns: df = df.sort_values(by = ["Guess Rate", "Rating"], ascending = [False, False])
+
+        elif "Elo" in df.columns:
             df["_sort_elo"] = pd.to_numeric(df["Elo"], errors = 'coerce')
-            df = df.sort_values(by=["Guess Rate", "_sort_elo"], ascending = [False, True]).drop(columns = ["_sort_elo"])
+            df              = df.sort_values(by = ["Guess Rate", "_sort_elo"], ascending = [False, True]).drop(columns = ["_sort_elo"])
 
         else: df = df.sort_values("Guess Rate", ascending = False)
 
@@ -819,6 +849,7 @@ class TourAnalyzer:
 
         if "Elo"            in df.columns: df["Elo"]            = pd.to_numeric(df["Elo"],          errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "UF"             in df.columns: df["UF"]             = pd.to_numeric(df["UF"],           errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Rating"         in df.columns: df["Rating"]         = pd.to_numeric(df["Rating"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Median Time"    in df.columns: df["Median Time"]    = pd.to_numeric(df["Median Time"],  errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Mean Over-8"    in df.columns: df["Mean Over-8"]    = pd.to_numeric(df["Mean Over-8"],  errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Rig Over-8"     in df.columns: df["Rig Over-8"]     = pd.to_numeric(df["Rig Over-8"],   errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -1682,9 +1713,28 @@ class TourAnalyzer:
                 try     : row["Elo"] = float(self.elo_map.get(name.lower(), np.nan))
                 except  : row["Elo"] = np.nan
             
+            try: elo_val_raw = float(self.elo_map.get(name.lower(), 0.0))
+            except: elo_val_raw = 0.0
+            all_pool_ufs = [(self.p_usefulness_sum[p] * avg_rank * 8) / self.s_part[p] if self.s_part[p] else 0.0 for p in self.s_part]
+            all_pool_elos = []
+            for p in self.s_part:
+                try: all_pool_elos.append(float(self.elo_map.get(p.lower(), 0.0)))
+                except: all_pool_elos.append(0.0)
+            if len(all_pool_elos) > 1 and np.var(all_pool_elos) > 0:
+                s_slope, s_intercept = np.polyfit(all_pool_elos, all_pool_ufs, 1)
+                s_res_std = np.std(np.array(all_pool_ufs) - (s_slope * np.array(all_pool_elos) + s_intercept))
+                if s_res_std == 0: s_res_std = 1
+            else:
+                s_slope, s_intercept, s_res_std = 0, np.mean(all_pool_ufs) if all_pool_ufs else 0, 1
+            
+            uf_score_val = float((self.p_usefulness_sum[name] * avg_rank * 8) / tot) if tot else 0.0
+            s_residual = uf_score_val - (s_slope * elo_val_raw + s_intercept)
+            calculated_performance = (1 / (1 + np.exp(SCALE_PERF * (s_residual / s_res_std)))) * 100
+
             row.update({
                 "Guess Rate"    : float(cor / tot * 100) if tot else 0.0,
-                "UF"            : float((self.p_usefulness_sum[name] * avg_rank * 8) / tot) if tot else 0.0,
+                "UF"            : uf_score_val,
+                "Rating"        : float(calculated_performance),
                 "1/8s"          : int(self.e_counts[name]),
                 "2/8s"          : int(self.p_two_e[name]),
                 "7/8s"          : int(self.p_rev_e[name]),
@@ -1738,7 +1788,7 @@ class TourAnalyzer:
                     if pd.notnull(v) and v >= t: f_idx = i
                 if f_idx != -1 and f_idx < len(df_players) - 1: borders.append(int(f_idx))
 
-        desc_cols   = ["Elo", "Guess Rate", "UF", "1/8s", "2/8s", "Lives Taken", "Lives Saved", "OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate", "Over-8 Delta", "Rig Guess Rate", "Off Guess Rate", "Rig Delta", "Chant Guess Rate"]
+        desc_cols   = ["Elo", "Guess Rate", "UF", "Rating", "1/8s", "2/8s", "Lives Taken", "Lives Saved", "OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate", "Over-8 Delta", "Rig Guess Rate", "Off Guess Rate", "Rig Delta", "Chant Guess Rate"]
         asc_cols    = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
         rest_cols   = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
         stats_hl    = {}
@@ -2075,6 +2125,7 @@ class TourAnalyzer:
         explanations = {
             "Player"                    : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
             "UF"                        : "Usefulness: Calculates this player's contribution to their team, scaled by Elo and songs played",
+            "Rating"                    : "Calculates this player's value (Usefulness) against what's expected from their Elo; 50 means this player is playing to expectations",
             "Mean Over-8"               : "Average of correct guessers across songs this player/team guessed correctly",
             "Lives Taken"               : "Count of points won against the opposing team; correct guessers exclusively on their team",
             "Lives Saved"               : "Count of blocks achieved against the opposing team; lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
@@ -2267,7 +2318,7 @@ class TourAnalyzer:
         const colExplanations = {json_explanations};
 
         const col0 = "{c0}", col1 = "{c1}", col2 = "{c2}";
-        const colBorders = new Set(["Player", "UF", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier", "Lives Saved", "Chanting Guess Rate"]);
+        const colBorders = new Set(["Player", "Rating", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier", "Lives Saved", "Chanting Guess Rate"]);
 
         function switchDashboardTab(evt, tabId) {{
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
@@ -2969,7 +3020,8 @@ class TourAnalyzer:
         df = df.reset_index(drop = True)
 
         desc = [
-            "Elo",              "Guess Rate",       "UF",
+            "Elo",              "Guess Rate",
+            "UF",               "Rating",
             "1/8s",             "2/8s",
             "Lives Taken",      "Lives Saved",
             "OP Guess Rate",    "ED Guess Rate",    "IN Guess Rate",
@@ -3067,7 +3119,7 @@ class TourAnalyzer:
 
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
-        col_borders = {"Player", "UF", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Mean Over-8"}
+        col_borders = {"Player", "Rating", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Mean Over-8"}
         th_cells    = []
 
         for c in df.columns:
