@@ -751,6 +751,8 @@ class TourAnalyzer:
                 row.update({
                     "Rigs"          : self.p_rigs[name],
                     "Rig Rate"      : self.p_rigs[name]             / tot                       if tot                          else np.nan,
+                    "Solo Rigs"     : self.p_l_solos[name],
+                    "Solo Rig Rate" : self.p_l_solos[name]          / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
                     "Rig Over-8"    : rig_over8,
                     "Over-8 Delta"  : rig_over8 - avg_over8,
                     "Rig GR"        : self.p_rigs_h[name]           / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
@@ -775,7 +777,7 @@ class TourAnalyzer:
         else: df = df.sort_values("GR", ascending = False)
             
         mask = pd.Series(eligibility, index = pd.DataFrame(rows).index).reindex(df.index).values
-        pcts = ["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"]
+        pcts = ["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Delta", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"]
 
         if "Elo"            in df.columns: df["Elo"]            = pd.to_numeric(df["Elo"],          errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "UF"             in df.columns: df["UF"]             = pd.to_numeric(df["UF"],           errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -1435,7 +1437,7 @@ class TourAnalyzer:
 
         # Initialize tracking dictionaries for tooltips
         player_song_details = defaultdict(lambda: defaultdict(list))
-        player_true_solo_rigs = defaultdict(list) # NEW: Dedicated tracker for solo rigs + outcomes
+        player_true_solo_rigs = defaultdict(list)
         tour_song_details = defaultdict(list)
         team_song_details = defaultdict(lambda: defaultdict(list))
         
@@ -1553,23 +1555,19 @@ class TourAnalyzer:
 
                 ls = song.get("listStates", [])
                 if ls:
-                    # Keep track of true solo rigs separately for the Solo Rig Converter tab metrics
                     is_true_solo_rig = (len(ls) == 1)
-                    if is_true_solo_rig:
-                        solo_rigger = ls[0]["name"]
-
+                    
                     for p in ls:
                         n = p["name"]
-                        
-                        # CHANGED: Give a checkmark as long as THIS specific player guessed it right.
-                        # They no longer need a global 1/8 solo to get a checkmark on their personal list!
                         is_rig_guessed_correctly = (n in active_correct)
                         marker = "✓" if is_rig_guessed_correctly else "✗"
-                            
+                        
                         player_song_details[n]["Rigs"].append(f"{marker} {song_line}")
+                        if is_true_solo_rig:
+                            player_song_details[n]["Solo Rigs"].append(f"{marker} {song_line}")
                     
-                    # Keep the strict solo-converter logic intact for the Tour tab calculation metrics
                     if is_true_solo_rig:
+                        solo_rigger = ls[0]["name"]
                         is_converted = (solo_rigger in active_correct) and (amt_correct == 1)
                         solo_marker = "✓" if is_converted else "✗"
                         player_true_solo_rigs[solo_rigger].append(f"{solo_marker} {song_line}")
@@ -1645,6 +1643,8 @@ class TourAnalyzer:
                 row.update({
                     "Rigs": int(self.p_rigs[name]),
                     "Rig Rate": float(self.p_rigs[name] / tot * 100) if tot else np.nan,
+                    "Solo Rigs": int(self.p_l_solos[name]),
+                    "Solo Rig Rate": float(self.p_l_solos[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
                     "Rig Over-8": float(rig_over8) if pd.notnull(rig_over8) else np.nan,
                     "Over-8 Delta": float(rig_over8 - avg_over8) if (pd.notnull(rig_over8) and pd.notnull(avg_over8)) else np.nan,
                     "Rig GR": float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
@@ -1660,8 +1660,8 @@ class TourAnalyzer:
             row["Chant GR"] = float(chant_gr) if pd.notnull(chant_gr) else np.nan
             
             # Map structural components into JSON row cells as structured data payloads
-            for key in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]:
-                if key == "Rigs":
+            for key in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]:
+                if key in ["Rigs", "Solo Rigs"]:
                     player_song_details[name][key].sort(key=lambda s: s[2:].strip().lower())
                 else:
                     player_song_details[name][key].sort(key=str.lower)
@@ -1691,11 +1691,11 @@ class TourAnalyzer:
 
         desc_cols = [
             "Elo", "GR", "UF", "1/8s", "2/8s", "Lives Taken", "Lives Saved", 
-            "OP GR", "ED GR", "IN GR", "Rigs", "Rig Rate", "Over-8 Delta", 
+            "OP GR", "ED GR", "IN GR", "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate", "Over-8 Delta", 
             "Rig GR", "Off GR", "Rig Delta", "Chant GR"
         ]
         asc_cols = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
-        rest_cols = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]
+        rest_cols = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
         
         stats_hl = {}
         elo_ser = df_players["Elo"].fillna(0.0) if "Elo" in df_players.columns else pd.Series(0.0, index=df_players.index)
@@ -1705,7 +1705,7 @@ class TourAnalyzer:
 
         for col in df_players.columns:
             if col in desc_cols or col in asc_cols:
-                if col in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]:
+                if col in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]:
                     num = df_players[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
                 else:
                     num = df_players[col]
@@ -1726,7 +1726,13 @@ class TourAnalyzer:
                     best_b_idx = num[num == best_val].index if pd.notnull(best_val) else pd.Index([])
                     worst_b_idx = el_num[el_num == worst_val].index if pd.notnull(worst_val) else pd.Index([])
 
-                    if col in ["Elo"]:
+                    if col == "Solo Rigs":
+                        best_idx = int(rig_ser.loc[best_b_idx].idxmin()) if not best_b_idx.empty else None
+                        worst_idx = int(rig_ser.loc[worst_b_idx].idxmax()) if not worst_b_idx.empty else None
+                    elif col == "Solo Rig Rate":
+                        best_idx = int(rig_ser.loc[best_b_idx].idxmax()) if not best_b_idx.empty else None
+                        worst_idx = int(rig_ser.loc[worst_b_idx].idxmax()) if not worst_b_idx.empty else None
+                    elif col in ["Elo"]:
                         best_idx = int(best_b_idx[0]) if not best_b_idx.empty else None
                         worst_idx = int(worst_b_idx[0]) if not worst_b_idx.empty else None
                     elif col in ["OP GR", "ED GR", "IN GR", "Chant GR"]:
@@ -1774,8 +1780,8 @@ class TourAnalyzer:
                 constant = 3
 
                 for n in eligible_players:
-                    t = self.p_l_solos[n] # Total true solo rigs (t)
-                    h = t - self.p_m_erigs[n] # Converted solo rigs (h)
+                    t = self.p_l_solos[n]
+                    h = t - self.p_m_erigs[n]
                     weighted_score = (h + constant * global_avg) / (t + constant)
                     
                     conv.append({
@@ -1953,7 +1959,7 @@ class TourAnalyzer:
         valid_elos = [float(v) for v in self.elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
         avg_rank = np.mean(valid_elos) if valid_elos else 1.0
 
-        # Step 1: Pre-calculate the residuals for all valid players to establish the standard deviation
+        # Pre-calculate the residuals for all valid players to establish the standard deviation
         pool_data = []
         for name in self.s_part:
             if self.c_counts[name] > 0:
@@ -1973,7 +1979,7 @@ class TourAnalyzer:
         else:
             slope, intercept, res_std = 0, np.mean(ufs) if len(ufs) > 0 else 0, 1
 
-        # Step 2: Build scatter_list with the dynamically calculated performance metrics
+        # Build scatter_list with the dynamically calculated performance metrics
         scatter_list, arrow_list = [], []
         for name in self.s_part:
             if self.c_counts[name] > 0:
@@ -2028,7 +2034,7 @@ class TourAnalyzer:
 
         headers = list(df_players.columns)
         html_rows_list = []
-        incremental_cols = {"1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"}
+        incremental_cols = {"1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"}
 
         for idx, row in df_players.iterrows():
             row_dict = {}
@@ -2085,6 +2091,7 @@ class TourAnalyzer:
             "OP GR"                     : "Opening Guess Rate",
             "ED GR"                     : "Ending Guess Rate",
             "IN GR"                     : "Insert Guess Rate",
+            "Solo Rigs"                 : "Count of songs exclusively from this player's list",
             "Rig Over-8"                : "Average of correct guessers across songs from this player's list",
             "Over-8 Delta"              : "Rig Over-8 - Mean Over-8",
             "Rig GR"                    : "Rig Guess Rate",
@@ -2120,14 +2127,12 @@ class TourAnalyzer:
         .highlight-best {{ background-color: {c2} !important; color: white !important; font-weight: bold; }}
         .highlight-worst {{ background-color: {c0} !important; color: white !important; font-weight: bold; }}
         
-        /* Interactive Nav Bar Tabs Styling */
         .tab-btn {{ font-size: 22px; font-weight: 600; padding: 10px 24px; border-bottom: 4px solid transparent; transition: all 0.2s; color: #4b5563; }}
         .tab-btn:hover {{ color: #000000; background-color: #f3f4f6; }}
         .tab-btn.active-tab {{ color: #000000; border-bottom-color: #000000; background-color: #f3f4f6; }}
         .tab-content {{ display: none; }}
         .tab-content.active-content {{ display: block; }}
 
-        /* Dynamic Tooltip Frame Styling */
         #customJsTooltip {{
             position: absolute;
             display: none;
@@ -2213,7 +2218,7 @@ class TourAnalyzer:
         const colExplanations = {json_explanations};
 
         const col0 = "{c0}", col1 = "{c1}", col2 = "{c2}";
-        const colBorders = new Set(["Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier", "Lives Saved", "Chanting Guess Rate"]);
+        const colBorders = new Set(["Player", "UF", "Mean Over-8", "Lives Saved", "IN GR", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier", "Lives Saved", "Chanting Guess Rate"]);
 
         function switchDashboardTab(evt, tabId) {{
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
@@ -2228,31 +2233,26 @@ class TourAnalyzer:
         function get75PercentileHull(pts, xKey, yKey) {{
             if (pts.length < 3) return null;
 
-            // 1. Calculate Center of Mass (Medians)
             const xVals = pts.map(p => p[xKey]).sort((a,b) => a-b);
             const yVals = pts.map(p => p[yKey]).sort((a,b) => a-b);
             const medX = xVals[Math.floor(xVals.length / 2)];
             const medY = yVals[Math.floor(yVals.length / 2)];
 
-            // 2. Normalize ranges for uniform distance calculations
             const xRange = (Math.max(...xVals) - Math.min(...xVals)) || 1;
             const yRange = (Math.max(...yVals) - Math.min(...yVals)) || 1;
 
-            // 3. Compute distances from Center of Mass
             const withDist = pts.map(p => {{
                 const dx = (p[xKey] - medX) / xRange;
                 const dy = (p[yKey] - medY) / yRange;
                 return {{ p, d: Math.sqrt(dx*dx + dy*dy) }};
             }});
 
-            // 4. Filter down to the 75th percentile packed group
             const sortedDist = withDist.map(item => item.d).sort((a,b) => a-b);
             const threshD = sortedDist[Math.floor(sortedDist.length * 0.75)];
             const packedPts = withDist.filter(item => item.d < threshD).map(item => item.p);
 
             if (packedPts.length < 3) return null;
 
-            // 5. Monotone Chain Convex Hull Algorithm
             packedPts.sort((a, b) => a[xKey] == b[xKey] ? a[yKey] - b[yKey] : a[xKey] - b[xKey]);
             
             const lower = [];
@@ -2286,7 +2286,7 @@ class TourAnalyzer:
             let headers = Object.keys(players[0]);
             let thead = "<thead><tr>" + headers.map(h => {{
                 let styleStr = colBorders.has(h) ? ' class="border-col-group"' : '';
-                return `<th${{styleStr}} data-metric="${{h}}">${{h.replace(' ', '<br>')}}</th>`;
+                return `<th${{styleStr}} data-metric="${{h}}">${{h.replace(/ /g, '<br>')}}</th>`;
             }}).join('') + "</tr></thead>";
 
             let tbody = "<tbody>";
@@ -2341,7 +2341,6 @@ class TourAnalyzer:
         function setupTooltipListeners() {{
             const tooltipNode = document.getElementById('customJsTooltip');
             
-            // Handle header explanations on hover for all tables dynamically
             document.querySelectorAll('table th[data-metric]').forEach(th => {{
                 const metricKey = th.getAttribute('data-metric');
                 if (!colExplanations[metricKey]) return;
@@ -2362,7 +2361,6 @@ class TourAnalyzer:
                 th.addEventListener('mouseleave', () => {{ tooltipNode.style.display = 'none'; }});
             }});
 
-            // Handle tour metric rows hover ONLY on the Metric cell itself (like Total 4-0s)
             document.querySelectorAll('#tourStatsTable tr td:first-child').forEach(td => {{
                 const metricKey = td.innerText.trim();
                 if (!colExplanations[metricKey]) return;
@@ -2383,7 +2381,6 @@ class TourAnalyzer:
                 td.addEventListener('mouseleave', () => {{ tooltipNode.style.display = 'none'; }});
             }});
 
-            // Setup granular itemized data list tooltips
             document.querySelectorAll('td[data-songs]').forEach(td => {{
                 td.addEventListener('mouseenter', (e) => {{
                     try {{
@@ -2392,24 +2389,19 @@ class TourAnalyzer:
                             let displaySongs = [...songs];
                             
                             if (songs.length > 10) {{
-                                // Shuffle randomly and take the first 10
                                 displaySongs = displaySongs
                                     .sort(() => Math.random() - 0.5)
                                     .slice(0, 10);
                                     
-                                // Sort just the 10 chosen songs alphabetically
                                 displaySongs.sort((a, b) => {{
-                                    // Strip the indicator prefix if present for clean alphabetic matching
                                     const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
                                     const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
                                     return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
                                 }});
                                 
-                                // Map conditionally: add bullet ONLY if it doesn't start with a check or cross
                                 displaySongs = displaySongs.map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : `• ${{s}}`);
                                 displaySongs.push(`and more`);
                             }} else {{
-                                // Fallback if 10 or fewer: map conditionally (already sorted from Python)
                                 displaySongs.sort((a, b) => {{
                                     const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
                                     const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
@@ -2525,7 +2517,6 @@ class TourAnalyzer:
         renderTierTable();
         setupTooltipListeners();
 
-        // 6. Restructure Matrix bins with an updated 5-interval step matching configuration criteria (8x8 or 9x9 Layout)
         const numX = {num_x}, numY = {num_y};
         const xLabels = (numX === 8) ? ['5', '10', '15', '20', '25', '30', '35'] : ['5', '10', '15', '20', '25', '30', '35', '40'];
         const yLabels = (numY === 8) ? [1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025] : [1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025];
@@ -2556,12 +2547,10 @@ class TourAnalyzer:
                     let val = matrixBins[key].over8Sum / matrixBins[key].count;
                     let_rowZ.push(val);
                     
-                    // 1. Pull list of match strings belonging to this bin
                     let bin_songs = matrixSongs[key] ? [...matrixSongs[key]] : [];
                     let song_hover_str = "";
                     
                     if (bin_songs.length > 10) {{
-                        // Randomly sample 10 items using JavaScript math
                         bin_songs = bin_songs
                             .sort(() => Math.random() - 0.5)
                             .slice(0, 10);
@@ -2572,7 +2561,6 @@ class TourAnalyzer:
                         song_hover_str = "<br>• " + bin_songs.join("<br>• ");
                     }}
 
-                    // 2. Append text layout formatting variables
                     let_rowText.push(`Mean Over-8: ${{val.toFixed(2)}}${{song_hover_str}}`);
 
                     annotations.push({{
@@ -2638,8 +2626,6 @@ class TourAnalyzer:
             margin: {{ l: 60, r: 0, t: 30, b: 55 }}
         }}, {{responsive: true, displayModeBar: false}});
 
-        // 0. Titles removed. 1. Style configurations copied explicitly from Song (bold titles, rotation, preserved grid lines)
-        // 4. textposition set to 'auto' enables smart native collision avoidance spacing inside Plotly engine
         const listHull = get75PercentileHull(arrowData, 'x_start', 'y_start');
         let listTraces = [];
         
@@ -2686,8 +2672,6 @@ class TourAnalyzer:
             margin: {{ l: 60, r: 0, t: 30, b: 55 }},
         }}, {{responsive: true, displayModeBar: false}});
 
-        // 0. Titles removed. 1. Style configurations copied explicitly from Song (bold titles, rotation, preserved grid lines)
-        // 4. textposition set to 'auto' enables smart native collision avoidance spacing inside Plotly engine
         const guessHull = get75PercentileHull(scatterData, 'over8', 'vintage');
         let guessTraces = [];
 
@@ -2744,15 +2728,16 @@ class TourAnalyzer:
         df = df.reset_index(drop = True)
 
         desc = [
-            "Elo",          "GR",           "UF",
-            "1/8s",         "2/8s",         "≤3/8s",
+            "Elo",          "GR",               "UF",
+            "1/8s",         "2/8s",
             "Lives Taken",  "Lives Saved",
-            "OP GR",        "ED GR",        "IN GR",
-            "Rigs",         "Rig Rate",     "Over-8 Delta",
-            "Rig GR",       "Off GR",       "Rig Delta", 
+            "OP GR",        "ED GR",            "IN GR",
+            "Rigs",         "Rig Rate",
+            "Solo Rigs",    "Solo Rig Rate",    "Over-8 Delta",
+            "Rig GR",       "Off GR",           "Rig Delta", 
             "Chant GR",
-            "Mean Elo",     "Mean GR",      "Total 1/8s",
-            "Rig Synergy",  "Off Synergy",  "Shared Rigs"
+            "Mean Elo",     "Mean GR",          "Total 1/8s",
+            "Rig Synergy",  "Off Synergy",      "Shared Rigs"
         ]
 
         asc     = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
@@ -2785,15 +2770,31 @@ class TourAnalyzer:
 
                     el_cols = ["Elo", "Mean Elo"]
                     gr_cols = ["OP GR", "ED GR", "IN GR", "Chant GR"]
+                    rig_ser = pd.to_numeric(df["Rigs"], errors = 'coerce').fillna(0)
 
-                    if      col in el_cols                              : best_idx = best_b_indices[0]                                                                      if not best_b_indices.empty else None
-                    elif    col in gr_cols                              : best_idx = pd.to_numeric(df["GR"],    errors = 'coerce').fillna(0).loc[best_b_indices].idxmin()   if not best_b_indices.empty else None
-                    elif    col == "Rig GR" and "Rigs" in df.columns    : best_idx = pd.to_numeric(df["Rigs"],  errors = 'coerce').fillna(0).loc[best_b_indices].idxmax()   if not best_b_indices.empty else None
-                    else                                                : best_idx = elo_ser.loc[best_b_indices].idxmin()                                                   if not best_b_indices.empty else None
+                    if col == "Solo Rigs":
+                        best_idx    = rig_ser.loc[best_b_indices]   .idxmin() if not best_b_indices     .empty else None
+                        worst_idx   = rig_ser.loc[worst_b_indices]  .idxmax() if not worst_b_indices    .empty else None
 
-                    if      col in el_cols              : worst_idx = worst_b_indices[0]                                                                    if not worst_b_indices.empty else None
-                    elif    col in gr_cols              : worst_idx = pd.to_numeric(df["GR"], errors = 'coerce').fillna(0).loc[worst_b_indices].idxmax()    if not worst_b_indices.empty else None
-                    else                                : worst_idx = elo_ser.loc[worst_b_indices].idxmax()                                                 if not worst_b_indices.empty else None
+                    elif col == "Solo Rig Rate":
+                        best_idx    = rig_ser.loc[best_b_indices]   .idxmax() if not best_b_indices     .empty else None
+                        worst_idx   = rig_ser.loc[worst_b_indices]  .idxmax() if not worst_b_indices    .empty else None
+
+                    elif col in el_cols:
+                        best_idx    = best_b_indices    [0] if not best_b_indices   .empty else None
+                        worst_idx   = worst_b_indices   [0] if not worst_b_indices  .empty else None
+
+                    elif col in gr_cols:
+                        best_idx    = pd.to_numeric(df["GR"], errors = 'coerce').fillna(0).loc[best_b_indices]  .idxmin() if not best_b_indices     .empty else None
+                        worst_idx   = pd.to_numeric(df["GR"], errors = 'coerce').fillna(0).loc[worst_b_indices] .idxmax() if not worst_b_indices    .empty else None
+
+                    elif col == "Rig GR" and "Rigs" in df.columns:
+                        best_idx    = rig_ser.loc[best_b_indices]   .idxmax() if not best_b_indices     .empty else None
+                        worst_idx   = elo_ser.loc[worst_b_indices]  .idxmax() if not worst_b_indices    .empty else None
+
+                    else:
+                        best_idx    = elo_ser.loc[best_b_indices]   .idxmin() if not best_b_indices     .empty else None
+                        worst_idx   = elo_ser.loc[worst_b_indices]  .idxmax() if not worst_b_indices    .empty else None
 
                     stats[col] = {'best_idx': best_idx, 'worst_idx': worst_idx}
 
