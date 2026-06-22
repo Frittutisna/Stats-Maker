@@ -1007,8 +1007,11 @@ class TourAnalyzer:
             gen_players, atk_players, blk_players, con_players, spd_players, chn_players = [], [], [], [], [], []
 
             for p in tp:
-                cor, tot = self.c_counts[p], self.s_part[p]
-                tim, chc, cht = self.p_answer_times.get(p, []), self.p_chan_c[p], self.p_chan_s[p]
+                cor = self.c_counts[p]
+                tot = self.s_part[p]
+                tim = self.p_answer_times.get(p, [])
+                chc = self.p_chan_c[p]
+                cht = self.p_chan_s[p]
 
                 gen = 100 * cor / tot if tot else 0.0
                 atk = self.p_pts[p]
@@ -1021,36 +1024,34 @@ class TourAnalyzer:
                 atk_players.append({"player": p, "value": atk})
                 blk_players.append({"player": p, "value": blk})
                 con_players.append({"player": p, "value": con})
-                if pd.notnull(spd): spd_players.append({"player": p, "value": spd})
-                if has_chanting_songs: chn_players.append({"player": p, "value": chn})
+
+                if pd.notnull(spd)      : spd_players.append({"player": p, "value": spd})
+                if has_chanting_songs   : chn_players.append({"player": p, "value": chn})
 
             gen_players.sort(key = lambda x: x["value"], reverse = True)
             atk_players.sort(key = lambda x: x["value"], reverse = True)
             blk_players.sort(key = lambda x: x["value"], reverse = True)
             con_players.sort(key = lambda x: x["value"], reverse = True)
             spd_players.sort(key = lambda x: x["value"], reverse = False)
+
             if chn_players: chn_players.sort(key = lambda x: x["value"], reverse = True)
 
-            row1["Guess Rate"]          = f"{gen_players[0]['player']} ({gen_players[0]['value']:.2f})" if gen_players else "N/A"
-            row1["Lives Taken"]         = f"{atk_players[0]['player']} ({atk_players[0]['value']:g})" if atk_players else "N/A"
-            row1["Lives Saved"]         = f"{blk_players[0]['player']} ({blk_players[0]['value']:g})" if blk_players else "N/A"
-            row2["Contribution Rate"]   = f"{con_players[0]['player']} ({con_players[0]['value']:.2f})" if con_players else "N/A"
-            row2["Median Time"]         = f"{spd_players[0]['player']} ({spd_players[0]['value']:.2f})" if spd_players else "N/A"
-            row2["Chant GR"]            = f"{chn_players[0]['player']} ({chn_players[0]['value']:.2f})" if chn_players and chn_players[0]['value'] > 0 else ""
+            row1["Guess Rate"]          = f"{gen_players[0]['player']} ({gen_players[0]['value']:.2f})" if gen_players                                  else "N/A"
+            row1["Lives Taken"]         = f"{atk_players[0]['player']} ({atk_players[0]['value']:g})"   if atk_players                                  else "N/A"
+            row1["Lives Saved"]         = f"{blk_players[0]['player']} ({blk_players[0]['value']:g})"   if blk_players                                  else "N/A"
+            row2["Contribution Rate"]   = f"{con_players[0]['player']} ({con_players[0]['value']:.2f})" if con_players                                  else "N/A"
+            row2["Median Time"]         = f"{spd_players[0]['player']} ({spd_players[0]['value']:.2f})" if spd_players                                  else "N/A"
+            row2["Chant GR"]            = f"{chn_players[0]['player']} ({chn_players[0]['value']:.2f})" if chn_players and chn_players[0]['value'] > 0  else ""
 
             row1["gen_val"] = gen_players[0]['value'] if gen_players else 0.0
             row1["atk_val"] = atk_players[0]['value'] if atk_players else 0.0
             row1["blk_val"] = blk_players[0]['value'] if blk_players else 0.0
             row2["con_val"] = con_players[0]['value'] if con_players else 0.0
-            row2["spd_val"] = spd_players[0]['value'] if spd_players else np.nan
-            row2["chn_val"] = chn_players[0]['value'] if chn_players else None
+            row2["spd_val"] = spd_players[0]['value'] if spd_players else 0.0
+            row2["chn_val"] = chn_players[0]['value'] if chn_players else 0.0
 
-            row1["_players"] = {
-                "gen": gen_players, "atk": atk_players, "blk": blk_players
-            }
-            row2["_players"] = {
-                "con": con_players, "spd": spd_players, "chn": chn_players
-            }
+            row1["_players"] = {"gen": gen_players, "atk": atk_players, "blk": blk_players}
+            row2["_players"] = {"con": con_players, "spd": spd_players, "chn": chn_players}
 
             rows1.append(row1)
             rows2.append(row2)
@@ -1058,18 +1059,16 @@ class TourAnalyzer:
         return rows1, rows2
 
     def _create_tier_png(self, assigns, path, has_chanting_songs):
-        rows1, rows2 = self._compute_tier_rows(assigns, has_chanting_songs)
-
-        best_gen_idx = len(rows1) - 1 - max(range(len(rows1)), key = lambda i: rows1[::-1][i]["gen_val"]) if rows1 else None
-        best_atk_idx = len(rows1) - 1 - max(range(len(rows1)), key = lambda i: rows1[::-1][i]["atk_val"]) if rows1 else None
-        best_blk_idx = len(rows1) - 1 - max(range(len(rows1)), key = lambda i: rows1[::-1][i]["blk_val"]) if rows1 else None
-        best_con_idx = len(rows2) - 1 - max(range(len(rows2)), key = lambda i: rows2[::-1][i]["con_val"]) if rows2 else None
-        
-        valid_spd_rows = [i for i, r in enumerate(rows2) if pd.notnull(r["spd_val"])]
-        best_spd_idx = len(rows2) - 1 - min(valid_spd_rows, key = lambda i: rows2[::-1][i]["spd_val"]) if valid_spd_rows else None
-
+        rows1, rows2    = self._compute_tier_rows(assigns, has_chanting_songs)
+        valid_spd_rows  = [i for i, r in enumerate(rows2) if pd.notnull(r["spd_val"])]
         valid_chn_rows  = [i for i, r in enumerate(rows2) if r["chn_val"] is not None]
-        best_chn_idx    = len(rows2) - 1 - max(valid_chn_rows, key = lambda i: rows2[::-1][i]["chn_val"]) if valid_chn_rows else None
+
+        best_gen_idx = len(rows1) - 1 - max(range(len(rows1)),  key = lambda i: rows1[::-1][i]["gen_val"]) if rows1             else None
+        best_atk_idx = len(rows1) - 1 - max(range(len(rows1)),  key = lambda i: rows1[::-1][i]["atk_val"]) if rows1             else None
+        best_blk_idx = len(rows1) - 1 - max(range(len(rows1)),  key = lambda i: rows1[::-1][i]["blk_val"]) if rows1             else None
+        best_con_idx = len(rows2) - 1 - max(range(len(rows2)),  key = lambda i: rows2[::-1][i]["con_val"]) if rows2             else None
+        best_spd_idx = len(rows2) - 1 - min(valid_spd_rows,     key = lambda i: rows2[::-1][i]["spd_val"]) if valid_spd_rows    else None
+        best_chn_idx = len(rows2) - 1 - max(valid_chn_rows,     key = lambda i: rows2[::-1][i]["chn_val"]) if valid_chn_rows    else None
 
         html_parts = []
         html_parts.append("<tr><th>Tier</th><th>Guess Rate</th><th>Lives Taken</th><th>Lives Saved</th></tr>")
