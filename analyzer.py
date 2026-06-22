@@ -1730,7 +1730,7 @@ class TourAnalyzer:
                 for ls in s.get("listStates", []):
                     if "name" in ls: raw_vintage_by_list[ls["name"]].append(v_str)
 
-        return player_song_details, player_true_solo_rigs, tour_song_details, team_song_details, raw_vintage_by_guess, raw_vintage_by_list, matrix_song_details, num_x, num_y
+        return player_song_details, tour_song_details, team_song_details, raw_vintage_by_guess, raw_vintage_by_list, matrix_song_details, num_x, num_y
 
     def _render_dashboard_player(self, sorted_players, active, t_labels, watched, player_song_details, df_base):
         rows, eligibility, borders = [], [], []
@@ -2122,43 +2122,43 @@ class TourAnalyzer:
         return scatter_list, arrow_list
 
     def _create_dashboard_html(self, path, use_teams, watched):
-        active      = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
+        active = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
         if len(active) <= 1: active = []
-        t_labels    = {1: "OP Guess Rate", 2: "ED Guess Rate", 3: "IN Guess Rate"}
 
-        valid_elos  = [float(v) for v in self.elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
-        avg_rank    = np.mean(valid_elos) if valid_elos else 1.0
-
+        t_labels        = {1: "OP Guess Rate", 2: "ED Guess Rate", 3: "IN Guess Rate"}
+        valid_elos      = [float(v) for v in self.elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
+        avg_rank        = np.mean(valid_elos) if valid_elos else 1.0
         final_threshold = 6 if len(self.s_part) <= 20 else 5
-        if self.base_exp >= final_threshold: stage = "Final"
-        elif self.base_exp == 3: stage = "Mid-Tour"
-        else: stage = f"R{self.base_exp}"
+
+        if      self.base_exp >= final_threshold    : stage = "Final"
+        elif    self.base_exp == 3                  : stage = "Mid-Tour"
+        else                                        : stage = f"R{self.base_exp}"
+
         prefix = f"{self.tour_label.strip()} Tour: {stage}"
 
-        player_song_details, player_true_solo_rigs, tour_song_details, team_song_details, raw_vintage_by_guess, raw_vintage_by_list, matrix_song_details, num_x, num_y = self._get_dashboard_data()
-
+        player_song_details, tour_song_details, team_song_details, raw_vintage_by_guess, raw_vintage_by_list, matrix_song_details, num_x, num_y = self._get_dashboard_data()
         df_base, _ = self._compute_player_rows(self.elo_map, self.apps, self.exp_map, self.base_exp, self.new_players, watched, active, t_labels, avg_rank)
         
         def player_sort_key(x):
             gr = (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0.0
-            try: elo = float(self.elo_map.get(x.lower(), float('inf')))
-            except: elo = float('inf')
+
+            try     : elo = float(self.elo_map.get(x.lower(), float('inf')))
+            except  : elo = float('inf')
+
             return (gr, -elo)
 
-        sorted_players = sorted(self.s_part.keys(), key = player_sort_key, reverse = True)
+        sorted_players  = sorted(self.s_part.keys(), key = player_sort_key, reverse = True)
+        df_teams        = self._compute_team_rows(self.assignments, self.t1_lookup)
+        rows1, rows2    = self._compute_tier_rows(self.assignments, any(self.p_chan_s.values()))
 
-        json_players, json_hl_rules, json_borders, json_eligibility = [json.dumps(x) for x in self._render_dashboard_player(sorted_players, active, t_labels, watched, player_song_details, df_base)]
-        json_tour_stats     = json.dumps(self._render_dashboard_tour(watched, tour_song_details, player_song_details))
-        
-        df_teams = self._compute_team_rows(self.assignments, self.t1_lookup)
-        json_teams, json_team_hl_rules = [json.dumps(x) for x in self._render_dashboard_team(df_teams, team_song_details)]
-        
-        rows1, rows2 = self._compute_tier_rows(self.assignments, any(self.p_chan_s.values()))
-        json_tier_merged    = json.dumps(self._render_dashboard_tiers(rows1, rows2, player_song_details))
-        
-        json_songs          = json.dumps(self._render_dashboard_songs())
+        json_players, json_hl_rules, json_borders, json_eligibility = [json.dumps(x) for x in self._render_dashboard_player (sorted_players, active, t_labels, watched, player_song_details, df_base)]
+        json_teams, json_team_hl_rules                              = [json.dumps(x) for x in self._render_dashboard_team   (df_teams, team_song_details)]
+        json_scatter, json_arrows                                   = [json.dumps(x) for x in self._render_dashboard_plot   (avg_rank, raw_vintage_by_guess, raw_vintage_by_list)]
+
+        json_tour_stats     = json.dumps(self._render_dashboard_tour    (watched, tour_song_details, player_song_details))
+        json_tier_merged    = json.dumps(self._render_dashboard_tiers   (rows1, rows2, player_song_details))
+        json_songs          = json.dumps(self._render_dashboard_songs   ())
         json_matrix_songs   = json.dumps(matrix_song_details)
-        json_scatter, json_arrows = [json.dumps(x) for x in self._render_dashboard_plot(avg_rank, raw_vintage_by_guess, raw_vintage_by_list)]
 
         explanations = {
             "Player"                    : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
@@ -2180,26 +2180,38 @@ class TourAnalyzer:
             "Best Solo Rig Converter"   : "100 * Solo from Solo Rig / Solo Rig: Shows the best player at converting their own solo rig into a solo",
             "Worst Solo Rig Converter"  : "100 * Solo from Solo Rig / Solo Rig: Shows the worst player at converting their own solo rig into a solo"
         }
+
         json_explanations = json.dumps(explanations)
 
-        # 1. Generate Content Str Structures
-        html_content = self._generate_html_skeleton(prefix, use_teams)
-        css_content  = self._generate_dashboard_css(COLOR_0, COLOR_1, COLOR_2)
-        js_content   = self._generate_dashboard_js(
-            use_teams=use_teams, num_x=num_x, num_y=num_y, c0=COLOR_0, c1=COLOR_1, c2=COLOR_2,
-            json_players=json_players, json_hl_rules=json_hl_rules, json_borders=json_borders, json_eligibility=json_eligibility,
-            json_tour_stats=json_tour_stats, json_teams=json_teams, json_team_hl_rules=json_team_hl_rules,
-            json_tier_merged=json_tier_merged, json_songs=json_songs, json_matrix_songs=json_matrix_songs,
-            json_scatter=json_scatter, json_arrows=json_arrows, json_explanations=json_explanations
+        html_content    = self._generate_html_skeleton  (prefix, use_teams)
+        css_content     = self._generate_dashboard_css  (COLOR_0, COLOR_2)
+        js_content      = self._generate_dashboard_js   (
+            use_teams           = use_teams, 
+            num_x               = num_x, 
+            num_y               = num_y, 
+            c0                  = COLOR_0, 
+            c1                  = COLOR_1, 
+            c2                  = COLOR_2,
+            json_players        = json_players, 
+            json_hl_rules       = json_hl_rules, 
+            json_borders        = json_borders, 
+            json_eligibility    = json_eligibility,
+            json_tour_stats     = json_tour_stats, 
+            json_teams          = json_teams, 
+            json_team_hl_rules  = json_team_hl_rules,
+            json_tier_merged    = json_tier_merged, 
+            json_songs          = json_songs, 
+            json_matrix_songs   = json_matrix_songs,
+            json_scatter        = json_scatter, 
+            json_arrows         = json_arrows, 
+            json_explanations   = json_explanations
         )
 
-        # 2. Save individual files to output disk
-        with open(path / "Dashboard.html", "w", encoding="utf-8") as f: f.write(html_content)
-        with open(path / "Styles.css", "w", encoding="utf-8") as f: f.write(css_content)
-        with open(path / "Script.js", "w", encoding="utf-8") as f: f.write(js_content)
+        with open(path / "Dashboard.html",  "w", encoding = "utf-8") as f: f.write(html_content)
+        with open(path / "Styles.css",      "w", encoding = "utf-8") as f: f.write(css_content)
+        with open(path / "Script.js",       "w", encoding = "utf-8") as f: f.write(js_content)
 
-    def _generate_html_skeleton(self, prefix, use_teams):
-        return f"""<!DOCTYPE html>
+    def _generate_html_skeleton(self, prefix, use_teams): return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -2278,8 +2290,7 @@ class TourAnalyzer:
 </body>
 </html>"""
 
-    def _generate_dashboard_css(self, c0, c1, c2):
-        return f"""body {{
+    def _generate_dashboard_css(self, c0, c2): return f"""body {{
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     background-color: #ffffff;
     color: #000000;
