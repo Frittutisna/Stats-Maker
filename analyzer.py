@@ -1681,8 +1681,8 @@ class TourAnalyzer:
                         player_song_details[n]["Rigs"].append(f"{marker} {song_line}")
 
                         if is_true_solo_rig:
-                            solo_marker = "✓" if (n in active_correct and amt_correct == 1) else "✗"
-                            player_song_details[n]["Solo Rigs"].append(f"{solo_marker} {song_line}")
+                            marker = "✓" if (n in active_correct) else "✗"
+                            player_song_details[n]["Solo Rigs"].append(f"{marker} {song_line}")
 
                     if is_true_solo_rig:
                         solo_rigger = ls[0]["name"]
