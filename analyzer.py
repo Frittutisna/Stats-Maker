@@ -2107,6 +2107,17 @@ class TourAnalyzer:
             border: 1px solid #475569;
             text-align: left;
         }}
+        td[data-songs] {{
+            cursor: help;
+            transition: background-color 0.15s ease;
+        }}        
+        td[data-songs]:hover {{
+            background-color: rgba(128, 128, 128, 0.25) !important;
+        }}
+        td[data-songs].highlight-best:hover,
+        td[data-songs].highlight-worst:hover {{
+            background-color: rgba(128, 128, 128, 0.25) !important;
+        }}
     </style>
 </head>
 <body class="p-6 w-screen max-w-full m-0 box-border">
