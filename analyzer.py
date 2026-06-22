@@ -439,10 +439,23 @@ class TourAnalyzer:
                     
                     self.p_two_e[p1] += 1
                     self.p_two_e[p2] += 1
-                    
-                    song["blocked_p1_by_p2"]    = f" (blocked by {p2})"
-                    song["blocked_p2_by_p1"]    = f" (blocked by {p1})"
-                    song["both_players"]        = f" ({p1} and {p2})"
+
+                    t1 = self.assignments.get(p1.lower(), (None,))[0] if self.use_teams else None
+                    t2 = self.assignments.get(p2.lower(), (None,))[0] if self.use_teams else None
+
+                    if t1 is not None and t2 is not None and t1 == t2:
+                        rel_p1_by_p2    = f" (covered by {p2})"
+                        rel_p2_by_p1    = f" (covered by {p1})"
+                        rel_both        = f" ({p1} and {p2})"
+
+                    else:
+                        rel_p1_by_p2    = f" (blocked by {p2})"
+                        rel_p2_by_p1    = f" (blocked by {p1})"
+                        rel_both        = f" ({p1} and {p2})"
+
+                    song["blocked_p1_by_p2"]    = rel_p1_by_p2
+                    song["blocked_p2_by_p1"]    = rel_p2_by_p1
+                    song["both_players"]        = rel_both
 
                 elif len(correct) == 1:
                     self.global_stats["solos"]  +=  1
@@ -1555,14 +1568,16 @@ class TourAnalyzer:
                     if amt_correct == 1:
                         p_song_details[sw]["1/8s"].append(song_line)
                     elif amt_correct == 2:
-                        # Check who the current player is to determine who blocked them
                         if sw.casefold() == list(active_correct)[0].casefold():
                             opp_player = list(active_correct)[1] if len(active_correct) > 1 else "Unknown"
                         else:
                             opp_player = list(active_correct)[0]
-                            
-                        # Append with formatting: HTML/Player/2/8s: (blocked by X)
-                        p_song_details[sw]["2/8s"].append(f"{song_line} (blocked by {opp_player})")
+                        t_sw = self.assignments.get(sw.lower(), (None,))[0] if self.use_teams else None
+                        t_opp = self.assignments.get(opp_player.lower(), (None,))[0] if self.use_teams else None
+                        if t_sw is not None and t_opp is not None and t_sw == t_opp:
+                            p_song_details[sw]["2/8s"].append(f"{song_line} (covered by {opp_player})")
+                        else:
+                            p_song_details[sw]["2/8s"].append(f"{song_line} (blocked by {opp_player})")
                 
                 if apply_rev and len(final_members - active_correct) == 1:
                     missing_player = list(final_members - active_correct)[0]
