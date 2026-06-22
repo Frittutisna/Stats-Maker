@@ -1538,8 +1538,9 @@ class TourAnalyzer:
                     if sw.lower() in self.assignments:
                         tm_song_details[self.assignments[sw.lower()][0]]["Total 1/8s"].append(song_line)
                 elif amt_correct == 2:
-                    both_suffix = song.get("both_players", "")
-                    t_song_details["Total 2/8s"].append(f"{song_line}{both_suffix}")
+                    p_list = list(active_correct)
+                    p1, p2 = p_list[0], p_list[1]
+                    t_song_details["Total 2/8s"].append(f"{song_line} ({p1} and {p2})")
                 elif apply_rev and len(final_members - active_correct) == 1:
                     t_song_details["Total 7/8s"].append(song_line)
                 elif amt_correct == len(final_members):
