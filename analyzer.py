@@ -1672,8 +1672,10 @@ class TourAnalyzer:
                         n = p["name"]
                         marker = "✓" if (n in active_correct) else "✗"
                         p_song_details[n]["Rigs"].append(f"{marker} {song_line}")
+                        
                         if is_true_solo_rig:
-                            p_song_details[n]["Solo Rigs"].append(f"{marker} {song_line}")
+                            solo_marker = "✓" if (n in active_correct and amt_correct == 1) else "✗"
+                            p_song_details[n]["Solo Rigs"].append(f"{solo_marker} {song_line}")
                     
                     if is_true_solo_rig:
                         solo_rigger = ls[0]["name"]
