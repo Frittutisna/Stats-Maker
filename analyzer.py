@@ -987,8 +987,8 @@ class TourAnalyzer:
         return df
 
     def _create_team_png(self, assigns, t1_lookup, path):
-        df = self._compute_team_rows(assigns, t1_lookup)
-        df_png = df.drop(columns = ["_tid"])
+        df          = self._compute_team_rows(assigns, t1_lookup)
+        df_png      = df.drop(columns = ["_tid"])
         num_cols    = ["Mean Elo", "Mean GR", "Mean Over-8", "Rig Synergy", "Off Synergy", "Shared Rigs"]
 
         for c in num_cols: df_png[c] = pd.to_numeric(df_png[c], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -1907,7 +1907,7 @@ class TourAnalyzer:
         headers         = list(df_players.columns)
         html_rows_list  = []
 
-        for idx, row in df_players.iterrows():
+        for _, row in df_players.iterrows():
             row_dict = {}
 
             for col in headers:
@@ -1923,76 +1923,88 @@ class TourAnalyzer:
         return html_rows_list, stats_hl, borders, eligibility
 
     def _render_dashboard_tour(self, watched, tour_song_details, player_song_details):
-        stats = self._compute_tour_stats(self.use_teams, watched)
-        tour_unrolled = []
+        stats           = self._compute_tour_stats(self.use_teams, watched)
+        tour_unrolled   = []
 
         for row in stats:
-            metric_name, display_val, link_key = row[0], str(row[1]), row[2]
-            details = []
+            metric_name = row[0]
+            display_val = str(row[1])
+            link_key    = row[2]
+            details     = []
+
             if link_key is not None:
-                if isinstance(link_key, str):
-                    details = tour_song_details.get(link_key, [])
+                if isinstance(link_key, str): details = tour_song_details.get(link_key, [])
+
                 elif isinstance(link_key, tuple):
-                    stat_key, player_name = link_key
-                    details = player_song_details.get(player_name, {}).get(stat_key, [])
+                    stat_key, player_name   = link_key
+                    details                 = player_song_details.get(player_name, {}).get(stat_key, [])
             
-            details.sort(key=str.lower)
+            details.sort(key = str.lower)
             tour_unrolled.append({"Metric": metric_name, "Value": {"count": display_val, "details": details}})
+
         return tour_unrolled
 
-    def _render_dashboard_teams(self, df_teams, team_song_details):
+    def _render_dashboard_team(self, df_teams, team_song_details):
         team_rows, team_hl_rules = [], {}
         if not self.use_teams: return team_rows, team_hl_rules
 
         for _, row_data in df_teams.iterrows():
             tid = row_data["_tid"]
-            team_song_details[tid]["Total 1/8s"].sort(key=str.lower)
+            team_song_details[tid]["Total 1/8s"].sort(key = str.lower)
+
             team_rows.append({
                 "Team Leader"   : row_data["Team Leader"],
-                "Mean Elo"      : float(row_data["Mean Elo"]),
-                "Mean GR"       : float(row_data["Mean GR"]),
+                "Mean Elo"      : float (row_data["Mean Elo"]),
+                "Mean GR"       : float (row_data["Mean GR"]),
                 "Total 1/8s"    : {"count": int(row_data["Total 1/8s"]), "details": team_song_details[tid]["Total 1/8s"]},
-                "Mean Over-8"   : float(row_data["Mean Over-8"]),
-                "Rig Synergy"   : float(row_data["Rig Synergy"]),
-                "Off Synergy"   : float(row_data["Off Synergy"]),
-                "Shared Rigs"   : float(row_data["Shared Rigs"])
+                "Mean Over-8"   : float (row_data["Mean Over-8"]),
+                "Rig Synergy"   : float (row_data["Rig Synergy"]),
+                "Off Synergy"   : float (row_data["Off Synergy"]),
+                "Shared Rigs"   : float (row_data["Shared Rigs"])
             })
 
         if team_rows:
-            team_desc = ["Mean Elo", "Mean GR", "Rig Synergy", "Off Synergy", "Shared Rigs"]
-            team_asc = ["Total 1/8s", "Mean Over-8"]
             df_teams_temp = pd.DataFrame(team_rows)
+
             for col in df_teams_temp.columns:
-                if col in team_desc or col in team_asc:
-                    num = df_teams_temp[col].map(lambda x: x["count"]) if col == "Total 1/8s" else df_teams_temp[col]
-                    if not num.dropna().empty:
-                        best_val = num.dropna().max() if col in team_desc else num.dropna().min()
-                        worst_val = num.dropna().min() if col in team_desc else num.dropna().max()
-                        best_b_idx = num[num == best_val].index
-                        worst_b_idx = num[num == worst_val].index
-                        team_hl_rules[col] = {
-                            'best_idx': int(best_b_idx[0]) if not best_b_idx.empty else None,
-                            'worst_idx': int(worst_b_idx[0]) if not worst_b_idx.empty else None
-                        }
+                num = df_teams_temp[col].map(lambda x: x["count"]) if col == "Total 1/8s" else df_teams_temp[col]
+                desc    = ["Mean Elo", "Mean GR", "Total 1/8s", "Rig Synergy", "Off Synergy", "Shared Rigs"]
+                asc     = ["Mean Over-8"]
+
+                if not num.dropna().empty and (col in desc or col in asc):
+                    best_val    = num.dropna().min() if col in asc else num.dropna().max()
+                    worst_val   = num.dropna().max() if col in asc else num.dropna().min()
+
+                    best_b_idx  = num[num == best_val]  .index
+                    worst_b_idx = num[num == worst_val] .index
+
+                    team_hl_rules[col] = {
+                        'best_idx'  : int(best_b_idx    [0]) if not best_b_idx  .empty else None,
+                        'worst_idx' : int(worst_b_idx   [0]) if not worst_b_idx .empty else None
+                    }
 
         formatted_team_rows = []
+
         for row in team_rows:
             f_dict = {}
+
             for k, v in row.items():
-                if k in ["Total 1/8s", "Team Leader"]: f_dict[k] = v
-                elif pd.isnull(v) or (isinstance(v, float) and np.isnan(v)): f_dict[k] = "N/A"
-                else: f_dict[k] = f"{float(v):.2f}"
+                if      k in ["Total 1/8s", "Team Leader"]                      : f_dict[k] = v
+                elif    pd.isnull(v) or (isinstance(v, float) and np.isnan(v))  : f_dict[k] = "N/A"
+                else                                                            : f_dict[k] = f"{float(v):.2f}"
+
             formatted_team_rows.append(f_dict)
 
         return formatted_team_rows, team_hl_rules
 
     def _render_dashboard_tiers(self, rows1, rows2, player_song_details):
         tier_data = {}
+
         for r1, r2 in zip(rows1, rows2):
-            tr = r1["Tier"]
-            tier_data[tr] = []
-            
+            tr              = r1["Tier"]
+            tier_data[tr]   = []
             players_tracked = {p["player"] for p in r1["_players"]["gen"]}
+
             for p in players_tracked:
                 gen = next((x["value"] for x in r1["_players"]["gen"] if x["player"] == p), 0.0)
                 atk = next((x["value"] for x in r1["_players"]["atk"] if x["player"] == p), 0.0)
@@ -2001,20 +2013,21 @@ class TourAnalyzer:
                 spd = next((x["value"] for x in r2["_players"]["spd"] if x["player"] == p), None)
                 chn = next((x["value"] for x in r2["_players"]["chn"] if x["player"] == p), 0.0) if r2["_players"]["chn"] else 0.0
 
-                player_song_details[p]["Lives Taken"].sort(key=str.lower)
-                player_song_details[p]["Lives Saved"].sort(key=str.lower)
-                
+                player_song_details[p]["Lives Taken"].sort(key = str.lower)
+                player_song_details[p]["Lives Saved"].sort(key = str.lower)
+
                 tier_data[tr].append({
-                    "player": p,
-                    "Guess Rate": float(round(gen, 2)),
-                    "Lives Taken": int(atk),
-                    "Lives Taken Details": player_song_details[p]["Lives Taken"],
-                    "Lives Saved": float(round(blk, 2)),
-                    "Lives Saved Details": player_song_details[p]["Lives Saved"],
-                    "Contribution Rate": float(round(con, 2)),
-                    "Median Time": float(round(spd, 2)) if spd is not None and pd.notnull(spd) else None,
-                    "Chanting Guess Rate": float(round(chn, 2))
+                    "Player"                : p,
+                    "Guess Rate"            : float(round(gen, 2)),
+                    "Lives Taken"           : int(atk),
+                    "Lives Taken Details"   : player_song_details[p]["Lives Taken"],
+                    "Lives Saved"           : float(round(blk, 2)),
+                    "Lives Saved Details"   : player_song_details[p]["Lives Saved"],
+                    "Contribution Rate"     : float(round(con, 2)),
+                    "Median Time"           : float(round(spd, 2)) if spd is not None and pd.notnull(spd) else None,
+                    "Chanting Guess Rate"   : float(round(chn, 2))
                 })
+
         return tier_data
 
     def _render_dashboard_songs(self):
@@ -2029,75 +2042,83 @@ class TourAnalyzer:
 
         return song_matrix_list
 
-    def _render_dashboard_scatter_plots(self, avg_rank, raw_vintage_by_guess, raw_vintage_by_list):
+    def _render_dashboard_plot(self, avg_rank, raw_vintage_by_guess, raw_vintage_by_list):
         pool_data = []
+
         for name in self.s_part:
             if self.c_counts[name] > 0:
-                tot = self.s_part[name]
-                uf_scaled = (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
-                try: elo = float(self.elo_map.get(name.lower(), 0.0))
-                except: elo = 0.0
+                tot         = self.s_part[name]
+                uf_scaled   = (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
+
+                try     : elo = float(self.elo_map.get(name.lower(), 0.0))
+                except  : elo = 0.0
+
                 pool_data.append({"name": name, "uf": uf_scaled, "elo": elo})
 
-        els = np.array([p["elo"] for p in pool_data])
-        ufs = np.array([p["uf"] for p in pool_data])
+        els = np.array([p["elo"]    for p in pool_data])
+        ufs = np.array([p["uf"]     for p in pool_data])
+
         if len(els) > 1 and np.var(els) > 0:
-            slope, intercept = np.polyfit(els, ufs, 1)
-            res_std = np.std(ufs - (slope * els + intercept))
+            slope, intercept    = np.polyfit(els, ufs, 1)
+            res_std             = np.std(ufs - (slope * els + intercept))
+
             if res_std == 0: res_std = 1
-        else:
-            slope, intercept, res_std = 0, np.mean(ufs) if len(ufs) > 0 else 0, 1
+
+        else: slope, intercept, res_std = 0, np.mean(ufs) if len(ufs) > 0 else 0, 1
 
         scatter_list, arrow_list = [], []
+
         for name in self.s_part:
             if self.c_counts[name] > 0:
                 yl = np.median(self.p_l_vint[name]) if self.p_l_vint[name] else np.nan
                 yg = np.median(self.p_c_vint[name]) if self.p_c_vint[name] else np.nan
                 
                 p_vints     = raw_vintage_by_guess.get(name, [])
-                p_vint_med  = np.median([extract_year(v) for v in p_vints]) if p_vints else (yg if pd.notnull(yg) else 2010)
-                p_seas      = format_year(p_vint_med) if p_vints else f"Winter {int(yg)}" if pd.notnull(yg) else "N/A"
+                p_vint_med  = np.median([extract_year(v) for v in p_vints]) if p_vints else yg
+                p_seas      = format_year(p_vint_med)                       if p_vints else f"Winter {int(yg)}" if pd.notnull(yg) else "N/A"
                 
                 r_vints     = raw_vintage_by_list.get(name, [])
-                r_vint_med  = np.median([extract_year(v) for v in r_vints]) if r_vints else (yl if pd.notnull(yl) else 2010)
-                r_seas      = format_year(r_vint_med) if r_vints else f"Winter {int(yl)}" if pd.notnull(yl) else "N/A"
+                r_vint_med  = np.median([extract_year(v) for v in r_vints]) if r_vints else yl
+                r_seas      = format_year(r_vint_med)                       if r_vints else f"Winter {int(yl)}" if pd.notnull(yl) else "N/A"
 
-                tot = self.s_part[name]
-                uf_scaled = (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
-                try: elo = float(self.elo_map.get(name.lower(), 0.0))
-                except: elo = 0.0
+                tot         = self.s_part[name]
+                uf_scaled   = (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
+
+                try     : elo = float(self.elo_map.get(name.lower(), 0.0))
+                except  : elo = 0.0
                 
                 expected_uf = slope * elo + intercept
-                residual = uf_scaled - expected_uf
-                perf_score = (1 / (1 + np.exp(SCALE_PERF * (residual / res_std)))) * 100
+                residual    = uf_scaled - expected_uf
+                perf_score  = (1 / (1 + np.exp(SCALE_PERF * (residual / res_std)))) * 100
 
                 base_node = {
                     "acronym"           : self._get_player_acronym(name),
                     "name"              : name,
-                    "over8"             : float(round(self.p_overs_sum[name] / self.c_counts[name], 2)),
-                    "vintage"           : float(round(p_vint_med, 2)),
+                    "over8"             : float(round(self.p_overs_sum  [name] / self.c_counts[name],       2)),
+                    "vintage"           : float(round(p_vint_med,                                           2)),
                     "seasonal_vintage"  : p_seas,
-                    "gr"                : float(round(self.c_counts[name] / self.s_part[name] * 100, 2)) if self.s_part[name] else 0.0,
-                    "rig_gr"            : float(round(self.p_rigs_h[name] / self.p_rigs[name] * 100, 2)) if self.p_rigs[name] else 0.0,
-                    "performance"       : float(round(perf_score, 2)),
-                    "rig_rate"          : float(round(self.p_rigs[name] / self.s_part[name] * 100, 2)) if self.s_part[name] else 0.0
+                    "gr"                : float(round(self.c_counts     [name] / self.s_part[name] * 100,   2)) if self.s_part[name] else 0.0,
+                    "rig_gr"            : float(round(self.p_rigs_h     [name] / self.p_rigs[name] * 100,   2)) if self.p_rigs[name] else 0.0,
+                    "performance"       : float(round(perf_score,                                           2)),
+                    "rig_rate"          : float(round(self.p_rigs       [name] / self.s_part[name] * 100,   2)) if self.s_part[name] else 0.0
                 }
+
                 scatter_list.append(base_node)
 
-                if self.p_l_corr[name] and pd.notnull(yl) and pd.notnull(yg):
-                    arrow_list.append({
-                        "acronym"               : base_node["acronym"],
-                        "name"                  : name,
-                        "x_start"               : float(round(np.mean(self.p_l_corr[name]), 2)),
-                        "y_start"               : float(round(r_vint_med, 2)),
-                        "seasonal_vintage_start": r_seas,
-                        "x_end"                 : base_node["over8"],
-                        "y_end"                 : base_node["vintage"],
-                        "seasonal_vintage_end"  : p_seas,
-                        "rig_gr"                : base_node["rig_gr"],
-                        "gr"                    : base_node["gr"],
-                        "rig_rate"              : base_node["rig_rate"]
-                    })
+                if self.p_l_corr[name] and pd.notnull(yl) and pd.notnull(yg): arrow_list.append({
+                    "acronym"                   : base_node["acronym"],
+                    "name"                      : name,
+                    "x_start"                   : float(round(np.mean(self.p_l_corr[name]), 2)),
+                    "y_start"                   : float(round(r_vint_med,                   2)),
+                    "seasonal_vintage_start"    : r_seas,
+                    "x_end"                     : base_node["over8"],
+                    "y_end"                     : base_node["vintage"],
+                    "seasonal_vintage_end"      : p_seas,
+                    "rig_gr"                    : base_node["rig_gr"],
+                    "gr"                        : base_node["gr"],
+                    "rig_rate"                  : base_node["rig_rate"]
+                })
+
         return scatter_list, arrow_list
 
     def _create_dashboard_html(self, path, use_teams, watched):
@@ -2130,14 +2151,14 @@ class TourAnalyzer:
         json_tour_stats     = json.dumps(self._render_dashboard_tour(watched, tour_song_details, player_song_details))
         
         df_teams = self._compute_team_rows(self.assignments, self.t1_lookup)
-        json_teams, json_team_hl_rules = [json.dumps(x) for x in self._render_dashboard_teams(df_teams, team_song_details)]
+        json_teams, json_team_hl_rules = [json.dumps(x) for x in self._render_dashboard_team(df_teams, team_song_details)]
         
         rows1, rows2 = self._compute_tier_rows(self.assignments, any(self.p_chan_s.values()))
         json_tier_merged    = json.dumps(self._render_dashboard_tiers(rows1, rows2, player_song_details))
         
         json_songs          = json.dumps(self._render_dashboard_songs())
         json_matrix_songs   = json.dumps(matrix_song_details)
-        json_scatter, json_arrows = [json.dumps(x) for x in self._render_dashboard_scatter_plots(avg_rank, raw_vintage_by_guess, raw_vintage_by_list)]
+        json_scatter, json_arrows = [json.dumps(x) for x in self._render_dashboard_plot(avg_rank, raw_vintage_by_guess, raw_vintage_by_list)]
 
         explanations = {
             "Player"                    : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
@@ -2767,7 +2788,7 @@ function renderTierCharts() {{
                 }}
 
                 xVals.push(finalVal);
-                yVals.push(p.player);
+                yVals.push(p.Player);
 
                 if (!metric.hoverDisabled) {{
                     let detailKey = metric.key + " Details";
