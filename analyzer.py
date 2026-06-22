@@ -2110,7 +2110,23 @@ class TourAnalyzer:
         td[data-songs] {{
             cursor: help;
             transition: background-color 0.15s ease;
+            position: relative; /* Anchors the dot inside the cell */
         }}        
+        td[data-songs]::after {{
+            content: '';
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 3px;
+            height: 3px;
+            background-color: #000000; /* Black dot for regular hoverable cells */
+            border-radius: 50%;
+        }}
+        /* Changes the dot to white for high contrast on highlighted metric rows */
+        td[data-songs].highlight-best::after,
+        td[data-songs].highlight-worst::after {{
+            background-color: #ffffff;
+        }}
         td[data-songs]:hover {{
             background-color: rgba(128, 128, 128, 0.25) !important;
         }}
