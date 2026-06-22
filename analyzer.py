@@ -793,7 +793,7 @@ class TourAnalyzer:
                 residual    = uf_val - (slope * elo + intercept)
                 perf_score  = (1 / (1 + np.exp(SCALE_PERF * (residual / res_std)))) * 100
 
-                row.update({"Rating": perf_score})
+                row.update({"Score": perf_score})
 
             avg_over8 = self.p_overs_sum[name] / cor if cor else np.nan
             row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name], "Mean Over-8": avg_over8})
@@ -828,7 +828,7 @@ class TourAnalyzer:
 
         df = pd.DataFrame(rows)
 
-        if "Rating" in df.columns: df = df.sort_values(by = ["Guess Rate", "Rating"], ascending = [False, False])
+        if "Score" in df.columns: df = df.sort_values(by = ["Guess Rate", "Score"], ascending = [False, False])
 
         elif "Elo" in df.columns:
             df["_sort_elo"] = pd.to_numeric(df["Elo"], errors = 'coerce')
@@ -853,7 +853,7 @@ class TourAnalyzer:
 
         if "Elo"            in df_png.columns: df_png["Elo"]            = pd.to_numeric(df_png["Elo"],          errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "UF"             in df_png.columns: df_png["UF"]             = pd.to_numeric(df_png["UF"],           errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Rating"         in df_png.columns: df_png["Rating"]         = pd.to_numeric(df_png["Rating"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Score"          in df_png.columns: df_png["Score"]          = pd.to_numeric(df_png["Score"],        errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Median Time"    in df_png.columns: df_png["Median Time"]    = pd.to_numeric(df_png["Median Time"],  errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Mean Over-8"    in df_png.columns: df_png["Mean Over-8"]    = pd.to_numeric(df_png["Mean Over-8"],  errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Rig Over-8"     in df_png.columns: df_png["Rig Over-8"]     = pd.to_numeric(df_png["Rig Over-8"],   errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -1274,7 +1274,7 @@ class TourAnalyzer:
                     "cmap"              : cmap_g,
                     "vmin"              : 0.0,
                     "vmax"              : 1.0,
-                    "cbar_label"        : "Rating",
+                    "cbar_label"        : "Score",
                     "cbar_ticks"        : [0, 1],
                     "cbar_ticklabels"   : ['0', '100'],
                     "labelpad"          : -37.5
@@ -1773,8 +1773,8 @@ class TourAnalyzer:
             if row_data is not None:
                 row.update({
                     "Guess Rate"    : float(row_data["Guess Rate"] * 100),
-                    "UF"            : float(row_data["UF"]) if "UF" in row_data else 0.0,
-                    "Rating"        : float(row_data["Rating"]) if "Rating" in row_data else 0.0,
+                    "UF"            : float(row_data["UF"])     if "UF"     in row_data else 0.0,
+                    "Score"         : float(row_data["Score"])  if "Score"  in row_data else 0.0,
                     "1/8s"          : int(row_data["1/8s"]),
                     "2/8s"          : int(row_data["2/8s"]),
                     "7/8s"          : int(row_data["7/8s"]),
@@ -1821,7 +1821,7 @@ class TourAnalyzer:
                     if pd.notnull(v) and v >= t: f_idx = i
                 if f_idx != -1 and f_idx < len(df_players) - 1: borders.append(int(f_idx))
 
-        desc_cols   = ["Elo", "Guess Rate", "UF", "Rating", "1/8s", "2/8s", "Lives Taken", "Lives Saved", "OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate", "Over-8 Delta", "Rig Guess Rate", "Off Guess Rate", "Rig Delta", "Chant Guess Rate"]
+        desc_cols   = ["Elo", "Guess Rate", "UF", "Score", "1/8s", "2/8s", "Lives Taken", "Lives Saved", "OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate", "Over-8 Delta", "Rig Guess Rate", "Off Guess Rate", "Rig Delta", "Chant Guess Rate"]
         asc_cols    = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
         rest_cols   = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
         stats_hl    = {}
@@ -2104,7 +2104,7 @@ class TourAnalyzer:
         explanations = {
             "Player"                    : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
             "UF"                        : "Usefulness: Calculates this player's contribution to their team, scaled by Elo and songs played",
-            "Rating"                    : "Calculates this player's value (Usefulness) against what's expected from their Elo; 50 means this player is playing to expectations",
+            "Score"                     : "Calculates this player's value (Usefulness) against what's expected from their Elo; 50 means this player is playing to expectations",
             "Mean Over-8"               : "Average of correct guessers across songs this player/team guessed correctly",
             "Lives Taken"               : "Count of points won against the opposing team; correct guessers exclusively on their team",
             "Lives Saved"               : "Count of blocks achieved against the opposing team; lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
@@ -2400,7 +2400,7 @@ const hlRules = {kwargs['json_hl_rules']};
 const colExplanations = {kwargs['json_explanations']};
 
 const col0 = "{kwargs['c0']}", col1 = "{kwargs['c1']}", col2 = "{kwargs['c2']}";
-const colBorders = new Set(["Player", "Rating", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier", "Lives Saved", "Chanting Guess Rate"]);
+const colBorders = new Set(["Player", "Score", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier", "Lives Saved", "Chanting Guess Rate"]);
 
 function switchDashboardTab(evt, tabId) {{
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
@@ -3041,7 +3041,7 @@ guessTraces.push({{
     y: scatterData.map(d => d.vintage),
     text: scatterData.map(d => d.acronym),
     customdata: scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), d.performance.toFixed(2)]),
-    hovertemplate: '<b>%{{customdata[0]}}</b><br>Mean Over-8: %{{customdata[1]}}<br>Median Vintage: %{{customdata[2]}}<br>Guess Rate: %{{customdata[3]}}<br>Rating: %{{customdata[4]}}<extra></extra>',
+    hovertemplate: '<b>%{{customdata[0]}}</b><br>Mean Over-8: %{{customdata[1]}}<br>Median Vintage: %{{customdata[2]}}<br>Guess Rate: %{{customdata[3]}}<br>Score: %{{customdata[4]}}<extra></extra>',
     mode: 'markers+text', textposition: 'top inside',
     textfont: {{ family: 'Segoe UI', size: 20, weight: 'bold', color: 'black' }},
     showlegend: false,
@@ -3052,7 +3052,7 @@ guessTraces.push({{
         colorscale: [[0, col0], [0.5, col1], [1, col2]],
         showscale: true, 
         colorbar: {{ 
-            title: {{ text: '<b>Rating</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }}, 
+            title: {{ text: '<b>Score</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }}, 
             thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
             tickmode: 'array', tickvals: [0, 50, 100], ticktext: ['0', '50', '100'],
             tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}
@@ -3088,7 +3088,7 @@ Plotly.newPlot('plotlyGuessChart', guessTraces, {{
 
         desc = [
             "Elo",              "Guess Rate",
-            "UF",               "Rating",
+            "UF",               "Score",
             "1/8s",             "2/8s",
             "Lives Taken",      "Lives Saved",
             "OP Guess Rate",    "ED Guess Rate",    "IN Guess Rate",
@@ -3186,7 +3186,7 @@ Plotly.newPlot('plotlyGuessChart', guessTraces, {{
 
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
-        col_borders = {"Player", "Rating", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Mean Over-8"}
+        col_borders = {"Player", "Score", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Mean Over-8"}
         th_cells    = []
 
         for c in df.columns:
