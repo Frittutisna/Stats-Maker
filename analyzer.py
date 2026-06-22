@@ -1732,12 +1732,11 @@ class TourAnalyzer:
 
         return player_song_details, player_true_solo_rigs, tour_song_details, team_song_details, raw_vintage_by_guess, raw_vintage_by_list, matrix_song_details, num_x, num_y
 
-    def _render_dashboard_players(self, sorted_players, active, t_labels, watched, avg_rank, player_song_details, df_base):
+    def _render_dashboard_player(self, sorted_players, active, t_labels, watched, player_song_details, df_base):
         rows, eligibility, borders = [], [], []
 
-        for idx, name in enumerate(sorted_players):
-            row_data = df_base.loc[df_base["Player"].str.startswith(name)].iloc[0] if any(df_base["Player"].str.startswith(name)) else None
-            
+        for _, name in enumerate(sorted_players):
+            row_data    = df_base.loc[df_base["Player"].str.startswith(name)].iloc[0] if any(df_base["Player"].str.startswith(name)) else None
             target     = self.exp_map.get(name, self.base_exp)
             d_name     = name
             sub_hover  = ""
@@ -1759,133 +1758,166 @@ class TourAnalyzer:
 
             is_eligible = not ("▼" in d_name or "▲" in d_name)
             eligibility.append(is_eligible)
+
             act = len(self.apps.get(name, []))
 
             if act < target:
                 syms = ["", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)"]
                 if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
 
-            row         = {"Player": {"count": d_name, "details": [sub_hover] if sub_hover else []}}
+            row = {"Player": {"count": d_name, "details": [sub_hover] if sub_hover else []}}
 
             if self.use_teams: 
-                try: row["Elo"] = float(self.elo_map.get(name.lower(), np.nan))
-                except: row["Elo"] = np.nan
-            
+                try     : row["Elo"] = float(self.elo_map.get(name.lower(), np.nan))
+                except  : row["Elo"] = np.nan
+
             if row_data is not None:
                 row.update({
-                    "Guess Rate"    : float(row_data["Guess Rate"] * 100),
-                    "UF"            : float(row_data["UF"])     if "UF"     in row_data else 0.0,
-                    "Score"         : float(row_data["Score"])  if "Score"  in row_data else 0.0,
-                    "1/8s"          : int(row_data["1/8s"]),
-                    "2/8s"          : int(row_data["2/8s"]),
-                    "7/8s"          : int(row_data["7/8s"]),
-                    "Mean Over-8"   : float(row_data["Mean Over-8"]) if pd.notnull(row_data["Mean Over-8"]) else np.nan
+                    "Guess Rate"    : float (row_data["Guess Rate"] * 100),
+                    "UF"            : float (row_data["UF"])                if "UF"     in row_data                 else np.nan,
+                    "Score"         : float (row_data["Score"])             if "Score"  in row_data                 else np.nan,
+                    "1/8s"          : int   (row_data["1/8s"]),
+                    "2/8s"          : int   (row_data["2/8s"]),
+                    "7/8s"          : int   (row_data["7/8s"]),
+                    "Mean Over-8"   : float (row_data["Mean Over-8"])       if pd.notnull(row_data["Mean Over-8"])  else np.nan
                 })
-                if self.use_teams:
-                    row.update({"Lives Taken": int(row_data["Lives Taken"]), "Lives Saved": int(row_data["Lives Saved"])})
 
-                for tid in active:
-                    row[t_labels[tid]] = float(row_data[t_labels[tid]] * 100) if pd.notnull(row_data[t_labels[tid]]) else np.nan
+                if self.use_teams: row.update({"Lives Taken": int(row_data["Lives Taken"]), "Lives Saved": int(row_data["Lives Saved"])})
+                for tid in active: row[t_labels[tid]] = float(row_data[t_labels[tid]] * 100) if pd.notnull(row_data[t_labels[tid]]) else np.nan
 
                 if watched:
                     row.update({
-                        "Rigs"              : int(row_data["Rigs"]),
-                        "Rig Rate"          : float(row_data["Rig Rate"] * 100),
-                        "Solo Rigs"         : int(row_data["Solo Rigs"]),
-                        "Solo Rig Rate"     : float(row_data["Solo Rig Rate"] * 100),
-                        "Rig Over-8"        : float(row_data["Rig Over-8"]) if pd.notnull(row_data["Rig Over-8"]) else np.nan,
-                        "Over-8 Delta"      : float(row_data["Over-8 Delta"]) if pd.notnull(row_data["Over-8 Delta"]) else np.nan,
-                        "Rig Guess Rate"    : float(row_data["Rig Guess Rate"] * 100),
-                        "Off Guess Rate"    : float(row_data["Off Guess Rate"] * 100),
-                        "Rig Delta"         : float(row_data["Rig Delta"] * 100),
+                        "Rigs"              : int   (row_data["Rigs"]),
+                        "Rig Rate"          : float (row_data["Rig Rate"]       * 100),
+                        "Solo Rigs"         : int   (row_data["Solo Rigs"]),
+                        "Solo Rig Rate"     : float (row_data["Solo Rig Rate"]  * 100),
+                        "Rig Over-8"        : float (row_data["Rig Over-8"])            if pd.notnull(row_data["Rig Over-8"])   else np.nan,
+                        "Over-8 Delta"      : float (row_data["Over-8 Delta"])          if pd.notnull(row_data["Over-8 Delta"]) else np.nan,
+                        "Rig Guess Rate"    : float (row_data["Rig Guess Rate"] * 100),
+                        "Off Guess Rate"    : float (row_data["Off Guess Rate"] * 100),
+                        "Rig Delta"         : float (row_data["Rig Delta"]      * 100),
                     })
-                row["Median Time"] = float(row_data["Median Time"]) if pd.notnull(row_data["Median Time"]) else np.nan
+
+                row["Median Time"]      = float(row_data["Median Time"])            if pd.notnull(row_data["Median Time"])      else np.nan
                 row["Chant Guess Rate"] = float(row_data["Chant Guess Rate"] * 100) if pd.notnull(row_data["Chant Guess Rate"]) else np.nan
 
             for key in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]:
-                if key not in row: continue
-                if key in ["Rigs", "Solo Rigs"]: player_song_details[name][key].sort(key = lambda s: s[2:].strip().lower())
-                else: player_song_details[name][key].sort(key = str.lower)
+                if key not in row               : continue
+                if key in ["Rigs", "Solo Rigs"] : player_song_details[name][key].sort(key = lambda s: s[2:].strip().lower())
+                else                            : player_song_details[name][key].sort(key = str.lower)
+
                 row[key] = {"count": row[key], "details": player_song_details[name][key]}
+
             rows.append(row)
 
         df_players = pd.DataFrame(rows)
 
         if "Guess Rate" in df_players.columns and "Eru" not in self.tour_label:
-            th_val = self.val_str if self.val_str != "default" else ("28, 18, 12, 6" if watched else "28, 19, 8")
-            try: th = [float(x.strip()) for x in th_val.split(",")] if th_val else []
-            except: th = [28.0, 18.0, 12.0, 6.0]
+            if self.val_str == "default":
+                if      self.tour_label == "Watched 2+8"                : th_val = "25, 20, 15, 10, 5"
+                elif    self.tour_label in ["Watched", "QuagWatched"]   : th_val = "28, 18, 12, 6"
+                elif    self.tour_label in ["Usual", "Quagsual"]        : th_val = "28, 19, 8"
+                elif    watched                                         : th_val = "28, 18, 12, 6"
+                else                                                    : th_val = "28, 19, 8"
+
+            else: th_val = self.val_str
+
+            try     : th = [float(x.strip()) for x in th_val.split(",")] if th_val else []
+            except  : th = [28.0, 18.0, 12.0, 6.0]
+
             gv = df_players["Guess Rate"].tolist()
+
             for t in th:
                 f_idx = -1
+
                 for i, v in enumerate(gv):
                     if pd.notnull(v) and v >= t: f_idx = i
+
                 if f_idx != -1 and f_idx < len(df_players) - 1: borders.append(int(f_idx))
 
-        desc_cols   = ["Elo", "Guess Rate", "UF", "Score", "1/8s", "2/8s", "Lives Taken", "Lives Saved", "OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate", "Over-8 Delta", "Rig Guess Rate", "Off Guess Rate", "Rig Delta", "Chant Guess Rate"]
+        desc_cols = [
+            "Elo",              "Guess Rate",       "UF",               "Score",
+            "1/8s",             "2/8s",             "Lives Taken",      "Lives Saved",
+            "OP Guess Rate",    "ED Guess Rate",    "IN Guess Rate",
+            "Rigs",             "Rig Rate",         "Solo Rigs",        "Solo Rig Rate",
+            "Over-8 Delta",     "Rig Guess Rate",   "Off Guess Rate",
+            "Rig Delta",        "Chant Guess Rate"
+        ]
+
         asc_cols    = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
-        rest_cols   = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
+        int_cols    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
         stats_hl    = {}
-        elo_ser     = df_players["Elo"].fillna(0.0) if "Elo" in df_players.columns else pd.Series(0.0, index = df_players.index)
-        gr_ser      = df_players["Guess Rate"].fillna(0.0)
-        rig_ser     = df_players["Rigs"].map(lambda x: x["count"] if isinstance(x, dict) else x).fillna(0.0) if "Rigs" in df_players.columns else pd.Series(0.0, index = df_players.index)
+
+        elo_ser     = df_players["Elo"]         .fillna(0.0) if "Elo" in df_players.columns else pd.Series(0.0, index = df_players.index)
+        gr_ser      = df_players["Guess Rate"]  .fillna(0.0)
+        rig_ser     = df_players["Rigs"]        .map(lambda x: x["count"] if isinstance(x, dict) else x).fillna(0.0) if "Rigs" in df_players.columns else pd.Series(0.0, index = df_players.index)
+
         mask_series = pd.Series(eligibility, index = df_players.index)
 
         for col in df_players.columns:
             if col in desc_cols or col in asc_cols:
-                if col in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]:
-                    num = df_players[col].map(lambda x: x["count"])
-                else:
-                    num = df_players[col]
-                el_num = num[mask_series].dropna() if col in rest_cols else num.dropna()
+                if col in int_cols  : num = df_players[col].map(lambda x: x["count"])
+                else                : num = df_players[col]
+
+                el_num = num[mask_series].dropna() if col in int_cols else num.dropna()
 
                 if not num.dropna().empty:
                     if col in desc_cols:
-                        best_val = num.dropna().max()
-                        worst_val = el_num.min() if not el_num.empty else None
+                        best_val    = num.dropna().max()
+                        worst_val   = el_num.min() if not el_num.empty else None
+
                     else:
                         best_val = num.dropna().min()
-                        if col == "Median Time":
-                            under_limit = el_num[el_num < 20.0]
-                            worst_val = under_limit.max() if not under_limit.empty else None
-                        else:
-                            worst_val = el_num.max() if not el_num.empty else None
 
-                    best_b_idx  = num[num == best_val].index if pd.notnull(best_val) else pd.Index([])
-                    worst_b_idx = el_num[el_num == worst_val].index if pd.notnull(worst_val) else pd.Index([])
+                        if col == "Median Time":
+                            under_limit = el_num[el_num < THRESH_TIME]
+                            worst_val   = under_limit.max() if not under_limit.empty else None
+
+                        else: worst_val = el_num.max() if not el_num.empty else None
+
+                    best_b_idx  = num       [num    == best_val]    .index if pd.notnull(best_val)  else pd.Index([])
+                    worst_b_idx = el_num    [el_num == worst_val]   .index if pd.notnull(worst_val) else pd.Index([])
 
                     if col == "Solo Rigs":
-                        best_idx    = int(rig_ser.loc[best_b_idx].idxmin()) if not best_b_idx.empty else None
-                        worst_idx   = int(rig_ser.loc[worst_b_idx].idxmax()) if not worst_b_idx.empty else None
+                        best_idx    = int(rig_ser.loc[best_b_idx]   .idxmin()) if not best_b_idx    .empty else None
+                        worst_idx   = int(rig_ser.loc[worst_b_idx]  .idxmax()) if not worst_b_idx   .empty else None
+
                     elif col == "Solo Rig Rate":
-                        best_idx    = int(rig_ser.loc[best_b_idx].idxmax()) if not best_b_idx.empty else None
-                        worst_idx   = int(rig_ser.loc[worst_b_idx].idxmax()) if not worst_b_idx.empty else None
+                        best_idx    = int(rig_ser.loc[best_b_idx]   .idxmax()) if not best_b_idx    .empty else None
+                        worst_idx   = int(rig_ser.loc[worst_b_idx]  .idxmax()) if not worst_b_idx   .empty else None
+
                     elif col in ["Elo"]:
-                        best_idx    = int(best_b_idx[0]) if not best_b_idx.empty else None
-                        worst_idx   = int(worst_b_idx[0]) if not worst_b_idx.empty else None
+                        best_idx    = int(best_b_idx    [0]) if not best_b_idx  .empty else None
+                        worst_idx   = int(worst_b_idx   [0]) if not worst_b_idx .empty else None
+
                     elif col in ["OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Chant Guess Rate"]:
-                        best_idx    = int(gr_ser.loc[best_b_idx].idxmin()) if not best_b_idx.empty else None
-                        worst_idx   = int(gr_ser.loc[worst_b_idx].idxmax()) if not worst_b_idx.empty else None
+                        best_idx    = int(gr_ser.loc[best_b_idx]    .idxmin()) if not best_b_idx    .empty else None
+                        worst_idx   = int(gr_ser.loc[worst_b_idx]   .idxmax()) if not worst_b_idx   .empty else None
+
                     elif col == "Rig Guess Rate":
-                        best_idx    = int(rig_ser.loc[best_b_idx].idxmax()) if not best_b_idx.empty else None
-                        worst_idx   = int(elo_ser.loc[worst_b_idx].idxmax()) if not worst_b_idx.empty else None
+                        best_idx    = int(rig_ser.loc[best_b_idx]   .idxmax()) if not best_b_idx    .empty else None
+                        worst_idx   = int(elo_ser.loc[worst_b_idx]  .idxmax()) if not worst_b_idx   .empty else None
+
                     else:
-                        best_idx    = int(elo_ser.loc[best_b_idx].idxmin()) if not best_b_idx.empty else None
-                        worst_idx   = int(elo_ser.loc[worst_b_idx].idxmax()) if not worst_b_idx.empty else None
+                        best_idx    = int(elo_ser.loc[best_b_idx]   .idxmin()) if not best_b_idx    .empty else None
+                        worst_idx   = int(elo_ser.loc[worst_b_idx]  .idxmax()) if not worst_b_idx   .empty else None
 
                     stats_hl[col] = {'best_idx': best_idx, 'worst_idx': worst_idx}
 
-        headers = list(df_players.columns)
-        html_rows_list = []
+        headers         = list(df_players.columns)
+        html_rows_list  = []
+
         for idx, row in df_players.iterrows():
             row_dict = {}
+
             for col in headers:
                 val = row[col]
-                if col == "Player": row_dict[col] = val
-                elif isinstance(val, dict): row_dict[col] = val
-                elif pd.isnull(val) or (isinstance(val, float) and np.isnan(val)): row_dict[col] = "N/A"
-                elif col in rest_cols: row_dict[col] = int(val)
-                else: row_dict[col] = f"{float(val):.2f}"
+
+                if      col == "Player" or isinstance(val, dict)                        : row_dict[col] = val
+                elif    pd.isnull(val)  or (isinstance(val, float) and np.isnan(val))   : row_dict[col] = "N/A"
+                elif    col in int_cols                                                 : row_dict[col] = int(val)
+                else                                                                    : row_dict[col] = f"{float(val):.2f}"
+
             html_rows_list.append(row_dict)
 
         return html_rows_list, stats_hl, borders, eligibility
@@ -2094,7 +2126,7 @@ class TourAnalyzer:
 
         sorted_players = sorted(self.s_part.keys(), key = player_sort_key, reverse = True)
 
-        json_players, json_hl_rules, json_borders, json_eligibility = [json.dumps(x) for x in self._render_dashboard_players(sorted_players, active, t_labels, watched, avg_rank, player_song_details, df_base)]
+        json_players, json_hl_rules, json_borders, json_eligibility = [json.dumps(x) for x in self._render_dashboard_player(sorted_players, active, t_labels, watched, player_song_details, df_base)]
         json_tour_stats     = json.dumps(self._render_dashboard_tour(watched, tour_song_details, player_song_details))
         
         df_teams = self._compute_team_rows(self.assignments, self.t1_lookup)
