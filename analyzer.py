@@ -874,7 +874,7 @@ class TourAnalyzer:
         stats = [
             ["Median Vintage",  format_year(round(np.median(self.all_vint), 2))                         if self.all_vint    else "N/A", None],
             ["Mean Difficulty", f"{np.mean(self.all_diff):.2f}"                                         if self.all_diff    else "N/A", None],
-            ["Mean GR",         f"{100 * (self.global_stats['tot_c'] / sum(self.s_part.values())):.2f}" if self.s_part      else "N/A", None],
+            ["Mean Guess Rate", f"{100 * (self.global_stats['tot_c'] / sum(self.s_part.values())):.2f}" if self.s_part      else "N/A", None],
             ["Total 0/8s",      self.global_stats["blanks"],    "Total 0/8s"],
             ["Total 1/8s",      self.global_stats["solos"],     "Total 1/8s"],
             ["Total 2/8s",      self.global_stats["doubles"],   "Total 2/8s"],
