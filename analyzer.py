@@ -526,7 +526,7 @@ class TourAnalyzer:
                 try                 : file_path.unlink()
                 except Exception    : pass
 
-        print(f"Push to GitHub to update the online Dashboard: https://raw.githack.com/Frittutisna/Stats-Maker/main/tour/{self.tour_id}/hakohoka/Dashboard.html")
+        print(f"Push to GitHub to update the online Dashboard: https://raw.githack.com/Frittutisna/Stats-Maker/main/tour/{self.tour_id}/hakohoka/Dashboard.html?update=1")
 
     def _scan_players(self, paths):
         players = set           ()
