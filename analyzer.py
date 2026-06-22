@@ -2438,7 +2438,7 @@ const hlRules = {kwargs['json_hl_rules']};
 const colExplanations = {kwargs['json_explanations']};
 
 const col0 = "{kwargs['c0']}", col1 = "{kwargs['c1']}", col2 = "{kwargs['c2']}";
-const colBorders = new Set(["Player", "Score", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier", "Lives Saved", "Chanting Guess Rate"]);
+const colBorders = new Set(["Player", "Guess Rate", "Score", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier", "Lives Saved", "Chanting Guess Rate"]);
 
 function switchDashboardTab(evt, tabId) {{
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
@@ -3224,7 +3224,7 @@ Plotly.newPlot('plotlyGuessChart', guessTraces, {{
 
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
-        col_borders = {"Player", "Score", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Mean Over-8"}
+        col_borders = {"Player", "Guess Rate", "Score", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Mean Over-8"}
         th_cells    = []
 
         for c in df.columns:
