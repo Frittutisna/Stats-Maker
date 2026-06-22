@@ -1495,7 +1495,8 @@ class TourAnalyzer:
                 t_num       = si    .get("typeNumber",  0)
                 romaji_name = si.get("animeNames",  {}).get("romaji", "Unknown")
                 s_name      = si.get("songName",    "Unknown")
-                art_name    = si.get("artist",      "Unknown")
+                art_raw     = si.get("artist",      "Unknown")
+                art_name    = "Multiple Singers" if len(art_raw) > THRESH_CHAR else art_raw
 
                 if      st == 1 : type_fmt = f"(OP{t_num})"
                 elif    st == 2 : type_fmt = f"(ED{t_num})"

@@ -18,6 +18,7 @@ FILE_CHANT  = "chant.txt"
 FILE_CODES  = "code.txt"
 FILE_ALIAS  = "alias.txt"
 SCALE_PERF  = -1.5
+THRESH_CHAR = 30
 THRESH_SONG = 35
 THRESH_TIME = 17.5
 URL_ALIAS   = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
