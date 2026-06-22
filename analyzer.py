@@ -607,6 +607,7 @@ class TourAnalyzer:
             return False
 
         self.main_roster_names                      = set()
+        self.sub_relations                          = defaultdict(list)
         elo_map, assignments, rosters, t1_lookup    = {}, {}, defaultdict(set), {}
         avail                                       = sorted(list(all_known))
         alias_path                                  = self.script_dir / DIR_TOURS / FILE_ALIAS
@@ -702,6 +703,9 @@ class TourAnalyzer:
                 rosters[chosen_team_id].add(sub_player)                
                 self.subbed_players_set.add(s_low)
                 self.subbed_players_set.add(replaced_player.lower())
+                
+                self.sub_relations[replaced_player.casefold()].append(sub_player)
+                self.sub_relations[s_low] = [replaced_player]
 
         unresolved_players = [p for p in all_known if p.lower() not in assignments]
 
@@ -1630,11 +1634,22 @@ class TourAnalyzer:
             tot, cor   = self.s_part[name], self.c_counts[name]
             target     = self.exp_map.get(name, self.base_exp)
             d_name     = name
+            sub_hover  = ""
 
             if name in self.new_players  : d_name += " ☆"
+
             if target < self.base_exp:
-                if name.lower() in self.main_roster_names   : d_name += " ▼"
-                else                                        : d_name += " ▲"
+                if name.lower() in self.main_roster_names:
+                    d_name  +=  " ▼"
+                    subs    =   self.sub_relations.get(name.casefold(), [])
+
+                    if subs: sub_hover = f"Subbed by {', '.join(subs)}"
+
+                else:
+                    d_name  +=  " ▲"
+                    orig    =   self.sub_relations.get(name.lower(), [])
+
+                    if orig: sub_hover = f"Subbing for {orig[0]}"
 
             is_eligible = not ("▼" in d_name or "▲" in d_name)
             eligibility.append(is_eligible)
@@ -1644,11 +1659,12 @@ class TourAnalyzer:
                 syms = ["", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)"]
                 if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
 
-            avg_over8 = self.p_overs_sum[name] / cor if cor else np.nan
-            row = {"Player": d_name}
+            avg_over8   = self.p_overs_sum[name] / cor if cor else np.nan
+            row         = {"Player": {"count": d_name, "details": [sub_hover] if sub_hover else []}}
+
             if self.use_teams: 
-                try: row["Elo"] = float(self.elo_map.get(name.lower(), np.nan))
-                except: row["Elo"] = np.nan
+                try     : row["Elo"] = float(self.elo_map.get(name.lower(), np.nan))
+                except  : row["Elo"] = np.nan
             
             row.update({
                 "Guess Rate"    : float(cor / tot * 100) if tot else 0.0,
@@ -1765,9 +1781,9 @@ class TourAnalyzer:
             row_dict = {}
             for col in headers:
                 val = row[col]
-                if isinstance(val, dict): row_dict[col] = val
+                if col == "Player": row_dict[col] = val
+                elif isinstance(val, dict): row_dict[col] = val
                 elif pd.isnull(val) or (isinstance(val, float) and np.isnan(val)): row_dict[col] = "N/A"
-                elif col == "Player": row_dict[col] = str(val)
                 elif col in rest_cols: row_dict[col] = int(val)
                 else: row_dict[col] = f"{float(val):.2f}"
             html_rows_list.append(row_dict)
@@ -2328,7 +2344,14 @@ class TourAnalyzer:
 
                     let finalVal = (h === "Player") ? `<b>${{displayVal}}</b>` : displayVal;
                     
-                    if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {{
+                    if (h === "Player") {{
+                        if (rawCell && rawCell.details && rawCell.details.length > 0) {{
+                            let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
+                            tbody += `<td class="${{cellStyle.trim()}}" data-songs="${{encodedDetails}}">${{finalVal}}</td>`;
+                        }} else {{
+                            tbody += `<td class="${{cellStyle.trim()}}">${{finalVal}}</td>`;
+                        }}
+                    }} else if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {{
                         let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
                         tbody += `<td class="${{cellStyle.trim()}}" data-songs="${{encodedDetails}}">${{finalVal}}</td>`;
                     }} else {{
@@ -2417,6 +2440,9 @@ class TourAnalyzer:
                         if(songs && songs.length > 0) {{
                             let displaySongs = [...songs];
                             
+                            // Check if this cell belongs to the Player column (Substitution info)
+                            const isPlayerSubHover = td.parentNode.firstElementChild === td;
+
                             if (songs.length > 10) {{
                                 displaySongs = displaySongs
                                     .sort(() => Math.random() - 0.5)
@@ -2428,7 +2454,11 @@ class TourAnalyzer:
                                     return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
                                 }});
                                 
-                                displaySongs = displaySongs.map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : `• ${{s}}`);
+                                // Only prefix with bullet points if it's NOT a player sub hover
+                                displaySongs = displaySongs.map(s => {{
+                                    if (s.startsWith('✓') || s.startsWith('✗')) return s;
+                                    return isPlayerSubHover ? s : `• ${{s}}`;
+                                }});
                                 displaySongs.push(`and more`);
                             }} else {{
                                 displaySongs.sort((a, b) => {{
@@ -2436,7 +2466,11 @@ class TourAnalyzer:
                                     const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
                                     return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
                                 }});
-                                displaySongs = displaySongs.map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : `• ${{s}}`);
+                                // Only prefix with bullet points if it's NOT a player sub hover
+                                displaySongs = displaySongs.map(s => {{
+                                    if (s.startsWith('✓') || s.startsWith('✗')) return s;
+                                    return isPlayerSubHover ? s : `• ${{s}}`;
+                                }});
                             }}
                             
                             tooltipNode.innerHTML = displaySongs.join('<br>');
