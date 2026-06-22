@@ -501,7 +501,7 @@ class SubstitutePromptDialog(UnifiedDialog):
         lbl.grid(row = 0, column = 0, padx = (0, 6), pady = 4, sticky = "w")
 
         self.choice_var     = tk.StringVar()
-        self.sorted_players = sorted(list(original_players_list))
+        self.sorted_players = sorted(list(original_players_list), key = str.lower)
 
         if self.sorted_players: self.choice_var.set(self.sorted_players[0])
 

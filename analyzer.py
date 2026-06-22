@@ -526,7 +526,7 @@ class TourAnalyzer:
                 try                 : file_path.unlink()
                 except Exception    : pass
 
-        print(f"Push to GitHub to update the online Dashboard: https://raw.githack.com/Frittutisna/Stats-Maker/main/tour/{self.tour_id}/hakohoka/Dashboard.html?update=1")
+        print(f"Push to GitHub to update the online Dashboard: https://frittutisna.github.io/Stats-Maker/tour/{self.tour_id}/hakohoka/Dashboard.html?update=1")
 
     def _scan_players(self, paths):
         players = set           ()
@@ -668,7 +668,7 @@ class TourAnalyzer:
 
             s_match                     = next((m for m in assignments if m in s_low or s_low in m), None)
             s_team, s_tier              = assignments[s_match] if s_match else (list(all_team_ids)[0] if all_team_ids else 1, "1")
-            original_players_display    = [name for tid in rosters for name in rosters[tid] if name.lower() in self.main_roster_names]
+            original_players_display    = sorted([name for tid in rosters for name in rosters[tid] if name.lower() in self.main_roster_names], key = str.lower)
             dialog                      = SubstitutePromptDialog(None, sub_player, original_players_display)
 
             if dialog.result:
