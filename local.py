@@ -54,4 +54,4 @@ if __name__ == "__main__":
                 root.destroy()
                 sys.exit(1)
                 
-        for analyzer in analyzer_pool: analyzer.process_and_generate() # Test
+        for analyzer in analyzer_pool: analyzer.process_and_generate()
