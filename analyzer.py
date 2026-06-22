@@ -3107,6 +3107,12 @@ Plotly.newPlot('plotlyListChart', listTraces, {{
         fixedrange: false
     }},
     margin: {{ l: 60, r: 0, t: 30, b: 55 }},
+    annotations: [
+        {{ x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'left', yanchor: 'top' }},
+        {{ x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'right', yanchor: 'top' }},
+        {{ x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom' }},
+        {{ x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'left', yanchor: 'bottom' }}
+    ]
 }}, {{responsive: true, displayModeBar: false}});
 
 const guessHull = get75PercentileHull(scatterData, 'over8', 'vintage');
@@ -3167,7 +3173,13 @@ Plotly.newPlot('plotlyGuessChart', guessTraces, {{
         dtick: 2,
         fixedrange: false
     }},
-    margin: {{ l: 60, r: 0, t: 30, b: 55 }}
+    margin: {{ l: 60, r: 0, t: 30, b: 55 }},
+    annotations: [
+        {{ x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'left', yanchor: 'top' }},
+        {{ x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'right', yanchor: 'top' }},
+        {{ x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom' }},
+        {{ x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'left', yanchor: 'bottom' }}
+    ]
 }}, {{responsive: true, displayModeBar: false}});"""
 
     def _export_png(self, df, path, fname, title, mask = None, val_str = "default"):
