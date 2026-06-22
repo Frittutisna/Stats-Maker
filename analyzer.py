@@ -537,7 +537,7 @@ class TourAnalyzer:
 
         tasks = []
 
-        tasks.append((self._create_player_png,      (self.use_teams, self.elo_map, watched_valid, stage, out_path, self.apps, prefix, self.exp_map, self.base_exp, self.new_players, self.val_str)))
+        tasks.append((self._create_player_png,      (self.elo_map, watched_valid, stage, out_path, self.apps, prefix, self.exp_map, self.base_exp, self.new_players, self.val_str)))
         tasks.append((self._create_tour_png,        (self.use_teams, watched_valid, out_path)))
         tasks.append((self._create_scatter_png,     (out_path, False, self.elo_map)))
         tasks.append((self._create_song_png,        (out_path, )))
@@ -742,15 +742,8 @@ class TourAnalyzer:
 
         return True, elo_map, assignments, t1_lookup, rosters, all_known
 
-    def _create_player_png(self, use_teams, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, new_players, val_str):
-        rows, eligibility   = [], []
-        t_labels            = {1: "OP Guess Rate", 2: "ED Guess Rate", 3: "IN Guess Rate"}
-        active              = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
-
-        if len(active) <= 1 : active = []
-
-        valid_elos  = [float(v) for v in elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
-        avg_rank    = np.mean(valid_elos) if valid_elos else 1.0
+    def _compute_player_rows(self, elo_map, apps, exp_map, base_exp, new_players, watched, active, t_labels, avg_rank):
+        rows, eligibility = [], []
 
         for name in self.s_part:
             tot, cor    = self.s_part[name], self.c_counts[name]
@@ -772,17 +765,16 @@ class TourAnalyzer:
                 if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
 
             row = {"Player": d_name}
-            if use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
-            row.update({"Guess Rate": cor / tot if tot else 0})
+            if self.use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
+            row.update({"Guess Rate": cor / tot if tot else 0.0})
 
-            if use_teams: 
+            if self.use_teams: 
                 uf_val = (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
                 row.update({"UF": uf_val})
                 
                 try     : elo = float(elo_map.get(name.lower(), 0.0))
                 except  : elo = 0.0
 
-                valid_elos  = [float(v) for v in elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
                 all_ufs     = [(self.p_usefulness_sum[p] * avg_rank * 8) / self.s_part[p] if self.s_part[p] else 0.0 for p in self.s_part]
                 all_elos    = []
 
@@ -805,7 +797,7 @@ class TourAnalyzer:
 
             avg_over8 = self.p_overs_sum[name] / cor if cor else np.nan
             row.update({"1/8s": self.e_counts[name], "2/8s": self.p_two_e[name], "7/8s": self.p_rev_e[name], "Mean Over-8": avg_over8})
-            if use_teams: row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
+            if self.use_teams: row.update({"Lives Taken": self.p_pts[name], "Lives Saved": self.p_blks[name]})
 
             for tid in active:
                 seen                = self.p_type_s[name][tid]
@@ -845,55 +837,81 @@ class TourAnalyzer:
         else: df = df.sort_values("Guess Rate", ascending = False)
 
         mask = pd.Series(eligibility, index = pd.DataFrame(rows).index).reindex(df.index).values
-        pcts = ["Guess Rate"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Delta", "Rig Guess Rate", "Off Guess Rate"] if watched else []) + ["Chant Guess Rate"]
+        return df, mask
 
-        if "Elo"            in df.columns: df["Elo"]            = pd.to_numeric(df["Elo"],          errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "UF"             in df.columns: df["UF"]             = pd.to_numeric(df["UF"],           errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Rating"         in df.columns: df["Rating"]         = pd.to_numeric(df["Rating"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Median Time"    in df.columns: df["Median Time"]    = pd.to_numeric(df["Median Time"],  errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Mean Over-8"    in df.columns: df["Mean Over-8"]    = pd.to_numeric(df["Mean Over-8"],  errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Rig Over-8"     in df.columns: df["Rig Over-8"]     = pd.to_numeric(df["Rig Over-8"],   errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Over-8 Delta"   in df.columns: df["Over-8 Delta"]   = pd.to_numeric(df["Over-8 Delta"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+    def _create_player_png(self, elo_map, watched, stage, path, apps, prefix, exp_map, base_exp, new_players, val_str):
+        t_labels    = {1: "OP Guess Rate", 2: "ED Guess Rate", 3: "IN Guess Rate"}
+        active      = [t for t in [1, 2, 3] if any(self.p_type_s[p][t] > 0 for p in self.s_part)]
 
-        for c in pcts: df[c] = pd.to_numeric(df[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        self._export_png(df, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask, val_str)
+        if len(active) <= 1 : active = []
 
-    def _create_tour_png(self, use_teams, watched, path):
+        valid_elos  = [float(v) for v in elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
+        avg_rank    = np.mean(valid_elos) if valid_elos else 1.0
+        df, mask    = self._compute_player_rows(elo_map, apps, exp_map, base_exp, new_players, watched, active, t_labels, avg_rank)
+        df_png      = df.copy()
+        pcts        = ["Guess Rate"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Delta", "Rig Guess Rate", "Off Guess Rate"] if watched else []) + ["Chant Guess Rate"]
+
+        if "Elo"            in df_png.columns: df_png["Elo"]            = pd.to_numeric(df_png["Elo"],          errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "UF"             in df_png.columns: df_png["UF"]             = pd.to_numeric(df_png["UF"],           errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Rating"         in df_png.columns: df_png["Rating"]         = pd.to_numeric(df_png["Rating"],       errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Median Time"    in df_png.columns: df_png["Median Time"]    = pd.to_numeric(df_png["Median Time"],  errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Mean Over-8"    in df_png.columns: df_png["Mean Over-8"]    = pd.to_numeric(df_png["Mean Over-8"],  errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Rig Over-8"     in df_png.columns: df_png["Rig Over-8"]     = pd.to_numeric(df_png["Rig Over-8"],   errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Over-8 Delta"   in df_png.columns: df_png["Over-8 Delta"]   = pd.to_numeric(df_png["Over-8 Delta"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+
+        for c in pcts: df_png[c] = pd.to_numeric(df_png[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        self._export_png(df_png, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask, val_str)
+
+    def _compute_tour_stats(self, use_teams, watched):
         def fmt_most(names, val):
             if not names: return "N/A"
 
             win = sorted(names, key = lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]
             gr  = (self.c_counts[win] / self.s_part[win]) * 100 if self.s_part[win] else 0
 
-            return f"{win} ({val}{f', {gr:.2f}' if len(names) > 1 else ''})"
+            return f"{win} ({val}{f', {gr:.2f}' if len(names) > 1 else ''})", win
 
         stats = [
-            ["Median Vintage",  format_year(round(np.median(self.all_vint), 2))                         if self.all_vint    else "N/A"],
-            ["Mean Difficulty", f"{np.mean(self.all_diff):.2f}"                                         if self.all_diff    else "N/A"],
-            ["Mean GR",         f"{100 * (self.global_stats['tot_c'] / sum(self.s_part.values())):.2f}" if self.s_part      else "0.00"],
-            ["Total 0/8s",      self.global_stats["blanks"]],
-            ["Total 1/8s",      self.global_stats["solos"]],
-            ["Total 2/8s",      self.global_stats["doubles"]],
-            ["Total 7/8s",      self.global_stats["sevens"]],
-            ["Total 8/8s",      self.global_stats["fulls"]]
+            ["Median Vintage",  format_year(round(np.median(self.all_vint), 2))                         if self.all_vint    else "N/A", None],
+            ["Mean Difficulty", f"{np.mean(self.all_diff):.2f}"                                         if self.all_diff    else "N/A", None],
+            ["Mean GR",         f"{100 * (self.global_stats['tot_c'] / sum(self.s_part.values())):.2f}" if self.s_part      else "N/A", None],
+            ["Total 0/8s",      self.global_stats["blanks"],    "Total 0/8s"],
+            ["Total 1/8s",      self.global_stats["solos"],     "Total 1/8s"],
+            ["Total 2/8s",      self.global_stats["doubles"],   "Total 2/8s"],
+            ["Total 7/8s",      self.global_stats["sevens"],    "Total 7/8s"],
+            ["Total 8/8s",      self.global_stats["fulls"],     "Total 8/8s"]
         ]
 
-        if use_teams: stats.append(["Total 4-0s", self.global_stats["sweeps"]])
+        if use_teams: stats.append(["Total 4-0s", self.global_stats["sweeps"], "Total 4-0s"])
+
+        pop_gen = self.genre_c  .most_common(1)[0][0] if self.genre_c   else "N/A"
+        pop_tag = self.tag_c    .most_common(1)[0][0] if self.tag_c     else "N/A"
+
+        pop_gen_cnt = self.genre_c  .most_common(1)[0][1] if self.genre_c   else 0
+        pop_tag_cnt = self.tag_c    .most_common(1)[0][1] if self.tag_c     else 0
+
+        m1_p = [n for n, v in self.e_counts .items() if v == max(self.e_counts  .values(), default = 0) and v > 0]
+        m2_p = [n for n, v in self.p_two_e  .items() if v == max(self.p_two_e   .values(), default = 0) and v > 0]
+        m7_p = [n for n, v in self.p_rev_e  .items() if v == max(self.p_rev_e   .values(), default = 0) and v > 0]
+
+        f1, w1 = fmt_most(m1_p, max(self.e_counts   .values(), default = 0))        
+        f2, w2 = fmt_most(m2_p, max(self.p_two_e    .values(), default = 0))
+        f7, w7 = fmt_most(m7_p, max(self.p_rev_e    .values(), default = 0))
 
         stats.extend([
-            ["Most Popular Genre",  f"{self.genre_c .most_common(1)[0][0]} ({self.genre_c   .most_common(1)[0][1]})" if self.genre_c else "N/A"],
-            ["Most Popular Tag",    f"{self.tag_c   .most_common(1)[0][0]} ({self.tag_c     .most_common(1)[0][1]})" if self.tag_c else "N/A"],
-            ["Most 1/8s",           fmt_most([n for n, v in self.e_counts   .items() if v == max(self.e_counts  .values(), default = 0) and v > 0], max(self.e_counts   .values(), default = 0))],
-            ["Most 2/8s",           fmt_most([n for n, v in self.p_two_e    .items() if v == max(self.p_two_e   .values(), default = 0) and v > 0], max(self.p_two_e    .values(), default = 0))],
-            ["Most 7/8s",           fmt_most([n for n, v in self.p_rev_e    .items() if v == max(self.p_rev_e   .values(), default = 0) and v > 0], max(self.p_rev_e    .values(), default = 0))]
+            ["Most Popular Genre",  f"{pop_gen} ({pop_gen_cnt})" if self.genre_c    else "N/A", f"Genre: {pop_gen}"],
+            ["Most Popular Tag",    f"{pop_tag} ({pop_tag_cnt})" if self.tag_c      else "N/A", f"Tag: {pop_tag}"],
+            ["Most 1/8s",           f1, ("1/8s", w1)],
+            ["Most 2/8s",           f2, ("2/8s", w2)],
+            ["Most 7/8s",           f7, ("7/8s", w7)]
         ])
 
         plist   = list(self.s_part.keys())
         no_s    = sorted([n for n in plist if self.e_counts[n] ==   0 and self.s_part[n] > 0], key = lambda x: self.c_counts[x] / self.s_part[x], reverse = True)
         yes_s   = sorted([n for n in plist if self.e_counts[n] >    0 and self.s_part[n] > 0], key = lambda x: self.c_counts[x] / self.s_part[x])
 
-        if no_s     : stats.append(["Highest GR Without 1/8s",  f"{no_s     [0]} ({100 * (self.c_counts[no_s    [0]] / self.s_part[no_s     [0]]):.2f})"])
-        if yes_s    : stats.append(["Lowest GR With 1/8s",      f"{yes_s    [0]} ({100 * (self.c_counts[yes_s   [0]] / self.s_part[yes_s    [0]]):.2f}, {self.e_counts[yes_s[0]]})"])
+        if no_s     : stats.append(["Highest GR Without 1/8s",  f"{no_s     [0]} ({100 * (self.c_counts[no_s    [0]] / self.s_part[no_s     [0]]):.2f})", None])
+        if yes_s    : stats.append(["Lowest GR With 1/8s",      f"{yes_s    [0]} ({100 * (self.c_counts[yes_s   [0]] / self.s_part[yes_s    [0]]):.2f}, {self.e_counts[yes_s[0]]})", ("1/8s", yes_s[0])])
 
         if watched:
             conv        = []
@@ -903,32 +921,35 @@ class TourAnalyzer:
                 total_hits      = sum((self.p_l_solos[p] - self.p_m_erigs[p]) for p in eligible)
                 total_attempts  = sum(self.p_l_solos[p] for p in eligible)
                 global_avg      = total_hits / total_attempts if total_attempts > 0 else 0
-                constant        = 3
 
                 for n in eligible:
                     t               = self.p_l_solos[n]
                     h               = t - self.p_m_erigs[n]
-                    weighted_score  = (h + constant * global_avg) / (t + constant)
+                    weighted_score  = (h + CONST_CONV * global_avg) / (t + CONST_CONV)
                     conv.append({'n': n, 'score': weighted_score, 'p': 100 * h / t, 'h': h, 't': t})
 
                 b = sorted(conv, key = lambda x: x['score'], reverse = True)    [0]
                 w = sorted(conv, key = lambda x: x['score'])                    [0]
 
-                stats.append(["Best Solo Rig Converter",    f"{b['n']} ({b['p']:.2f}, {b['h']}/{b['t']})"])
-                stats.append(["Worst Solo Rig Converter",   f"{w['n']} ({w['p']:.2f}, {w['h']}/{w['t']})"])
+                stats.append(["Best Solo Rig Converter",    f"{b['n']} ({b['p']:.2f}%, {b['h']}/{b['t']})", ("Solo Rigs", b['n'])])
+                stats.append(["Worst Solo Rig Converter",   f"{w['n']} ({w['p']:.2f}%, {w['h']}/{w['t']})", ("Solo Rigs", w['n'])])
 
+        return stats
+
+    def _create_tour_png(self, use_teams, watched, path):
+        stats = self._compute_tour_stats(use_teams, watched)
         half    = (len(stats) + 1) // 2
         left    = stats[:half]
         right   = stats[half:]
 
-        while len(right) < len(left): right.append(["", ""])
+        while len(right) < len(left): right.append(["", "", None])
         split_stats = []
         for l, r in zip(left, right): split_stats.append([l[0], l[1], r[0], r[1]])
 
         df_tour = pd.DataFrame(split_stats, columns = ["Metric", "Value", "Metric", "Value"])
         self._export_png(df_tour, path, "Tour.png", "Tour Statistics")
 
-    def _create_team_png(self, assigns, t1_lookup, path):
+    def _compute_team_rows(self, assigns, t1_lookup):
         res = []
 
         for tid in self.t_c_ps:
@@ -951,7 +972,7 @@ class TourAnalyzer:
                     except  : pass
 
             res.append({
-                "Team Leader"   : t1_lookup.get(tid, ""),
+                "Team Leader"   : t1_lookup.get(tid, f"Team {tid}"),
                 "Mean Elo"      : np.mean(t_elos),
                 "Mean GR"       : np.mean(self.t_c_ps       [tid]) * 100,
                 "Total 1/8s"    : self.t_solos              [tid],
@@ -959,17 +980,22 @@ class TourAnalyzer:
                 "Rig Synergy"   : np.mean(self.t_on_syn     [tid]) * 100,
                 "Off Synergy"   : np.mean(self.t_off_syn    [tid]) * 100,
                 "Shared Rigs"   : np.mean(self.t_sh_rig     [tid]) * 100,
+                "_tid"          : tid
             })
 
-        df          = pd.DataFrame(res).sort_values(by = ["Mean GR", "Mean Elo"], ascending = [False, True])
+        df = pd.DataFrame(res).sort_values(by = ["Mean GR", "Mean Elo"], ascending = [False, True])
+        return df
+
+    def _create_team_png(self, assigns, t1_lookup, path):
+        df = self._compute_team_rows(assigns, t1_lookup)
+        df_png = df.drop(columns = ["_tid"])
         num_cols    = ["Mean Elo", "Mean GR", "Mean Over-8", "Rig Synergy", "Off Synergy", "Shared Rigs"]
 
-        for c in num_cols: df[c] = pd.to_numeric(df[c], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        self._export_png(df, path, "Team.png", "Team Statistics")
+        for c in num_cols: df_png[c] = pd.to_numeric(df_png[c], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        self._export_png(df_png, path, "Team.png", "Team Statistics")
 
-    def _create_tier_png(self, assigns, path, has_chanting_songs):
-        rows1 = []
-        rows2 = []
+    def _compute_tier_rows(self, assigns, has_chanting_songs):
+        rows1, rows2 = [], []
 
         for tr in ["1", "2", "3", "4"]:
             tp = [n for n in self.s_part if n.lower() in assigns and assigns[n.lower()][1] == tr]
@@ -978,32 +1004,24 @@ class TourAnalyzer:
             row1 = {"Tier": tr}
             row2 = {"Tier": tr}
 
-            gen_players = []
-            atk_players = []
-            blk_players = []
-            con_players = []
-            spd_players = []
-            chn_players = []
+            gen_players, atk_players, blk_players, con_players, spd_players, chn_players = [], [], [], [], [], []
 
             for p in tp:
-                cor = self.c_counts[p]
-                tot = self.s_part[p]
-                tim = self.p_answer_times.get(p, [])
-                chc = self.p_chan_c[p]
-                cht = self.p_chan_s[p]
+                cor, tot = self.c_counts[p], self.s_part[p]
+                tim, chc, cht = self.p_answer_times.get(p, []), self.p_chan_c[p], self.p_chan_s[p]
 
-                gen = 100 * cor / tot if tot else 0
+                gen = 100 * cor / tot if tot else 0.0
                 atk = self.p_pts[p]
                 blk = self.p_blks[p]
-                con = 100 * (atk + blk) / cor if cor else 0
-                spd = np.median(tim)
-                chn = 100 * chc / cht if cht else 0
+                con = 100 * (atk + blk) / cor if cor else 0.0
+                spd = np.median(tim) if tim else np.nan
+                chn = 100 * chc / cht if cht else 0.0
 
                 gen_players.append({"player": p, "value": gen})
                 atk_players.append({"player": p, "value": atk})
                 blk_players.append({"player": p, "value": blk})
                 con_players.append({"player": p, "value": con})
-                spd_players.append({"player": p, "value": spd})
+                if pd.notnull(spd): spd_players.append({"player": p, "value": spd})
                 if has_chanting_songs: chn_players.append({"player": p, "value": chn})
 
             gen_players.sort(key = lambda x: x["value"], reverse = True)
@@ -1013,28 +1031,42 @@ class TourAnalyzer:
             spd_players.sort(key = lambda x: x["value"], reverse = False)
             if chn_players: chn_players.sort(key = lambda x: x["value"], reverse = True)
 
-            row1["Guess Rate"]          = f"{gen_players[0]['player']} ({gen_players[0]['value']:.2f})"
-            row1["Lives Taken"]         = f"{atk_players[0]['player']} ({atk_players[0]['value']:g})"
-            row1["Lives Saved"]         = f"{blk_players[0]['player']} ({blk_players[0]['value']:g})"
-            row2["Contribution Rate"]   = f"{con_players[0]['player']} ({con_players[0]['value']:.2f})"
-            row2["Median Time"]         = f"{spd_players[0]['player']} ({spd_players[0]['value']:.2f})"
+            row1["Guess Rate"]          = f"{gen_players[0]['player']} ({gen_players[0]['value']:.2f})" if gen_players else "N/A"
+            row1["Lives Taken"]         = f"{atk_players[0]['player']} ({atk_players[0]['value']:g})" if atk_players else "N/A"
+            row1["Lives Saved"]         = f"{blk_players[0]['player']} ({blk_players[0]['value']:g})" if blk_players else "N/A"
+            row2["Contribution Rate"]   = f"{con_players[0]['player']} ({con_players[0]['value']:.2f})" if con_players else "N/A"
+            row2["Median Time"]         = f"{spd_players[0]['player']} ({spd_players[0]['value']:.2f})" if spd_players else "N/A"
             row2["Chant GR"]            = f"{chn_players[0]['player']} ({chn_players[0]['value']:.2f})" if chn_players and chn_players[0]['value'] > 0 else ""
 
-            row1["gen_val"] = gen_players[0]['value']
-            row1["atk_val"] = atk_players[0]['value']
-            row1["blk_val"] = blk_players[0]['value']
-            row2["con_val"] = con_players[0]['value']
-            row2["spd_val"] = spd_players[0]['value']
+            row1["gen_val"] = gen_players[0]['value'] if gen_players else 0.0
+            row1["atk_val"] = atk_players[0]['value'] if atk_players else 0.0
+            row1["blk_val"] = blk_players[0]['value'] if blk_players else 0.0
+            row2["con_val"] = con_players[0]['value'] if con_players else 0.0
+            row2["spd_val"] = spd_players[0]['value'] if spd_players else np.nan
             row2["chn_val"] = chn_players[0]['value'] if chn_players else None
+
+            row1["_players"] = {
+                "gen": gen_players, "atk": atk_players, "blk": blk_players
+            }
+            row2["_players"] = {
+                "con": con_players, "spd": spd_players, "chn": chn_players
+            }
 
             rows1.append(row1)
             rows2.append(row2)
+
+        return rows1, rows2
+
+    def _create_tier_png(self, assigns, path, has_chanting_songs):
+        rows1, rows2 = self._compute_tier_rows(assigns, has_chanting_songs)
 
         best_gen_idx = len(rows1) - 1 - max(range(len(rows1)), key = lambda i: rows1[::-1][i]["gen_val"]) if rows1 else None
         best_atk_idx = len(rows1) - 1 - max(range(len(rows1)), key = lambda i: rows1[::-1][i]["atk_val"]) if rows1 else None
         best_blk_idx = len(rows1) - 1 - max(range(len(rows1)), key = lambda i: rows1[::-1][i]["blk_val"]) if rows1 else None
         best_con_idx = len(rows2) - 1 - max(range(len(rows2)), key = lambda i: rows2[::-1][i]["con_val"]) if rows2 else None
-        best_spd_idx = len(rows2) - 1 - min(range(len(rows2)), key = lambda i: rows2[::-1][i]["spd_val"]) if rows2 else None
+        
+        valid_spd_rows = [i for i, r in enumerate(rows2) if pd.notnull(r["spd_val"])]
+        best_spd_idx = len(rows2) - 1 - min(valid_spd_rows, key = lambda i: rows2[::-1][i]["spd_val"]) if valid_spd_rows else None
 
         valid_chn_rows  = [i for i, r in enumerate(rows2) if r["chn_val"] is not None]
         best_chn_idx    = len(rows2) - 1 - max(valid_chn_rows, key = lambda i: rows2[::-1][i]["chn_val"]) if valid_chn_rows else None
@@ -1675,7 +1707,6 @@ class TourAnalyzer:
 
             for s in songs:
                 v_str = s.get("songInfo", {}).get("vintage", "")
-                v_str = s.get("songInfo", {}).get("vintage", "")
                 if not v_str: continue
                 for p in s.get("correctGuessPlayers", []):
                     p_name = p if isinstance(p, str) else p.get("name") if isinstance(p, dict) else None
@@ -1685,11 +1716,12 @@ class TourAnalyzer:
 
         return p_song_details, p_true_solo_rigs, t_song_details, tm_song_details, raw_v_by_player, raw_v_by_rig, m_song_lists, num_x, num_y
 
-    def _render_dashboard_players(self, sorted_players, active, t_labels, watched, avg_rank, p_song_details):
+    def _render_dashboard_players(self, sorted_players, active, t_labels, watched, avg_rank, p_song_details, df_base):
         rows, eligibility, borders = [], [], []
 
-        for name in sorted_players:
-            tot, cor   = self.s_part[name], self.c_counts[name]
+        for idx, name in enumerate(sorted_players):
+            row_data = df_base.loc[df_base["Player"].str.startswith(name)].iloc[0] if any(df_base["Player"].str.startswith(name)) else None
+            
             target     = self.exp_map.get(name, self.base_exp)
             d_name     = name
             sub_hover  = ""
@@ -1717,73 +1749,48 @@ class TourAnalyzer:
                 syms = ["", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)"]
                 if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
 
-            avg_over8   = self.p_overs_sum[name] / cor if cor else np.nan
             row         = {"Player": {"count": d_name, "details": [sub_hover] if sub_hover else []}}
 
             if self.use_teams: 
-                try     : row["Elo"] = float(self.elo_map.get(name.lower(), np.nan))
-                except  : row["Elo"] = np.nan
+                try: row["Elo"] = float(self.elo_map.get(name.lower(), np.nan))
+                except: row["Elo"] = np.nan
             
-            try: elo_val_raw = float(self.elo_map.get(name.lower(), 0.0))
-            except: elo_val_raw = 0.0
-            all_pool_ufs = [(self.p_usefulness_sum[p] * avg_rank * 8) / self.s_part[p] if self.s_part[p] else 0.0 for p in self.s_part]
-            all_pool_elos = []
-            for p in self.s_part:
-                try: all_pool_elos.append(float(self.elo_map.get(p.lower(), 0.0)))
-                except: all_pool_elos.append(0.0)
-            if len(all_pool_elos) > 1 and np.var(all_pool_elos) > 0:
-                s_slope, s_intercept = np.polyfit(all_pool_elos, all_pool_ufs, 1)
-                s_res_std = np.std(np.array(all_pool_ufs) - (s_slope * np.array(all_pool_elos) + s_intercept))
-                if s_res_std == 0: s_res_std = 1
-            else:
-                s_slope, s_intercept, s_res_std = 0, np.mean(all_pool_ufs) if all_pool_ufs else 0, 1
-            
-            uf_score_val = float((self.p_usefulness_sum[name] * avg_rank * 8) / tot) if tot else 0.0
-            s_residual = uf_score_val - (s_slope * elo_val_raw + s_intercept)
-            calculated_performance = (1 / (1 + np.exp(SCALE_PERF * (s_residual / s_res_std)))) * 100
-
-            row.update({
-                "Guess Rate"    : float(cor / tot * 100) if tot else 0.0,
-                "UF"            : uf_score_val,
-                "Rating"        : float(calculated_performance),
-                "1/8s"          : int(self.e_counts[name]),
-                "2/8s"          : int(self.p_two_e[name]),
-                "7/8s"          : int(self.p_rev_e[name]),
-                "Mean Over-8"   : float(avg_over8) if pd.notnull(avg_over8) else np.nan
-            })
-            if self.use_teams:
-                row.update({"Lives Taken": int(self.p_pts[name]), "Lives Saved": int(self.p_blks[name])})
-
-            for tid in active:
-                seen = self.p_type_s[name][tid]
-                val_type = (self.p_type_c[name][tid] / seen * 100) if seen else np.nan
-                row[t_labels[tid]] = float(val_type) if pd.notnull(val_type) else np.nan
-
-            if watched:
-                rig_over8 = np.mean(self.p_l_corr[name]) if self.p_l_corr[name] else np.nan
+            if row_data is not None:
                 row.update({
-                    "Rigs"              : int(self.p_rigs[name]),
-                    "Rig Rate"          : float(self.p_rigs[name] / tot * 100) if tot else np.nan,
-                    "Solo Rigs"         : int(self.p_l_solos[name]),
-                    "Solo Rig Rate"     : float(self.p_l_solos[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
-                    "Rig Over-8"        : float(rig_over8) if pd.notnull(rig_over8) else np.nan,
-                    "Over-8 Delta"      : float(rig_over8 - avg_over8) if (pd.notnull(rig_over8) and pd.notnull(avg_over8)) else np.nan,
-                    "Rig Guess Rate"    : float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else np.nan,
-                    "Off Guess Rate"    : float((cor - self.p_rigs_h[name]) / (tot - self.p_rigs_h[name]) * 100) if (tot - self.p_rigs[name]) else np.nan,
-                    "Rig Delta"         : float((cor - self.p_rigs[name]) / cor * 100) if cor else np.nan,
+                    "Guess Rate"    : float(row_data["Guess Rate"] * 100),
+                    "UF"            : float(row_data["UF"]) if "UF" in row_data else 0.0,
+                    "Rating"        : float(row_data["Rating"]) if "Rating" in row_data else 0.0,
+                    "1/8s"          : int(row_data["1/8s"]),
+                    "2/8s"          : int(row_data["2/8s"]),
+                    "7/8s"          : int(row_data["7/8s"]),
+                    "Mean Over-8"   : float(row_data["Mean Over-8"]) if pd.notnull(row_data["Mean Over-8"]) else np.nan
                 })
+                if self.use_teams:
+                    row.update({"Lives Taken": int(row_data["Lives Taken"]), "Lives Saved": int(row_data["Lives Saved"])})
 
-            times       = self.p_answer_times.get(name, [])
-            seen_chan   = self.p_chan_s[name]
-            med_time    = np.median(times) if times else np.nan
-            row["Median Time"] = float(med_time) if pd.notnull(med_time) else np.nan
-            chant_gr    = (self.p_chan_c[name] / seen_chan * 100) if seen_chan else np.nan
-            row["Chant Guess Rate"] = float(chant_gr) if pd.notnull(chant_gr) else np.nan
-            
+                for tid in active:
+                    row[t_labels[tid]] = float(row_data[t_labels[tid]] * 100) if pd.notnull(row_data[t_labels[tid]]) else np.nan
+
+                if watched:
+                    row.update({
+                        "Rigs"              : int(row_data["Rigs"]),
+                        "Rig Rate"          : float(row_data["Rig Rate"] * 100),
+                        "Solo Rigs"         : int(row_data["Solo Rigs"]),
+                        "Solo Rig Rate"     : float(row_data["Solo Rig Rate"] * 100),
+                        "Rig Over-8"        : float(row_data["Rig Over-8"]) if pd.notnull(row_data["Rig Over-8"]) else np.nan,
+                        "Over-8 Delta"      : float(row_data["Over-8 Delta"]) if pd.notnull(row_data["Over-8 Delta"]) else np.nan,
+                        "Rig Guess Rate"    : float(row_data["Rig Guess Rate"] * 100),
+                        "Off Guess Rate"    : float(row_data["Off Guess Rate"] * 100),
+                        "Rig Delta"         : float(row_data["Rig Delta"] * 100),
+                    })
+                row["Median Time"] = float(row_data["Median Time"]) if pd.notnull(row_data["Median Time"]) else np.nan
+                row["Chant Guess Rate"] = float(row_data["Chant Guess Rate"] * 100) if pd.notnull(row_data["Chant Guess Rate"]) else np.nan
+
             for key in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]:
+                if key not in row: continue
                 if key in ["Rigs", "Solo Rigs"]: p_song_details[name][key].sort(key = lambda s: s[2:].strip().lower())
                 else: p_song_details[name][key].sort(key = str.lower)
-                if key in row: row[key] = {"count": row[key], "details": p_song_details[name][key]}
+                row[key] = {"count": row[key], "details": p_song_details[name][key]}
             rows.append(row)
 
         df_players = pd.DataFrame(rows)
@@ -1867,101 +1874,41 @@ class TourAnalyzer:
 
         return html_rows_list, stats_hl, borders, eligibility
 
-    def _render_dashboard_tour(self, watched, sorted_players, t_song_details, p_song_details, p_true_solo_rigs):
-        fmt_most = lambda names, val: "N/A" if not names else f"{sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]} ({val}{f', {(self.c_counts[sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]] / self.s_part[sorted(names, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]] * 100):.2f}' if len(names) > 1 else ''})"
-        
-        best_converter_str, worst_converter_str = "N/A", "N/A"
-        best_converter_details, worst_converter_details = [], []
-        
-        if watched:
-            conv = []
-            eligible_players = [p for p in sorted_players if len(p_true_solo_rigs[p]) > 0]
-            if eligible_players:
-                total_hits = sum((self.p_l_solos[p] - self.p_m_erigs[p]) for p in eligible_players)
-                total_attempts = sum(self.p_l_solos[p] for p in eligible_players)
-                global_avg = total_hits / total_attempts if total_attempts > 0 else 0
-                constant = 3
-                for n in eligible_players:
-                    t = self.p_l_solos[n]
-                    h = t - self.p_m_erigs[n]
-                    weighted_score = (h + constant * global_avg) / (t + constant)
-                    conv.append({'n': n, 'score': weighted_score, 'p': 100 * h / t, 'h': h, 't': t, 'details': p_true_solo_rigs[n]})
-                if conv:
-                    b = sorted(conv, key=lambda x: x['score'], reverse=True)[0]
-                    w = sorted(conv, key=lambda x: x['score'])[0]
-                    best_converter_str = f"{b['n']} ({b['p']:.2f}%, {b['h']}/{b['t']})"
-                    worst_converter_str = f"{w['n']} ({w['p']:.2f}%, {w['h']}/{w['t']})"
-                    best_converter_details = sorted(b['details'], key=lambda s: s[2:].strip().lower())
-                    worst_converter_details = sorted(w['details'], key=lambda s: s[2:].strip().lower())
-
-        tour_stats_raw = [
-            ["Median Vintage", format_year(round(np.median(self.all_vint), 2)) if self.all_vint else "N/A", []],
-            ["Mean Difficulty", f"{np.mean(self.all_diff):.2f}" if self.all_diff else "N/A", []],
-            ["Mean Guess Rate", f"{(self.global_stats['tot_c'] / sum(self.s_part.values()) * 100):.2f}" if self.s_part else "0.00", []],
-            ["Total 0/8s", str(self.global_stats["blanks"]), t_song_details.get("Total 0/8s", [])],
-            ["Total 1/8s", str(self.global_stats["solos"]), t_song_details.get("Total 1/8s", [])],
-            ["Total 2/8s", str(self.global_stats["doubles"]), t_song_details.get("Total 2/8s", [])],
-            ["Total 7/8s", str(self.global_stats["sevens"]), t_song_details.get("Total 7/8s", [])],
-            ["Total 8/8s", str(self.global_stats["fulls"]), t_song_details.get("Total 8/8s", [])]
-        ]
-        if self.use_teams: tour_stats_raw.append(["Total 4-0s", str(self.global_stats["sweeps"]), t_song_details.get("Total 4-0s", [])])
-        
-        pop_gen = self.genre_c.most_common(1)[0][0] if self.genre_c else "N/A"
-        pop_gen_count = self.genre_c.most_common(1)[0][1] if self.genre_c else 0
-        pop_tag = self.tag_c.most_common(1)[0][0] if self.tag_c else "N/A"
-        pop_tag_count = self.tag_c.most_common(1)[0][1] if self.tag_c else 0
-
-        m1_p = [n for n, v in self.e_counts.items() if v == max(self.e_counts.values(), default=0) and v > 0]
-        m1_win = sorted(m1_p, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0] if m1_p else None
-        m2_p = [n for n, v in self.p_two_e.items() if v == max(self.p_two_e.values(), default=0) and v > 0]
-        m2_win = sorted(m2_p, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0] if m2_p else None
-        m7_p = [n for n, v in self.p_rev_e.items() if v == max(self.p_rev_e.values(), default=0) and v > 0]
-        m7_win = sorted(m7_p, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0] if m7_p else None
-
-        tour_stats_raw.extend([
-            ["Most Popular Genre", f"{pop_gen} ({pop_gen_count})" if self.genre_c else "N/A", t_song_details.get(f"Genre:{pop_gen}", [])],
-            ["Most Popular Tag", f"{pop_tag} ({pop_tag_count})" if self.tag_c else "N/A", t_song_details.get(f"Tag:{pop_tag}", [])],
-            ["Most 1/8s", fmt_most(m1_p, max(self.e_counts.values(), default=0)), p_song_details.get(m1_win, {}).get("1/8s", []) if m1_win else []],
-            ["Most 2/8s", fmt_most(m2_p, max(self.p_two_e.values(), default=0)), p_song_details.get(m2_win, {}).get("2/8s", []) if m2_win else []],
-            ["Most 7/8s", fmt_most(m7_p, max(self.p_rev_e.values(), default=0)), p_song_details.get(m7_win, {}).get("7/8s", []) if m7_win else []]
-        ])
-        
-        plist = list(self.s_part.keys())
-        no_s = sorted([n for n in plist if self.e_counts[n] == 0 and self.s_part[n] > 0], key=lambda x: self.c_counts[x] / self.s_part[x], reverse=True)
-        yes_s = sorted([n for n in plist if self.e_counts[n] > 0 and self.s_part[n] > 0], key=lambda x: self.c_counts[x] / self.s_part[x])
-        if no_s: tour_stats_raw.append(["Highest GR Without 1/8s", f"{no_s[0]} ({100 * (self.c_counts[no_s[0]] / self.s_part[no_s[0]]):.2f})", []])
-        if yes_s: tour_stats_raw.append(["Lowest GR With 1/8s", f"{yes_s[0]} ({100 * (self.c_counts[yes_s[0]] / self.s_part[yes_s[0]]):.2f}, {self.e_counts[yes_s[0]]})", p_song_details[yes_s[0]]["1/8s"]])
-
-        if watched:
-            tour_stats_raw.append(["Best Solo Rig Converter", best_converter_str, best_converter_details])
-            tour_stats_raw.append(["Worst Solo Rig Converter", worst_converter_str, worst_converter_details])
-
+    def _render_dashboard_tour(self, watched, t_song_details, p_song_details):
+        stats = self._compute_tour_stats(self.use_teams, watched)
         tour_unrolled = []
-        for row in tour_stats_raw:
-            row[2].sort(key=str.lower)
-            tour_unrolled.append({"Metric": row[0], "Value": {"count": row[1], "details": row[2]}})
+
+        for row in stats:
+            metric_name, display_val, link_key = row[0], str(row[1]), row[2]
+            details = []
+            if link_key is not None:
+                if isinstance(link_key, str):
+                    details = t_song_details.get(link_key, [])
+                elif isinstance(link_key, tuple):
+                    stat_key, player_name = link_key
+                    details = p_song_details.get(player_name, {}).get(stat_key, [])
+            
+            details.sort(key=str.lower)
+            tour_unrolled.append({"Metric": metric_name, "Value": {"count": display_val, "details": details}})
         return tour_unrolled
 
-    def _render_dashboard_teams(self, tm_song_details):
+    def _render_dashboard_teams(self, df_teams, tm_song_details):
         team_rows, team_hl_rules = [], {}
         if not self.use_teams: return team_rows, team_hl_rules
 
-        for tid in self.t_c_ps:
-            t_overs = [self.p_overs_sum[p] / self.c_counts[p] for p in self.s_part if p.lower() in self.assignments and self.assignments[p.lower()][0] == tid and self.c_counts[p] > 0]
-            t_elos = [float(self.elo_map.get(p.lower(), 0)) for p in self.rosters[tid] if p.lower() in self.elo_map]
+        for _, row_data in df_teams.iterrows():
+            tid = row_data["_tid"]
             tm_song_details[tid]["Total 1/8s"].sort(key=str.lower)
             team_rows.append({
-                "Team Leader"   : self.t1_lookup.get(tid, f"Team {tid}"),
-                "Mean Elo"      : float(np.mean(t_elos)) if t_elos else np.nan,
-                "Mean GR"       : float(np.mean(self.t_c_ps[tid]) * 100),
-                "Total 1/8s"    : {"count": int(self.t_solos[tid]), "details": tm_song_details[tid]["Total 1/8s"]},
-                "Mean Over-8"   : float(np.mean(t_overs)) if t_overs else np.nan,
-                "Rig Synergy"   : float(np.mean(self.t_on_syn[tid]) * 100) if self.t_on_syn[tid] else np.nan,
-                "Off Synergy"   : float(np.mean(self.t_off_syn[tid]) * 100) if self.t_off_syn[tid] else np.nan,
-                "Shared Rigs"   : float(np.mean(self.t_sh_rig[tid]) * 100) if self.t_sh_rig[tid] else np.nan
+                "Team Leader"   : row_data["Team Leader"],
+                "Mean Elo"      : float(row_data["Mean Elo"]),
+                "Mean GR"       : float(row_data["Mean GR"]),
+                "Total 1/8s"    : {"count": int(row_data["Total 1/8s"]), "details": tm_song_details[tid]["Total 1/8s"]},
+                "Mean Over-8"   : float(row_data["Mean Over-8"]),
+                "Rig Synergy"   : float(row_data["Rig Synergy"]),
+                "Off Synergy"   : float(row_data["Off Synergy"]),
+                "Shared Rigs"   : float(row_data["Shared Rigs"])
             })
-        
-        team_rows = sorted(team_rows, key = lambda x: (-x["Mean GR"], x["Mean Elo"] if pd.notnull(x["Mean Elo"]) else float('inf')))
 
         if team_rows:
             team_desc = ["Mean Elo", "Mean GR", "Rig Synergy", "Off Synergy", "Shared Rigs"]
@@ -1991,28 +1938,34 @@ class TourAnalyzer:
 
         return formatted_team_rows, team_hl_rules
 
-    def _render_dashboard_tiers(self, p_song_details):
+    def _render_dashboard_tiers(self, rows1, rows2, p_song_details):
         tier_data = {}
-        for tr in ["1", "2", "3", "4"]:
-            tp = [n for n in self.s_part if n.lower() in self.assignments and self.assignments[n.lower()][1] == tr]
-            if not tp: continue
+        for r1, r2 in zip(rows1, rows2):
+            tr = r1["Tier"]
             tier_data[tr] = []
-            for p in tp:
-                cor, tot = self.c_counts[p], self.s_part[p]
-                tim, chc, cht = self.p_answer_times.get(p, []), self.p_chan_c[p], self.p_chan_s[p]
+            
+            players_tracked = {p["player"] for p in r1["_players"]["gen"]}
+            for p in players_tracked:
+                gen = next((x["value"] for x in r1["_players"]["gen"] if x["player"] == p), 0.0)
+                atk = next((x["value"] for x in r1["_players"]["atk"] if x["player"] == p), 0.0)
+                blk = next((x["value"] for x in r1["_players"]["blk"] if x["player"] == p), 0.0)
+                con = next((x["value"] for x in r2["_players"]["con"] if x["player"] == p), 0.0)
+                spd = next((x["value"] for x in r2["_players"]["spd"] if x["player"] == p), None)
+                chn = next((x["value"] for x in r2["_players"]["chn"] if x["player"] == p), 0.0) if r2["_players"]["chn"] else 0.0
+
                 p_song_details[p]["Lives Taken"].sort(key=str.lower)
                 p_song_details[p]["Lives Saved"].sort(key=str.lower)
                 
                 tier_data[tr].append({
                     "player": p,
-                    "Guess Rate": float(round(100 * cor / tot, 2)) if tot else 0.0,
-                    "Lives Taken": int(self.p_pts[p]),
+                    "Guess Rate": float(round(gen, 2)),
+                    "Lives Taken": int(atk),
                     "Lives Taken Details": p_song_details[p]["Lives Taken"],
-                    "Lives Saved": float(round(self.p_blks[p], 2)),
+                    "Lives Saved": float(round(blk, 2)),
                     "Lives Saved Details": p_song_details[p]["Lives Saved"],
-                    "Contribution Rate": float(round(100 * (self.p_pts[p] + self.p_blks[p]) / cor, 2)) if cor else 0.0,
-                    "Median Time": float(round(np.median(tim), 2)) if tim else None,
-                    "Chanting Guess Rate": float(round(100 * chc / cht, 2)) if cht else 0.0
+                    "Contribution Rate": float(round(con, 2)),
+                    "Median Time": float(round(spd, 2)) if spd is not None and pd.notnull(spd) else None,
+                    "Chanting Guess Rate": float(round(chn, 2))
                 })
         return tier_data
 
@@ -2023,7 +1976,7 @@ class TourAnalyzer:
                 song_matrix_list.append({"vintage": int(s["vintage"]), "difficulty": float(s["difficulty"]), "correct_count": int(s["correct_count"])})
         return song_matrix_list
 
-    def _render_dashboard_scatter_plots(self, avg_rank, raw_v_by_player, raw_v_by_grid):
+    def _render_dashboard_scatter_plots(self, avg_rank, raw_v_by_player, raw_v_by_rig):
         pool_data = []
         for name in self.s_part:
             if self.c_counts[name] > 0:
@@ -2052,7 +2005,7 @@ class TourAnalyzer:
                 p_vint_med  = np.median([extract_year(v) for v in p_vints]) if p_vints else (yg if pd.notnull(yg) else 2010)
                 p_seas      = format_year(p_vint_med) if p_vints else f"Winter {int(yg)}" if pd.notnull(yg) else "N/A"
                 
-                r_vints     = raw_v_by_grid.get(name, [])
+                r_vints     = raw_v_by_rig.get(name, [])
                 r_vint_med  = np.median([extract_year(v) for v in r_vints]) if r_vints else (yl if pd.notnull(yl) else 2010)
                 r_seas      = format_year(r_vint_med) if r_vints else f"Winter {int(yl)}" if pd.notnull(yl) else "N/A"
 
@@ -2110,6 +2063,8 @@ class TourAnalyzer:
 
         p_song_details, p_true_solo_rigs, t_song_details, tm_song_details, raw_v_by_player, raw_v_by_rig, m_song_lists, num_x, num_y = self._get_dashboard_data(watched)
 
+        df_base, _ = self._compute_player_rows(self.elo_map, self.apps, self.exp_map, self.base_exp, self.new_players, watched, active, t_labels, avg_rank)
+        
         def player_sort_key(x):
             gr = (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0.0
             try: elo = float(self.elo_map.get(x.lower(), float('inf')))
@@ -2118,10 +2073,15 @@ class TourAnalyzer:
 
         sorted_players = sorted(self.s_part.keys(), key = player_sort_key, reverse = True)
 
-        json_players, json_hl_rules, json_borders, json_eligibility = [json.dumps(x) for x in self._render_dashboard_players(sorted_players, active, t_labels, watched, avg_rank, p_song_details)]
-        json_tour_stats     = json.dumps(self._render_dashboard_tour(watched, sorted_players, t_song_details, p_song_details, p_true_solo_rigs))
-        json_teams, json_team_hl_rules = [json.dumps(x) for x in self._render_dashboard_teams(tm_song_details)]
-        json_tier_merged    = json.dumps(self._render_dashboard_tiers(p_song_details))
+        json_players, json_hl_rules, json_borders, json_eligibility = [json.dumps(x) for x in self._render_dashboard_players(sorted_players, active, t_labels, watched, avg_rank, p_song_details, df_base)]
+        json_tour_stats     = json.dumps(self._render_dashboard_tour(watched, t_song_details, p_song_details))
+        
+        df_teams = self._compute_team_rows(self.assignments, self.t1_lookup)
+        json_teams, json_team_hl_rules = [json.dumps(x) for x in self._render_dashboard_teams(df_teams, tm_song_details)]
+        
+        rows1, rows2 = self._compute_tier_rows(self.assignments, any(self.p_chan_s.values()))
+        json_tier_merged    = json.dumps(self._render_dashboard_tiers(rows1, rows2, p_song_details))
+        
         json_songs          = json.dumps(self._render_dashboard_songs())
         json_matrix_songs   = json.dumps(m_song_lists)
         json_scatter, json_arrows = [json.dumps(x) for x in self._render_dashboard_scatter_plots(avg_rank, raw_v_by_player, raw_v_by_rig)]

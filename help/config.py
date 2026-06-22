@@ -10,6 +10,7 @@ BROWSER_PATHS = [
 COLOR_0     = "#C83232"
 COLOR_1     = "#646464"
 COLOR_2     = "#3232C8"
+CONST_CONV  = 3
 DIR_CREDS   = "cred"
 DIR_JSONS   = "json"
 DIR_OUT     = "hakohoka"
