@@ -2641,7 +2641,7 @@ class TourAnalyzer:
                 ticktext: xLabels,
                 tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }},
                 showgrid: true, zeroline: false, showticklabels: true, ticks: '',
-                fixedrange: false
+                fixedrange: true
             }},
             yaxis: {{
                 title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }},
@@ -2651,7 +2651,7 @@ class TourAnalyzer:
                 tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }},
                 tickangle: -90,
                 showgrid: true, zeroline: false, showticklabels: true, ticks: '',
-                fixedrange: false
+                fixedrange: true
             }},
             annotations: annotations,
             margin: {{ l: 60, r: 0, t: 30, b: 55 }}
@@ -2765,7 +2765,7 @@ class TourAnalyzer:
                 showgrid: true,
                 tickformat: '.1f',
                 dtick: 0.5,
-                fixedrange: true
+                fixedrange: false
             }},
             yaxis: {{ 
                 title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
@@ -2774,7 +2774,7 @@ class TourAnalyzer:
                 showgrid: true,
                 tickformat: '.0f',
                 dtick: 2,
-                fixedrange: true
+                fixedrange: false
             }},
             margin: {{ l: 60, r: 0, t: 30, b: 55 }}
         }}, {{responsive: true, displayModeBar: false}});
