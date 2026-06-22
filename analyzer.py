@@ -1212,7 +1212,7 @@ class TourAnalyzer:
                     "cmap"              : cmap_g,
                     "vmin"              : 0.0,
                     "vmax"              : 1.0,
-                    "cbar_label"        : "Performance",
+                    "cbar_label"        : "Rating",
                     "cbar_ticks"        : [0, 1],
                     "cbar_ticklabels"   : ['0', '100'],
                     "labelpad"          : -37.5
@@ -2074,7 +2074,7 @@ class TourAnalyzer:
     def _build_dashboard_base(self, path, use_teams, prefix, c0, c1, c2, num_x, num_y, **kwargs):
         explanations = {
             "Player"                    : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
-            "UF"                        : "Usefulness",
+            "UF"                        : "Usefulness: Calculates this player's contribution to their team, scaled by Elo and songs played",
             "Mean Over-8"               : "Average of correct guessers across songs this player/team guessed correctly",
             "Lives Taken"               : "Count of points won against the opposing team; correct guessers exclusively on their team",
             "Lives Saved"               : "Count of blocks achieved against the opposing team; lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
@@ -2409,23 +2409,45 @@ class TourAnalyzer:
         function setupTooltipListeners() {{
             const tooltipNode = document.getElementById('customJsTooltip');
             
+            // Helper function to track mouse coordinate positions safely within viewport boundaries
+            function positionTooltip(e) {{
+                tooltipNode.style.display = 'block';
+                
+                const tooltipWidth = tooltipNode.offsetWidth;
+                const tooltipHeight = tooltipNode.offsetHeight;
+                
+                // Default coordinates (15px padding below and right of cursor)
+                let xPos = e.pageX + 15;
+                let yPos = e.pageY + 15;
+                
+                // Check if tooltip overflows the horizontal right layout boundary
+                if (e.clientX + 15 + tooltipWidth > window.innerWidth) {{
+                    xPos = e.pageX - tooltipWidth - 15;
+                }}
+                
+                // Check if tooltip overflows the vertical bottom layout boundary
+                if (e.clientY + 15 + tooltipHeight > window.innerHeight) {{
+                    yPos = e.pageY - tooltipHeight - 15;
+                }}
+                
+                // Prevent negative absolute positions if tooltips are massive
+                if (xPos < window.scrollX) xPos = window.scrollX + 5;
+                if (yPos < window.scrollY) yPos = window.scrollY + 5;
+                
+                tooltipNode.style.left = xPos + 'px';
+                tooltipNode.style.top = yPos + 'px';
+            }}
+
             document.querySelectorAll('table th[data-metric]').forEach(th => {{
                 const metricKey = th.getAttribute('data-metric');
                 if (!colExplanations[metricKey]) return;
 
                 th.addEventListener('mouseenter', (e) => {{
                     tooltipNode.innerHTML = colExplanations[metricKey];
-                    tooltipNode.style.display = 'block';
+                    positionTooltip(e);
                 }});
 
-                th.addEventListener('mousemove', (e) => {{
-                    let xPos = e.pageX + 15;
-                    let yPos = e.pageY + 15;
-                    if (xPos + 450 > window.innerWidth + window.scrollX) {{ xPos = e.pageX - 465; }}
-                    tooltipNode.style.left = xPos + 'px';
-                    tooltipNode.style.top = yPos + 'px';
-                }});
-
+                th.addEventListener('mousemove', positionTooltip);
                 th.addEventListener('mouseleave', () => {{ tooltipNode.style.display = 'none'; }});
             }});
 
@@ -2435,17 +2457,10 @@ class TourAnalyzer:
 
                 td.addEventListener('mouseenter', (e) => {{
                     tooltipNode.innerHTML = colExplanations[metricKey];
-                    tooltipNode.style.display = 'block';
+                    positionTooltip(e);
                 }});
 
-                td.addEventListener('mousemove', (e) => {{
-                    let xPos = e.pageX + 15;
-                    let yPos = e.pageY + 15;
-                    if (xPos + 450 > window.innerWidth + window.scrollX) {{ xPos = e.pageX - 465; }}
-                    tooltipNode.style.left = xPos + 'px';
-                    tooltipNode.style.top = yPos + 'px';
-                }});
-
+                td.addEventListener('mousemove', positionTooltip);
                 td.addEventListener('mouseleave', () => {{ tooltipNode.style.display = 'none'; }});
             }});
 
@@ -2455,8 +2470,6 @@ class TourAnalyzer:
                         const songs = JSON.parse(decodeURIComponent(td.getAttribute('data-songs')));
                         if(songs && songs.length > 0) {{
                             let displaySongs = [...songs];
-                            
-                            // Check if this cell belongs to the Player column (Substitution info)
                             const isPlayerSubHover = td.parentNode.firstElementChild === td;
 
                             if (songs.length > 10) {{
@@ -2470,7 +2483,6 @@ class TourAnalyzer:
                                     return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
                                 }});
                                 
-                                // Only prefix with bullet points if it's NOT a player sub hover
                                 displaySongs = displaySongs.map(s => {{
                                     if (s.startsWith('✓') || s.startsWith('✗')) return s;
                                     return isPlayerSubHover ? s : `• ${{s}}`;
@@ -2482,7 +2494,6 @@ class TourAnalyzer:
                                     const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
                                     return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
                                 }});
-                                // Only prefix with bullet points if it's NOT a player sub hover
                                 displaySongs = displaySongs.map(s => {{
                                     if (s.startsWith('✓') || s.startsWith('✗')) return s;
                                     return isPlayerSubHover ? s : `• ${{s}}`;
@@ -2490,19 +2501,12 @@ class TourAnalyzer:
                             }}
                             
                             tooltipNode.innerHTML = displaySongs.join('<br>');
-                            tooltipNode.style.display = 'block';
+                            positionTooltip(e);
                         }}
                     }} catch(err) {{}}
                 }});
 
-                td.addEventListener('mousemove', (e) => {{
-                    let xPos = e.pageX + 15;
-                    let yPos = e.pageY + 15;
-                    if (xPos + 450 > window.innerWidth + window.scrollX) {{ xPos = e.pageX - 465; }}
-                    tooltipNode.style.left = xPos + 'px';
-                    tooltipNode.style.top = yPos + 'px';
-                }});
-
+                td.addEventListener('mousemove', positionTooltip);
                 td.addEventListener('mouseleave', () => {{ tooltipNode.style.display = 'none'; }});
             }});
         }}
@@ -2914,7 +2918,7 @@ class TourAnalyzer:
             y: scatterData.map(d => d.vintage),
             text: scatterData.map(d => d.acronym),
             customdata: scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), d.performance.toFixed(2)]),
-            hovertemplate: '<b>%{{customdata[0]}}</b><br>Mean Over-8: %{{customdata[1]}}<br>Median Vintage: %{{customdata[2]}}<br>Guess Rate: %{{customdata[3]}}<br>Performance: %{{customdata[4]}}<extra></extra>',
+            hovertemplate: '<b>%{{customdata[0]}}</b><br>Mean Over-8: %{{customdata[1]}}<br>Median Vintage: %{{customdata[2]}}<br>Guess Rate: %{{customdata[3]}}<br>Rating: %{{customdata[4]}}<extra></extra>',
             mode: 'markers+text', textposition: 'top inside',
             textfont: {{ family: 'Segoe UI', size: 20, weight: 'bold', color: 'black' }},
             showlegend: false,
@@ -2925,7 +2929,7 @@ class TourAnalyzer:
                 colorscale: [[0, col0], [0.5, col1], [1, col2]],
                 showscale: true, 
                 colorbar: {{ 
-                    title: {{ text: '<b>Performance</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }}, 
+                    title: {{ text: '<b>Rating</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }}, 
                     thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
                     tickmode: 'array', tickvals: [0, 50, 100], ticktext: ['0', '50', '100'],
                     tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}
