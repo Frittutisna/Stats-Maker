@@ -1526,19 +1526,24 @@ class TourAnalyzer:
                 elif amt_correct == 1:
                     t_song_details["Total 1/8s"].append(song_line)
                     sw = list(active_correct)[0]
-                    p_song_details[sw]["1/8s"].append(song_line)
                     if sw.lower() in self.assignments:
                         tm_song_details[self.assignments[sw.lower()][0]]["Total 1/8s"].append(song_line)
                 elif amt_correct == 2:
                     t_song_details["Total 2/8s"].append(song_line)
-                    for sw in active_correct:
-                        p_song_details[sw]["2/8s"].append(song_line)
                 elif apply_rev and len(final_members - active_correct) == 1:
                     t_song_details["Total 7/8s"].append(song_line)
-                    sevens_target = list(final_members - active_correct)[0]
-                    p_song_details[sevens_target]["7/8s"].append(song_line)
                 elif amt_correct == len(final_members):
                     t_song_details["Total 8/8s"].append(song_line)
+
+                for sw in active_correct:
+                    if amt_correct == 1:
+                        p_song_details[sw]["1/8s"].append(song_line)
+                    elif amt_correct == 2:
+                        p_song_details[sw]["2/8s"].append(song_line)
+                
+                if apply_rev and len(final_members - active_correct) == 1:
+                    missing_player = list(final_members - active_correct)[0]
+                    p_song_details[missing_player]["7/8s"].append(song_line)
 
                 if isinstance(si.get("animeGenre"), list):
                     for gen in si.get("animeGenre"):
@@ -1781,13 +1786,13 @@ class TourAnalyzer:
             ["Median Vintage", format_year(round(np.median(self.all_vint), 2)) if self.all_vint else "N/A", []],
             ["Mean Difficulty", f"{np.mean(self.all_diff):.2f}" if self.all_diff else "N/A", []],
             ["Mean Guess Rate", f"{(self.global_stats['tot_c'] / sum(self.s_part.values()) * 100):.2f}" if self.s_part else "0.00", []],
-            ["Total 0/8s", str(self.global_stats["blanks"]), t_song_details["Total 0/8s"]],
-            ["Total 1/8s", str(self.global_stats["solos"]), t_song_details["Total 1/8s"]],
-            ["Total 2/8s", str(self.global_stats["doubles"]), t_song_details["Total 2/8s"]],
-            ["Total 7/8s", str(self.global_stats["sevens"]), t_song_details["Total 7/8s"]],
-            ["Total 8/8s", str(self.global_stats["fulls"]), t_song_details["Total 8/8s"]]
+            ["Total 0/8s", str(self.global_stats["blanks"]), t_song_details.get("Total 0/8s", [])],
+            ["Total 1/8s", str(self.global_stats["solos"]), t_song_details.get("Total 1/8s", [])],
+            ["Total 2/8s", str(self.global_stats["doubles"]), t_song_details.get("Total 2/8s", [])],
+            ["Total 7/8s", str(self.global_stats["sevens"]), t_song_details.get("Total 7/8s", [])],
+            ["Total 8/8s", str(self.global_stats["fulls"]), t_song_details.get("Total 8/8s", [])]
         ]
-        if self.use_teams: tour_stats_raw.append(["Total 4-0s", str(self.global_stats["sweeps"]), t_song_details["Total 4-0s"]])
+        if self.use_teams: tour_stats_raw.append(["Total 4-0s", str(self.global_stats["sweeps"]), t_song_details.get("Total 4-0s", [])])
         
         pop_gen = self.genre_c.most_common(1)[0][0] if self.genre_c else "N/A"
         pop_gen_count = self.genre_c.most_common(1)[0][1] if self.genre_c else 0
@@ -1802,11 +1807,11 @@ class TourAnalyzer:
         m7_win = sorted(m7_p, key=lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0] if m7_p else None
 
         tour_stats_raw.extend([
-            ["Most Popular Genre", f"{pop_gen} ({pop_gen_count})" if self.genre_c else "N/A", t_song_details[f"Genre:{pop_gen}"]],
-            ["Most Popular Tag", f"{pop_tag} ({pop_tag_count})" if self.tag_c else "N/A", t_song_details[f"Tag:{pop_tag}"]],
-            ["Most 1/8s", fmt_most(m1_p, max(self.e_counts.values(), default=0)), p_song_details[m1_win]["1/8s"] if m1_win else []],
-            ["Most 2/8s", fmt_most(m2_p, max(self.p_two_e.values(), default=0)), p_song_details[m2_win]["2/8s"] if m2_win else []],
-            ["Most 7/8s", fmt_most(m7_p, max(self.p_rev_e.values(), default=0)), p_song_details[m7_win]["7/8s"] if m7_win else []]
+            ["Most Popular Genre", f"{pop_gen} ({pop_gen_count})" if self.genre_c else "N/A", t_song_details.get(f"Genre:{pop_gen}", [])],
+            ["Most Popular Tag", f"{pop_tag} ({pop_tag_count})" if self.tag_c else "N/A", t_song_details.get(f"Tag:{pop_tag}", [])],
+            ["Most 1/8s", fmt_most(m1_p, max(self.e_counts.values(), default=0)), p_song_details.get(m1_win, {}).get("1/8s", []) if m1_win else []],
+            ["Most 2/8s", fmt_most(m2_p, max(self.p_two_e.values(), default=0)), p_song_details.get(m2_win, {}).get("2/8s", []) if m2_win else []],
+            ["Most 7/8s", fmt_most(m7_p, max(self.p_rev_e.values(), default=0)), p_song_details.get(m7_win, {}).get("7/8s", []) if m7_win else []]
         ])
         
         plist = list(self.s_part.keys())
@@ -2075,7 +2080,7 @@ class TourAnalyzer:
             color: #ffffff;
             padding: 8px 14px;
             border-radius: 6px;
-            font-size: clamp(8px, 0.8vw, 20px;
+            font-size: clamp(8px, 0.8vw, 20px);
             z-index: 99999;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
             pointer-events: none;
