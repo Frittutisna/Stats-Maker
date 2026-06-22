@@ -2279,7 +2279,7 @@ class TourAnalyzer:
                     <p><b>X-Axis:</b> Mean of correct guessers across songs this player guessed correctly</p>
                     <p><b>Y-Axis:</b> Median vintage across songs this player guessed correctly</p>
                     <p><b>Size (Guess Rate)</b></p>
-                    <p><b>Color:</b> Calculates this player's value (Usefulness) against what's expected from their Elo; 50 means this player is playing to expectations</p>
+                    <p><b>Color:</b> Calculates this player's value (Usefulness) against what's expected from their Elo; grey means this player is playing around expectations</p>
                 </div>
                 <div id="plotlyGuessChart" style="width:100%; height:750px;"></div>
             </div>
@@ -2301,8 +2301,11 @@ class TourAnalyzer:
 </body>
 </html>"""
 
-    def _generate_dashboard_css(self, c0, c2): return f"""body {{
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    def _generate_dashboard_css(self, c0, c2): return f"""body, table, th, td, button, input {{
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif !important;
+}}
+
+body {{
     background-color: #ffffff;
     color: #000000;
     overflow-x: hidden;
@@ -2866,6 +2869,7 @@ function renderTierCharts() {{
             : `<span style="font-size: 30px;"><b>${{metric.title}}</b></span>`;
 
         const layout = {{
+            font: {{ family: 'Segoe UI' }},
             title: {{
                 text: titleText,
                 font: {{ family: 'Segoe UI', size: 14, color: 'black' }},
@@ -2885,7 +2889,7 @@ function renderTierCharts() {{
                 ticksuffix: "  "
             }},
             bargap: 0.0,
-            margin: {{ l: 200, r: 40, t: 85, b: 60 }},
+            margin: {{ l: 200, r: 25, t: 75, b: 25 }},
             height: 145 + (yVals.length * 30),
             hoverlabel: {{ align: 'left', font: {{ family: 'Segoe UI', size: 15 }} }}
         }};
@@ -3025,6 +3029,7 @@ Plotly.newPlot('plotlySongChart', [{{
         tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}
     }}
 }}], {{
+    font: {{ family: 'Segoe UI' }},
     xaxis: {{
         title: {{ text: '<b>Difficulty</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }},
         tickmode: 'array',
@@ -3089,7 +3094,8 @@ listTraces.push({{
 }});
 
 Plotly.newPlot('plotlyListChart', listTraces, {{
-    xaxis: {{ 
+    font: {{ family: 'Segoe UI' }},
+    xaxis: {{
         title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
         tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, 
         showgrid: true,
@@ -3108,10 +3114,10 @@ Plotly.newPlot('plotlyListChart', listTraces, {{
     }},
     margin: {{ l: 60, r: 0, t: 30, b: 55 }},
     annotations: [
-        {{ x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'left', yanchor: 'top' }},
-        {{ x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'right', yanchor: 'top' }},
-        {{ x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom' }},
-        {{ x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'left', yanchor: 'bottom' }}
+        {{ x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'left', yanchor: 'top' }},
+        {{ x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'right', yanchor: 'top' }},
+        {{ x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom' }},
+        {{ x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'left', yanchor: 'bottom' }}
     ]
 }}, {{responsive: true, displayModeBar: false}});
 
@@ -3156,7 +3162,8 @@ guessTraces.push({{
 }});
 
 Plotly.newPlot('plotlyGuessChart', guessTraces, {{
-    xaxis: {{ 
+    font: {{ family: 'Segoe UI' }},
+    xaxis: {{
         title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
         tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, 
         showgrid: true,
@@ -3175,10 +3182,10 @@ Plotly.newPlot('plotlyGuessChart', guessTraces, {{
     }},
     margin: {{ l: 60, r: 0, t: 30, b: 55 }},
     annotations: [
-        {{ x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'left', yanchor: 'top' }},
-        {{ x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'right', yanchor: 'top' }},
-        {{ x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom' }},
-        {{ x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {{ size: 15 }}, opacity: 0.75, xanchor: 'left', yanchor: 'bottom' }}
+        {{ x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'left', yanchor: 'top' }},
+        {{ x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'right', yanchor: 'top' }},
+        {{ x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom' }},
+        {{ x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'left', yanchor: 'bottom' }}
     ]
 }}, {{responsive: true, displayModeBar: false}});"""
 

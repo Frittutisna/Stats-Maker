@@ -1,5 +1,8 @@
+body, table, th, td, button, input {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif !important;
+}
+
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     background-color: #ffffff;
     color: #000000;
     overflow-x: hidden;
