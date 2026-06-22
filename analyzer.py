@@ -1681,14 +1681,19 @@ class TourAnalyzer:
                         player_song_details[n]["Rigs"].append(f"{marker} {song_line}")
 
                         if is_true_solo_rig:
-                            marker = "✓" if (n in active_correct) else "✗"
-                            player_song_details[n]["Solo Rigs"].append(f"{marker} {song_line}")
+                            stealers        = sorted(list(active_correct - {n}))
+                            count_stealers  = len(stealers)
 
-                    if is_true_solo_rig:
-                        solo_rigger = ls[0]["name"]
-                        solo_marker = "✓" if (solo_rigger in active_correct and amt_correct == 1) else "✗"
+                            if      count_stealers == 0 : tag = "(0/8)"
+                            elif    count_stealers == 1 : tag = f"(stolen by {stealers[0]})"
+                            elif    count_stealers == 2 : tag = f"(stolen by {stealers[0]} and {stealers[1]})"
+                            else                        : tag = f"({amt_correct}/8)"
 
-                        player_true_solo_rigs[solo_rigger].append(f"{solo_marker} {song_line}")
+                            if n in active_correct  : player_song_details[n]["Solo Rigs"].append(f"✓ {song_line}")
+                            else                    : player_song_details[n]["Solo Rigs"].append(f"✗ {song_line} {tag}")
+
+                            if n in active_correct and amt_correct == 1 : player_song_details[n]["Solo Rig Conversions"].append(f"✓ {song_line}")
+                            else                                        : player_song_details[n]["Solo Rig Conversions"].append(f"✗ {song_line} {tag}")
 
                 if self.use_teams:
                     t_list = list({self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments})
@@ -1937,7 +1942,8 @@ class TourAnalyzer:
 
                 elif isinstance(link_key, tuple):
                     stat_key, player_name   = link_key
-                    details                 = player_song_details.get(player_name, {}).get(stat_key, [])
+                    lookup_key              = "Solo Rig Conversions" if "Converter" in metric_name else stat_key
+                    details                 = player_song_details.get(player_name, {}).get(lookup_key, [])
             
             details.sort(key = str.lower)
             tour_unrolled.append({"Metric": metric_name, "Value": {"count": display_val, "details": details}})
@@ -2275,11 +2281,11 @@ class TourAnalyzer:
 
         <div id="guess-tab" class="tab-content">
             <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
-                <div class="mb-4 text-sm text-gray-800 space-y-1">
+                <div class="mb-4 text-lg text-black space-y-1">
                     <p><b>X-Axis:</b> Mean of correct guessers across songs this player guessed correctly</p>
                     <p><b>Y-Axis:</b> Median vintage across songs this player guessed correctly</p>
                     <p><b>Size (Guess Rate)</b></p>
-                    <p><b>Color:</b> Calculates this player's value (Usefulness) against what's expected from their Elo; grey means this player is playing around expectations</p>
+                    <p><b>Color:</b> Calculates this player's value (Usefulness) against what's expected from their Elo</p>
                 </div>
                 <div id="plotlyGuessChart" style="width:100%; height:750px;"></div>
             </div>
@@ -2287,10 +2293,10 @@ class TourAnalyzer:
 
         <div id="list-tab" class="tab-content">
             <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
-                <div class="mb-4 text-sm text-gray-800 space-y-1">
+                <div class="mb-4 text-lg text-black space-y-1">
                     <p><b>X-Axis:</b> Mean of correct guessers across songs from this player's list</p>
                     <p><b>Y-Axis:</b> Median vintage across songs from this player's list</p>
-                    <p><b>Size (Rig Guess Rate)</b></p>
+                    <p><b>Size (Rig Rate)</b></p>
                 </div>
                 <div id="plotlyListChart" style="width:100%; height:750px;"></div>
             </div>
