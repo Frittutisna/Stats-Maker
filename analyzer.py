@@ -2134,6 +2134,22 @@ class TourAnalyzer:
         td[data-songs].highlight-worst:hover {{
             background-color: rgba(128, 128, 128, 0.25) !important;
         }}
+        th.has-explanation,
+        td.has-explanation {{
+            cursor: help;
+            position: relative;
+        }}
+        th.has-explanation::after,
+        td.has-explanation::after {{
+            content: '';
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 3px;
+            height: 3px;
+            background-color: #000000;
+            border-radius: 50%;
+        }}
     </style>
 </head>
 <body class="p-6 w-screen max-w-full m-0 box-border">
@@ -2286,8 +2302,11 @@ class TourAnalyzer:
 
             let headers = Object.keys(players[0]);
             let thead = "<thead><tr>" + headers.map(h => {{
-                let styleStr = colBorders.has(h) ? ' class="border-col-group"' : '';
-                return `<th${{styleStr}} data-metric="${{h}}">${{h.replace(/ /g, '<br>')}}</th>`;
+                let classes = [];
+                if (colBorders.has(h)) classes.push("border-col-group");
+                if (colExplanations[h]) classes.push("has-explanation");
+                let classStr = classes.length > 0 ? ` class="${{classes.join(' ')}}"` : '';
+                return `<th${{classStr}} data-metric="${{h}}">${{h.replace(/ /g, '<br>')}}</th>`;
             }}).join('') + "</tr></thead>";
 
             let tbody = "<tbody>";
@@ -2323,17 +2342,26 @@ class TourAnalyzer:
 
         function renderTourTable() {{
             const table = document.getElementById('tourStatsTable');
-            let thead = "<thead><tr><th class='border-col-group' data-metric='Metric'>Metric</th><th data-metric='Value'>Value</th></tr></thead><tbody>";
+            
+            let tourHeaders = ['Metric', 'Value'];
+            let thead = "<thead><tr>" + tourHeaders.map(h => {{
+                let classes = [];
+                if (colBorders.has(h)) classes.push("border-col-group");
+                if (colExplanations[h]) classes.push("has-explanation");
+                let classStr = classes.length > 0 ? ` class="${{classes.join(' ')}}"` : '';
+                return `<th${{classStr}} data-metric="${{h}}">${{h.replace(/ /g, '<br>')}}</th>`;
+            }}).join('') + "</tr></thead>";
+
             let tbody = "";
             tourStats.forEach(row => {{
                 let rawCell = row.Value;
                 let displayVal = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
-                
+                let metricClass = colExplanations[row.Metric] ? "border-col-group has-explanation" : "border-col-group";
                 if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {{
                     let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-                    tbody += `<tr><td class='border-col-group'><b>${{row.Metric}}</b></td><td data-songs="${{encodedDetails}}">${{displayVal}}</td></tr>`;
+                    tbody += `<tr><td class='${{metricClass}}'><b>${{row.Metric}}</b></td><td data-songs="${{encodedDetails}}">${{displayVal}}</td></tr>`;
                 }} else {{
-                    tbody += `<tr><td class='border-col-group'><b>${{row.Metric}}</b></td><td>${{displayVal}}</td></tr>`;
+                    tbody += `<tr><td class='${{metricClass}}'><b>${{row.Metric}}</b></td><td>${{displayVal}}</td></tr>`;
                 }}
             }});
             table.innerHTML = thead + tbody + "</tbody>";
@@ -2435,8 +2463,11 @@ class TourAnalyzer:
             
             let headers = Object.keys(teamStats[0]);
             let thead = "<thead><tr>" + headers.map(h => {{
-                let styleStr = colBorders.has(h) ? ' class="border-col-group"' : '';
-                return `<th${{styleStr}} data-metric="${{h}}">${{h.replace(' ', '<br>')}}</th>`;
+                let classes = [];
+                if (colBorders.has(h)) classes.push("border-col-group");
+                if (colExplanations[h]) classes.push("has-explanation");
+                let classStr = classes.length > 0 ? ` class="${{classes.join(' ')}}"` : '';
+                return `<th${{classStr}} data-metric="${{h}}">${{h.replace(/ /g, '<br>')}}</th>`;
             }}).join('') + "</tr></thead>";
             
             let tbody = "<tbody>";
