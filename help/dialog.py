@@ -364,7 +364,7 @@ class TourMetadataDialog(UnifiedDialog):
         super().on_confirm()
 
 class MismatchedRoundsDialog(UnifiedDialog):
-    def __init__(self, parent, mismatched_players, base_exp, subbed_players_set):
+    def __init__(self, parent, mismatched_players, base_exp, subbed_players_set, tour_dir):
         title_part = "These players appear" if len(mismatched_players) > 1 else "This player appears"
 
         prompt_text = (
@@ -379,11 +379,23 @@ class MismatchedRoundsDialog(UnifiedDialog):
         self.player_configs = {}
         self.fill_color     = "#000000"
 
+        subs_txt_players    = set()
+        subs_file           = tour_dir / "subs.txt"
+
+        if subs_file.exists():
+            with open(subs_file, "r", encoding = "utf-8") as f:
+                for line in f:
+                    if "," in line:
+                        sub_player, original_player = line.split(",", 1)
+
+                        subs_txt_players.add(sub_player         .strip().lower())
+                        subs_txt_players.add(original_player    .strip().lower())
+
         for _, (name, act) in enumerate(sorted(mismatched_players.items())):
             p_frame = ttk.LabelFrame(self.container, text = f" {name} ", padding = 8)
             p_frame.pack(fill = tk.X, pady = 4, anchor = "w")
 
-            is_subbed       = name.lower() in subbed_players_set
+            is_subbed       = (name.lower() in subbed_players_set) or (name.lower() in subs_txt_players)
             initial_mode    = "json" if is_subbed else "round"
             mode_var        = tk.StringVar(value = initial_mode)
             boxes           = {}
@@ -493,9 +505,12 @@ class SubSelectionDialog(tk.Toplevel):
         if sel: self.result = self.listbox.get(sel[0]); self.destroy()
 
 class SubstitutePromptDialog(UnifiedDialog):
-    def __init__(self, parent, sub_name, original_players_list):
+    def __init__(self, parent, sub_name, original_players_list, tour_dir):
         super().__init__(parent, "Substitute Setup", "")
-        self.result = None
+
+        self.result         = None
+        self._sub_name      = sub_name
+        self.subs_txt_path  = tour_dir / "subs.txt"
 
         lbl = ttk.Label(self.container, text = f"Who is {sub_name} subbing for?", font = ("Segoe UI", 10))
         lbl.grid(row = 0, column = 0, padx = (0, 6), pady = 4, sticky = "w")
@@ -503,7 +518,20 @@ class SubstitutePromptDialog(UnifiedDialog):
         self.choice_var     = tk.StringVar()
         self.sorted_players = sorted(list(original_players_list), key = str.lower)
 
-        if self.sorted_players: self.choice_var.set(self.sorted_players[0])
+        saved_original = None
+
+        if self.subs_txt_path.exists():
+            with open(self.subs_txt_path, "r", encoding = "utf-8") as f:
+                for line in f:
+                    if "," in line:
+                        s_name, o_name = line.strip().split(",", 1)
+
+                        if s_name.strip().lower() == sub_name.lower():
+                            saved_original = next((p for p in self.sorted_players if p.lower() == o_name.strip().lower()), None)
+                            if saved_original: break
+
+        if      saved_original      : self.choice_var.set(saved_original)
+        elif    self.sorted_players : self.choice_var.set(self.sorted_players[0])
 
         combo_frame = tk.Frame(self.container, bg = "white", bd = 1, relief = "solid")
         combo_frame.grid(row = 0, column = 1, pady = 4, sticky = "ew")
@@ -528,5 +556,16 @@ class SubstitutePromptDialog(UnifiedDialog):
         self.wait_window    ()
 
     def on_confirm(self):
-        self.result = self.choice_var.get()
+        self.result     = self.choice_var.get()
+        existing_lines  = []
+
+        if self.subs_txt_path.exists():
+            with open(self.subs_txt_path, "r", encoding = "utf-8") as f:
+                for line in f:
+                    if "," in line:
+                        s_part, _ = line.split(",", 1)
+                        if s_part.strip().lower() != self._sub_name.lower(): existing_lines.append(line.strip())
+
+        existing_lines.append(f"{self._sub_name}, {self.result}")        
+        with open(self.subs_txt_path, "w", encoding = "utf-8") as f: f.write("\n".join(existing_lines) + "\n")
         super().on_confirm()

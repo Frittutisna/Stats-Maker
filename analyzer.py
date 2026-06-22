@@ -242,7 +242,7 @@ class TourAnalyzer:
             else                    : self.exp_map[name]        = self.base_exp
 
         if mismatched_players:
-            mismatch_dialog = MismatchedRoundsDialog(None, mismatched_players, self.base_exp, self.subbed_players_set)
+            mismatch_dialog = MismatchedRoundsDialog(None, mismatched_players, self.base_exp, self.subbed_players_set, self.tour_dir)
             mismatch_res    = mismatch_dialog.result if mismatch_dialog.result else {k: self.base_exp for k in mismatched_players}
 
             for name, target in mismatch_res.items():
@@ -678,27 +678,21 @@ class TourAnalyzer:
 
             idx += 1
 
-        all_team_ids = set(t1_lookup.keys())
-
         for sub_player in sub_candidates_raw:
             s_low = sub_player.lower()
             if s_low in assignments: continue
 
-            s_match                     = next((m for m in assignments if m in s_low or s_low in m), None)
-            s_team, s_tier              = assignments[s_match] if s_match else (list(all_team_ids)[0] if all_team_ids else 1, "1")
             original_players_display    = sorted([name for tid in rosters for name in rosters[tid] if name.lower() in self.main_roster_names], key = str.lower)
-            dialog                      = SubstitutePromptDialog(None, sub_player, original_players_display)
+            dialog                      = SubstitutePromptDialog(None, sub_player, original_players_display, self.tour_dir)
 
             if dialog.result:
                 replaced_player             = dialog.result
                 chosen_team_id, chosen_tier = assignments[replaced_player.lower()]
                 assignments[s_low]          = (chosen_team_id, chosen_tier)
 
-                rosters[chosen_team_id].add(sub_player)
-
-            else:
-                assignments[s_low] = (s_team, s_tier)
-                rosters[s_team].add(sub_player)
+                rosters[chosen_team_id].add(sub_player)                
+                self.subbed_players_set.add(s_low)
+                self.subbed_players_set.add(replaced_player.lower())
 
         unresolved_players = [p for p in all_known if p.lower() not in assignments]
 
