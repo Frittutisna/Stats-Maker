@@ -152,6 +152,16 @@ class TourAnalyzer:
 
             songs = data.get("songs", [])
 
+            if not path.stem.startswith("amq"):
+                match_digits = re.search(r'(\d+)$', path.stem)
+
+                if match_digits:
+                    m = int(match_digits.group(1))
+
+                    if m <= THRESH_SONG:
+                        songs           = songs[:min(m, len(songs))]
+                        data["songs"]   = songs
+
             if not isinstance(songs, list) or not songs:
                 messagebox.showerror("Disconnected Player JSON", f"Error in {path.name}: The exporter likely disconnected; ask someone else to re-upload this JSON")
                 return False
@@ -252,6 +262,14 @@ class TourAnalyzer:
         for path in self.json_paths:
             with open(path, encoding = "utf-8") as f: data = json.load(f)
             songs = data.get("songs", [])
+
+            if not path.stem.startswith("amq"):
+                match_digits = re.search(r'(\d+)$', path.stem)
+
+                if match_digits:
+                    m = int(match_digits.group(1))
+                    if m <= THRESH_SONG: songs = songs[:min(m, len(songs))]
+
             if not songs: continue
 
             raw_f_players = set()
@@ -1436,6 +1454,14 @@ class TourAnalyzer:
         for json_path in self.json_paths:
             with open(json_path, encoding = "utf-8") as f: data = json.load(f)
             songs = data.get("songs", [])
+
+            if not json_path.stem.startswith("amq"):
+                match_digits = re.search(r'(\d+)$', json_path.stem)
+
+                if match_digits:
+                    m = int(match_digits.group(1))
+                    if m <= THRESH_SONG: songs = songs[:min(m, len(songs))]
+            
             if not songs: continue
 
             raw_f_players = set()
@@ -1559,7 +1585,16 @@ class TourAnalyzer:
 
         for json_path in self.json_paths:
             with open(json_path, encoding = "utf-8") as f: data = json.load(f)
-            for s in data.get("songs", []):
+            songs = data.get("songs", [])
+
+            if not json_path.stem.startswith("amq"):
+                match_digits = re.search(r'(\d+)$', json_path.stem)
+                if match_digits:
+                    m = int(match_digits.group(1))
+                    if m <= THRESH_SONG: songs = songs[:min(m, len(songs))]
+
+            for s in songs:
+                v_str = s.get("songInfo", {}).get("vintage", "")
                 v_str = s.get("songInfo", {}).get("vintage", "")
                 if not v_str: continue
                 for p in s.get("correctGuessPlayers", []):
