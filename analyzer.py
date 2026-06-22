@@ -2660,8 +2660,21 @@ class TourAnalyzer:
         }});
 
         Plotly.newPlot('plotlyListChart', listTraces, {{
-            xaxis: {{ title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, showgrid: true }},
-            yaxis: {{ title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, tickangle: -90, showgrid: true }},
+            xaxis: {{ 
+                title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
+                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, 
+                showgrid: true,
+                tickformat: '.1f',
+                dtick: 0.5
+            }},
+            yaxis: {{ 
+                title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
+                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, 
+                tickangle: -90, 
+                showgrid: true,
+                tickformat: '.0f',
+                dtick: 2
+            }},
             margin: {{ l: 60, r: 0, t: 30, b: 55 }},
         }}, {{responsive: true, displayModeBar: false}});
 
@@ -2706,8 +2719,21 @@ class TourAnalyzer:
         }});
 
         Plotly.newPlot('plotlyGuessChart', guessTraces, {{
-            xaxis: {{ title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, showgrid: true }},
-            yaxis: {{ title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, tickangle: -90, showgrid: true }},
+            xaxis: {{ 
+                title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
+                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, 
+                showgrid: true,
+                tickformat: '.1f',
+                dtick: 0.5
+            }},
+            yaxis: {{ 
+                title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
+                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, 
+                tickangle: -90, 
+                showgrid: true,
+                tickformat: '.0f',
+                dtick: 2
+            }},
             margin: {{ l: 60, r: 0, t: 30, b: 55 }}
         }}, {{responsive: true, displayModeBar: false}});
     </script>
