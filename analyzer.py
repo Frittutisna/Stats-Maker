@@ -2849,10 +2849,17 @@ function renderTierCharts() {{
             trace.hoverinfo = 'text';
         }}
 
+        const explanation = colExplanations[metric.key];
+        const titleText = explanation 
+            ? `<span style="font-size: 30px;"><b>${{metric.title}}</b></span><br><span style="font-size: 15px; font-weight: normal; color: 'black';">${{explanation}}</span>`
+            : `<span style="font-size: 30px;"><b>${{metric.title}}</b></span>`;
+
         const layout = {{
             title: {{
-                text: `<b>${{metric.title}}</b>`,
-                font: {{ family: 'Segoe UI', size: 26, color: 'black' }}
+                text: titleText,
+                font: {{ family: 'Segoe UI', size: 14, color: 'black' }},
+                y: 0.95,
+                yanchor: 'top'
             }},
             xaxis: {{
                 tickfont: {{ family: 'Segoe UI', size: 16, color: 'black', weight: 'bold' }},
@@ -2867,8 +2874,8 @@ function renderTierCharts() {{
                 ticksuffix: "  "
             }},
             bargap: 0.0,
-            margin: {{ l: 200, r: 40, t: 60, b: 60 }},
-            height: 140 + (yVals.length * 30),
+            margin: {{ l: 200, r: 40, t: 85, b: 60 }},
+            height: 145 + (yVals.length * 30),
             hoverlabel: {{ align: 'left', font: {{ family: 'Segoe UI', size: 15 }} }}
         }};
 
