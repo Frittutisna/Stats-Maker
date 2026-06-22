@@ -1607,9 +1607,9 @@ class TourAnalyzer:
 
                 try:
                     vint_raw    = si.get("vintage", "")
-                    vint        = int(extract_year(vint_raw)) if vint_raw else 0
+                    vint        = float(extract_year(vint_raw)) if vint_raw else 0.0
 
-                except: vint = 0
+                except: vint = 0.0
 
                 try:
                     raw_diff    = si.get("animeDifficulty")
@@ -1618,10 +1618,11 @@ class TourAnalyzer:
                 except: safe_diff = 0.0
 
                 if vint > 0:
-                    x_idx = min(int(math.floor(safe_diff / 5)), num_x - 1)
+                    x_idx       = min(int(math.floor(safe_diff / 5)), num_x - 1)
+                    vint_floor  = math.floor(vint)
 
-                    if num_y == 8   : y_idx = 0 if vint < 1990 else min(int(math.floor((vint - 1990) / 5)) + 1, 7)
-                    else            : y_idx = min(max(int(math.floor((vint - 1985) / 5)), 0), 8)
+                    if num_y == 8   : y_idx = 0 if vint_floor < 1990 else min(int(math.floor((vint_floor - 1990) / 5)) + 1, 7)
+                    else            : y_idx = min(max(int(math.floor((vint_floor - 1985) / 5)), 0), 8)
 
                     matrix_song_details[f"{x_idx}-{y_idx}"].append(song_line)
 
@@ -1986,9 +1987,14 @@ class TourAnalyzer:
 
     def _render_dashboard_songs(self):
         song_matrix_list = []
+
         for s in self.song_data:
-            if s["vintage"] > 0:
-                song_matrix_list.append({"vintage": int(s["vintage"]), "difficulty": float(s["difficulty"]), "correct_count": int(s["correct_count"])})
+            if s["vintage"] > 0: song_matrix_list.append({
+                "vintage"       : float(round(s["vintage"],     2)), 
+                "difficulty"    : float(round(s["difficulty"],  2)), 
+                "correct_count" : int(s["correct_count"])
+            })
+
         return song_matrix_list
 
     def _render_dashboard_scatter_plots(self, avg_rank, raw_vintage_by_guess, raw_vintage_by_list):
@@ -2036,13 +2042,13 @@ class TourAnalyzer:
                 base_node = {
                     "acronym"           : self._get_player_acronym(name),
                     "name"              : name,
-                    "over8"             : float(self.p_overs_sum[name] / self.c_counts[name]),
-                    "vintage"           : float(p_vint_med),
+                    "over8"             : float(round(self.p_overs_sum[name] / self.c_counts[name], 2)),
+                    "vintage"           : float(round(p_vint_med, 2)),
                     "seasonal_vintage"  : p_seas,
-                    "gr"                : float(self.c_counts[name] / self.s_part[name] * 100) if self.s_part[name] else 0.0,
-                    "rig_gr"            : float(self.p_rigs_h[name] / self.p_rigs[name] * 100) if self.p_rigs[name] else 0.0,
-                    "performance"       : float(perf_score),
-                    "rig_rate"          : float(self.p_rigs[name] / self.s_part[name] * 100) if self.s_part[name] else 0.0
+                    "gr"                : float(round(self.c_counts[name] / self.s_part[name] * 100, 2)) if self.s_part[name] else 0.0,
+                    "rig_gr"            : float(round(self.p_rigs_h[name] / self.p_rigs[name] * 100, 2)) if self.p_rigs[name] else 0.0,
+                    "performance"       : float(round(perf_score, 2)),
+                    "rig_rate"          : float(round(self.p_rigs[name] / self.s_part[name] * 100, 2)) if self.s_part[name] else 0.0
                 }
                 scatter_list.append(base_node)
 
@@ -2050,8 +2056,8 @@ class TourAnalyzer:
                     arrow_list.append({
                         "acronym"               : base_node["acronym"],
                         "name"                  : name,
-                        "x_start"               : float(np.mean(self.p_l_corr[name])),
-                        "y_start"               : float(r_vint_med),
+                        "x_start"               : float(round(np.mean(self.p_l_corr[name]), 2)),
+                        "y_start"               : float(round(r_vint_med, 2)),
                         "seasonal_vintage_start": r_seas,
                         "x_end"                 : base_node["over8"],
                         "y_end"                 : base_node["vintage"],
