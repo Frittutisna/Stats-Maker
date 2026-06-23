@@ -21,7 +21,8 @@ from tkinter        import messagebox
 
 TEAMS_RE = r"([^\s(]+)\s*\(([-]?\d+(?:\.\d+)?)\)"
 
-def _nested_defaultdict(): return defaultdict(int)
+def _nested_int_defaultdict     (): return defaultdict(int)
+def _nested_list_defaultdict    (): return defaultdict(list)
 
 class TourAnalyzer:
     def __init__(self, tour_id):
@@ -36,8 +37,8 @@ class TourAnalyzer:
         self.p_two_e                    = defaultdict(int)
         self.p_pts                      = defaultdict(int)
         self.p_blks                     = defaultdict(int)
-        self.p_type_c                   = defaultdict(_nested_defaultdict)
-        self.p_type_s                   = defaultdict(_nested_defaultdict)
+        self.p_type_c                   = defaultdict(_nested_int_defaultdict)
+        self.p_type_s                   = defaultdict(_nested_int_defaultdict)
         self.p_rigs                     = defaultdict(int)
         self.p_rigs_h                   = defaultdict(int)
         self.p_l_vint                   = defaultdict(list)
@@ -68,6 +69,12 @@ class TourAnalyzer:
         self.tour_label                 = ""
         self.id_database                = {}
         self.player_acronyms            = {}
+        self.player_song_details        = defaultdict(_nested_list_defaultdict)
+        self.tour_song_details          = defaultdict(list)
+        self.team_song_details          = defaultdict(_nested_list_defaultdict)
+        self.matrix_song_details        = defaultdict(list)
+        self.raw_vintage_by_guess       = defaultdict(list)
+        self.raw_vintage_by_list        = defaultdict(list)
 
     def _find_browser(self): return next((p for p in BROWSER_PATHS if os.path.exists(p)), None)
 
@@ -293,6 +300,13 @@ class TourAnalyzer:
 
                 for tid in t_in_f:
                     ros     = self.rosters[tid]
+
+                    for m_p in ros:
+                        if m_p.lower() not in self.assignments:
+                            for c_p in raw_f_players:
+                                if c_p.lower() in self.assignments and self.assignments[c_p.lower()][0] == tid:
+                                    self.assignments[m_p.lower()] = self.assignments[c_p.lower()]
+
                     missing = [p for p in ros if p not in raw_f_players]
 
                     if len([p for p in ros if p in raw_f_players]) == 3 and missing:
@@ -322,10 +336,24 @@ class TourAnalyzer:
                     for t in [1, 2, 3]: self.p_type_s[name][t] += f_type_totals[t]
 
             for song in songs:
-                si      = song      .get("songInfo", {})
-                st      = si        .get("type")
-                ann_id  = str(si    .get("annSongId"))
+                si = song.get("songInfo", {})
+
+                st      = si.get("type",        3)
+                t_num   = si.get("typeNumber",  0)
+
+                ann_id  = str(si.get("annSongId"))
                 is_chan = ann_id in self.chanting_ids
+
+                romaji_name = si.get("animeNames",  {})         .get("romaji", "Unknown")
+                s_name      = si.get("songName",    "Unknown")
+                art_raw     = si.get("artist",      "Unknown")
+                art_name    = "Multiple Singers" if len(art_raw) > THRESH_CHAR else art_raw
+
+                if      st == 1 : type_fmt = f"(OP{t_num})"
+                elif    st == 2 : type_fmt = f"(ED{t_num})"
+                else            : type_fmt = f"(IN)"
+
+                song_line = f"{romaji_name} {type_fmt}: {s_name} by {art_name}"
 
                 if isinstance(si.get("animeGenre"), list): self.genre_c .update(si.get("animeGenre"))
                 if isinstance(si.get("animeTags"),  list): self.tag_c   .update([t for t in si.get("animeTags") if t not in EXCLUDED_TAGS])
@@ -337,13 +365,19 @@ class TourAnalyzer:
                     if      isinstance(p, str)                  : correct.add(p)
                     elif    isinstance(p, dict) and "name" in p : correct.add(p["name"])
 
+                active_correct  = correct & final_members
+                amt_correct     = len(active_correct)
+
                 self.song_history.append((correct, raw_f_players))
 
                 ls                          =   song.get("listStates", [])
                 self.global_stats["tot_c"]  +=  len(correct)
-                
-                try     : yr = int(extract_year(si.get("vintage")))
-                except  : yr = None
+
+                try:
+                    vint_raw    = si.get("vintage", "")
+                    yr          = int(extract_year(vint_raw)) if vint_raw else None
+
+                except: yr = None
 
                 if yr is not None: self.all_vint.append(yr)
 
@@ -359,6 +393,67 @@ class TourAnalyzer:
                     "difficulty"    : safe_diff,
                     "correct_count" : int(len(correct))
                 })
+
+                if yr is not None and yr > 0:
+                    diffs_arr   = [s["difficulty"] for s in self.song_data]
+                    max_diff_v  = max(diffs_arr) if diffs_arr else 0
+                    num_x_v     = 8 if max_diff_v < 40 else 9
+                    num_y_v     = 8 if max_diff_v < 40 else 9
+                    x_idx_v     = min(int(math.floor(safe_diff / 5)), num_x_v - 1)
+                    vint_floor  = math.floor(float(yr))
+
+                    if num_y_v == 8 : y_idx_v = 0 if vint_floor < 1990 else min(int(math.floor((vint_floor - 1990) / 5)) + 1, 7)
+                    else            : y_idx_v = min(max(int(math.floor((vint_floor - 1985) / 5)), 0), 8)
+
+                    self.matrix_song_details[f"{x_idx_v}-{y_idx_v}"].append(song_line)
+
+                if len(correct) == 0: self.tour_song_details["Total 0/8s"].append(song_line)
+
+                elif len(correct) == 1:
+                    sw_v = list(correct)[0]
+                    self.tour_song_details["Total 1/8s"].append(f"{song_line} ({sw_v})")
+                    if sw_v.lower() in self.assignments:
+                        self.team_song_details[self.assignments[sw_v.lower()][0]]["Total 1/8s"].append(song_line)
+
+                elif len(correct) == 2:
+                    p_list_v = list(correct)
+                    self.tour_song_details["Total 2/8s"].append(f"{song_line} ({p_list_v[0]}/{p_list_v[1]})")
+
+                elif apply_rev and len(final_members - correct) == 1:
+                    missing_player_v = list(final_members - correct)[0]
+                    self.tour_song_details["Total 7/8s"].append(f"{song_line} ({missing_player_v})")
+
+                elif len(final_members - correct) == 0: self.tour_song_details["Total 8/8s"].append(song_line)
+
+                for sw_v in active_correct:
+                    if amt_correct == 1: self.player_song_details[sw_v]["1/8s"].append(song_line)
+
+                    elif amt_correct == 2:
+                        opp_player_v = list(active_correct)[1] if sw_v.casefold() == list(active_correct)[0].casefold() and len(active_correct) > 1 else list(active_correct)[0]
+                        t_sw_v       = self.assignments.get(sw_v.lower(), (None,))[0] if self.use_teams else None
+                        t_opp_v      = self.assignments.get(opp_player_v.lower(), (None,))[0] if self.use_teams else None
+
+                        if t_sw_v is not None and t_opp_v is not None and t_sw_v == t_opp_v : self.player_song_details[sw_v]["2/8s"].append(f"{song_line} (covered by {opp_player_v})")
+                        else                                                                : self.player_song_details[sw_v]["2/8s"].append(f"{song_line} (blocked by {opp_player_v})")
+
+                if apply_rev and len(final_members - correct) == 1:
+                    missing_player_v = list(final_members - correct)[0]
+                    self.player_song_details[missing_player_v]["7/8s"].append(song_line)
+
+                if isinstance(si.get("animeGenre"), list):
+                    for gen in si.get("animeGenre"): self.tour_song_details[f"Genre: {gen}"].append(song_line)
+
+                if isinstance(si.get("animeTags"), list):
+                    for tag in si.get("animeTags"):
+                        if tag not in EXCLUDED_TAGS: self.tour_song_details[f"Tag: {tag}"].append(song_line)
+
+                if si.get("vintage"):
+                    for p in song.get("correctGuessPlayers", []):
+                        p_name_v = p if isinstance(p, str) else p.get("name") if isinstance(p, dict) else None
+                        if p_name_v: self.raw_vintage_by_guess[p_name_v].append(si.get("vintage"))
+
+                    for ls_v in song.get("listStates", []):
+                        if "name" in ls_v: self.raw_vintage_by_list[ls_v["name"]].append(si.get("vintage"))
 
                 seen_song_times = set()
 
@@ -398,6 +493,29 @@ class TourAnalyzer:
                     self.p_l_solos[u]   +=  1
                     if not (len(correct) == 1 and list(correct)[0] == u): self.p_m_erigs[u] += 1
 
+                if ls:
+                    is_true_solo_rig = (len(ls) == 1)
+
+                    for p in ls:
+                        n_v       = p["name"]
+                        marker_v  = "✓" if (n_v in active_correct) else "✗"
+
+                        self.player_song_details[n_v]["Rigs"].append(f"{marker_v} {song_line}")
+
+                        if is_true_solo_rig:
+                            self.player_song_details[n_v]["Solo Rigs"].append(f"{marker_v} {song_line}")
+
+                            s_v     = sorted(list(active_correct - {n_v}))
+                            sC_v    = len(s_v)
+
+                            if      sC_v == 0   : tag_v = "(0/8)"
+                            elif    sC_v == 1   : tag_v = f"(stolen by {s_v[0]})"
+                            elif    sC_v == 2   : tag_v = f"(stolen by {s_v[0]}/{s_v[1]})"
+                            else                : tag_v = f"({amt_correct}/8)"
+
+                            if n_v in active_correct and amt_correct == 1   : self.player_song_details[n_v]["Solo Rig Conversions"].append(f"✓ {song_line}")
+                            else                                            : self.player_song_details[n_v]["Solo Rig Conversions"].append(f"✗ {song_line} {tag_v}")
+
                 if self.use_teams:
                     t_list = list({self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments})
 
@@ -408,6 +526,9 @@ class TourAnalyzer:
                         if len(cA) == 4 and not cB: self.t_sweeps[tA] += 1; self.global_stats["sweeps"] += 1
                         if len(cB) == 4 and not cA: self.t_sweeps[tB] += 1; self.global_stats["sweeps"] += 1
 
+                        if (len(cA & final_members) == 4 and not (cB & final_members)) or (len(cB & final_members) == 4 and not (cA & final_members)):
+                            self.tour_song_details["Total 4-0s"].append(song_line)
+
                         for cur, opp in [(tA, tB), (tB, tA)]:
                             cC, oC = correct & self.rosters[cur], correct & self.rosters[opp]
 
@@ -415,6 +536,21 @@ class TourAnalyzer:
                                 for p in cC: self.p_pts[p] += 1
 
                             if len(cC) == 1 and len(oC) > 0: self.p_blks[list(cC)[0]] += 1
+
+                        for _, opp_v, cC_v, oC_v in [(tA, tB, cA & final_members, cB & final_members), (tB, tA, cB & final_members, cA & final_members)]:
+                            oL_v = self.t1_lookup.get(opp_v, f"Team {opp_v}")
+
+                            if not oC_v:
+                                for p_v in cC_v: self.player_song_details[p_v]["Lives Taken"].append(f"{song_line} (from Team {oL_v})")
+
+                            if len(cC_v) == 1 and len(oC_v) > 0:
+                                oP_v = sorted(list(oC_v), key = lambda x: self.assignments.get(x.lower(), (None, "5"))[1])
+
+                                if      len(oP_v) == 1  : opp_tag_v = f"(from {oP_v[0]} in Team {oL_v})"          if oP_v[0] != oL_v                  else f"(from {oP_v[0]})"
+                                elif    len(oP_v) == 2  : opp_tag_v = f"(from {oP_v[0]}/{oP_v[1]} in Team {oL_v})"  if oP_v[0] != oL_v and oP_v[1] != oL_v  else f"(from {oP_v[0]}/{oP_v[1]})"
+                                else                    : opp_tag_v = f"(from Team {oL_v})"
+
+                                self.player_song_details[list(cC_v)[0]]["Lives Saved"].append(f"{song_line} {opp_tag_v}")
 
                     for tid in t_list:
                         ros     = self.rosters[tid]
@@ -1524,230 +1660,21 @@ class TourAnalyzer:
         except  : pass
 
     def _get_dashboard_data(self):
-        player_song_details     = defaultdict(lambda: defaultdict(list))
-        tour_song_details       = defaultdict(list)
-        team_song_details       = defaultdict(lambda: defaultdict(list))
-        matrix_song_details     = defaultdict(list)
-        raw_vintage_by_guess    = defaultdict(list)
-        raw_vintage_by_list     = defaultdict(list)
-
         diffs       = [s["difficulty"] for s in self.song_data]
         max_diff    = max(diffs) if diffs else 0
-
-        num_x = 8 if max_diff < 40 else 9
-        num_y = 8 if max_diff < 40 else 9
-
-        for json_path in self.json_paths:
-            with open(json_path, encoding = "utf-8") as f: data = json.load(f)
-            songs = data.get("songs", [])
-
-            if not json_path.stem.startswith("amq"):
-                match_digits = re.search(r'(\d+)$', json_path.stem)
-
-                if match_digits:
-                    m = int(match_digits.group(1))
-                    if m <= THRESH_SONG: songs = songs[:min(m, len(songs))]
-
-            if not songs: continue
-
-            raw_f_players = set()
-
-            for s in songs:
-                for p in s.get("correctGuessPlayers", []):
-                    if      isinstance(p, str)                  : raw_f_players.add(p)
-                    elif    isinstance(p, dict) and "name" in p : raw_f_players.add(p["name"])
-
-                for ls in s.get("listStates", []):
-                    if "name" in ls: raw_f_players.add(ls["name"])
-
-            final_members = set(raw_f_players)
-
-            if self.use_teams:
-                t_in_f = {self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments}
-
-                for tid in t_in_f:
-                    ros = self.rosters[tid]
-
-                    for m_p in ros:
-                        if m_p.lower() not in self.assignments:
-                            for c_p in raw_f_players:
-                                if c_p.lower() in self.assignments and self.assignments[c_p.lower()][0] == tid: self.assignments[m_p.lower()] = self.assignments[c_p.lower()]
-
-                    if len([p for p in ros if p in raw_f_players]) == 3:
-                        missing = [p for p in ros if p not in raw_f_players]
-                        if missing: final_members.add(missing[0])
-
-                if len(final_members) < 8:
-                    for tid in t_in_f: final_members.update(self.rosters[tid])
-
-            apply_rev = (len(final_members) % 2 == 0)
-
-            for song in songs:
-                si = song.get("songInfo", {})
-
-                st          = si.get("type",        3)
-                t_num       = si.get("typeNumber",  0)
-                romaji_name = si.get("animeNames",  {})         .get("romaji", "Unknown")
-                s_name      = si.get("songName",    "Unknown")
-                art_raw     = si.get("artist",      "Unknown")
-
-                art_name = "Multiple Singers" if len(art_raw) > THRESH_CHAR else art_raw
-
-                if      st == 1 : type_fmt = f"(OP{t_num})"
-                elif    st == 2 : type_fmt = f"(ED{t_num})"
-                else            : type_fmt = f"(IN)"
-
-                song_line   = f"{romaji_name} {type_fmt}: {s_name} by {art_name}"
-                raw_correct = song.get("correctGuessPlayers", [])
-                correct     = set()
-
-                for p in raw_correct:
-                    if      isinstance(p, str)                  : correct.add(p)
-                    elif    isinstance(p, dict) and "name" in p : correct.add(p["name"])
-
-                active_correct  = correct & final_members
-                amt_correct     = len(active_correct)
-
-                try:
-                    vint_raw    = si.get("vintage", "")
-                    vint        = float(extract_year(vint_raw)) if vint_raw else 0.0
-
-                except: vint = 0.0
-
-                try:
-                    raw_diff    = si.get("animeDifficulty")
-                    safe_diff   = float(raw_diff) if raw_diff is not None else 0.0
-
-                except: safe_diff = 0.0
-
-                if vint > 0:
-                    x_idx       = min(int(math.floor(safe_diff / 5)), num_x - 1)
-                    vint_floor  = math.floor(vint)
-
-                    if num_y == 8   : y_idx = 0 if vint_floor < 1990 else min(int(math.floor((vint_floor - 1990) / 5)) + 1, 7)
-                    else            : y_idx = min(max(int(math.floor((vint_floor - 1985) / 5)), 0), 8)
-
-                    matrix_song_details[f"{x_idx}-{y_idx}"].append(song_line)
-
-                if len(correct) == 0: tour_song_details["Total 0/8s"].append(song_line)
-
-                elif len(correct) == 1:
-                    sw = list(correct)[0]
-                    tour_song_details["Total 1/8s"].append(f"{song_line} ({sw})")
-                    if sw.lower() in self.assignments: team_song_details[self.assignments[sw.lower()][0]]["Total 1/8s"].append(song_line)
-
-                elif len(correct) == 2:
-                    p_list = list(correct)
-                    p1, p2 = p_list[0], p_list[1]
-
-                    tour_song_details["Total 2/8s"].append(f"{song_line} ({p1}/{p2})")
-
-                elif apply_rev and len(final_members - correct) == 1:
-                    missing_player = list(final_members - correct)[0]
-                    tour_song_details["Total 7/8s"].append(f"{song_line} ({missing_player})")
-
-                elif len(final_members - correct) == 0: tour_song_details["Total 8/8s"].append(song_line)
-
-                for sw in active_correct:
-                    if amt_correct == 1: player_song_details[sw]["1/8s"].append(song_line)
-
-                    elif amt_correct == 2:
-                        if sw.casefold() == list(active_correct)[0].casefold()  : opp_player = list(active_correct)[1] if len(active_correct) > 1 else "Unknown"
-                        else                                                    : opp_player = list(active_correct)[0]
-
-                        t_sw    = self.assignments.get(sw.lower(),          (None,))[0] if self.use_teams else None
-                        t_opp   = self.assignments.get(opp_player.lower(),  (None,))[0] if self.use_teams else None
-
-                        if t_sw is not None and t_opp is not None and t_sw == t_opp : player_song_details[sw]["2/8s"].append(f"{song_line} (covered by {opp_player})")
-                        else                                                        : player_song_details[sw]["2/8s"].append(f"{song_line} (blocked by {opp_player})")
-
-                if apply_rev and len(final_members - correct) == 1:
-                    missing_player = list(final_members - correct)[0]
-                    player_song_details[missing_player]["7/8s"].append(song_line)
-
-                if isinstance(si.get("animeGenre"), list):
-                    for gen in si.get("animeGenre"): tour_song_details[f"Genre: {gen}"].append(song_line)
-
-                if isinstance(si.get("animeTags"), list):
-                    for tag in si.get("animeTags"):
-                        if tag not in EXCLUDED_TAGS: tour_song_details[f"Tag: {tag}"].append(song_line)
-
-                ls = song.get("listStates", [])
-
-                if ls:
-                    is_true_solo_rig = (len(ls) == 1)
-
-                    for p in ls:
-                        n       = p["name"]
-                        marker  = "✓" if (n in active_correct) else "✗"
-
-                        player_song_details[n]["Rigs"].append(f"{marker} {song_line}")
-
-                        if is_true_solo_rig:
-                            if n in active_correct  : player_song_details[n]["Solo Rigs"].append(f"✓ {song_line}")
-                            else                    : player_song_details[n]["Solo Rigs"].append(f"✗ {song_line}")
-
-                            s   = sorted(list(active_correct - {n}))
-                            sC  = len(s)
-
-                            if      sC == 0 : tag = "(0/8)"
-                            elif    sC == 1 : tag = f"(stolen by {s[0]})"
-                            elif    sC == 2 : tag = f"(stolen by {s[0]}/{s[1]})"
-                            else            : tag = f"({amt_correct}/8)"
-
-                            if n in active_correct and amt_correct == 1 : player_song_details[n]["Solo Rig Conversions"].append(f"✓ {song_line}")
-                            else                                        : player_song_details[n]["Solo Rig Conversions"].append(f"✗ {song_line} {tag}")
-
-                if self.use_teams:
-                    t_list = list({self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments})
-
-                    if len(t_list) == 2:
-                        tA = t_list[0]
-                        tB = t_list[1]
-
-                        cA = active_correct & self.rosters[tA]
-                        cB = active_correct & self.rosters[tB]
-
-                        if (len(cA) == 4 and not cB) or (len(cB) == 4 and not cA): tour_song_details["Total 4-0s"].append(song_line)
-
-                        for _, oT, cC, oC in [(tA, tB, cA, cB), (tB, tA, cB, cA)]:
-                            oL = self.t1_lookup.get(oT, f"Team {oT}")
-
-                            if not oC:
-                                for p in cC: player_song_details[p]["Lives Taken"].append(f"{song_line} (from Team {oL})")
-
-                            if len(cC) == 1 and len(oC) > 0:
-                                oP = sorted(list(oC), key = lambda x: self.assignments.get(x.lower(), (None, "5"))[1])
-
-                                if      len(oP) == 1    : opp_tag = f"(from {oP[0]} in Team {oL})"          if oP[0] != oL                  else f"(from {oP[0]})"
-                                elif    len(oP) == 2    : opp_tag = f"(from {oP[0]}/{oP[1]} in Team {oL})"  if oP[0] != oL and oP[1] != oL  else f"(from {oP[0]}/{oP[1]})"
-                                else                    : opp_tag = f"(from Team {oL})"
-
-                                player_song_details[list(cC)[0]]["Lives Saved"].append(f"{song_line} {opp_tag}")
-
-        for json_path in self.json_paths:
-            with open(json_path, encoding = "utf-8") as f: data = json.load(f)
-            songs = data.get("songs", [])
-
-            if not json_path.stem.startswith("amq"):
-                match_digits = re.search(r'(\d+)$', json_path.stem)
-
-                if match_digits:
-                    m = int(match_digits.group(1))
-                    if m <= THRESH_SONG: songs = songs[:min(m, len(songs))]
-
-            for s in songs:
-                v_str = s.get("songInfo", {}).get("vintage", "")
-                if not v_str: continue
-
-                for p in s.get("correctGuessPlayers", []):
-                    p_name = p if isinstance(p, str) else p.get("name") if isinstance(p, dict) else None
-                    if p_name: raw_vintage_by_guess[p_name].append(v_str)
-
-                for ls in s.get("listStates", []):
-                    if "name" in ls: raw_vintage_by_list[ls["name"]].append(v_str)
-
-        return player_song_details, tour_song_details, team_song_details, raw_vintage_by_guess, raw_vintage_by_list, matrix_song_details, num_x, num_y
+        num_x       = 8 if max_diff < 40 else 9
+        num_y       = 8 if max_diff < 40 else 9
+
+        return (
+            self.player_song_details, 
+            self.tour_song_details, 
+            self.team_song_details, 
+            self.raw_vintage_by_guess, 
+            self.raw_vintage_by_list, 
+            self.matrix_song_details, 
+            num_x, 
+            num_y
+        )
 
     def _render_dashboard_player(self, sorted_players, active, t_labels, watched, player_song_details, df_base):
         rows, eligibility, borders = [], [], []
@@ -2449,6 +2376,9 @@ td[data-songs].highlight-worst:hover {{
     line-height: 1.4;
     border: 1px solid #475569;
     text-align: left;
+    max-width: 90vw;
+    word-wrap: break-word;
+    white-space: normal;
 }}
 
 td[data-songs] {{

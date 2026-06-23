@@ -124,6 +124,9 @@ td[data-songs].highlight-worst:hover {
     line-height: 1.4;
     border: 1px solid #475569;
     text-align: left;
+    max-width: 90vw;
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 td[data-songs] {
