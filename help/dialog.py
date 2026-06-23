@@ -477,35 +477,6 @@ class MismatchedRoundsDialog(UnifiedDialog):
 
         super().on_confirm()
 
-class ManualMatchDialog(tk.Toplevel):
-    def __init__(self, parent, unknown_name, available_pool):
-        super().__init__(parent)
-
-        self.title("Manual Match Required")
-        self.result = None
-
-        main_frame = ttk.Frame(self, padding = 10)
-        main_frame.pack(fill = tk.BOTH, expand = True)
-
-        ttk.Label(main_frame, text = f"Match required for: '{unknown_name}'", font = ("Arial", 10, "bold")).pack(pady = (0, 6), anchor = "w")
-
-        self.listbox = tk.Listbox(main_frame, height = 15)
-        self.listbox.pack(fill = tk.BOTH, expand = True, pady = (0, 8))
-
-        for name in sorted(available_pool): self.listbox.insert(tk.END, name)
-        ttk.Button(main_frame, text = "Match Selected", command = self.on_match).pack(side = tk.RIGHT)
-
-        self.protocol       ("WM_DELETE_WINDOW", lambda: [setattr(self, 'result', None), self.destroy()])
-        self.grab_set       ()
-        self.wait_window    ()
-
-    def on_match(self):
-        sel = self.listbox.curselection()
-
-        if sel:
-            self.result = self.listbox.get(sel[0])
-            self.destroy()
-
 class SubstitutePromptDialog(UnifiedDialog):
     def __init__(self, parent, sub_name, original_players_list, tour_dir):
         super().__init__(parent, "Substitute Setup", "")
