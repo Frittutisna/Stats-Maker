@@ -60,12 +60,12 @@ body {
     font-weight: bold;
 }
 
-.highlight-best:hover {
+td[data-songs].highlight-best:hover {
     background-color: #ffffff !important;
     color: #3232C8 !important;
 }
 
-.highlight-worst:hover {
+td[data-songs].highlight-worst:hover {
     background-color: #ffffff !important;
     color: #C83232 !important;
 }

@@ -364,13 +364,14 @@ class TourMetadataDialog(UnifiedDialog):
         super().on_confirm()
 
 class MismatchedRoundsDialog(UnifiedDialog):
-    def __init__(self, parent, mismatched_players, base_exp, subbed_players_set, tour_dir):
+    def __init__(self, parent, mismatched_players, base_exp, subbed_players_set, tour_dir, is_watched = True):
         title_part = "These players appear" if len(mismatched_players) > 1 else "This player appears"
 
         prompt_text = (
             f"{title_part} in fewer JSONs than expected; how many rounds were they expected to be in?\n\n"
-            f'• "Use the current round count" is primarily used if the player has 0/0 round(s)\n'
-            f'• "Use the current JSON count" is primarily used if the player was subbed in/out'
+            '● "Use the current round count" is primarily used if the player has 0/0 round(s)\n'
+            '● "Use the current JSON count" is primarily used if the player was subbed in/out\n'
+            '● "Ignore mismatched" is primarily used for non-Watched tours\n'
         )
 
         super().__init__(parent, "Mismatched Round Counts", prompt_text)
@@ -396,7 +397,7 @@ class MismatchedRoundsDialog(UnifiedDialog):
             p_frame.pack(fill = tk.X, pady = 4, anchor = "w")
 
             is_subbed       = (name.lower() in subbed_players_set) or (name.lower() in subs_txt_players)
-            initial_mode    = "json" if is_subbed else "round"
+            initial_mode    = "custom" if not is_watched else ("json" if is_subbed else "round")
             mode_var        = tk.StringVar(value = initial_mode)
             boxes           = {}
 
@@ -418,28 +419,23 @@ class MismatchedRoundsDialog(UnifiedDialog):
 
             f_custom = ttk.Frame(p_frame)
             f_custom.pack(anchor = "w", pady = 2)
-            box_r3 = tk.Canvas(f_custom, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
+            box_r3 = tk.Canvas(f_custom, width = 10, height = 10, bg = self.fill_color if initial_mode == "custom" else "white", highlightthickness = 1, highlightbackground = "black")
             box_r3.pack(side = tk.LEFT, padx = (0, 4))
             boxes["custom"] = box_r3
-            lbl_r3 = ttk.Label(f_custom, text = "Use a custom value:")
+            lbl_r3 = ttk.Label(f_custom, text = "Ignore mismatch")
             lbl_r3.pack(side = tk.LEFT)
 
-            spin = CustomSpinbox(f_custom, from_ = act, to = base_exp, initial_val = act)
-            spin.pack(side = tk.LEFT, padx = 4)
-            spin.configure_state("normal" if initial_mode == "custom" else "disabled")
-
-            def make_selector(m_var, b_map, target_opt, s_box):
+            def make_selector(m_var, b_map, target_opt):
                 return lambda _: [
                     m_var.set(target_opt),
-                    s_box.configure_state("normal" if target_opt == "custom" else "disabled"),
                     *[b.configure(bg = self.fill_color if k == target_opt else "white") for k, b in b_map.items()]
                 ]
 
-            for w, opt in [(box_r1, "round"),   (lbl_r1, "round")]  : w.bind("<Button-1>", make_selector(mode_var, boxes, opt, spin))
-            for w, opt in [(box_r2, "json"),    (lbl_r2, "json")]   : w.bind("<Button-1>", make_selector(mode_var, boxes, opt, spin))
-            for w, opt in [(box_r3, "custom"),  (lbl_r3, "custom")] : w.bind("<Button-1>", make_selector(mode_var, boxes, opt, spin))
+            for w, opt in [(box_r1, "round"),   (lbl_r1, "round")]  : w.bind("<Button-1>", make_selector(mode_var, boxes, opt))
+            for w, opt in [(box_r2, "json"),    (lbl_r2, "json")]   : w.bind("<Button-1>", make_selector(mode_var, boxes, opt))
+            for w, opt in [(box_r3, "custom"),  (lbl_r3, "custom")] : w.bind("<Button-1>", make_selector(mode_var, boxes, opt))
 
-            self.player_configs[name] = {"mode": mode_var, "spin": spin, "act": act}
+            self.player_configs[name] = {"mode": mode_var, "act": act}
  
         self.grab_set       ()
         self.wait_window    ()
@@ -452,9 +448,7 @@ class MismatchedRoundsDialog(UnifiedDialog):
 
             if      mode == "round" : self.result[name] = self.base_exp
             elif    mode == "json"  : self.result[name] = cfg["act"]
-            else:
-                try                 : self.result[name] = int(cfg["spin"].get())
-                except ValueError   : self.result[name] = cfg["act"]
+            else                    : self.result[name] = "ignore"
 
         super().on_confirm()
 

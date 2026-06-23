@@ -205,8 +205,10 @@ class TourAnalyzer:
                 if st in [1, 2, 3]                  : self.tour_types.add(st)
                 if not song.get("listStates", [])   : self.missing_list_count += 1
 
-        watched_valid       = self.missing_list_count <= 5
-        baseline_initial    = int(np.median([len(self.apps.get(name, [])) for name in all_known]))
+        total_jsons         = len(self.json_paths)
+        total_players       = len(all_known)
+        baseline_initial    = total_jsons // (2 if total_players <= THRESH_PLYR else 3)
+        watched_valid       = self.missing_list_count <= THRESH_WTCH
 
         if len(self.tour_types) == 1:
             t_map       = {1: "OP", 2: "ED", 3: "IN"}
@@ -242,12 +244,14 @@ class TourAnalyzer:
             else                    : self.exp_map[name]        = self.base_exp
 
         if mismatched_players:
-            mismatch_dialog = MismatchedRoundsDialog(None, mismatched_players, self.base_exp, self.subbed_players_set, self.tour_dir)
+            mismatch_dialog = MismatchedRoundsDialog(None, mismatched_players, self.base_exp, self.subbed_players_set, self.tour_dir, watched_valid)
             mismatch_res    = mismatch_dialog.result if mismatch_dialog.result else {k: self.base_exp for k in mismatched_players}
 
             for name, target in mismatch_res.items():
                 act                 = len(self.apps.get(name, []))
                 self.exp_map[name]  = target
+
+                if target == "ignore": continue
 
                 if target > act:
                     avg_songs_per_json  = sum(len(self.apps.get(n, [])) for n in all_known) / len(all_known)
@@ -257,7 +261,7 @@ class TourAnalyzer:
         return True
 
     def process_and_generate(self):
-        watched_valid = self.missing_list_count <= 5
+        watched_valid = self.missing_list_count <= THRESH_WTCH
 
         for path in self.json_paths:
             with open(path, encoding = "utf-8") as f: data = json.load(f)
@@ -523,7 +527,7 @@ class TourAnalyzer:
                                 self.p_blks[pA] += 0.50
                                 self.p_blks[pB] += 0.50
 
-        final_threshold = 6 if len(self.s_part) <= 20 else 5
+        final_threshold = 6 if len(self.s_part) <= THRESH_PLYR else 5
 
         if      self.base_exp >= final_threshold: stage = "Final"
         elif    self.base_exp == 3              : stage = "Mid-Tour"
@@ -752,7 +756,7 @@ class TourAnalyzer:
 
             if name in new_players: d_name += " ☆"
 
-            if target < base_exp:
+            if target != "ignore" and target < base_exp:
                 if name.lower() in self.main_roster_names   : d_name += " ▼"
                 else                                        : d_name += " ▲"
 
@@ -760,7 +764,7 @@ class TourAnalyzer:
             eligibility.append(is_eligible)
             act = len(apps.get(name, []))
 
-            if act < target:
+            if target != "ignore" and act < target:
                 syms = ["", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)"]
                 if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
 
@@ -1187,7 +1191,7 @@ class TourAnalyzer:
                     rig_rates   = [self.p_rigs      [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist_l]
                     grid_grs    = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist_l]
 
-                    scale_l = 1.00 if len(plist_l) <= 20 else (0.75 if len(plist_l) <= 28 else 0.50)
+                    scale_l = 1.00 if len(plist_l) <= THRESH_PLYR else (0.75 if len(plist_l) <= THRESH_PLYR + 8 else 0.50)
                     sizes_l = [(rate * scale_l) ** 2 * 10000 for rate in rig_rates]
 
                     cmap_l = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [
@@ -1259,7 +1263,7 @@ class TourAnalyzer:
 
                 else: norm_perf = [0.5] * len(plist_g)
 
-                scale_g = 1.00 if len(plist_g) <= 20 else (0.75 if len(plist_g) <= 28 else 0.50)
+                scale_g = 1.00 if len(plist_g) <= THRESH_PLYR else (0.75 if len(plist_g) <= THRESH_PLYR + 8 else 0.50)
                 sizes_g = [(rate * scale_g) ** 2 * 10000 for rate in gr_vals]
                 cmap_g  = mc.LinearSegmentedColormap.from_list("guess_uf_elo_cmap", [(0, COLOR_0), (0.5, COLOR_1), (1, COLOR_2)])
                 
@@ -1748,7 +1752,7 @@ class TourAnalyzer:
 
             if name in self.new_players  : d_name += " ☆"
 
-            if target < self.base_exp:
+            if target != "ignore" and target < self.base_exp:
                 if name.lower() in self.main_roster_names:
                     d_name  +=  " ▼"
                     subs    =   self.sub_relations.get(name.casefold(), [])
@@ -1766,7 +1770,7 @@ class TourAnalyzer:
 
             act = len(self.apps.get(name, []))
 
-            if act < target:
+            if target != "ignore" and act < target:
                 syms = ["", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)"]
                 if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
 
@@ -2134,7 +2138,7 @@ class TourAnalyzer:
         t_labels        = {1: "OP Guess Rate", 2: "ED Guess Rate", 3: "IN Guess Rate"}
         valid_elos      = [float(v) for v in self.elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
         avg_rank        = np.mean(valid_elos) if valid_elos else 1.0
-        final_threshold = 6 if len(self.s_part) <= 20 else 5
+        final_threshold = 6 if len(self.s_part) <= THRESH_PLYR else 5
 
         if      self.base_exp >= final_threshold    : stage = "Final"
         elif    self.base_exp == 3                  : stage = "Mid-Tour"
@@ -2350,12 +2354,12 @@ body {{
     font-weight: bold;
 }}
 
-.highlight-best:hover {{
+td[data-songs].highlight-best:hover {{
     background-color: #ffffff !important;
     color: {c2} !important;
 }}
 
-.highlight-worst:hover {{
+td[data-songs].highlight-worst:hover {{
     background-color: #ffffff !important;
     color: {c0} !important;
 }}
@@ -2731,7 +2735,7 @@ function setupTooltipListeners() {{
                             if (s.startsWith('✓') || s.startsWith('✗')) return s;
                             return isPlayerSubHover ? s : `• ${{s}}`;
                         }});
-                        displaySongs.push(`and more`);
+                        displaySongs.push(`and ${{songs.length - 10}} more`);
                     }} else {{
                         displaySongs.sort((a, b) => {{
                             const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
@@ -2856,7 +2860,7 @@ function renderTierCharts() {{
                         if (songs.length > 10) {{
                             displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
                             displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-                            customHovers.push("• " + displaySongs.join("<br>• ") + "<br>and more");
+                            customHovers.push("• " + displaySongs.join("<br>• ") + "<br>and " + (songs.length - 10) + " more");
                         }} else {{
                             displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
                             customHovers.push("• " + displaySongs.join("<br>• "));
@@ -2929,8 +2933,13 @@ function renderTierCharts() {{
 
         if (metric.isRate) {{
             layout.xaxis.tickmode = 'array';
-            layout.xaxis.tickvals = [0, 20, 40, 60, 80, 100];
-            layout.xaxis.range = [0, 105];
+            if (metric.key == "Contribution Rate") {{
+                layout.xaxis.tickvals = [0, 10, 20, 30, 40, 50];
+                layout.xaxis.range = [0, 52.5];
+            }} else {{
+                layout.xaxis.tickvals = [0, 20, 40, 60, 80, 100];
+                layout.xaxis.range = [0, 105];
+            }}
         }} else if (metric.isTime) {{
             layout.xaxis.tickmode = 'array';
             layout.xaxis.tickvals = [0, 4, 8, 12, 16, 20];
@@ -3012,7 +3021,7 @@ for (let i = 0; i < numY; i++) {{
                     .sort(() => Math.random() - 0.5)
                     .slice(0, 10);
                 bin_songs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-                song_hover_str = "<br>• " + bin_songs.join("<br>• ") + "<br>and more";
+                song_hover_str = "<br>• " + bin_songs.join("<br>• ") + "<br>and ${{bin_songs.length - 10}} more";
             }} else if (bin_songs.length > 0) {{
                 bin_songs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
                 song_hover_str = "<br>• " + bin_songs.join("<br>• ");
