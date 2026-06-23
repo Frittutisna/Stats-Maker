@@ -427,7 +427,7 @@ class TourAnalyzer:
                             self.t_on_syn[tid].append(len(c_on_t)                   / 4.0)
                             self.t_sh_rig[tid].append((len(s_riggers & ros) - 1)    / 3.0)
 
-                        else: self.t_off_syn[tid].append(len(c_on_t)/ 4.0)
+                        else: self.t_off_syn[tid].append(len(c_on_t) / 4.0)
 
                 if len(final_members - correct) == 0: self.global_stats["fulls"] += 1
 
@@ -935,8 +935,8 @@ class TourAnalyzer:
                 b = sorted(conv, key = lambda x: x['score'], reverse = True)    [0]
                 w = sorted(conv, key = lambda x: x['score'])                    [0]
 
-                stats.append(["Best Solo Rig Converter",    f"{b['n']} ({b['p']:.2f}%, {b['h']}/{b['t']})", ("Solo Rigs", b['n'])])
-                stats.append(["Worst Solo Rig Converter",   f"{w['n']} ({w['p']:.2f}%, {w['h']}/{w['t']})", ("Solo Rigs", w['n'])])
+                stats.append(["Best Solo Rig Converter",    f"{b['n']} ({b['p']:.2f}, {b['h']}/{b['t']})", ("Solo Rigs", b['n'])])
+                stats.append(["Worst Solo Rig Converter",   f"{w['n']} ({w['p']:.2f}, {w['h']}/{w['t']})", ("Solo Rigs", w['n'])])
 
         return stats
 
@@ -3025,11 +3025,12 @@ for (let i = 0; i < numY; i++) {{
             let song_hover_str = "";
             
             if (bin_songs.length > 10) {{
+                const remainingCount = bin_songs.length - 10;
                 bin_songs = bin_songs
                     .sort(() => Math.random() - 0.5)
                     .slice(0, 10);
                 bin_songs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-                song_hover_str = "<br>• " + bin_songs.join("<br>• ") + "<br>and ${{bin_songs.length - 10}} more";
+                song_hover_str = "<br>• " + bin_songs.join("<br>• ") + "<br>and " + remainingCount + " more";
             }} else if (bin_songs.length > 0) {{
                 bin_songs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
                 song_hover_str = "<br>• " + bin_songs.join("<br>• ");
