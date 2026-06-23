@@ -1,4 +1,4 @@
-import hashlib, json, logging, math, matplotlib, os, re, time
+import hashlib, json, logging, math, matplotlib, os, re, sys, time
 
 logging     .getLogger  ("adjustText").setLevel(logging.ERROR)
 matplotlib  .use        ('Agg')
@@ -232,8 +232,10 @@ class TourAnalyzer:
             elif    init_label in ["Usual",     "Quagsual"]     : default_th = "28, 19, 8"
             else                                                : default_th = "28, 19, 8"
 
-        meta_dialog     = TourMetadataDialog(None, self.tour_id, init_label, default_th, baseline_initial, list(all_known), self.elo_map)
-        meta_res        = meta_dialog.result if meta_dialog.result else {"tour_label": init_label, "th_str": "default", "base_exp": baseline_initial, "selected_new": []}
+        meta_dialog = TourMetadataDialog(None, self.tour_id, init_label, default_th, baseline_initial, list(all_known), self.elo_map)
+        if meta_dialog.result is None: sys.exit(0)
+
+        meta_res        = meta_dialog.result
         self.tour_label = meta_res["tour_label"]
 
         if not self.tour_label: self.tour_label = init_label
@@ -252,7 +254,8 @@ class TourAnalyzer:
 
         if mismatched_players:
             mismatch_dialog = MismatchedRoundsDialog(None, mismatched_players, self.base_exp, self.subbed_players_set, self.tour_dir, watched_valid)
-            mismatch_res    = mismatch_dialog.result if mismatch_dialog.result else {k: self.base_exp for k in mismatched_players}
+            if mismatch_dialog.result is None: sys.exit(0)
+            mismatch_res = mismatch_dialog.result
 
             for name, target in mismatch_res.items():
                 act                 = len(self.apps.get(name, []))
@@ -311,6 +314,7 @@ class TourAnalyzer:
 
                     if len([p for p in ros if p in raw_f_players]) == 3 and missing:
                         res = SubSelectionDialog(None, missing).result if len(missing) > 1 else missing[0]
+                        if res is None: sys.exit(0)
 
                         if res:
                             final_members.add(res)
@@ -795,9 +799,12 @@ class TourAnalyzer:
                     target_id   = self.id_database[p_low]
                     match       = next((n for n in all_known if self.id_database.get(n.lower()) == target_id), None)
 
-            if not match and allow_manual and ("[" in line_text or "Subs:" in line_text)    : match             = ManualMatchDialog(None, p_in, avail).result
-            if match                                                                        : new_aliases[p_in] = match
+            if not match and allow_manual and ("[" in line_text or "Subs:" in line_text):
+                dialog_match = ManualMatchDialog(None, p_in, avail)
+                if dialog_match.result is None: sys.exit(0)
+                match = dialog_match.result
 
+            if match: new_aliases[p_in] = match
             return match
 
         for line in lines:
@@ -851,6 +858,8 @@ class TourAnalyzer:
 
             original_players_display    = sorted([name for tid in rosters for name in rosters[tid] if name.lower() in self.main_roster_names], key = str.lower)
             dialog                      = SubstitutePromptDialog(None, sub_player, original_players_display, self.tour_dir)
+
+            if dialog.result is None: sys.exit(0)
 
             if dialog.result:
                 replaced_player             = dialog.result

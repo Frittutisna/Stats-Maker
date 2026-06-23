@@ -149,6 +149,7 @@ class TourSelectionDialog(UnifiedDialog):
 
             for widget in (box, lbl): widget.bind("<Button-1>", lambda _, t = tid, b = box: self.toggle_custom(t, b))
 
+        self.protocol("WM_DELETE_WINDOW", lambda: [setattr(self, 'selected_tours', []), self.destroy()])
         self.grab_set()
         self.wait_window()
 
@@ -305,8 +306,14 @@ class TourMetadataDialog(UnifiedDialog):
             for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n=name, b = box: self.toggle_custom_player(n, b))
 
         self._update_np_state()
-        self.grab_set()
-        self.wait_window()
+        
+        def on_close_cancel():
+            self.result = None
+            self.destroy()
+
+        self.protocol       ("WM_DELETE_WINDOW", on_close_cancel)
+        self.grab_set       ()
+        self.wait_window    ()
 
     def _select_lbl_opt(self, opt):
         self.lbl_var.set(opt)
@@ -437,6 +444,11 @@ class MismatchedRoundsDialog(UnifiedDialog):
 
             self.player_configs[name] = {"mode": mode_var, "act": act}
  
+        def on_close_cancel():
+            self.result = None
+            self.destroy()
+
+        self.protocol       ("WM_DELETE_WINDOW", on_close_cancel)
         self.grab_set       ()
         self.wait_window    ()
 
@@ -469,7 +481,10 @@ class ManualMatchDialog(tk.Toplevel):
 
         for name in sorted(available_pool): self.listbox.insert(tk.END, name)
         ttk.Button(main_frame, text = "Match Selected", command = self.on_match).pack(side = tk.RIGHT)
-        self.grab_set(); self.wait_window()
+
+        self.protocol       ("WM_DELETE_WINDOW", lambda: [setattr(self, 'result', None), self.destroy()])
+        self.grab_set       ()
+        self.wait_window    ()
 
     def on_match(self):
         sel = self.listbox.curselection()
@@ -492,7 +507,10 @@ class SubSelectionDialog(tk.Toplevel):
 
         for m in missing_roster: self.listbox.insert(tk.END, m)
         ttk.Button(main_frame, text = "Confirm", command = self.on_confirm).pack(side = tk.RIGHT)
-        self.grab_set(); self.wait_window()
+
+        self.protocol       ("WM_DELETE_WINDOW", lambda: [setattr(self, 'result', None), self.destroy()])        
+        self.grab_set       ()
+        self.wait_window    ()
 
     def on_confirm(self):
         sel = self.listbox.curselection()
@@ -546,6 +564,11 @@ class SubstitutePromptDialog(UnifiedDialog):
         arrow_btn   .bind("<Button-1>", show_menu)
         self.entry  .bind("<Button-1>", show_menu)
 
+        def on_close_cancel():
+            self.result = None
+            self.destroy()
+
+        self.protocol       ("WM_DELETE_WINDOW", on_close_cancel)
         self.grab_set       ()
         self.wait_window    ()
 
