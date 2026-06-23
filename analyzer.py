@@ -2870,6 +2870,11 @@ function renderTierCharts() {{
                 let vb = (b[metric.key] !== null && typeof b[metric.key] === 'object') ? b[metric.key].count : b[metric.key];
                 if (va === null || va === undefined) return 1;
                 if (vb === null || vb === undefined) return -1;
+                if (va === vb && (metric.key === "Guess Rate" || metric.key === "Chanting Guess Rate")) {{
+                    let numA = a[metric.key] && a[metric.key].details ? parseInt(a[metric.key].details[0].split('/')[0]) || 0 : 0;
+                    let numB = b[metric.key] && b[metric.key].details ? parseInt(b[metric.key].details[0].split('/')[0]) || 0 : 0;
+                    if (numA !== numB) return numB - numA
+                }}
                 return metric.isAsc ? va - vb : vb - va;
             }});
 
