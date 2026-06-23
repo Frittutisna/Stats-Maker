@@ -2372,6 +2372,16 @@ body {{
     font-weight: bold;
 }}
 
+.highlight-best:hover {{
+    background-color: #ffffff !important;
+    color: {c2} !important;
+}}
+
+.highlight-worst:hover {{
+    background-color: #ffffff !important;
+    color: {c0} !important;
+}}
+
 .tab-btn {{
     font-size: clamp(14px, 1.2vw, 22px);
     font-weight: 600;
@@ -2450,12 +2460,15 @@ td[data-songs].highlight-worst::after {{
     background-color: #ffffff;
 }}
 
-td[data-songs]:hover {{
-    background-color: rgba(128, 128, 128, 0.25) !important;
+td[data-songs].highlight-best:hover::after {{
+    background-color: {c2} !important;
 }}
 
-td[data-songs].highlight-best:hover,
-td[data-songs].highlight-worst:hover {{
+td[data-songs].highlight-worst:hover::after {{
+    background-color: {c0} !important;
+}}
+
+td[data-songs]:not(.highlight-best):not(.highlight-worst):hover {{
     background-color: rgba(128, 128, 128, 0.25) !important;
 }}
 
