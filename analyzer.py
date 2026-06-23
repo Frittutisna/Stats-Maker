@@ -1960,7 +1960,7 @@ class TourAnalyzer:
 
         return formatted_team_rows, team_hl_rules
 
-    def _render_dashboard_tiers(self, rows1, rows2, player_song_details):
+    def _render_dashboard_tier(self, rows1, rows2, player_song_details):
         tier_data = {}
 
         for r1, r2 in zip(rows1, rows2):
@@ -1998,7 +1998,7 @@ class TourAnalyzer:
 
         return tier_data
 
-    def _render_dashboard_songs(self):
+    def _render_dashboard_song(self):
         song_matrix_list = []
 
         for s in self.song_data:
@@ -2124,8 +2124,8 @@ class TourAnalyzer:
         json_scatter, json_arrows                                   = [json.dumps(x) for x in self._render_dashboard_plot   (avg_rank, raw_vintage_by_guess, raw_vintage_by_list)]
 
         json_tour_stats     = json.dumps(self._render_dashboard_tour    (watched, tour_song_details, player_song_details))
-        json_tier_merged    = json.dumps(self._render_dashboard_tiers   (rows1, rows2, player_song_details))
-        json_songs          = json.dumps(self._render_dashboard_songs   ())
+        json_tier_merged    = json.dumps(self._render_dashboard_tier   (rows1, rows2, player_song_details))
+        json_songs          = json.dumps(self._render_dashboard_song   ())
         json_matrix_songs   = json.dumps(matrix_song_details)
 
         explanations = {
