@@ -340,7 +340,7 @@ class TourAnalyzer:
                 artist_name = si.get("artist",      "Unknown")
 
                 if len(anime_name)  > THRESH_CHRL: anime_name   = re.sub(r'\s+\S*$', '', anime_name     [:THRESH_CHRL]) + " ..."
-                if len(song_name)   > THRESH_CHRS: song_name    = re.sub(r'\s+\S*$', '', song_name      [:THRESH_CHRS]) + " ..."
+                if len(song_name)   > THRESH_CHRM: song_name    = re.sub(r'\s+\S*$', '', song_name      [:THRESH_CHRM]) + " ..."
                 if len(artist_name) > THRESH_CHRS: artist_name  = re.sub(r'\s+\S*$', '', artist_name    [:THRESH_CHRS]) + " ..."
 
                 if      st == 1 : type_fmt = f"(OP{t_num})"
@@ -769,7 +769,7 @@ class TourAnalyzer:
 
         new_aliases = {}
 
-        def find_best_match(p_in, allow_manual = False, line_text = ""):
+        def find_best_match(p_in):
             p_low = p_in.lower()
 
             if p_low in local_aliases:
@@ -785,11 +785,6 @@ class TourAnalyzer:
                     target_id   = self.id_database[p_low]
                     match       = next((n for n in all_known if self.id_database.get(n.lower()) == target_id), None)
 
-            if not match and allow_manual and ("[" in line_text or "Subs:" in line_text):
-                dialog_match = ManualMatchDialog(None, p_in, avail)
-                if dialog_match.result is None: sys.exit(0)
-                match = dialog_match.result
-
             if match: new_aliases[p_in] = match
             return match
 
@@ -798,7 +793,7 @@ class TourAnalyzer:
 
             for p_in, val in matches:
                 if not line.lower().startswith("subs:"):
-                    match = find_best_match(p_in, allow_manual=True, line_text=line)
+                    match = find_best_match(p_in)
                     if match: elo_map[match.lower()] = val
 
         idx                 = 1
