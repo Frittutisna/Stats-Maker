@@ -310,19 +310,6 @@ class TourAnalyzer:
                                 if c_p.lower() in self.assignments and self.assignments[c_p.lower()][0] == tid:
                                     self.assignments[m_p.lower()] = self.assignments[c_p.lower()]
 
-                    missing = [p for p in ros if p not in raw_f_players]
-
-                    if len([p for p in ros if p in raw_f_players]) == 3 and missing:
-                        res = SubSelectionDialog(None, missing).result if len(missing) > 1 else missing[0]
-                        if res is None: sys.exit(0)
-
-                        if res:
-                            final_members.add(res)
-                            potential_subs = list(raw_f_players - self.rosters[tid])
-
-                            for sub_candidate in potential_subs:
-                                if sub_candidate.lower() not in self.assignments: self.assignments[sub_candidate.lower()] = self.assignments[res.lower()]
-
                 if len(final_members) < 8:
                     for tid in t_in_f: final_members.update(self.rosters[tid])
 
@@ -350,12 +337,11 @@ class TourAnalyzer:
 
                 anime_name  = si.get("animeNames",  {})         .get("romaji", "Unknown")
                 song_name   = si.get("songName",    "Unknown")
+                artist_name = si.get("artist",      "Unknown")
 
-                if len(anime_name)  > THRESH_CHAR: anime_name   = re.sub(r'\s+\S*$', '', anime_name [:THRESH_CHAR]) + " ..."
-                if len(song_name)   > THRESH_CHAR: song_name    = re.sub(r'\s+\S*$', '', song_name  [:THRESH_CHAR]) + " ..."
-
-                artist_raw     = si.get("artist", "Unknown")
-                artist_name    = "Multiple Singers" if len(artist_raw) > THRESH_CHAR else artist_raw
+                if len(anime_name)  > THRESH_CHRL: anime_name   = re.sub(r'\s+\S*$', '', anime_name     [:THRESH_CHRL]) + " ..."
+                if len(song_name)   > THRESH_CHRS: song_name    = re.sub(r'\s+\S*$', '', song_name      [:THRESH_CHRS]) + " ..."
+                if len(artist_name) > THRESH_CHRS: artist_name  = re.sub(r'\s+\S*$', '', artist_name    [:THRESH_CHRS]) + " ..."
 
                 if      st == 1 : type_fmt = f"(OP{t_num})"
                 elif    st == 2 : type_fmt = f"(ED{t_num})"

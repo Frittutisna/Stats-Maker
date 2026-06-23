@@ -1,4 +1,3 @@
-import re
 import tkinter as tk
 
 from help.config    import DIR_TOURS, DIR_JSONS, FILE_CODES
@@ -58,6 +57,7 @@ class CustomSpinbox(tk.Frame):
 
         try                 : curr = int(self.var.get())
         except ValueError   : curr = self.from_
+
         new_val = max(self.from_, min(self.to, curr + delta))
         self.var.set(str(new_val))
 
@@ -87,6 +87,7 @@ class CustomSpinbox(tk.Frame):
 class UnifiedDialog(tk.Toplevel):
     def __init__(self, parent, title, prompt):
         super().__init__(parent)
+
         self.title(title)
         self.result = None
 
@@ -95,6 +96,7 @@ class UnifiedDialog(tk.Toplevel):
 
         main_frame = ttk.Frame(self, padding = 10)
         main_frame.pack(fill = tk.BOTH, expand = True)
+
         if prompt: ttk.Label(main_frame, text = prompt, font = ("Segoe UI", 10)).pack(pady = (0, 6), anchor = "w")
 
         self.container = ttk.Frame(main_frame)
@@ -105,6 +107,7 @@ class UnifiedDialog(tk.Toplevel):
 
         self.confirm_btn = ttk.Button(btn_frame, text = "Confirm", command = self.on_confirm)
         self.confirm_btn.pack(side = tk.RIGHT)
+
         self.bind("<Return>", lambda: self.on_confirm())
 
     def on_confirm(self): self.destroy()
@@ -116,8 +119,9 @@ class TourSelectionDialog(UnifiedDialog):
         self.selected_tours = []
         self.vars           = {}
         self.fill_color     = "#000000"
-        script_dir          = Path(__file__).parent.parent.absolute()
-        states              = {}
+
+        script_dir  = Path(__file__).parent.parent.absolute()
+        states      = {}
 
         for tid in tour_ids:
             t_path          = script_dir / DIR_TOURS / str(tid)
@@ -128,6 +132,7 @@ class TourSelectionDialog(UnifiedDialog):
             if codes_file.exists() and json_dir.exists():
                 codes_size = codes_file.stat().st_size
                 json_count = len(list(json_dir.glob("*.json")))
+
                 if codes_size > 0 and json_count > 1: is_recommended = True
 
             states[tid] = is_recommended
@@ -149,9 +154,9 @@ class TourSelectionDialog(UnifiedDialog):
 
             for widget in (box, lbl): widget.bind("<Button-1>", lambda _, t = tid, b = box: self.toggle_custom(t, b))
 
-        self.protocol("WM_DELETE_WINDOW", lambda: [setattr(self, 'selected_tours', []), self.destroy()])
-        self.grab_set()
-        self.wait_window()
+        self.protocol       ("WM_DELETE_WINDOW", lambda: [setattr(self, 'selected_tours', []), self.destroy()])
+        self.grab_set       ()
+        self.wait_window    ()
 
     def toggle_custom(self, tid, box):
         new_val = not self.vars[tid].get()
@@ -166,6 +171,7 @@ class TourSelectionDialog(UnifiedDialog):
 class TourMetadataDialog(UnifiedDialog):
     def __init__(self, parent, tour_id, init_label, default_th, baseline_initial, active_players, elo_map = None):
         super().__init__(parent, f"Tour {tour_id} Configuration", "")
+
         self.fill_color = "#000000"
         ttk.Label(self.container, text = "What tour is this?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 4))
 
@@ -182,7 +188,7 @@ class TourMetadataDialog(UnifiedDialog):
 
             box.pack(side = tk.LEFT, padx = (0, 4))
             self.lbl_boxes[opt] = box
-            
+
             if opt == "Others":
                 lbl = ttk.Label(f_opt, text = "Others:", font = ("Segoe UI", 10))
                 lbl.pack(side = tk.LEFT)
@@ -198,26 +204,25 @@ class TourMetadataDialog(UnifiedDialog):
                 lbl.pack(side = tk.LEFT)
 
                 for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_lbl_opt(o))
-                    
-        self._update_lbl_state()
 
+        self._update_lbl_state()
         ttk.Label(self.container, text = "What are the comma-separated guess rate threshold values?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (6, 4))
 
         self.th_var     = tk.StringVar(value = "default")
         self.th_boxes   = {}
-        f_th1           = ttk.Frame(self.container)
 
+        f_th1 = ttk.Frame(self.container)
         f_th1.pack(anchor = "w", pady = 2)
 
         box_th1 = tk.Canvas(f_th1, width = 10, height = 10, bg = self.fill_color, highlightthickness = 1, highlightbackground = "black")
         box_th1.pack(side = tk.LEFT, padx = (0, 4))
+        self.th_boxes["default"] = box_th1
 
-        self.th_boxes["default"]    = box_th1
-        lbl_th1                     = ttk.Label(f_th1, text = "Use the default threshold values", font = ("Segoe UI", 10))
-
+        lbl_th1 = ttk.Label(f_th1, text = "Use the default threshold values", font = ("Segoe UI", 10))
         lbl_th1.pack(side = tk.LEFT)
+
         for w in (box_th1, lbl_th1): w.bind("<Button-1>", lambda _: self._select_th_opt("default"))
-            
+
         f_th2 = ttk.Frame(self.container)
         f_th2.pack(anchor = "w", pady = 2)
 
@@ -225,8 +230,8 @@ class TourMetadataDialog(UnifiedDialog):
         box_th2.pack(side = tk.LEFT, padx = (0, 4))
 
         self.th_boxes["custom"] = box_th2
-        lbl_th2                 = ttk.Label(f_th2, text = "Use custom threshold values:", font = ("Segoe UI", 10))
 
+        lbl_th2 = ttk.Label(f_th2, text = "Use custom threshold values:", font = ("Segoe UI", 10))
         lbl_th2.pack(side = tk.LEFT)
 
         self.th_entry = ttk.Entry(f_th2, width = 25)
@@ -234,10 +239,9 @@ class TourMetadataDialog(UnifiedDialog):
         self.th_entry.pack(side = tk.LEFT, padx = (4, 0))
 
         for w in (box_th2, lbl_th2): w.bind("<Button-1>", lambda _: self._select_th_opt("custom"))
-
         self._update_th_state()
-
         ttk.Label(self.container, text = "How many rounds have elapsed?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (6, 4))
+
         self.spin = CustomSpinbox(self.container, from_ = 1, to = 6, initial_val = baseline_initial)
         self.spin.pack(anchor = "w", pady = 2)
 
@@ -293,8 +297,8 @@ class TourMetadataDialog(UnifiedDialog):
             is_round                = name.lower() in round_elo_players
             var                     = tk.BooleanVar(value = is_round)
             self.player_vars[name]  = var
-            item_frame              = ttk.Frame(self.player_container)
 
+            item_frame              = ttk.Frame(self.player_container)
             item_frame.grid(row = row, column = col, padx = 4, pady = 2, sticky = "w")
 
             box = tk.Canvas(item_frame, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
@@ -306,7 +310,7 @@ class TourMetadataDialog(UnifiedDialog):
             for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n=name, b = box: self.toggle_custom_player(n, b))
 
         self._update_np_state()
-        
+
         def on_close_cancel():
             self.result = None
             self.destroy()
@@ -410,25 +414,34 @@ class MismatchedRoundsDialog(UnifiedDialog):
 
             f_r1 = ttk.Frame(p_frame)
             f_r1.pack(anchor = "w", pady = 2)
+
             box_r1 = tk.Canvas(f_r1, width = 10, height = 10, bg = self.fill_color if initial_mode == "round" else "white", highlightthickness = 1, highlightbackground = "black")
             box_r1.pack(side = tk.LEFT, padx = (0, 4))
+
             boxes["round"] = box_r1
+
             lbl_r1 = ttk.Label(f_r1, text = "Use the current round count")
             lbl_r1.pack(side = tk.LEFT)
 
             f_r2 = ttk.Frame(p_frame)
             f_r2.pack(anchor = "w", pady = 2)
+
             box_r2 = tk.Canvas(f_r2, width = 10, height = 10, bg = self.fill_color if initial_mode == "json" else "white", highlightthickness = 1, highlightbackground = "black")
             box_r2.pack(side = tk.LEFT, padx = (0, 4))
+
             boxes["json"] = box_r2
+
             lbl_r2 = ttk.Label(f_r2, text = "Use the current JSON count")
             lbl_r2.pack(side = tk.LEFT)
 
             f_custom = ttk.Frame(p_frame)
             f_custom.pack(anchor = "w", pady = 2)
+
             box_r3 = tk.Canvas(f_custom, width = 10, height = 10, bg = self.fill_color if initial_mode == "custom" else "white", highlightthickness = 1, highlightbackground = "black")
             box_r3.pack(side = tk.LEFT, padx = (0, 4))
+
             boxes["custom"] = box_r3
+
             lbl_r3 = ttk.Label(f_custom, text = "Ignore mismatch")
             lbl_r3.pack(side = tk.LEFT)
 
@@ -488,33 +501,10 @@ class ManualMatchDialog(tk.Toplevel):
 
     def on_match(self):
         sel = self.listbox.curselection()
-        if sel: self.result = self.listbox.get(sel[0]); self.destroy()
 
-class SubSelectionDialog(tk.Toplevel):
-    def __init__(self, parent, missing_roster):
-        super().__init__(parent)
-
-        self.title("Substitute Resolution")
-        self.result = None
-
-        main_frame = ttk.Frame(self, padding = 10)
-        main_frame.pack(fill = tk.BOTH, expand = True)
-
-        ttk.Label(main_frame, text = "Select the subbed player:", font = ("Segoe UI", 10)).pack(pady = (0, 6), anchor = "w")
-
-        self.listbox = tk.Listbox(main_frame, height = len(missing_roster))
-        self.listbox.pack(fill = tk.X, expand = True, pady = (0, 8))
-
-        for m in missing_roster: self.listbox.insert(tk.END, m)
-        ttk.Button(main_frame, text = "Confirm", command = self.on_confirm).pack(side = tk.RIGHT)
-
-        self.protocol       ("WM_DELETE_WINDOW", lambda: [setattr(self, 'result', None), self.destroy()])        
-        self.grab_set       ()
-        self.wait_window    ()
-
-    def on_confirm(self):
-        sel = self.listbox.curselection()
-        if sel: self.result = self.listbox.get(sel[0]); self.destroy()
+        if sel:
+            self.result = self.listbox.get(sel[0])
+            self.destroy()
 
 class SubstitutePromptDialog(UnifiedDialog):
     def __init__(self, parent, sub_name, original_players_list, tour_dir):
@@ -547,6 +537,7 @@ class SubstitutePromptDialog(UnifiedDialog):
 
         combo_frame = tk.Frame(self.container, bg = "white", bd = 1, relief = "solid")
         combo_frame.grid(row = 0, column = 1, pady = 4, sticky = "ew")
+
         self.container.grid_columnconfigure(1, weight = 1)
 
         self.entry = tk.Entry(combo_frame, textvariable = self.choice_var, bg = "white", fg = "black", font = ("Segoe UI", 10), justify = "center", bd = 0, state = "readonly")
