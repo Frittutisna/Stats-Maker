@@ -142,9 +142,22 @@ td[data-songs]:hover {
     background-color: rgba(128, 128, 128, 0.25) !important;
 }
 
-td[data-songs].highlight-best:hover,
+td[data-songs].highlight-best:hover {
+    background-color: #ffffff !important;
+    color: {c2} !important;
+}
+
 td[data-songs].highlight-worst:hover {
-    background-color: rgba(128, 128, 128, 0.25) !important;
+    background-color: #ffffff !important;
+    color: {c0} !important;
+}
+
+td[data-songs].highlight-best::after:hover {
+    background-color: {c2};
+}
+
+td[data-songs].highlight-worst::after:hover {
+    background-color: {c0};
 }
 
 th.has-explanation,

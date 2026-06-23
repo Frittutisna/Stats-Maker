@@ -1,4 +1,4 @@
-import hashlib, json, logging, math, matplotlib, os, re
+import hashlib, json, logging, math, matplotlib, os, re, time
 
 logging     .getLogger  ("adjustText").setLevel(logging.ERROR)
 matplotlib  .use        ('Agg')
@@ -2187,7 +2187,8 @@ class TourAnalyzer:
             "Worst Solo Rig Converter"  : "100 * Solo from Solo Rig / Solo Rig: Shows the worst player at converting their own solo rig into a solo"
         }
 
-        json_explanations = json.dumps(explanations)
+        json_explanations   = json.dumps(explanations)
+        generated_timestamp = int(time.time() * 1000)
 
         html_content    = self._generate_html_skeleton  (prefix, use_teams)
         css_content     = self._generate_dashboard_css  (COLOR_0, COLOR_2)
@@ -2210,7 +2211,8 @@ class TourAnalyzer:
             json_matrix_songs   = json_matrix_songs,
             json_scatter        = json_scatter, 
             json_arrows         = json_arrows, 
-            json_explanations   = json_explanations
+            json_explanations   = json_explanations,
+            generated_timestamp = generated_timestamp
         )
 
         with open(path / "Dashboard.html",  "w", encoding = "utf-8") as f: f.write(html_content)
@@ -2229,7 +2231,8 @@ class TourAnalyzer:
 <body class="p-6 w-screen max-w-full m-0 box-border">
     <div id="customJsTooltip"></div>
 
-    <h2 class="text-5xl font-bold text-center mt-4 mb-6">{prefix}</h2>
+    <h2 class="text-5xl font-bold text-center mt-4">{prefix}</h2>
+    <p id="lastUpdatedSubtitle" class="text-xl text-gray-500 text-center mt-1 mb-6 font-semibold"></p>
     
     <div class="w-full max-w-full border-b border-gray-300 flex flex-wrap justify-center gap-2 mb-8">
         <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
@@ -2488,9 +2491,39 @@ const groupBorders = {kwargs['json_borders']};
 const eligibility = {kwargs['json_eligibility']};
 const hlRules = {kwargs['json_hl_rules']};
 const colExplanations = {kwargs['json_explanations']};
+const generatedTime = {kwargs['generated_timestamp']};
 
 const col0 = "{kwargs['c0']}", col1 = "{kwargs['c1']}", col2 = "{kwargs['c2']}";
 const colBorders = new Set(["Player", "Guess Rate", "Score", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Tier", "Lives Saved", "Chanting Guess Rate"]);
+
+function updateTimeAgoSubtitle() {{
+    const subNode = document.getElementById('lastUpdatedSubtitle');
+    if (!subNode) return;
+
+    const diffMs = Date.now() - generatedTime;
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHr = Math.floor(diffMin / 60);
+    const diffDays = Math.floor(diffHr / 24);
+
+    let displayString = "Last updated: ";
+
+    if (diffSec < 60) {{
+        displayString += `${{diffSec}} seconds ago`;
+    }} else if (diffMin < 60) {{
+        displayString += `${{diffMin}} minute${{diffMin === 1 ? '' : 's'}} ago`;
+    }} else if (diffHr < 24) {{
+        displayString += `${{diffHr}} hour${{diffHr === 1 ? '' : 's'}} ago`;
+    }} else {{
+        displayString += `${{diffDays}} day${{diffDays === 1 ? '' : 's'}} ago`;
+    }}
+
+    subNode.innerText = displayString;
+}}
+
+// Initialize live ticker updates
+updateTimeAgoSubtitle();
+setInterval(updateTimeAgoSubtitle, 1000);
 
 function switchDashboardTab(evt, tabId) {{
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
