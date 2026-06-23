@@ -1525,7 +1525,6 @@ class TourAnalyzer:
 
     def _get_dashboard_data(self):
         player_song_details     = defaultdict(lambda: defaultdict(list))
-        player_true_solo_rigs   = defaultdict(list)
         tour_song_details       = defaultdict(list)
         team_song_details       = defaultdict(lambda: defaultdict(list))
         matrix_song_details     = defaultdict(list)
@@ -1641,7 +1640,7 @@ class TourAnalyzer:
                     p_list = list(correct)
                     p1, p2 = p_list[0], p_list[1]
 
-                    tour_song_details["Total 2/8s"].append(f"{song_line} ({p1} and {p2})")
+                    tour_song_details["Total 2/8s"].append(f"{song_line} ({p1}/{p2})")
 
                 elif apply_rev and len(final_members - correct) == 1:
                     missing_player = list(final_members - correct)[0]
@@ -1685,16 +1684,16 @@ class TourAnalyzer:
                         player_song_details[n]["Rigs"].append(f"{marker} {song_line}")
 
                         if is_true_solo_rig:
-                            stealers        = sorted(list(active_correct - {n}))
-                            count_stealers  = len(stealers)
-
-                            if      count_stealers == 0 : tag = "(0/8)"
-                            elif    count_stealers == 1 : tag = f"(stolen by {stealers[0]})"
-                            elif    count_stealers == 2 : tag = f"(stolen by {stealers[0]} and {stealers[1]})"
-                            else                        : tag = f"({amt_correct}/8)"
-
                             if n in active_correct  : player_song_details[n]["Solo Rigs"].append(f"✓ {song_line}")
-                            else                    : player_song_details[n]["Solo Rigs"].append(f"✗ {song_line} {tag}")
+                            else                    : player_song_details[n]["Solo Rigs"].append(f"✗ {song_line}")
+
+                            s   = sorted(list(active_correct - {n}))
+                            sC  = len(s)
+
+                            if      sC == 0 : tag = "(0/8)"
+                            elif    sC == 1 : tag = f"(stolen by {s[0]})"
+                            elif    sC == 2 : tag = f"(stolen by {s[0]}/{s[1]})"
+                            else            : tag = f"({amt_correct}/8)"
 
                             if n in active_correct and amt_correct == 1 : player_song_details[n]["Solo Rig Conversions"].append(f"✓ {song_line}")
                             else                                        : player_song_details[n]["Solo Rig Conversions"].append(f"✗ {song_line} {tag}")
@@ -1711,11 +1710,20 @@ class TourAnalyzer:
 
                         if (len(cA) == 4 and not cB) or (len(cB) == 4 and not cA): tour_song_details["Total 4-0s"].append(song_line)
 
-                        for cC, oC in [(cA, cB), (cB, cA)]:
-                            if not oC:
-                                for p in cC: player_song_details[p]["Lives Taken"].append(song_line)
+                        for _, oT, cC, oC in [(tA, tB, cA, cB), (tB, tA, cB, cA)]:
+                            oL = self.t1_lookup.get(oT, f"Team {oT}")
 
-                            if len(cC) == 1 and len(oC) > 0: player_song_details[list(cC)[0]]["Lives Saved"].append(song_line)
+                            if not oC:
+                                for p in cC: player_song_details[p]["Lives Taken"].append(f"{song_line} (from Team {oL})")
+
+                            if len(cC) == 1 and len(oC) > 0:
+                                oP = sorted(list(oC), key = lambda x: self.assignments.get(x.lower(), (None, "5"))[1])
+
+                                if      len(oP) == 1    : opp_tag = f"(from {oP[0]} in Team {oL})"          if oP[0] != oL                  else f"(from {oP[0]})"
+                                elif    len(oP) == 2    : opp_tag = f"(from {oP[0]}/{oP[1]} in Team {oL})"  if oP[0] != oL and oP[1] != oL  else f"(from {oP[0]}/{oP[1]})"
+                                else                    : opp_tag = f"(from Team {oL})"
+
+                                player_song_details[list(cC)[0]]["Lives Saved"].append(f"{song_line} {opp_tag}")
 
         for json_path in self.json_paths:
             with open(json_path, encoding = "utf-8") as f: data = json.load(f)

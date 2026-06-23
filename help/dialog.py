@@ -371,7 +371,7 @@ class MismatchedRoundsDialog(UnifiedDialog):
             f"{title_part} in fewer JSONs than expected; how many rounds were they expected to be in?\n\n"
             '● "Use the current round count" is primarily used if the player has 0/0 round(s)\n'
             '● "Use the current JSON count" is primarily used if the player was subbed in/out\n'
-            '● "Ignore mismatched" is primarily used for non-Watched tours\n'
+            '● "Ignore mismatch" is primarily used for non-Watched tours\n'
         )
 
         super().__init__(parent, "Mismatched Round Counts", prompt_text)
