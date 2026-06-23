@@ -769,7 +769,7 @@ class TourAnalyzer:
                 if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
 
             row = {"Player": d_name}
-            if self.use_teams: row["Elo"] = elo_map.get(name.lower(), "N/A")
+            if self.use_teams: row["Elo"] = elo_map.get(name.lower(), np.nan)
             row.update({"Guess Rate": cor / tot if tot else 0.0})
 
             if self.use_teams: 
@@ -1789,8 +1789,10 @@ class TourAnalyzer:
                 except  : row["Elo"] = np.nan
 
             if row_data is not None:
+                tot, cor = self.s_part[name], self.c_counts[name]
+
                 row.update({
-                    "Guess Rate"    : float (row_data["Guess Rate"] * 100),
+                    "Guess Rate"    : {"count": float(row_data["Guess Rate"] * 100), "details": [f"{cor}/{tot}"]},
                     "UF"            : float (row_data["UF"])                if "UF"     in row_data                 else np.nan,
                     "Score"         : float (row_data["Score"])             if "Score"  in row_data                 else np.nan,
                     "1/8s"          : int   (row_data["1/8s"]),
@@ -1800,7 +1802,15 @@ class TourAnalyzer:
                 })
 
                 if self.use_teams: row.update({"Lives Taken": int(row_data["Lives Taken"]), "Lives Saved": int(row_data["Lives Saved"])})
-                for tid in active: row[t_labels[tid]] = float(row_data[t_labels[tid]] * 100) if pd.notnull(row_data[t_labels[tid]]) else np.nan
+                
+                for tid in active: 
+                    seen = self.p_type_s[name][tid]
+                    succ = self.p_type_c[name][tid]
+
+                    row[t_labels[tid]] = {
+                        "count"     : float(row_data[t_labels[tid]] * 100),
+                        "details"   : [f"{succ}/{seen}"]
+                    } if pd.notnull(row_data[t_labels[tid]]) else np.nan
 
                 if watched:
                     row.update({
@@ -1815,8 +1825,15 @@ class TourAnalyzer:
                         "Rig Delta"         : float (row_data["Rig Delta"]      * 100),
                     })
 
-                row["Median Time"]      = float(row_data["Median Time"])            if pd.notnull(row_data["Median Time"])      else np.nan
-                row["Chant Guess Rate"] = float(row_data["Chant Guess Rate"] * 100) if pd.notnull(row_data["Chant Guess Rate"]) else np.nan
+                seen_chan = self.p_chan_s[name]
+                succ_chan = self.p_chan_c[name]
+
+                row["Median Time"] = float(row_data["Median Time"]) if pd.notnull(row_data["Median Time"]) else np.nan
+
+                row["Chant Guess Rate"] = {
+                    "count"     : float(row_data["Chant Guess Rate"] * 100),
+                    "details"   : [f"{succ_chan}/{seen_chan}"]
+                } if pd.notnull(row_data["Chant Guess Rate"]) else np.nan
 
             for key in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]:
                 if key not in row               : continue
@@ -1842,7 +1859,7 @@ class TourAnalyzer:
             try     : th = [float(x.strip()) for x in th_val.split(",")] if th_val else []
             except  : th = [28.0, 18.0, 12.0, 6.0]
 
-            gv = df_players["Guess Rate"].tolist()
+            gv = df_players["Guess Rate"].map(lambda x: x["count"] if isinstance(x, dict) else x).tolist()
 
             for t in th:
                 f_idx = -1
@@ -1863,18 +1880,19 @@ class TourAnalyzer:
 
         asc_cols    = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
         int_cols    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
+        rate_cols   = ["Guess Rate", "OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Chant Guess Rate"]
         stats_hl    = {}
 
         elo_ser     = df_players["Elo"]         .fillna(0.0) if "Elo" in df_players.columns else pd.Series(0.0, index = df_players.index)
-        gr_ser      = df_players["Guess Rate"]  .fillna(0.0)
+        gr_ser      = df_players["Guess Rate"]  .map(lambda x: x["count"] if isinstance(x, dict) else x).fillna(0.0)
         rig_ser     = df_players["Rigs"]        .map(lambda x: x["count"] if isinstance(x, dict) else x).fillna(0.0) if "Rigs" in df_players.columns else pd.Series(0.0, index = df_players.index)
 
         mask_series = pd.Series(eligibility, index = df_players.index)
 
         for col in df_players.columns:
             if col in desc_cols or col in asc_cols:
-                if col in int_cols  : num = df_players[col].map(lambda x: x["count"])
-                else                : num = df_players[col]
+                if col in int_cols or col in rate_cols  : num = df_players[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
+                else                                    : num = df_players[col]
 
                 el_num = num[mask_series].dropna() if col in int_cols else num.dropna()
 
@@ -2024,26 +2042,31 @@ class TourAnalyzer:
             players_tracked = {p["player"] for p in r1["_players"]["gen"]}
 
             for p in players_tracked:
-                gen = next((x["value"] for x in r1["_players"]["gen"] if x["player"] == p), 0.0)
+                tot = self.s_part   [p]
+                cor = self.c_counts [p]
+                chc = self.p_chan_c [p]
+                cht = self.p_chan_s [p]
+
+                gen = 100 * cor / tot if tot else 0.0
                 atk = next((x["value"] for x in r1["_players"]["atk"] if x["player"] == p), 0.0)
                 blk = next((x["value"] for x in r1["_players"]["blk"] if x["player"] == p), 0.0)
-                con = next((x["value"] for x in r2["_players"]["con"] if x["player"] == p), 0.0)
+                con = 100 * (atk + blk) / cor if cor else 0.0
                 spd = next((x["value"] for x in r2["_players"]["spd"] if x["player"] == p), None)
-                chn = next((x["value"] for x in r2["_players"]["chn"] if x["player"] == p), 0.0) if r2["_players"]["chn"] else 0.0
+                chn = 100 * chc / cht if cht else 0.0
 
                 player_song_details[p]["Lives Taken"].sort(key = str.lower)
                 player_song_details[p]["Lives Saved"].sort(key = str.lower)
 
                 tier_data[tr].append({
                     "Player"                : p,
-                    "Guess Rate"            : float(round(gen, 2)),
+                    "Guess Rate"            : {"count": float(round(gen, 2)), "details": [f"{cor}/{tot}"]},
                     "Lives Taken"           : int(atk),
                     "Lives Taken Details"   : player_song_details[p]["Lives Taken"],
                     "Lives Saved"           : float(round(blk, 2)),
                     "Lives Saved Details"   : player_song_details[p]["Lives Saved"],
-                    "Contribution Rate"     : float(round(con, 2)),
+                    "Contribution Rate"     : {"count": float(round(con, 2)), "details": [f"{int(atk) + int(blk)}/{cor}"]},
                     "Median Time"           : float(round(spd, 2)) if spd is not None and pd.notnull(spd) else None,
-                    "Chanting Guess Rate"   : float(round(chn, 2))
+                    "Chanting Guess Rate"   : {"count": float(round(chn, 2)), "details": [f"{chc}/{cht}"]}
                 })
 
         return tier_data
@@ -2526,7 +2549,6 @@ function updateTimeAgoSubtitle() {{
     subNode.innerText = displayString;
 }}
 
-// Initialize live ticker updates
 updateTimeAgoSubtitle();
 setInterval(updateTimeAgoSubtitle, 1000);
 
@@ -2619,7 +2641,8 @@ function renderPlayerTable() {{
                 else if (isWorst) cellStyle += "highlight-worst ";
             }}
 
-            let finalVal = (h === "Player") ? `<b>${{displayVal}}</b>` : displayVal;
+            let formattedVal = (typeof displayVal === 'number' && h !== "1/8s" && h !== "2/8s" && h !== "7/8s" && h !== "Lives Taken" && h !== "Lives Saved" && h !== "Rigs" && h !== "Solo Rigs") ? displayVal.toFixed(2) : displayVal;
+            let finalVal = (h === "Player") ? `<b>${{formattedVal}}</b>` : formattedVal;
             
             if (h === "Player") {{
                 if (rawCell && rawCell.details && rawCell.details.length > 0) {{
@@ -2727,6 +2750,12 @@ function setupTooltipListeners() {{
                 if(songs && songs.length > 0) {{
                     let displaySongs = [...songs];
                     const isPlayerSubHover = td.parentNode.firstElementChild === td;
+                    
+                    if (songs.length === 1 && !songs[0].startsWith('✓') && !songs[0].startsWith('✗') && songs[0].includes('/')) {{
+                        tooltipNode.innerHTML = songs[0];
+                        positionTooltip(e);
+                        return;
+                    }}
 
                     if (songs.length > 10) {{
                         displaySongs = displaySongs
@@ -2812,12 +2841,12 @@ function renderTeamTable() {{
 function renderTierCharts() {{
     if (!document.getElementById('tierChart_GuessRate')) return;
     const metrics = [
-        {{ key: "Guess Rate", title: "Guess Rate", isAsc: false, isRate: true, hoverDisabled: true }},
+        {{ key: "Guess Rate", title: "Guess Rate", isAsc: false, isRate: true, hoverDisabled: false }},
         {{ key: "Lives Taken", title: "Lives Taken", isAsc: false, isRate: false, isInt: true }},
         {{ key: "Lives Saved", title: "Lives Saved", isAsc: false, isRate: false, isInt: true }},
-        {{ key: "Contribution Rate", title: "Contribution Rate", isAsc: false, isRate: true, hoverDisabled: true }},
+        {{ key: "Contribution Rate", title: "Contribution Rate", isAsc: false, isRate: true, hoverDisabled: false }},
         {{ key: "Median Time", title: "Median Time", isAsc: true, isRate: false, isTime: true, hoverDisabled: true }},
-        {{ key: "Chanting Guess Rate", title: "Chanting Guess Rate", isAsc: false, isRate: true, hoverDisabled: true }}
+        {{ key: "Chanting Guess Rate", title: "Chanting Guess Rate", isAsc: false, isRate: true, hoverDisabled: false }}
     ];
 
     const divIds = [
@@ -2837,8 +2866,8 @@ function renderTierCharts() {{
 
             let playersInTier = [...tierStats[tr]];
             playersInTier.sort((a, b) => {{
-                let va = a[metric.key];
-                let vb = b[metric.key];
+                let va = (a[metric.key] !== null && typeof a[metric.key] === 'object') ? a[metric.key].count : a[metric.key];
+                let vb = (b[metric.key] !== null && typeof b[metric.key] === 'object') ? b[metric.key].count : b[metric.key];
                 if (va === null || va === undefined) return 1;
                 if (vb === null || vb === undefined) return -1;
                 return metric.isAsc ? va - vb : vb - va;
@@ -2851,7 +2880,8 @@ function renderTierCharts() {{
             }}
 
             playersInTier.forEach(p => {{
-                let val = p[metric.key];
+                let rawVal = p[metric.key];
+                let val = (rawVal !== null && typeof rawVal === 'object') ? rawVal.count : rawVal;
                 let finalVal = 0;
                 if (val !== null && val !== undefined && val !== Infinity) {{
                     finalVal = metric.isInt ? Math.round(val) : Number(val.toFixed(2));
@@ -2861,20 +2891,24 @@ function renderTierCharts() {{
                 yVals.push(p.Player);
 
                 if (!metric.hoverDisabled) {{
-                    let detailKey = metric.key + " Details";
-                    let songs = p[detailKey] || [];
-                    if (songs.length > 0) {{
-                        let displaySongs = [...songs];
-                        if (songs.length > 10) {{
-                            displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
-                            displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-                            customHovers.push("• " + displaySongs.join("<br>• ") + "<br>and " + (songs.length - 10) + " more");
-                        }} else {{
-                            displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-                            customHovers.push("• " + displaySongs.join("<br>• "));
-                        }}
+                    if (rawVal !== null && typeof rawVal === 'object' && rawVal.details && rawVal.details.length > 0) {{
+                        customHovers.push(rawVal.details[0]);
                     }} else {{
-                        customHovers.push("• No songs logged");
+                        let detailKey = metric.key + " Details";
+                        let songs = p[detailKey] || [];
+                        if (songs.length > 0) {{
+                            let displaySongs = [...songs];
+                            if (songs.length > 10) {{
+                                displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
+                                displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                                customHovers.push("• " + displaySongs.join("<br>• ") + "<br>and " + (songs.length - 10) + " more");
+                            }} else {{
+                                displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                                customHovers.push("• " + displaySongs.join("<br>• "));
+                            }}
+                        }} else {{
+                            customHovers.push("• No songs logged");
+                        }}
                     }}
                 }} else {{
                     customHovers.push("");
