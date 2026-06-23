@@ -2468,6 +2468,8 @@ td[data-songs].highlight-worst:hover::after {{
     background-color: {c0} !important;
 }}
 
+th.has-explanation:hover,
+#tourStatsTable tr td.has-explanation:hover,
 td[data-songs]:not(.highlight-best):not(.highlight-worst):hover {{
     background-color: rgba(128, 128, 128, 0.25) !important;
 }}
