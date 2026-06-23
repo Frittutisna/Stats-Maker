@@ -196,7 +196,7 @@ class TourAnalyzer:
         loaded = self._load_team_data(all_known)
         if not loaded: return False
 
-        self.use_teams, self.elo_map, self.assignments, self.t1_lookup, self.rosters, all_known = loaded
+        self.use_teams, self.elo_map, self.assignments, self.t1_lookup, self.rosters, all_known, sub_candidates_raw, original_players_display = loaded
 
         self.missing_list_count = 0
         self.tour_types         = set()
@@ -232,11 +232,22 @@ class TourAnalyzer:
             elif    init_label in ["Usual",     "Quagsual"]     : default_th = "28, 19, 8"
             else                                                : default_th = "28, 19, 8"
 
-        meta_dialog = TourMetadataDialog(None, self.tour_id, init_label, default_th, baseline_initial, list(all_known), self.elo_map)
+        meta_dialog = TourMetadataDialog(None, self.tour_id, init_label, default_th, baseline_initial, list(all_known), self.elo_map, sub_candidates_raw, original_players_display, self.tour_dir)
         if meta_dialog.result is None: sys.exit(0)
 
         meta_res        = meta_dialog.result
         self.tour_label = meta_res["tour_label"]
+
+        if "sub_results" in meta_res:
+            for sub_player, replaced_player in meta_res["sub_results"].items():
+                s_low = sub_player.lower()
+                chosen_team_id, chosen_tier = self.assignments[replaced_player.lower()]
+                self.assignments[s_low] = (chosen_team_id, chosen_tier)
+                self.rosters[chosen_team_id].add(sub_player)
+                self.subbed_players_set.add(s_low)
+                self.subbed_players_set.add(replaced_player.lower())
+                self.sub_relations[replaced_player.casefold()].append(sub_player)
+                self.sub_relations[s_low] = [replaced_player]
 
         if not self.tour_label: self.tour_label = init_label
 
@@ -833,32 +844,13 @@ class TourAnalyzer:
 
             idx += 1
 
-        for sub_player in sub_candidates_raw:
-            s_low = sub_player.lower()
-            if s_low in assignments: continue
-
-            original_players_display    = sorted([name for tid in rosters for name in rosters[tid] if name.lower() in self.main_roster_names], key = str.lower)
-            dialog                      = SubstitutePromptDialog(None, sub_player, original_players_display, self.tour_dir)
-
-            if dialog.result is None: sys.exit(0)
-
-            if dialog.result:
-                replaced_player             = dialog.result
-                chosen_team_id, chosen_tier = assignments[replaced_player.lower()]
-                assignments[s_low]          = (chosen_team_id, chosen_tier)
-
-                rosters[chosen_team_id].add(sub_player)                
-                self.subbed_players_set.add(s_low)
-                self.subbed_players_set.add(replaced_player.lower())
-                
-                self.sub_relations[replaced_player.casefold()].append(sub_player)
-                self.sub_relations[s_low] = [replaced_player]
-
         unresolved_players = [p for p in all_known if p.lower() not in assignments]
 
         if unresolved_players:
             messagebox.showerror("Roster Mismatch", f"These players are in the JSONs but not in codes.txt: {', '.join(unresolved_players)}")
             return False
+
+        original_players_display = [p for p in all_known if p.lower() in assignments and p.lower() not in [s.lower() for s in sub_candidates_raw]]
 
         if new_aliases:
             existing_entries = []
@@ -874,7 +866,7 @@ class TourAnalyzer:
                         f.write(f"{k}, {v}\n")
                         existing_entries.append(entry)
 
-        return True, elo_map, assignments, t1_lookup, rosters, all_known
+        return True, elo_map, assignments, t1_lookup, rosters, all_known, sub_candidates_raw, original_players_display
 
     def _compute_player_rows(self, elo_map, apps, exp_map, base_exp, new_players, watched, active, t_labels, avg_rank):
         rows, eligibility = [], []

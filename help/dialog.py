@@ -169,7 +169,7 @@ class TourSelectionDialog(UnifiedDialog):
         super().on_confirm()
 
 class TourMetadataDialog(UnifiedDialog):
-    def __init__(self, parent, tour_id, init_label, default_th, baseline_initial, active_players, elo_map = None):
+    def __init__(self, parent, tour_id, init_label, default_th, baseline_initial, active_players, elo_map = None, sub_candidates = None, original_players_list = None, tour_dir = None):
         super().__init__(parent, f"Tour {tour_id} Configuration", "")
 
         self.fill_color = "#000000"
@@ -244,6 +244,60 @@ class TourMetadataDialog(UnifiedDialog):
 
         self.spin = CustomSpinbox(self.container, from_ = 1, to = 6, initial_val = baseline_initial)
         self.spin.pack(anchor = "w", pady = 2)
+
+        self.sub_vars = {}
+        self.tour_dir = tour_dir
+
+        if sub_candidates and original_players_list:
+            ttk.Label(self.container, text = "Substitution Setup", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (6, 4))
+
+            sorted_subs         = sorted(list(sub_candidates),          key = str.lower)
+            sorted_originals    = sorted(list(original_players_list),   key = str.lower)
+            saved_subs_map      = {}
+
+            if tour_dir and (tour_dir / "subs.txt").exists():
+                with open(tour_dir / "subs.txt", "r", encoding = "utf-8") as f:
+                    for line in f:
+                        if "," in line:
+                            s_name, o_name                          = line.strip().split(",", 1)
+                            saved_subs_map[s_name.strip().lower()]  = o_name.strip()
+
+            for sub_name in sorted_subs:
+                f_sub = ttk.Frame(self.container)
+                f_sub.pack(fill = tk.X, anchor = "w", pady = 2)
+
+                lbl = ttk.Label(f_sub, text = f"Who is {sub_name} subbing for?", font = ("Segoe UI", 10))
+                lbl.pack(side = tk.LEFT, padx = (0, 6))
+
+                choice_var = tk.StringVar()
+                saved_orig = saved_subs_map.get(sub_name.lower())
+
+                if saved_orig and any(p.lower() == saved_orig.lower() for p in sorted_originals)    : choice_var.set(next(p for p in sorted_originals   if p.lower() == saved_orig.lower()))
+                else                                                                                : choice_var.set(sorted_originals[0]                if sorted_originals else "")
+
+                self.sub_vars[sub_name] = choice_var
+
+                combo_frame = tk.Frame(f_sub, bg = "white", bd = 1, relief = "solid")
+                combo_frame.pack(side = tk.LEFT, fill = tk.X, expand = True)
+
+                entry = tk.Entry(combo_frame, textvariable = choice_var, bg = "white", fg = "black", font = ("Segoe UI", 10), justify = "center", bd = 0, state = "readonly")
+                entry.pack(side = tk.LEFT, fill = tk.X, expand = True, padx = 2)
+
+                arrow_btn = tk.Canvas(combo_frame, width = 25, height = 25, bg = "black", highlightthickness = 0, borderwidth = 0, cursor = "hand2")
+                arrow_btn.create_polygon(7, 10, 17, 10, 12, 16, fill = "white")
+                arrow_btn.pack(side = tk.RIGHT)
+
+                def make_show_menu(s_players, c_var):
+                    return lambda event: [
+                        menu := tk.Menu(self, tearoff = 0),
+                        *[menu.add_command(label = p, command = lambda val = p: c_var.set(val)) for p in s_players],
+                        menu.post(event.x_root, event.y_root)
+                    ]
+
+                show_menu_func = make_show_menu(sorted_originals, choice_var)
+
+                arrow_btn   .bind("<Button-1>", show_menu_func)
+                entry       .bind("<Button-1>", show_menu_func)
 
         ttk.Label(self.container, text = "Are there any new players?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (6, 4))
 
@@ -370,7 +424,21 @@ class TourMetadataDialog(UnifiedDialog):
         tour_label      = self.lbl_entry    .get() if self.lbl_var  .get() == "Others" else self.lbl_var.get()
         th_str          = self.th_entry     .get() if self.th_var   .get() == "custom" else "default"
         selected_new    = [name for name, var in self.player_vars.items() if var.get()] if self.np_var.get() == "Yes" else []
-        self.result     = {"tour_label": tour_label, "th_str": th_str, "base_exp": base_exp, "selected_new": selected_new}
+        sub_results     = {sub_name: var.get() for sub_name, var in self.sub_vars.items()}
+        self.result     = {"tour_label": tour_label, "th_str": th_str, "base_exp": base_exp, "selected_new": selected_new, "sub_results": sub_results}
+
+        if self.tour_dir and sub_results:
+            existing_lines = []
+
+            if (self.tour_dir / "subs.txt").exists():
+                with open(self.tour_dir / "subs.txt", "r", encoding = "utf-8") as f:
+                    for line in f:
+                        if "," in line:
+                            s_part, _ = line.split(",", 1)
+                            if s_part.strip().lower() not in [s.lower() for s in sub_results]: existing_lines.append(line.strip())
+
+            for s_name, r_name in sub_results.items()                           : existing_lines.append(f"{s_name}, {r_name}")
+            with open(self.tour_dir / "subs.txt", "w", encoding = "utf-8") as f : f.write("\n".join(existing_lines) + "\n")
 
         super().on_confirm()
 
