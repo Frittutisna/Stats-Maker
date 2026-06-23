@@ -2914,13 +2914,8 @@ function renderTierCharts() {{
 
         if (metric.isRate) {{
             layout.xaxis.tickmode = 'array';
-            if (metric.key == "Contribution Rate") {{
-                layout.xaxis.tickvals = [0, 10, 20, 30, 40, 50];
-                layout.xaxis.range = [0, 52.5];
-            }} else {{
-                layout.xaxis.tickvals = [0, 20, 40, 60, 80, 100];
-                layout.xaxis.range = [0, 105];
-            }}
+            layout.xaxis.tickvals = [0, 20, 40, 60, 80, 100];
+            layout.xaxis.range = [0, 105];
         }} else if (metric.isTime) {{
             layout.xaxis.tickmode = 'array';
             layout.xaxis.tickvals = [0, 4, 8, 12, 16, 20];
