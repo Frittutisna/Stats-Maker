@@ -344,16 +344,20 @@ class TourAnalyzer:
                 ann_id  = str(si.get("annSongId"))
                 is_chan = ann_id in self.chanting_ids
 
-                romaji_name = si.get("animeNames",  {})         .get("romaji", "Unknown")
-                s_name      = si.get("songName",    "Unknown")
-                art_raw     = si.get("artist",      "Unknown")
-                art_name    = "Multiple Singers" if len(art_raw) > THRESH_CHAR else art_raw
+                anime_name  = si.get("animeNames",  {})         .get("romaji", "Unknown")
+                song_name   = si.get("songName",    "Unknown")
+
+                if len(anime_name)  > THRESH_CHAR: anime_name   = re.sub(r'\s+\S*$', '', anime_name [:THRESH_CHAR]) + " ..."
+                if len(song_name)   > THRESH_CHAR: song_name    = re.sub(r'\s+\S*$', '', song_name  [:THRESH_CHAR]) + " ..."
+
+                artist_raw     = si.get("artist", "Unknown")
+                artist_name    = "Multiple Singers" if len(artist_raw) > THRESH_CHAR else artist_raw
 
                 if      st == 1 : type_fmt = f"(OP{t_num})"
                 elif    st == 2 : type_fmt = f"(ED{t_num})"
                 else            : type_fmt = f"(IN)"
 
-                song_line = f"{romaji_name} {type_fmt}: {s_name} by {art_name}"
+                song_line = f"{anime_name} {type_fmt}: {song_name} by {artist_name}"
 
                 if isinstance(si.get("animeGenre"), list): self.genre_c .update(si.get("animeGenre"))
                 if isinstance(si.get("animeTags"),  list): self.tag_c   .update([t for t in si.get("animeTags") if t not in EXCLUDED_TAGS])
@@ -2130,23 +2134,23 @@ class TourAnalyzer:
 
         explanations = {
             "Player"                    : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
-            "UF"                        : "Usefulness: Calculates this player's contribution to their team, scaled by Elo and songs played",
-            "Score"                     : "Calculates this player's value (Usefulness) against what's expected from their Elo; 50 means this player is playing to expectations",
+            "UF"                        : "Usefulness<br>Calculates this player's contribution to their team, scaled by Elo and songs played",
+            "Score"                     : "Calculates this player's value (Usefulness) against what's expected from their Elo<br>50 means this player is playing to expectations",
             "Mean Over-8"               : "Average of correct guessers across songs this player/team guessed correctly",
-            "Lives Taken"               : "Count of points won against the opposing team; correct guessers exclusively on their team",
-            "Lives Saved"               : "Count of blocks achieved against the opposing team; lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
+            "Lives Taken"               : "Count of points won against the opposing team<br>Correct guessers exclusively on their team",
+            "Lives Saved"               : "Count of blocks achieved against the opposing team<br>Lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
             "Solo Rigs"                 : "Count of songs exclusively from this player's list",
             "Rig Over-8"                : "Average of correct guessers across songs from this player's list",
-            "Over-8 Delta"              : "Rig Over-8 - Mean Over-8: Calculates the difficulty gap between this player's list and correct guesses",
-            "Rig Delta"                 : "100 * (Correct - Rig) / Correct: Calculates this player's performance against their own list",
+            "Over-8 Delta"              : "Rig Over-8 - Mean Over-8<br>Calculates the difficulty gap between this player's list and correct guesses",
+            "Rig Delta"                 : "100 * (Correct - Rig) / Correct<br>Calculates this player's performance against their own list",
             "Median Time"               : "Median guess time across songs this player guessed correctly",
             "Total 4-0s"                : "Count of songs where all players from one team guessed correctly and all players from the other team missed",
             "Rig Synergy"               : "Average team guess rate across songs from its own members' lists",
             "Off Synergy"               : "Average team guess rate across songs from the opposing team member's lists",
             "Shared Rigs"               : "Calculates how much songs are shared across its own members' lists",
-            "Contribution Rate"         : "100 * (Lives Taken + Saved) / Correct: Calculates how much of this player's correct guesses directly contributed to the scoreline",
-            "Best Solo Rig Converter"   : "100 * Solo from Solo Rig / Solo Rig: Shows the best player at converting their own solo rig into a solo",
-            "Worst Solo Rig Converter"  : "100 * Solo from Solo Rig / Solo Rig: Shows the worst player at converting their own solo rig into a solo"
+            "Contribution Rate"         : "100 * (Lives Taken + Saved) / Correct<br>Calculates how much of this player's correct guesses directly contributed to the scoreline",
+            "Best Solo Rig Converter"   : "100 * Solo from Solo Rig / Solo Rig<br>Shows the best player at converting their own solo rig into a solo",
+            "Worst Solo Rig Converter"  : "100 * Solo from Solo Rig / Solo Rig<br>Shows the worst player at converting their own solo rig into a solo"
         }
 
         json_explanations   = json.dumps(explanations)
@@ -2903,7 +2907,7 @@ function renderTierCharts() {{
                 ticksuffix: "  "
             }},
             bargap: 0.0,
-            margin: {{ l: 200, r: 25, t: 75, b: 25 }},
+            margin: {{ l: 200, r: 50, t: 100, b: 100 }},
             height: 145 + (yVals.length * 30),
             hoverlabel: {{ align: 'left', font: {{ family: 'Segoe UI', size: 15 }} }}
         }};
