@@ -2190,7 +2190,7 @@ class TourAnalyzer:
         json_explanations   = json.dumps(explanations)
         generated_timestamp = int(time.time() * 1000)
 
-        html_content    = self._generate_html_skeleton  (prefix, use_teams)
+        html_content    = self._generate_html_skeleton  (prefix, use_teams, watched)
         css_content     = self._generate_dashboard_css  (COLOR_0, COLOR_2)
         js_content      = self._generate_dashboard_js   (
             use_teams           = use_teams, 
@@ -2219,7 +2219,7 @@ class TourAnalyzer:
         with open(path / "Styles.css",      "w", encoding = "utf-8") as f: f.write(css_content)
         with open(path / "Script.js",       "w", encoding = "utf-8") as f: f.write(js_content)
 
-    def _generate_html_skeleton(self, prefix, use_teams): return f"""<!DOCTYPE html>
+    def _generate_html_skeleton(self, prefix, use_teams, watched): return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -2237,11 +2237,11 @@ class TourAnalyzer:
     <div class="w-full max-w-full border-b border-gray-300 flex flex-wrap justify-center gap-2 mb-8">
         <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
-        {"<button class='tab-btn' onclick='switchDashboardTab(event, \"team-tab\")'>Team</button>" if use_teams else ""}
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>
+        {"<button class='tab-btn' onclick='switchDashboardTab(event, \"team-tab\")'>Team</button>" if use_teams and watched else ""}
+        {"<button class='tab-btn' onclick='switchDashboardTab(event, \"tier-tab\")'>Tier</button>" if use_teams else ""}
         <button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>
         <button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>
+        {"<button class='tab-btn' onclick='switchDashboardTab(event, \"list-tab\")'>List</button>" if watched else ""}
     </div>
 
     <div class="w-full max-w-full block box-border overflow-hidden">
@@ -2257,24 +2257,11 @@ class TourAnalyzer:
             </div>
         </div>
 
-        <div id="team-tab" class="tab-content">
-            <div class="table-center-wrapper">
-                <table class="main-table" id="teamStatsTable"></table>
-            </div>
-        </div>
+        {"<div id='team-tab' class='tab-content'><div class='table-center-wrapper'><table class='main-table' id='teamStatsTable'></table></div></div>" if use_teams else ""}
     </div>
     
     <div class="max-w-[2400px] mx-auto mt-4"> 
-        <div id="tier-tab" class="tab-content">
-            <div class="max-w-[1200px] mx-auto space-y-8 bg-white p-6 rounded shadow-md border border-gray-300">
-                <div id="tierChart_GuessRate"></div>
-                <div id="tierChart_LivesTaken"></div>
-                <div id="tierChart_LivesSaved"></div>
-                <div id="tierChart_ContributionRate"></div>
-                <div id="tierChart_MedianTime"></div>
-                <div id="tierChart_ChantingGuessRate"></div>
-            </div>
-        </div>
+        {"<div id='tier-tab' class='tab-content'><div class='max-w-[1200px] mx-auto space-y-8 bg-white p-6 rounded shadow-md border border-gray-300'><div id='tierChart_GuessRate'></div><div id='tierChart_LivesTaken'></div><div id='tierChart_LivesSaved'></div><div id='tierChart_ContributionRate'></div><div id='tierChart_MedianTime'></div><div id='tierChart_ChantingGuessRate'></div></div></div>" if use_teams else ""}
 
         <div id="song-tab" class="tab-content">
             <div class="max-w-[950px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
@@ -2294,16 +2281,7 @@ class TourAnalyzer:
             </div>
         </div>
 
-        <div id="list-tab" class="tab-content">
-            <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
-                <div class="mb-4 text-lg text-black space-y-1">
-                    <p><b>X-Axis:</b> Mean of correct guessers across songs from this player's list</p>
-                    <p><b>Y-Axis:</b> Median vintage across songs from this player's list</p>
-                    <p><b>Size (Rig Rate)</b></p>
-                </div>
-                <div id="plotlyListChart" style="width:100%; height:750px;"></div>
-            </div>
-        </div>
+        {"<div id='list-tab' class='tab-content'><div class='max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md'><div class='mb-4 text-lg text-black space-y-1'><p><b>X-Axis:</b> Mean of correct guessers across songs from this player\'s list</p><p><b>Y-Axis:</b> Median vintage across songs from this player\'s list</p><p><b>Size (Rig Rate)</b></p></div><div id='plotlyListChart' style='width:100%; height:750px;'></div></div></div>" if watched else ""}
     </div>
 
     <script src="Script.js"></script>
@@ -2820,6 +2798,7 @@ function renderTeamTable() {{
 }}
 
 function renderTierCharts() {{
+    if (!document.getElementById('tierChart_GuessRate')) return;
     const metrics = [
         {{ key: "Guess Rate", title: "Guess Rate", isAsc: false, isRate: true, hoverDisabled: true }},
         {{ key: "Lives Taken", title: "Lives Taken", isAsc: false, isRate: false, isInt: true }},
@@ -3107,73 +3086,75 @@ Plotly.newPlot('plotlySongChart', [{{
     margin: {{ l: 60, r: 0, t: 30, b: 55 }}
 }}, {{responsive: true, displayModeBar: false}});
 
-const listHull = get75PercentileHull(arrowData, 'x_start', 'y_start');
-let listTraces = [];
+if (document.getElementById('plotlyListChart')) {{
+    const listHull = get75PercentileHull(arrowData, 'x_start', 'y_start');
+    let listTraces = [];
 
-if (listHull) {{
-    listTraces.push({{
-        x: listHull.x,
-        y: listHull.y,
-        type: 'scatter',
-        mode: 'lines',
-        line: {{ color: 'black', width: 0.5, dash: 'solid' }},
-        hoverinfo: 'skip',
-        showlegend: false
-    }});
-}}
-
-listTraces.push({{
-    x: arrowData.map(d => d.x_start),
-    y: arrowData.map(d => d.y_start),
-    text: arrowData.map(d => d.acronym),
-    customdata: arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
-    hovertemplate: '<b>%{{customdata[0]}}</b><br>Rig Over-8: %{{customdata[1]}}<br>Rig Vintage: %{{customdata[2]}}<br>Rig Rate: %{{customdata[3]}}<br>Rig Guess Rate: %{{customdata[4]}}<extra></extra>',
-    mode: 'markers+text', textposition: 'top center',
-    textfont: {{ family: 'Segoe UI', size: 20, weight: 'bold', color: 'black' }},
-    showlegend: false,
-    marker: {{
-        size: arrowData.map(d => Math.max(25, Math.pow(d.rig_rate, 2) * 0.025)),
-        opacity: 1,
-        color: arrowData.map(d => d.grid_grs || d.rig_gr),
-        colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]],
-        showscale: true, 
-        colorbar: {{ 
-            title: {{ text: '<b>Rig Guess Rate</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }}, 
-            thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
-            tickmode: 'array', tickvals: [0, 70, 80, 90, 100], ticktext: ['0', '70', '80', '90', '100'],
-            tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}
-        }},
-        line: {{ color: 'black', width: 1 }}, cmin: 0, cmax: 100
+    if (listHull) {{
+        listTraces.push({{
+            x: listHull.x,
+            y: listHull.y,
+            type: 'scatter',
+            mode: 'lines',
+            line: {{ color: 'black', width: 0.5, dash: 'solid' }},
+            hoverinfo: 'skip',
+            showlegend: false
+        }});
     }}
-}});
 
-Plotly.newPlot('plotlyListChart', listTraces, {{
-    font: {{ family: 'Segoe UI' }},
-    xaxis: {{
-        title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
-        tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, 
-        showgrid: true,
-        tickformat: '.1f',
-        dtick: 0.5,
-        fixedrange: false
-    }},
-    yaxis: {{ 
-        title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
-        tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, 
-        tickangle: -90, 
-        showgrid: true,
-        tickformat: '.0f',
-        dtick: 2,
-        fixedrange: false
-    }},
-    margin: {{ l: 60, r: 0, t: 30, b: 55 }},
-    annotations: [
-        {{ x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'left', yanchor: 'top' }},
-        {{ x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'right', yanchor: 'top' }},
-        {{ x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom' }},
-        {{ x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'left', yanchor: 'bottom' }}
-    ]
-}}, {{responsive: true, displayModeBar: false}});
+    listTraces.push({{
+        x: arrowData.map(d => d.x_start),
+        y: arrowData.map(d => d.y_start),
+        text: arrowData.map(d => d.acronym),
+        customdata: arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
+        hovertemplate: '<b>%{{customdata[0]}}</b><br>Rig Over-8: %{{customdata[1]}}<br>Rig Vintage: %{{customdata[2]}}<br>Rig Rate: %{{customdata[3]}}<br>Rig Guess Rate: %{{customdata[4]}}<extra></extra>',
+        mode: 'markers+text', textposition: 'top center',
+        textfont: {{ family: 'Segoe UI', size: 20, weight: 'bold', color: 'black' }},
+        showlegend: false,
+        marker: {{
+            size: arrowData.map(d => Math.max(25, Math.pow(d.rig_rate, 2) * 0.025)),
+            opacity: 1,
+            color: arrowData.map(d => d.grid_grs || d.rig_gr),
+            colorscale: [[0, col0], [0.7, col0], [0.8, col1], [0.9, col2], [1, col2]],
+            showscale: true, 
+            colorbar: {{ 
+                title: {{ text: '<b>Rig Guess Rate</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, side: 'right' }}, 
+                thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
+                tickmode: 'array', tickvals: [0, 70, 80, 90, 100], ticktext: ['0', '70', '80', '90', '100'],
+                tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}
+            }},
+            line: {{ color: 'black', width: 1 }}, cmin: 0, cmax: 100
+        }}
+    }});
+
+    Plotly.newPlot('plotlyListChart', listTraces, {{
+        font: {{ family: 'Segoe UI' }},
+        xaxis: {{
+            title: {{ text: '<b>Over-8</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
+            tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, 
+            showgrid: true,
+            tickformat: '.1f',
+            dtick: 0.5,
+            fixedrange: false
+        }},
+        yaxis: {{ 
+            title: {{ text: '<b>Vintage</b>', font: {{ family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }}, pad: 5 }}, 
+            tickfont: {{ family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }}, 
+            tickangle: -90, 
+            showgrid: true,
+            tickformat: '.0f',
+            dtick: 2,
+            fixedrange: false
+        }},
+        margin: {{ l: 60, r: 0, t: 30, b: 55 }},
+        annotations: [
+            {{ x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'left', yanchor: 'top' }},
+            {{ x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'right', yanchor: 'top' }},
+            {{ x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom' }},
+            {{ x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {{ size: 20 }}, opacity: 0.75, xanchor: 'left', yanchor: 'bottom' }}
+        ]
+    }}, {{responsive: true, displayModeBar: false}});
+}}
 
 const guessHull = get75PercentileHull(scatterData, 'over8', 'vintage');
 let guessTraces = [];
