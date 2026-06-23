@@ -3134,7 +3134,7 @@ if (document.getElementById('plotlyListChart')) {{
             tickangle: -90, 
             showgrid: true,
             tickformat: '.0f',
-            dtick: 2,
+            dtick: Math.max(2, Math.ceil((Math.max(...arrowData.map(d => d.y_start)) - Math.min(...arrowData.map(d => d.y_start))) / 5)),
             fixedrange: false
         }},
         margin: {{ l: 60, r: 0, t: 30, b: 55 }},
@@ -3203,7 +3203,7 @@ Plotly.newPlot('plotlyGuessChart', guessTraces, {{
         tickangle: -90, 
         showgrid: true,
         tickformat: '.0f',
-        dtick: 2,
+        dtick: Math.max(2, Math.ceil((Math.max(...scatterData.map(d => d.vintage)) - Math.min(...scatterData.map(d => d.vintage))) / 5)),
         fixedrange: false
     }},
     margin: {{ l: 60, r: 0, t: 30, b: 55 }},
