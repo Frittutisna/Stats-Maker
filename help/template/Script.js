@@ -400,17 +400,23 @@ function renderTierCharts() {
                             const crosses   = displaySongs.filter(s => s.startsWith('✗'));
                             const valid     = ticks.length + crosses.length;
 
-                            let tickTarget  = valid > 0 ? Math.round((ticks.length / valid) * 10) : 5;
+                            let tickTarget = 5;
+
+                            if (valid > 0) {
+                                tickTarget = Math.round((ticks.length / valid) * 10);
+                                if (ticks.length > 0 && crosses.length > 0) tickTarget = Math.max(1, Math.min(9, tickTarget));
+                            }
+
                             let crossTarget = 10 - tickTarget;
 
                             if (ticks.length < tickTarget) {
                                 tickTarget  = ticks.length;
-                                crossTarget = 10 - tickTarget;
+                                crossTarget = Math.min(crosses.length, 10 - tickTarget);
                             }
 
                             else if (crosses.length < crossTarget) {
                                 crossTarget = crosses.length;
-                                tickTarget  = 10 - crossTarget;
+                                tickTarget  = Math.min(ticks.length, 10 - crossTarget);
                             }
 
                             const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
@@ -613,17 +619,23 @@ function setupTooltipListeners() {
                     const crosses   = displaySongs.filter(s => s.startsWith('✗'));
                     const valid     = ticks.length + crosses.length;
 
-                    let tickTarget  = valid > 0 ? Math.round((ticks.length / valid) * 10) : 5;
+                    let tickTarget = 5;
+
+                    if (valid > 0) {
+                        tickTarget = Math.round((ticks.length / valid) * 10);
+                        if (ticks.length > 0 && crosses.length > 0) tickTarget = Math.max(1, Math.min(9, tickTarget));
+                    }
+
                     let crossTarget = 10 - tickTarget;
 
                     if (ticks.length < tickTarget) {
-                        tickTarget = ticks.length;
-                        crossTarget = 10 - tickTarget;
+                        tickTarget  = ticks.length;
+                        crossTarget = Math.min(crosses.length, 10 - tickTarget);
                     }
 
                     else if (crosses.length < crossTarget) {
                         crossTarget = crosses.length;
-                        tickTarget  = 10 - crossTarget;
+                        tickTarget  = Math.min(ticks.length, 10 - crossTarget);
                     }
 
                     const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
