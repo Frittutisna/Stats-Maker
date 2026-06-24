@@ -358,11 +358,7 @@ class TourAnalyzer:
                 elif    st == 2 : type_fmt = f"(ED{t_num})"
                 else            : type_fmt = f"(IN)"
 
-                song_line = f"{anime_name} {type_fmt}: {song_name} by {artist_name}"
-
-                if isinstance(si.get("animeGenre"), list): self.genre_c .update(si.get("animeGenre"))
-                if isinstance(si.get("animeTags"),  list): self.tag_c   .update([t for t in si.get("animeTags") if t not in EXCLUDED_TAGS])
-
+                song_line   = f"{anime_name} {type_fmt}: {song_name} by {artist_name}"
                 raw_correct = song.get("correctGuessPlayers", [])
                 correct     = set()
 
@@ -379,10 +375,14 @@ class TourAnalyzer:
                 self.global_stats["tot_c"]  +=  len(correct)
 
                 try:
-                    vint_raw    = si.get("vintage", "")
-                    yr          = int(extract_year(vint_raw)) if vint_raw else None
+                    vint_raw = si.get("vintage", "")
+                    yr          = int   (extract_year   (vint_raw))     if vint_raw else None
+                    vint_scaled = float (extract_year   (vint_raw))     if vint_raw else 0.0
+                    vint_pretty = format_year           (vint_scaled)   if vint_raw else "Unknown"
 
-                except: yr = None
+                except: 
+                    yr          = None
+                    vint_pretty = "Unknown"
 
                 if yr is not None: self.all_vint.append(yr)
 
@@ -399,6 +399,11 @@ class TourAnalyzer:
                     "correct_count" : int(len(correct))
                 })
 
+                song_line = f"{anime_name} {type_fmt}: {song_name} by {artist_name} ({vint_pretty}/{safe_diff:.2f}: {len(correct)}/8)"
+
+                if isinstance(si.get("animeGenre"), list): self.genre_c .update(si.get("animeGenre"))
+                if isinstance(si.get("animeTags"),  list): self.tag_c   .update([t for t in si.get("animeTags") if t not in EXCLUDED_TAGS])
+
                 if yr is not None and yr > 0:
                     diffs_arr   = [s["difficulty"] for s in self.song_data]
                     max_diff_v  = max(diffs_arr) if diffs_arr else 0
@@ -407,8 +412,8 @@ class TourAnalyzer:
                     x_idx_v     = min(int(math.floor(safe_diff / 5)), num_x_v - 1)
                     vint_floor  = math.floor(float(yr))
 
-                    if num_y_v == 8 : y_idx_v = 0 if vint_floor < 1990 else min(int(math.floor((vint_floor - 1990) / 5)) + 1, 7)
-                    else            : y_idx_v = min(max(int(math.floor((vint_floor - 1985) / 5)), 0), 8)
+                    if num_y_v == 8 : y_idx_v = 0 if vint_floor < 1995 else min(int(math.floor((vint_floor - 1995) / 5)) + 1, 7)
+                    else            : y_idx_v = min(max(int(math.floor((vint_floor - 1995) / 5)), 0), 8)
 
                     self.matrix_song_details[f"{x_idx_v}-{y_idx_v}"].append(song_line)
 

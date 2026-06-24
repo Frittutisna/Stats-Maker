@@ -661,8 +661,8 @@ const xLabels = (numX === 8)
 : ['5', '10', '15', '20', '25', '30', '35', '40'];
 
 const yLabels = (numY === 8)
-? [1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025]
-: [1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025];
+? [1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030]
+: [1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030];
 
 const matrixBins = {};
 
@@ -686,7 +686,65 @@ for (let i = 0; i < numY; i++) {
     let rowText = [];
 
     for (let j = 0; j < numX; j++) {
-        let key = `${j}-${i}`;
+        let key         = `${j}-${i}`;
+        let vintageStr  = "";
+
+        if (numY === 8) {
+            if (i === 0) vintageStr = "Vintage: <1995";
+
+            else {
+                let startYr = 1995 + (i - 1) * 5;
+                let endYr = startYr + 5;
+                vintageStr = `Vintage: ${startYr}-${endYr}`;
+            }
+
+        }
+
+        else {
+            if      (i === 0) vintageStr = "Vintage: <1990";
+            else if (i === 8) vintageStr = "Vintage: >2025";
+
+            else {
+                let startYr = 1990 + (i - 1) * 5;
+                let endYr   = startYr + 5;
+                vintageStr  = `Vintage: ${startYr}-${endYr}`;
+            }
+        }
+
+        let diffStr = "";
+
+        if (numX === 4) {
+            if      (j === 0)   diffStr = "Difficulty: <10";
+            else if (j === 1)   diffStr = "Difficulty: 10-20";
+            else if (j === 2)   diffStr = "Difficulty: 20-30";
+            else                diffStr = "Difficulty: >30";
+        }
+
+        else if (numX === 5) {
+            if      (j === 0)   diffStr = "Difficulty: <10";
+            else if (j === 1)   diffStr = "Difficulty: 10-20";
+            else if (j === 2)   diffStr = "Difficulty: 20-30";
+            else if (j === 3)   diffStr = "Difficulty: 30-40";
+            else                diffStr = "Difficulty: >40";
+        }
+
+        else if (numX === 8) {
+            let startDf = j         * 5;
+            let endDf   = startDf   + 5;
+
+            if      (j === 0)   diffStr = "Difficulty: <5";
+            else if (j === 7)   diffStr = "Difficulty: >35";
+            else                diffStr = `Difficulty: ${startDf}-${endDf}`;
+        }
+
+        else {
+            let startDf = j         * 5;
+            let endDf   = startDf   + 5;
+
+            if      (j === 0)   diffStr = "Difficulty: <5";
+            else if (j === 8)   diffStr = "Difficulty: >40";
+            else                diffStr = `Difficulty: ${startDf}-${endDf}`;
+        }
 
         if (key in matrixBins) {
             let val = matrixBins[key].over8Sum / matrixBins[key].count;
@@ -709,7 +767,7 @@ for (let i = 0; i < numY; i++) {
                 song_hover_str = "<br>• " + bin_songs.join("<br>• ");
             }
 
-            rowText.push(`Mean Over-8: ${val.toFixed(2)}${song_hover_str}`);
+            rowText.push(`${vintageStr}<br>${diffStr}<br>Mean Over-8: ${val.toFixed(2)}${song_hover_str}`);
 
             annotations.push({
                 x               : j,
@@ -724,7 +782,7 @@ for (let i = 0; i < numY; i++) {
 
         else {
             rowZ    .push(null);
-            rowText .push('');
+            rowText .push(`${vintageStr}<br>${diffStr}<br>Mean Over-8: N/A`);
         }
     }
 
