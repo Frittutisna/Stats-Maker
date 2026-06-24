@@ -154,6 +154,48 @@ function get75PercentileHull(pts, xKey, yKey) {
     };
 }
 
+const formatAndSortSongsList = (list, prefixBullets = true) => {
+    return list
+        .sort((a, b) => {
+            const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
+            const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
+
+            return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
+        })
+
+        .map(s => (s.startsWith('✓') || s.startsWith('✗') || !prefixBullets) ? s : `• ${s}`);
+};
+
+const sampleLargeSongList = (displaySongs) => {
+    const ticks     = displaySongs.filter(s => s.startsWith('✓'));
+    const crosses   = displaySongs.filter(s => s.startsWith('✗'));
+    const valid     = ticks.length + crosses.length;
+
+    let tickTarget = 5;
+
+    if (valid > 0) {
+        tickTarget  = Math.round((ticks.length / valid) * 10);
+        if (ticks.length > 0 && crosses.length > 0) tickTarget = Math.max(1, Math.min(9, tickTarget));
+    }
+
+    let crossTarget = 10 - tickTarget;
+
+    if (ticks.length < tickTarget) {
+        tickTarget  = ticks.length;
+        crossTarget = Math.min(crosses.length, 10 - tickTarget);
+    }
+
+    else if (crosses.length < crossTarget) {
+        crossTarget = crosses.length;
+        tickTarget  = Math.min(ticks.length, 10 - crossTarget);
+    }
+
+    const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
+    const sampledCrosses    = crosses   .sort(() => Math.random() - 0.5).slice(0, crossTarget);
+
+    return [...formatAndSortSongsList(sampledTicks), ...formatAndSortSongsList(sampledCrosses)];
+};
+
 function renderPlayerTable() {
     const table = document.getElementById('playerStandingsTable');
     if(!players || !players.length) return;
@@ -193,12 +235,7 @@ function renderPlayerTable() {
             let formattedVal    = (typeof displayVal === 'number' && !intCols.includes(h))  ? displayVal.toFixed(2)     : displayVal;
             let finalVal        = (h === "Player")                                          ? `<b>${formattedVal}</b>`  : formattedVal;
 
-            if (h === "Player" && rawCell && rawCell.details && rawCell.details.length > 0) {
-                let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-                tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}">${finalVal}</td>`;
-            }
-
-            else if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
+            if ((h === "Player" && rawCell && rawCell.details && rawCell.details.length > 0) || (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0)) {
                 let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
                 tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}">${finalVal}</td>`;
             }
@@ -219,10 +256,7 @@ function renderTourTable() {
 
     let thead = "<thead><tr>" + tourHeaders.map(h => {
         let classes = [];
-
         if (thickBorderColumns.has(h))  classes.push("border-col-group");
-        // REMOVED: broken colExplanations[h] check for the static headers 'Metric'/'Value'
-
         let classStr = classes.length > 0 ? ` class="${classes.join(' ')}"` : '';
         return `<th${classStr}>${h.replace(/ /g, '<br>')}</th>`;
     }).join('') + "</tr></thead>";
@@ -232,12 +266,8 @@ function renderTourTable() {
     tourStats.forEach(row => {
         let rawCell     = row.Value;
         let displayVal  = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
-        
-        // Add "has-explanation" class dynamically if an explanation exists for this specific row metric
         let hasExp      = !!colExplanations[row.Metric];
         let metricClass = hasExp ? "border-col-group has-explanation" : "border-col-group";
-        
-        // CRITICAL FIX: Inject data-metric="${row.Metric}" so setupTooltipListeners() finds it
         let metricAttr  = `class='${metricClass}' data-metric="${row.Metric}"`;
 
         if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
@@ -250,6 +280,7 @@ function renderTourTable() {
 
     table.innerHTML = thead + tbody + "</tbody>";
 }
+
 function renderTeamTable() {
     const table = document.getElementById('teamStatsTable');
     if(!table || !teamStats || !teamStats.length) return;
@@ -377,52 +408,16 @@ function renderTierCharts() {
                             displaySongs.shift(); 
                         }
 
-                        const formatAndSortList = (list) => {
-                            return list.sort((a, b) => {
-                                const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
-                                const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
-
-                                return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
-                            });
-                        };
-
                         if (metric.isTime) customHovers.push(displaySongs.join('<br>'));
 
                         else if (displaySongs.length > 10) {
-                            const ticks     = displaySongs.filter(s => s.startsWith('✓'));
-                            const crosses   = displaySongs.filter(s => s.startsWith('✗'));
-                            const valid     = ticks.length + crosses.length;
-
-                            let tickTarget = 5;
-
-                            if (valid > 0) {
-                                tickTarget = Math.round((ticks.length / valid) * 10);
-                                if (ticks.length > 0 && crosses.length > 0) tickTarget = Math.max(1, Math.min(9, tickTarget));
-                            }
-
-                            let crossTarget = 10 - tickTarget;
-
-                            if (ticks.length < tickTarget) {
-                                tickTarget  = ticks.length;
-                                crossTarget = Math.min(crosses.length, 10 - tickTarget);
-                            }
-
-                            else if (crosses.length < crossTarget) {
-                                crossTarget = crosses.length;
-                                tickTarget  = Math.min(ticks.length, 10 - crossTarget);
-                            }
-
-                            const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
-                            const sampledCrosses    = crosses   .sort(() => Math.random() - 0.5).slice(0, crossTarget);
-
-                            displaySongs = [...formatAndSortList(sampledTicks), ...formatAndSortList(sampledCrosses)];
+                            displaySongs = sampleLargeSongList(displaySongs);
                             displaySongs.push(`and ${rawVal.details.length - 1 - 10} more`);
-
                             customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
-                        } 
+                        }
 
                         else {
-                            displaySongs = formatAndSortList(displaySongs);
+                            displaySongs = formatAndSortSongsList(displaySongs);
                             customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
                         }
                     }
@@ -436,12 +431,12 @@ function renderTierCharts() {
 
                             if (songs.length > 10) {
                                 displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
-                                displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                                displaySongs = formatAndSortSongsList(displaySongs, false);
                                 customHovers.push("• " + displaySongs.join("<br>• ") + "<br>and " + (songs.length - 10) + " more");
                             }
 
                             else {
-                                displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                                displaySongs = formatAndSortSongsList(displaySongs, false);
                                 customHovers.push("• " + displaySongs.join("<br>• "));
                             }
                         }
@@ -561,20 +556,9 @@ function setupTooltipListeners() {
                 const songs = JSON.parse(decodeURIComponent(td.getAttribute('data-songs')));
                 if (!songs || songs.length === 0) return;
 
-                if (td.classList.contains('highlight-best')) {
-                    tooltipNode.style.backgroundColor   = c2;
-                    tooltipNode.style.color             = 'white';
-                }
-
-                else if (td.classList.contains('highlight-worst')) {
-                    tooltipNode.style.backgroundColor   = c0;
-                    tooltipNode.style.color             = 'white';
-                }
-
-                else {
-                    tooltipNode.style.backgroundColor   = 'black';
-                    tooltipNode.style.color             = 'white';
-                }
+                if      (td.classList.contains('highlight-best'))   {tooltipNode.style.backgroundColor = c2;        tooltipNode.style.color = 'white';}
+                else if (td.classList.contains('highlight-worst'))  {tooltipNode.style.backgroundColor = c0;        tooltipNode.style.color = 'white';}
+                else                                                {tooltipNode.style.backgroundColor = 'black';   tooltipNode.style.color = 'white';}
 
                 let displaySongs        = [...songs];
                 const isPlayerSubHover  = td.parentNode.firstElementChild === td;
@@ -585,9 +569,7 @@ function setupTooltipListeners() {
                     return;
                 }
 
-                const isTimeMetric = songs.some(s => s.startsWith("Minimum:"));
-
-                if (isTimeMetric) {
+                if (songs.some(s => s.startsWith("Minimum:"))) {
                     tooltipNode.innerHTML = displaySongs.join('<br>');
                     positionTooltip(e);
                     return;
@@ -602,50 +584,11 @@ function setupTooltipListeners() {
                     displaySongs.shift();
                 }
 
-                const formatAndSortList = (list) => {return list
-                    .sort((a, b) => {
-                        const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
-                        const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
-
-                        return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
-                    })
-
-                    .map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : (isPlayerSubHover ? s : `• ${s}`));
-                };
-
-                if (containsRegex && songs.length > 10) {
-                    const ticks     = displaySongs.filter(s => s.startsWith('✓'));
-                    const crosses   = displaySongs.filter(s => s.startsWith('✗'));
-                    const valid     = ticks.length + crosses.length;
-
-                    let tickTarget = 5;
-
-                    if (valid > 0) {
-                        tickTarget = Math.round((ticks.length / valid) * 10);
-                        if (ticks.length > 0 && crosses.length > 0) tickTarget = Math.max(1, Math.min(9, tickTarget));
-                    }
-
-                    let crossTarget = 10 - tickTarget;
-
-                    if (ticks.length < tickTarget) {
-                        tickTarget  = ticks.length;
-                        crossTarget = Math.min(crosses.length, 10 - tickTarget);
-                    }
-
-                    else if (crosses.length < crossTarget) {
-                        crossTarget = crosses.length;
-                        tickTarget  = Math.min(ticks.length, 10 - crossTarget);
-                    }
-
-                    const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
-                    const sampledCrosses    = crosses   .sort(() => Math.random() - 0.5).slice(0, crossTarget);
-
-                    displaySongs = [...formatAndSortList(sampledTicks), ...formatAndSortList(sampledCrosses)];
-                }
+                if (containsRegex && songs.length > 10) displaySongs = sampleLargeSongList(displaySongs).map(s => (s.startsWith('✓') || s.startsWith('✗') || !isPlayerSubHover) ? s : `• ${s}`);
 
                 else {
                     if (displaySongs.length > 10) displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
-                    displaySongs = formatAndSortList(displaySongs);
+                    displaySongs = formatAndSortSongsList(displaySongs, !isPlayerSubHover);
                 }
 
                 if (songs.length > 10) displaySongs.push(`and ${songs.length - 10 - (containsRegex ? 1 : 0)} more`);
@@ -708,44 +651,36 @@ for (let i = 0; i < numY; i++) {
         if (numY === 8) {
             if      (i === 0) vintageStr = "Vintage: <1995";
             else if (i === 7) vintageStr = "Vintage: >2025";
-
             else {
                 let startYr = 1995 + (i - 1) * 5;
-                let endYr   = startYr + 5;
-                vintageStr  = `Vintage: ${startYr}-${endYr}`;
+                vintageStr  = `Vintage: ${startYr}-${startYr + 5}`;
             }
         }
 
         else {
             if      (i === 0) vintageStr = "Vintage: <1990";
             else if (i === 8) vintageStr = "Vintage: >2025";
-
             else {
                 let startYr = 1990 + (i - 1) * 5;
-                let endYr   = startYr + 5;
-                vintageStr  = `Vintage: ${startYr}-${endYr}`;
+                vintageStr  = `Vintage: ${startYr}-${startYr + 5}`;
             }
         }
 
         if (numX === 8) {
             if      (j === 0)   diffStr = "Difficulty: <5";
             else if (j === 7)   diffStr = "Difficulty: >35";
-
             else {
                 let startDf = j         * 5;
-                let endDf   = startDf   + 5;
-                diffStr     = `Difficulty: ${startDf}-${endDf}`;
+                diffStr     = `Difficulty: ${startDf}-${startDf + 5}`;
             }
         }
 
         else {
             if      (j === 0)   diffStr = "Difficulty: <5";
             else if (j === 8)   diffStr = "Difficulty: >40";
-
             else {
                 let startDf = j         * 5;
-                let endDf   = startDf   + 5;
-                diffStr     = `Difficulty: ${startDf}-${endDf}`;
+                diffStr     = `Difficulty: ${startDf}-${startDf + 5}`;
             }
         }
 
@@ -758,15 +693,13 @@ for (let i = 0; i < numY; i++) {
 
             if (bin_songs.length > 10) {
                 const remainingCount = bin_songs.length - 10;
-
                 bin_songs = bin_songs.sort(() => Math.random() - 0.5).slice(0, 10);
-                bin_songs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-
+                bin_songs = formatAndSortSongsList(bin_songs, false);
                 song_hover_str = "<br>• " + bin_songs.join("<br>• ") + "<br>and " + remainingCount + " more";
             }
 
             else if (bin_songs.length > 0) {
-                bin_songs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                bin_songs = formatAndSortSongsList(bin_songs, false);
                 song_hover_str = "<br>• " + bin_songs.join("<br>• ");
             }
 
@@ -780,7 +713,6 @@ for (let i = 0; i < numY; i++) {
                 showarrow       : false,
                 captureevents   : false
             });
-
         }
 
         else {
@@ -811,7 +743,6 @@ function getBgColor(val, minZ, maxZ, color0, color1, color2) {
 
     if (norm <= 0.375) {
         let t = norm / 0.375;
-
         r = rgb0[0] + t * (rgb1[0] - rgb0[0]);
         g = rgb0[1] + t * (rgb1[1] - rgb0[1]);
         b = rgb0[2] + t * (rgb1[2] - rgb0[2]);
@@ -819,7 +750,6 @@ function getBgColor(val, minZ, maxZ, color0, color1, color2) {
 
     else if (norm <= 0.625) {
         let t = (norm - 0.375) / (0.25);
-
         r = rgb1[0] + t * (rgb2[0] - rgb1[0]);
         g = rgb1[1] + t * (rgb2[1] - rgb1[1]);
         b = rgb1[2] + t * (rgb2[2] - rgb1[2]);
@@ -903,9 +833,54 @@ function hexToRgba(hex, opacity = 0.95) {
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
 
+function buildScatterAnnotations(data, xKey, yKey, sizeKeyMultiplier) {
+    const defaultAnn = [
+        {x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'top'},
+        {x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'top'},
+        {x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom'},
+        {x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'bottom'}
+    ];
+
+    const xCenter = data.reduce((sum, d) => sum + d[xKey], 0) / data.length;
+    const yCenter = data.reduce((sum, d) => sum + d[yKey], 0) / data.length;
+
+    data.forEach(d => {
+        const bubbleSize = Math.max(10, d[sizeKeyMultiplier] * 2);
+        const baseOffset = (bubbleSize / 2) + 10;
+
+        const dx = d[xKey] - xCenter;
+        const dy = d[yKey] - yCenter;
+        
+        const angle = (dx === 0 && dy === 0) ? Math.PI / 4 : Math.atan2(dy, dx);
+
+        const axVal = Math.cos(angle) * baseOffset;
+        const ayVal = Math.sin(angle) * baseOffset * -1;
+
+        const xAlign = Math.cos(angle) > 0.1 ? 'left'   : (Math.cos(angle) < -0.1 ? 'right' : 'center');
+        const yAlign = Math.sin(angle) > 0.1 ? 'bottom' : (Math.sin(angle) < -0.1 ? 'top'   : 'middle');
+
+        defaultAnn.push({
+            x           : d[xKey],
+            y           : d[yKey],
+            text        : `<b>${d.acronym}</b>`,
+            font        : {family: 'Segoe UI', size: 20, color: 'black'},
+            showarrow   : true,
+            arrowhead   : 0,
+            arrowwidth  : 1,
+            arrowcolor  : 'rgba(0, 0, 0, 0.5)',
+            ax          : axVal,
+            ay          : ayVal,
+            xanchor     : xAlign,
+            yanchor     : yAlign
+        });
+    });
+
+    return defaultAnn;
+}
+
 if (scatterData) {
-    const guessHull = get75PercentileHull(scatterData, 'over8', 'vintage');
-    let guessTraces = [];
+    const guessHull   = get75PercentileHull(scatterData, 'over8', 'vintage');
+    let guessTraces   = [];
 
     if (guessHull) guessTraces.push({
         x           : guessHull.x,
@@ -951,47 +926,6 @@ if (scatterData) {
         }
     });
 
-    const guessAnnotations = [
-        {x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'top'},
-        {x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'top'},
-        {x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom'},
-        {x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'bottom'}
-    ];
-
-    const guessXCenter = scatterData.reduce((sum, d) => sum + d.over8,      0) / scatterData.length;
-    const guessYCenter = scatterData.reduce((sum, d) => sum + d.vintage,    0) / scatterData.length;
-
-    scatterData.forEach(d => {
-        const bubbleSize = Math.max(10, d.gr * 2);
-        const baseOffset = (bubbleSize / 2) + 10;
-
-        const dx = d.over8      - guessXCenter;
-        const dy = d.vintage    - guessYCenter;
-        
-        const angle = (dx === 0 && dy === 0) ? Math.PI / 4 : Math.atan2(dy, dx);
-
-        const axVal = Math.cos(angle) * baseOffset;
-        const ayVal = Math.sin(angle) * baseOffset * -1;
-
-        const xAlign = Math.cos(angle) > 0.1 ? 'left'   : (Math.cos(angle) < -0.1 ? 'right' : 'center');
-        const yAlign = Math.sin(angle) > 0.1 ? 'bottom' : (Math.sin(angle) < -0.1 ? 'top'   : 'middle');
-
-        guessAnnotations.push({
-            x           : d.over8,
-            y           : d.vintage,
-            text        : `<b>${d.acronym}</b>`,
-            font        : {family: 'Segoe UI', size: 20, color: 'black'},
-            showarrow   : true,
-            arrowhead   : 0,
-            arrowwidth  : 1,
-            arrowcolor  : 'rgba(0,0,0,0.5)',
-            ax          : axVal,
-            ay          : ayVal,
-            xanchor     : xAlign,
-            yanchor     : yAlign
-        });
-    });
-
     Plotly.newPlot('plotlyGuessChart', guessTraces, {
         font        : {family: 'Segoe UI'},
         xaxis       : {
@@ -1018,13 +952,13 @@ if (scatterData) {
             fixedrange  : false
         },
         margin      : {l: 75, r: 0, t: 25, b: 75},
-        annotations : guessAnnotations
+        annotations : buildScatterAnnotations(scatterData, 'over8', 'vintage', 'gr')
     }, {responsive: true, displayModeBar: false});
 }
 
 if (document.getElementById('plotlyListChart') && arrowData) {
-    const listHull = get75PercentileHull(arrowData, 'x_start', 'y_start');
-    let listTraces = [];
+    const listHull  = get75PercentileHull(arrowData, 'x_start', 'y_start');
+    let listTraces  = [];
 
     if (listHull) listTraces.push({
         x           : listHull.x,
@@ -1040,7 +974,7 @@ if (document.getElementById('plotlyListChart') && arrowData) {
         x               : arrowData.map(d => d.x_start),
         y               : arrowData.map(d => d.y_start),
         text            : arrowData.map(d => d.acronym),
-        customdata      : arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
+        customdata      : arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.grid_rate !== undefined ? d.grid_rate.toFixed(2) : d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
         hovertemplate   : '<b>%{customdata[0]}</b><br>Rig Over-8: %{customdata[1]}<br>Rig Vintage: %{customdata[2]}<br>Rig Rate: %{customdata[3]}<br>Rig Guess Rate: %{customdata[4]}<extra></extra>',
         hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}},
         mode            : 'markers',
@@ -1069,47 +1003,6 @@ if (document.getElementById('plotlyListChart') && arrowData) {
         }
     });
 
-    const listAnnotations = [
-        {x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'top'},
-        {x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'top'},
-        {x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom'},
-        {x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'bottom'}
-    ];
-
-    const listXCenter = arrowData.reduce((sum, d) => sum + d.x_start, 0) / arrowData.length;
-    const listYCenter = arrowData.reduce((sum, d) => sum + d.y_start, 0) / arrowData.length;
-
-    arrowData.forEach(d => {
-        const bubbleSize = Math.max(10, d.rig_rate * 2);
-        const baseOffset = (bubbleSize / 2) + 10;
-
-        const dx = d.x_start - listXCenter;
-        const dy = d.y_start - listYCenter;
-        
-        const angle = (dx === 0 && dy === 0) ? Math.PI / 4 : Math.atan2(dy, dx);
-
-        const axVal = Math.cos(angle) * baseOffset;
-        const ayVal = Math.sin(angle) * baseOffset * -1;
-
-        const xAlign = Math.cos(angle) > 0.1 ? 'left'   : (Math.cos(angle) < -0.1 ? 'right' : 'center');
-        const yAlign = Math.sin(angle) > 0.1 ? 'bottom' : (Math.sin(angle) < -0.1 ? 'top'   : 'middle');
-
-        listAnnotations.push({
-            x           : d.x_start,
-            y           : d.y_start,
-            text        : `<b>${d.acronym}</b>`,
-            font        : {family: 'Segoe UI', size: 20, color: 'black'},
-            showarrow   : true,
-            arrowhead   : 0,
-            arrowwidth  : 1,
-            arrowcolor  : 'rgba(0,0,0,0.5)',
-            ax          : axVal,
-            ay          : ayVal,
-            xanchor     : xAlign,
-            yanchor     : yAlign
-        });
-    });
-
     Plotly.newPlot('plotlyListChart', listTraces, {
         font        : {family: 'Segoe UI'},
         xaxis       : {
@@ -1136,6 +1029,6 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             fixedrange  : false
         },
         margin      : {l: 75, r: 0, t: 25, b: 75},
-        annotations : listAnnotations
+        annotations : buildScatterAnnotations(arrowData, 'x_start', 'y_start', 'rig_rate')
     }, {responsive: true, displayModeBar: false});
 }
