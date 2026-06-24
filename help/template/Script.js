@@ -35,26 +35,14 @@ dynamicStyles.innerHTML = `
 `;
 
 document.head.appendChild(dynamicStyles);
-
 const tabContainer = document.getElementById('tabContainer');
 
-if (use_teams && watched) {
-    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'team-tab')">Team</button>`);
-    document.getElementById('team-tab-container').outerHTML = `<div id='team-tab' class='tab-content'><div class='table-center-wrapper'><table class='main-table' id='teamStatsTable'></table></div></div>`;
-}
-
-if (use_teams) {
-    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
-    document.getElementById('tier-tab-container').outerHTML = `<div id='tier-tab' class='tab-content'><div class='max-w-[1200px] mx-auto space-y-8 bg-white p-6 rounded shadow-md border border-gray-300'><div id='tierChart_GuessRate'></div><div id='tierChart_LivesTaken'></div><div id='tierChart_LivesSaved'></div><div id='tierChart_ContributionRate'></div><div id='tierChart_MedianTime'></div><div id='tierChart_ChantingGuessRate'></div></div></div>`;
-}
+if (use_teams && watched)   tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'team-tab')">Team</button>`);
+if (use_teams)              tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
 
 tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
 tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
-
-if (watched) {
-    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>`);
-    document.getElementById('list-tab-container').outerHTML = `<div id='list-tab' class='tab-content'><div class='max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md'><div class='mb-4 text-lg text-black space-y-1'><p><b>X-Axis:</b> Mean of correct guessers across songs from this player\'s list</p><p><b>Y-Axis:</b> Median vintage across songs from this player\'s list</p><p><b>Size (Rig Rate)</b></p></div><div id='plotlyListChart' style='width:100%; height:750px;'></div></div></div>`;
-}
+if (watched) tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>`);
 
 const thickBorderColumns = new Set([
     "Player",
@@ -497,11 +485,11 @@ function renderTierCharts() {
 
         const layout = {
             font        : {family: 'Segoe UI'},
-            title       : {text: titleText, font: {family: 'Segoe UI', size: 15, color: 'black'}, y: 0.95, yanchor: 'top'},
+            title       : {text: titleText, font: {family: 'Segoe UI', size: 15, color: 'black'}, y: 0.925, yanchor: 'top'},
             xaxis       : {tickfont: {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true},
             yaxis       : {tickfont: {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: "  " },
             bargap      : 0.0,
-            margin      : {l: 100, r: 0, t: 100, b: 0},
+            margin      : {l: 100, r: 0, t: 100, b: 25},
             height      : yVals.length * 35,
             hoverlabel  : {align: 'left', font: {family: 'Segoe UI', size: 15}}
         };
@@ -788,7 +776,7 @@ for (let i = 0; i < numY; i++) {
                 x               : j,
                 y               : i,
                 text            : `<b>${matrixBins[key].count}</b>`,
-                font            : {family: 'Segoe UI', size: (numX > 8 ? 50 : 55), color: 'white'},
+                font            : {family: 'Segoe UI', size: (numX > 8 ? 65 : 70), color: 'white'},
                 showarrow       : false,
                 captureevents   : false
             });
@@ -870,7 +858,7 @@ Plotly.newPlot('plotlySongChart', [{
         tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'}
     }
 }], {
-    font        : {family: 'Segoe UI'},
+    font        : {family: 'Segoe UI', size: 50},
     xaxis       : {
         title           : {text: '<b>Difficulty</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
         tickmode        : 'array',
