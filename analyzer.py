@@ -862,12 +862,6 @@ class TourAnalyzer:
 
             idx += 1
 
-        unresolved_players = [p for p in all_known if p.lower() not in assignments]
-
-        # if unresolved_players:
-        #    messagebox.showerror("Roster Mismatch", f"These players are in the JSONs but not in codes.txt: {', '.join(unresolved_players)}")
-        #    return False
-
         original_players_display = [p for p in all_known if p.lower() in assignments and p.lower() not in [s.lower() for s in sub_candidates_raw]]
 
         if new_aliases:
@@ -894,7 +888,7 @@ class TourAnalyzer:
             target      = exp_map.get(name, base_exp)
             d_name      = name
 
-            if name in new_players: d_name += " ☆"
+            if name in new_players: d_name += " ★"
 
             if target != "ignore" and target < base_exp:
                 if name.lower() in self.main_roster_names   : d_name += " ▼"
@@ -1689,7 +1683,7 @@ class TourAnalyzer:
             d_name     = name
             sub_hover  = ""
 
-            if name in self.new_players  : d_name += " ☆"
+            if name in self.new_players  : d_name += " ★"
 
             if target != "ignore" and target < self.base_exp:
                 if name.lower() in self.main_roster_names:
@@ -2200,7 +2194,7 @@ class TourAnalyzer:
         render_songs          = self._render_dashboard_song()
 
         explanations = {
-            "Player"                    : "☆: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
+            "Player"                    : "★: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
             "UF"                        : "Usefulness<br>Calculates this player's contribution to their team, scaled by Elo and songs played",
             "Score"                     : "Calculates this player's value (Usefulness) against what's expected from their Elo<br>50 means this player is playing to expectations",
             "Mean Over-8"               : "Average of correct guessers across songs this player/team guessed correctly",
