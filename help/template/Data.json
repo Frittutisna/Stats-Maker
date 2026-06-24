@@ -3326,28 +3326,28 @@
             "Value": {
                 "count": "22",
                 "details": [
-                    "Catman Series III (IN): Never Going to Drink Again by The Planet Smashers (Mayottatoki/mahzrunner)",
+                    "Catman Series III (IN): Never Going to Drink Again by The Planet Smashers (mahzrunner/Mayottatoki)",
                     "Chou Futsuu Toshi Kashiwa Densetsu (ED1): Ame-iro Paradise by Akebonoyama Chuugaku Band ... (ArronChu/Mayottatoki)",
-                    "Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK (SUS_DOMESTICUS/Mami)",
+                    "Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK (Mami/SUS_DOMESTICUS)",
                     "Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki (KaedeDayo/Selaph)",
-                    "Ginga e Kickoff!! (OP1): Across my world by knotlamp (Edwardd/Mami)",
-                    "Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou (ArronChu/Mami)",
+                    "Ginga e Kickoff!! (OP1): Across my world by knotlamp (Mami/Edwardd)",
+                    "Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou (Mami/ArronChu)",
                     "Jashin-chan Dropkick' (IN): Jinbouchou Aika by Aina Suzuki (SUS_DOMESTICUS/Selaph)",
                     "Magi: Sinbad no Bouken (ED1): Polaris by Fujifabric (ArronChu/legrandort)",
                     "Mousou Kagaku Series Wandaba Style (IN): Rocket Girl by Mix JUICE (SUS_DOMESTICUS/Selaph)",
-                    "Nepos Napos (ED1): smile by Ayaka Hirahara (SUS_DOMESTICUS/Mami)",
+                    "Nepos Napos (ED1): smile by Ayaka Hirahara (Mami/SUS_DOMESTICUS)",
                     "Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ... (Iuna/Selaph)",
                     "Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani (Iuna/SUS_DOMESTICUS)",
-                    "Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada (SUS_DOMESTICUS/Mami)",
-                    "Psycho Armor Govarian (ED1): Lullaby by Neverland (Edwardd/Mami)",
-                    "Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara (Vr0003/SUS_DOMESTICUS)",
+                    "Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada (Mami/SUS_DOMESTICUS)",
+                    "Psycho Armor Govarian (ED1): Lullaby by Neverland (Mami/Edwardd)",
+                    "Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara (SUS_DOMESTICUS/Vr0003)",
                     "Sekai Seifuku: Bouryaku no Zvezda (ED2): Koi wa Missile Launcher by Erii Yamazaki (mahzrunner/konomi)",
-                    "Taka no Tsume 8: Yoshida-kun no × File (ED1): Ichigo Ichie by Monkichi (hmsuis/ArronChu)",
+                    "Taka no Tsume 8: Yoshida-kun no × File (ED1): Ichigo Ichie by Monkichi (ArronChu/hmsuis)",
                     "Tanjou: Debut (ED1): Sayonara ni Furenai by Miina Tominaga, Hiroko ... (ArronChu/Tugia)",
                     "Uta no☆Prince-sama♪Maji Love Legend Star (IN): Visible Elf by Kousuke Toriumi & Daiki ... (mahzrunner/SUS_DOMESTICUS)",
-                    "Vampire Hunter D (ED1): YOUR SONG by TM NETWORK (SUS_DOMESTICUS/Mami)",
+                    "Vampire Hunter D (ED1): YOUR SONG by TM NETWORK (Mami/SUS_DOMESTICUS)",
                     "Yamato Takeru: After War (ED1): Twilight Songs by Naoko Hamasaki (ArronChu/chaabdu92)",
-                    "Youjo Shachou (OP1): Susume! Mujina Company by Neko Hacker feat. Rina Hidaka ... (Selaph/chaabdu92)"
+                    "Youjo Shachou (OP1): Susume! Mujina Company by Neko Hacker feat. Rina Hidaka ... (chaabdu92/Selaph)"
                 ]
             }
         },
@@ -3649,6 +3649,127 @@
     "json_tier_merged": {
         "1": [
             {
+                "Player": "konomi",
+                "Guess Rate": {
+                    "count": 44.44,
+                    "details": [
+                        "24/54",
+                        "✓ 22/7 (ED2): One of them by Nagomi Saijou",
+                        "✓ Aikatsu Stars! (IN): Never Give Up☆ by Kana from AIKATSU☆STARS!",
+                        "✗ Baldr Force EXE Resolution (IN): Face of Fact by KOTOKO",
+                        "✗ Bannou Bunka Neko-Musume (IN): n² no Tsubuyaki by Megumi Hayashibara",
+                        "✗ Bishoujo Senshi Sailor Moon Sailor Stars (ED2): Moonlight Densetsu by Sakurakko Club Sakura-gumi",
+                        "✗ Black Jack (ED1): Kuroge Wagyuu Joshio Tanyaki 680 Yen by Ai Otsuka",
+                        "✓ Blade Runner: Black Lotus (ED7): Intuition by Salem Ilese",
+                        "✗ Bronze: Zetsuai Since 1989 (IN): Morobito Kozorite (Dai 112-ban) by KAY Gasshou-dan",
+                        "✗ Catman Series III (IN): Never Going to Drink Again by The Planet Smashers",
+                        "✗ Chou Futsuu Toshi Kashiwa Densetsu (ED1): Ame-iro Paradise by Akebonoyama Chuugaku Band ...",
+                        "✗ Chou Futsuu Toshi Kashiwa Densetsu Z (ED1): MJK Tega-chan by Hikari Nishino",
+                        "✗ Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba",
+                        "✓ Clannad: After Story (IN): Dango Daikazoku by Yuichi Nakamura & Chata",
+                        "✗ D.C.II S.S.: Da Capo II Second Season (OP1): Sakura Amaneku Sekai by yozuca*",
+                        "✓ Dorohedoro (ED4): Strange Meat Pie by (K)NoW_NAME:Ayaka Tachibana",
+                        "✗ Dr. Rin ni Kiitemite! (ED2): Kimi to no Mirai by AiM",
+                        "✗ Dr. Stone: Science Future (ED1): Rolling Stone by BREIMEN",
+                        "✗ Eiga Doraemon: Nobita no Shin Kyouryuu (IN): Kimi to Kasaneta Monologue by Mr.Children",
+                        "✗ Gdleen (ED1): IN MY ROOM by Hirofumi Banba",
+                        "✓ Gekijouban Overlord: Sei Oukoku-hen (ED1): WHEELER-DEALER by OxT",
+                        "✗ Gekijouban Tokimeki Restaurant☆☆☆ MIRACLE6 (ED2): E→Motion by Shoichiro Hirata",
+                        "✓ Gintama (ED1): Omae no Kaa-chan××Da! by kazmy with Necromancers",
+                        "✗ Gridman Universe (IN): Heartbeat City by Maaya Uchida",
+                        "✗ Heart Cocktail Colorful (ED1): Tenderly by Sarah Vaughan",
+                        "✓ Imawa no Kuni no Alice (OP1): NEXTAGE by i☆Ris",
+                        "✗ Jashin-chan Dropkick' (IN): Jinbouchou Aika by Aina Suzuki",
+                        "✓ Kono Subarashii Sekai ni Shukufuku o! (ED1): Chiisana Boukensha by Sora Amamiya, Rie Takahashi, ...",
+                        "✓ Koukou Hoshi Kageki (IN): Hoshi no Stride by Natsuki Hanae",
+                        "✓ Koukou Hoshi Kageki (IN): Yume Tsubomi by Kensho Ono & Yoshitsugu ...",
+                        "✓ Koukou Hoshi Kageki (OP2): Yume Iro ~team Hiiragi Ver.~ by team Hiiragi",
+                        "✗ Love♥Love? (IN): Inori no Uta by rainbow colors",
+                        "✗ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold",
+                        "✗ Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri",
+                        "✓ Majutsushi Orphen Haguretabi: Kimluck-hen (ED1): Marionette Coup d'État by Mai Fuchigami",
+                        "✗ Mama wa Shougaku 4-nensei (OP1): Ai o + One by Hiromi Iwasaki",
+                        "✓ Mazinger Z: Infinity (OP1): Mazinger Z by Ichiro Mizuki",
+                        "✗ Monster Strike: Rain of Memories (ED1): Aurora by WHITE ASH",
+                        "✓ One Outs (ED1): Moment by TRIBAL CHAIR",
+                        "✓ Rokushin Gattai God Mars (OP1): Uchuu no Ouja God Mars by Ippo Hiura",
+                        "✗ Ryuuichi Manga Gekijou: Onbu Obake (ED1): Onbu wa ne by Etsuko Hamura",
+                        "✓ Sekai Seifuku: Bouryaku no Zvezda (ED2): Koi wa Missile Launcher by Erii Yamazaki",
+                        "✓ Senki Zesshou Symphogear AXZ (IN): Shitou -Ewigkeit- (German ver.) by Minako Kotobuki×Shouta ...",
+                        "✓ Shakugan no Shana-tan Final Destruction (ED2): Yoake Umare Kuru Shoujo by Yoko Takahashi",
+                        "✗ Shinryaku!! Ika Musume (ED1): Puzzle by Kanae Itou",
+                        "✓ Shuffle! (OP1): YOU by YURIA",
+                        "✓ Shuumatsu Nani Shitemasu ka? Isogashii desu ka? ... (IN): I call you by Tamaru Yamada",
+                        "✓ Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela",
+                        "✗ Taka no Tsume 8: Yoshida-kun no × File (ED1): Ichigo Ichie by Monkichi",
+                        "✗ Tanjou: Debut (ED1): Sayonara ni Furenai by Miina Tominaga, Hiroko ...",
+                        "✗ Twin Bee Paradise (ED1): Aikotoba wa Be!! by Mariko Kouda",
+                        "✗ Uta no☆Prince-sama♪Maji Love Legend Star (IN): Visible Elf by Kousuke Toriumi & Daiki ...",
+                        "✗ Video Senshi Lezarion (IN): Traveling Band by ALFEE",
+                        "✓ Watashi ni Tenshi ga Maiorita! (IN): Tenshi no Manazashi Epilogue by Maria Sashide, Rika Nagae, ...",
+                        "✓ Yuukoku no Moriarty (ED1): ALPHA by STEREO DIVE FOUNDATION"
+                    ]
+                },
+                "Lives Taken": 2,
+                "Lives Taken Details": [
+                    "Aikatsu Stars! (IN): Never Give Up☆ by Kana from AIKATSU☆STARS! (from Team ArronChu)",
+                    "Sekai Seifuku: Bouryaku no Zvezda (ED2): Koi wa Missile Launcher by Erii Yamazaki (from Team ArronChu)"
+                ],
+                "Lives Saved": 2.0,
+                "Lives Saved Details": [
+                    "Koukou Hoshi Kageki (IN): Yume Tsubomi by Kensho Ono & Yoshitsugu ... (from ArronChu/zomg)",
+                    "Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela (from SUS_DOMESTICUS/Vr0003)"
+                ],
+                "Contribution Rate": {
+                    "count": 16.67,
+                    "details": [
+                        "4/24",
+                        "✗ 22/7 (ED2): One of them by Nagomi Saijou",
+                        "✓ Aikatsu Stars! (IN): Never Give Up☆ by Kana from AIKATSU☆STARS! (taken from Team ArronChu)",
+                        "✗ Blade Runner: Black Lotus (ED7): Intuition by Salem Ilese",
+                        "✗ Clannad: After Story (IN): Dango Daikazoku by Yuichi Nakamura & Chata",
+                        "✗ Dorohedoro (ED4): Strange Meat Pie by (K)NoW_NAME:Ayaka Tachibana",
+                        "✗ Gekijouban Overlord: Sei Oukoku-hen (ED1): WHEELER-DEALER by OxT",
+                        "✗ Gintama (ED1): Omae no Kaa-chan××Da! by kazmy with Necromancers",
+                        "✗ Imawa no Kuni no Alice (OP1): NEXTAGE by i☆Ris",
+                        "✗ Kono Subarashii Sekai ni Shukufuku o! (ED1): Chiisana Boukensha by Sora Amamiya, Rie Takahashi, ...",
+                        "✗ Koukou Hoshi Kageki (IN): Hoshi no Stride by Natsuki Hanae",
+                        "✓ Koukou Hoshi Kageki (IN): Yume Tsubomi by Kensho Ono & Yoshitsugu ... (saved from ArronChu/zomg)",
+                        "✗ Koukou Hoshi Kageki (OP2): Yume Iro ~team Hiiragi Ver.~ by team Hiiragi",
+                        "✗ Majutsushi Orphen Haguretabi: Kimluck-hen (ED1): Marionette Coup d'État by Mai Fuchigami",
+                        "✗ Mazinger Z: Infinity (OP1): Mazinger Z by Ichiro Mizuki",
+                        "✗ One Outs (ED1): Moment by TRIBAL CHAIR",
+                        "✗ Rokushin Gattai God Mars (OP1): Uchuu no Ouja God Mars by Ippo Hiura",
+                        "✓ Sekai Seifuku: Bouryaku no Zvezda (ED2): Koi wa Missile Launcher by Erii Yamazaki (taken from Team ArronChu)",
+                        "✗ Senki Zesshou Symphogear AXZ (IN): Shitou -Ewigkeit- (German ver.) by Minako Kotobuki×Shouta ...",
+                        "✗ Shakugan no Shana-tan Final Destruction (ED2): Yoake Umare Kuru Shoujo by Yoko Takahashi",
+                        "✗ Shuffle! (OP1): YOU by YURIA",
+                        "✗ Shuumatsu Nani Shitemasu ka? Isogashii desu ka? ... (IN): I call you by Tamaru Yamada",
+                        "✓ Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela (saved from SUS_DOMESTICUS/Vr0003)",
+                        "✗ Watashi ni Tenshi ga Maiorita! (IN): Tenshi no Manazashi Epilogue by Maria Sashide, Rika Nagae, ...",
+                        "✗ Yuukoku no Moriarty (ED1): ALPHA by STEREO DIVE FOUNDATION"
+                    ]
+                },
+                "Median Time": {
+                    "count": 6.82,
+                    "details": [
+                        "Minimum: 2.83",
+                        "Mean: 8.54",
+                        "Maximum: 19.91",
+                        "Standard Deviation: 4.72"
+                    ]
+                },
+                "Chanting Guess Rate": {
+                    "count": 0.0,
+                    "details": [
+                        "0/3",
+                        "✗ Bronze: Zetsuai Since 1989 (IN): Morobito Kozorite (Dai 112-ban) by KAY Gasshou-dan",
+                        "✗ Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba",
+                        "✗ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold"
+                    ]
+                }
+            },
+            {
                 "Player": "SUS_DOMESTICUS",
                 "Guess Rate": {
                     "count": 64.41,
@@ -3802,136 +3923,6 @@
                 }
             },
             {
-                "Player": "Mami",
-                "Guess Rate": {
-                    "count": 40.0,
-                    "details": [
-                        "24/60",
-                        "✓ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
-                        "✗ Arei no Kagami: Way to the Virgin Space (IN): Aoi Mizuumi by Satoko Shimonari",
-                        "✗ Bats & Terry (IN): DOWNTOWN STEP by Stardust☆Revue & Momoko ...",
-                        "✗ Bouken Shite mo Ii Koro (ED1): Puzzling Day by PARIS-TEXAS",
-                        "✗ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
-                        "✗ Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA",
-                        "✗ Crayon Shin-chan (IN): Happy Fools by TOMORROW X TOGETHER feat. Coi ...",
-                        "✗ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
-                        "✓ Dog Days'' (ED1): Stay With Me by Yui Horie",
-                        "✓ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
-                        "✓ Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK",
-                        "✗ Fumetsu no Anata e Season 2 (ED1): Roots by Masashi Hamauzu",
-                        "✗ Futari Solo Camp (OP1): Akari wa Tooku by Skirt",
-                        "✗ Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki",
-                        "✓ Ginga e Kickoff!! (OP1): Across my world by knotlamp",
-                        "✓ Gintama' (IN): Yuke! Kaien by singman",
-                        "✗ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
-                        "✓ Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou",
-                        "✓ Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ...",
-                        "✗ Haruzora to Akizora (ED1): Haruzora to Akizora by ViANKiE",
-                        "✓ Inuyashiki Last Hero (ED1): Ai o Oshiete Kureta Kimi e by Qaijff",
-                        "✓ Josee to Tora to Sakana-tachi (IN): On This Christmas Night by Evan Call",
-                        "✓ Kamui no Ken (ED1): Kamui no Ken by Noriko Watanabe",
-                        "✓ Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka",
-                        "✗ King of Prism: Your Endless Call - Mi~nna ... (IN): Lovepara! -Endless Love,Love- by SePTENTRION",
-                        "✓ Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar",
-                        "✓ Love Live! School Idol Project (IN): Private Wars by A-RISE",
-                        "✗ Maeterlinck no Aoi Tori: Tyltyl Mytyl no Bouken ... (ED1): Mado Akari by Hideki Osuga",
-                        "✗ Magi: Sinbad no Bouken (ED1): Polaris by Fujifabric",
-                        "✗ Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri",
-                        "✗ Marshmallow Times (ED1): Aruitekou by Grace",
-                        "✗ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
-                        "✗ Mikagura Gakuen Kumikyoku (ED3): Sekirara Candy by Ari Ozawa",
-                        "✗ Mikeneko Holmes no Yuurei Joushu (ED1): Anata ni Deaete Yokatta by Eri Hiramatsu",
-                        "✗ Mousou Kagaku Series Wandaba Style (IN): Rocket Girl by Mix JUICE",
-                        "✓ Naruto (OP1): R★O★C★K★S by Hound Dog",
-                        "✓ Nepos Napos (ED1): smile by Ayaka Hirahara",
-                        "✗ Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ...",
-                        "✗ Nyan Koi! (ED1): Strawberry ~Amaku Setsunai Namida~ by Asami Imai",
-                        "✗ Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani",
-                        "✗ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa",
-                        "✓ Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada",
-                        "✗ Peeping Life: The Perfect Edition (ED1): Satori no Sho by detune.",
-                        "✗ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
-                        "✓ Psycho Armor Govarian (ED1): Lullaby by Neverland",
-                        "✗ Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara",
-                        "✗ Sabi-iro no Armor: Reimei (IN): Blue Eyes by Taiki Satou",
-                        "✓ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
-                        "✓ Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ...",
-                        "✗ Soreike! Anpanman: Tsumiki-jou no Himitsu (IN): Tsumiki no Tou by Ryusei Nakao",
-                        "✓ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
-                        "✗ The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ...",
-                        "✗ Uchuu Senkan Yamato 2199 (ED1): Hoshi ga Towa o Terashiteru by Aira Yuuki",
-                        "✓ Vampire Hunter D (ED1): YOUR SONG by TM NETWORK",
-                        "✗ Wakakusa Monogatari (ED1): Haru no Kizashi by Mitsuko Horie",
-                        "✗ Yamato Takeru: After War (ED1): Twilight Songs by Naoko Hamasaki",
-                        "✓ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
-                        "✓ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5",
-                        "✗ Yoasobi Gurashi! (ED1): Heart Balance by Yukanyun",
-                        "✗ Youjo Shachou (OP1): Susume! Mujina Company by Neko Hacker feat. Rina Hidaka ..."
-                    ]
-                },
-                "Lives Taken": 5,
-                "Lives Taken Details": [
-                    "Ginga e Kickoff!! (OP1): Across my world by knotlamp (from Team SUS_DOMESTICUS)",
-                    "Gintama' (IN): Yuke! Kaien by singman (from Team SUS_DOMESTICUS)",
-                    "Kamui no Ken (ED1): Kamui no Ken by Noriko Watanabe (from Team SUS_DOMESTICUS)",
-                    "Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar (from Team SUS_DOMESTICUS)",
-                    "Psycho Armor Govarian (ED1): Lullaby by Neverland (from Team SUS_DOMESTICUS)"
-                ],
-                "Lives Saved": 5.0,
-                "Lives Saved Details": [
-                    "Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK (from SUS_DOMESTICUS)",
-                    "Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou (from ArronChu)",
-                    "Nepos Napos (ED1): smile by Ayaka Hirahara (from SUS_DOMESTICUS)",
-                    "Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada (from SUS_DOMESTICUS)",
-                    "Vampire Hunter D (ED1): YOUR SONG by TM NETWORK (from SUS_DOMESTICUS)"
-                ],
-                "Contribution Rate": {
-                    "count": 41.67,
-                    "details": [
-                        "10/24",
-                        "✗ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
-                        "✗ Dog Days'' (ED1): Stay With Me by Yui Horie",
-                        "✗ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
-                        "✓ Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK (saved from SUS_DOMESTICUS)",
-                        "✓ Ginga e Kickoff!! (OP1): Across my world by knotlamp (taken from Team SUS_DOMESTICUS)",
-                        "✓ Gintama' (IN): Yuke! Kaien by singman (taken from Team SUS_DOMESTICUS)",
-                        "✓ Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou (saved from ArronChu)",
-                        "✗ Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ...",
-                        "✗ Inuyashiki Last Hero (ED1): Ai o Oshiete Kureta Kimi e by Qaijff",
-                        "✗ Josee to Tora to Sakana-tachi (IN): On This Christmas Night by Evan Call",
-                        "✓ Kamui no Ken (ED1): Kamui no Ken by Noriko Watanabe (taken from Team SUS_DOMESTICUS)",
-                        "✗ Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka",
-                        "✓ Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar (taken from Team SUS_DOMESTICUS)",
-                        "✗ Love Live! School Idol Project (IN): Private Wars by A-RISE",
-                        "✗ Naruto (OP1): R★O★C★K★S by Hound Dog",
-                        "✓ Nepos Napos (ED1): smile by Ayaka Hirahara (saved from SUS_DOMESTICUS)",
-                        "✓ Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada (saved from SUS_DOMESTICUS)",
-                        "✓ Psycho Armor Govarian (ED1): Lullaby by Neverland (taken from Team SUS_DOMESTICUS)",
-                        "✗ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
-                        "✗ Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ...",
-                        "✗ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
-                        "✓ Vampire Hunter D (ED1): YOUR SONG by TM NETWORK (saved from SUS_DOMESTICUS)",
-                        "✗ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
-                        "✗ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5"
-                    ]
-                },
-                "Median Time": {
-                    "count": 8.12,
-                    "details": [
-                        "Minimum: 4.46",
-                        "Mean: 8.93",
-                        "Maximum: 17.04",
-                        "Standard Deviation: 3.59"
-                    ]
-                },
-                "Chanting Guess Rate": {
-                    "count": 0.0,
-                    "details": [
-                        "0/0"
-                    ]
-                }
-            },
-            {
                 "Player": "ArronChu",
                 "Guess Rate": {
                     "count": 69.09,
@@ -4080,313 +4071,65 @@
                 }
             },
             {
-                "Player": "konomi",
+                "Player": "Mami",
                 "Guess Rate": {
-                    "count": 44.44,
+                    "count": 40.0,
                     "details": [
-                        "24/54",
-                        "✓ 22/7 (ED2): One of them by Nagomi Saijou",
-                        "✓ Aikatsu Stars! (IN): Never Give Up☆ by Kana from AIKATSU☆STARS!",
-                        "✗ Baldr Force EXE Resolution (IN): Face of Fact by KOTOKO",
-                        "✗ Bannou Bunka Neko-Musume (IN): n² no Tsubuyaki by Megumi Hayashibara",
-                        "✗ Bishoujo Senshi Sailor Moon Sailor Stars (ED2): Moonlight Densetsu by Sakurakko Club Sakura-gumi",
-                        "✗ Black Jack (ED1): Kuroge Wagyuu Joshio Tanyaki 680 Yen by Ai Otsuka",
-                        "✓ Blade Runner: Black Lotus (ED7): Intuition by Salem Ilese",
-                        "✗ Bronze: Zetsuai Since 1989 (IN): Morobito Kozorite (Dai 112-ban) by KAY Gasshou-dan",
-                        "✗ Catman Series III (IN): Never Going to Drink Again by The Planet Smashers",
-                        "✗ Chou Futsuu Toshi Kashiwa Densetsu (ED1): Ame-iro Paradise by Akebonoyama Chuugaku Band ...",
-                        "✗ Chou Futsuu Toshi Kashiwa Densetsu Z (ED1): MJK Tega-chan by Hikari Nishino",
-                        "✗ Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba",
-                        "✓ Clannad: After Story (IN): Dango Daikazoku by Yuichi Nakamura & Chata",
-                        "✗ D.C.II S.S.: Da Capo II Second Season (OP1): Sakura Amaneku Sekai by yozuca*",
-                        "✓ Dorohedoro (ED4): Strange Meat Pie by (K)NoW_NAME:Ayaka Tachibana",
-                        "✗ Dr. Rin ni Kiitemite! (ED2): Kimi to no Mirai by AiM",
-                        "✗ Dr. Stone: Science Future (ED1): Rolling Stone by BREIMEN",
-                        "✗ Eiga Doraemon: Nobita no Shin Kyouryuu (IN): Kimi to Kasaneta Monologue by Mr.Children",
-                        "✗ Gdleen (ED1): IN MY ROOM by Hirofumi Banba",
-                        "✓ Gekijouban Overlord: Sei Oukoku-hen (ED1): WHEELER-DEALER by OxT",
-                        "✗ Gekijouban Tokimeki Restaurant☆☆☆ MIRACLE6 (ED2): E→Motion by Shoichiro Hirata",
-                        "✓ Gintama (ED1): Omae no Kaa-chan××Da! by kazmy with Necromancers",
-                        "✗ Gridman Universe (IN): Heartbeat City by Maaya Uchida",
-                        "✗ Heart Cocktail Colorful (ED1): Tenderly by Sarah Vaughan",
-                        "✓ Imawa no Kuni no Alice (OP1): NEXTAGE by i☆Ris",
-                        "✗ Jashin-chan Dropkick' (IN): Jinbouchou Aika by Aina Suzuki",
-                        "✓ Kono Subarashii Sekai ni Shukufuku o! (ED1): Chiisana Boukensha by Sora Amamiya, Rie Takahashi, ...",
-                        "✓ Koukou Hoshi Kageki (IN): Hoshi no Stride by Natsuki Hanae",
-                        "✓ Koukou Hoshi Kageki (IN): Yume Tsubomi by Kensho Ono & Yoshitsugu ...",
-                        "✓ Koukou Hoshi Kageki (OP2): Yume Iro ~team Hiiragi Ver.~ by team Hiiragi",
-                        "✗ Love♥Love? (IN): Inori no Uta by rainbow colors",
-                        "✗ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold",
-                        "✗ Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri",
-                        "✓ Majutsushi Orphen Haguretabi: Kimluck-hen (ED1): Marionette Coup d'État by Mai Fuchigami",
-                        "✗ Mama wa Shougaku 4-nensei (OP1): Ai o + One by Hiromi Iwasaki",
-                        "✓ Mazinger Z: Infinity (OP1): Mazinger Z by Ichiro Mizuki",
-                        "✗ Monster Strike: Rain of Memories (ED1): Aurora by WHITE ASH",
-                        "✓ One Outs (ED1): Moment by TRIBAL CHAIR",
-                        "✓ Rokushin Gattai God Mars (OP1): Uchuu no Ouja God Mars by Ippo Hiura",
-                        "✗ Ryuuichi Manga Gekijou: Onbu Obake (ED1): Onbu wa ne by Etsuko Hamura",
-                        "✓ Sekai Seifuku: Bouryaku no Zvezda (ED2): Koi wa Missile Launcher by Erii Yamazaki",
-                        "✓ Senki Zesshou Symphogear AXZ (IN): Shitou -Ewigkeit- (German ver.) by Minako Kotobuki×Shouta ...",
-                        "✓ Shakugan no Shana-tan Final Destruction (ED2): Yoake Umare Kuru Shoujo by Yoko Takahashi",
-                        "✗ Shinryaku!! Ika Musume (ED1): Puzzle by Kanae Itou",
-                        "✓ Shuffle! (OP1): YOU by YURIA",
-                        "✓ Shuumatsu Nani Shitemasu ka? Isogashii desu ka? ... (IN): I call you by Tamaru Yamada",
-                        "✓ Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela",
-                        "✗ Taka no Tsume 8: Yoshida-kun no × File (ED1): Ichigo Ichie by Monkichi",
-                        "✗ Tanjou: Debut (ED1): Sayonara ni Furenai by Miina Tominaga, Hiroko ...",
-                        "✗ Twin Bee Paradise (ED1): Aikotoba wa Be!! by Mariko Kouda",
-                        "✗ Uta no☆Prince-sama♪Maji Love Legend Star (IN): Visible Elf by Kousuke Toriumi & Daiki ...",
-                        "✗ Video Senshi Lezarion (IN): Traveling Band by ALFEE",
-                        "✓ Watashi ni Tenshi ga Maiorita! (IN): Tenshi no Manazashi Epilogue by Maria Sashide, Rika Nagae, ...",
-                        "✓ Yuukoku no Moriarty (ED1): ALPHA by STEREO DIVE FOUNDATION"
-                    ]
-                },
-                "Lives Taken": 2,
-                "Lives Taken Details": [
-                    "Aikatsu Stars! (IN): Never Give Up☆ by Kana from AIKATSU☆STARS! (from Team ArronChu)",
-                    "Sekai Seifuku: Bouryaku no Zvezda (ED2): Koi wa Missile Launcher by Erii Yamazaki (from Team ArronChu)"
-                ],
-                "Lives Saved": 2.0,
-                "Lives Saved Details": [
-                    "Koukou Hoshi Kageki (IN): Yume Tsubomi by Kensho Ono & Yoshitsugu ... (from ArronChu/zomg)",
-                    "Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela (from SUS_DOMESTICUS/Vr0003)"
-                ],
-                "Contribution Rate": {
-                    "count": 16.67,
-                    "details": [
-                        "4/24",
-                        "✗ 22/7 (ED2): One of them by Nagomi Saijou",
-                        "✓ Aikatsu Stars! (IN): Never Give Up☆ by Kana from AIKATSU☆STARS! (taken from Team ArronChu)",
-                        "✗ Blade Runner: Black Lotus (ED7): Intuition by Salem Ilese",
-                        "✗ Clannad: After Story (IN): Dango Daikazoku by Yuichi Nakamura & Chata",
-                        "✗ Dorohedoro (ED4): Strange Meat Pie by (K)NoW_NAME:Ayaka Tachibana",
-                        "✗ Gekijouban Overlord: Sei Oukoku-hen (ED1): WHEELER-DEALER by OxT",
-                        "✗ Gintama (ED1): Omae no Kaa-chan××Da! by kazmy with Necromancers",
-                        "✗ Imawa no Kuni no Alice (OP1): NEXTAGE by i☆Ris",
-                        "✗ Kono Subarashii Sekai ni Shukufuku o! (ED1): Chiisana Boukensha by Sora Amamiya, Rie Takahashi, ...",
-                        "✗ Koukou Hoshi Kageki (IN): Hoshi no Stride by Natsuki Hanae",
-                        "✓ Koukou Hoshi Kageki (IN): Yume Tsubomi by Kensho Ono & Yoshitsugu ... (saved from ArronChu/zomg)",
-                        "✗ Koukou Hoshi Kageki (OP2): Yume Iro ~team Hiiragi Ver.~ by team Hiiragi",
-                        "✗ Majutsushi Orphen Haguretabi: Kimluck-hen (ED1): Marionette Coup d'État by Mai Fuchigami",
-                        "✗ Mazinger Z: Infinity (OP1): Mazinger Z by Ichiro Mizuki",
-                        "✗ One Outs (ED1): Moment by TRIBAL CHAIR",
-                        "✗ Rokushin Gattai God Mars (OP1): Uchuu no Ouja God Mars by Ippo Hiura",
-                        "✓ Sekai Seifuku: Bouryaku no Zvezda (ED2): Koi wa Missile Launcher by Erii Yamazaki (taken from Team ArronChu)",
-                        "✗ Senki Zesshou Symphogear AXZ (IN): Shitou -Ewigkeit- (German ver.) by Minako Kotobuki×Shouta ...",
-                        "✗ Shakugan no Shana-tan Final Destruction (ED2): Yoake Umare Kuru Shoujo by Yoko Takahashi",
-                        "✗ Shuffle! (OP1): YOU by YURIA",
-                        "✗ Shuumatsu Nani Shitemasu ka? Isogashii desu ka? ... (IN): I call you by Tamaru Yamada",
-                        "✓ Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela (saved from SUS_DOMESTICUS/Vr0003)",
-                        "✗ Watashi ni Tenshi ga Maiorita! (IN): Tenshi no Manazashi Epilogue by Maria Sashide, Rika Nagae, ...",
-                        "✗ Yuukoku no Moriarty (ED1): ALPHA by STEREO DIVE FOUNDATION"
-                    ]
-                },
-                "Median Time": {
-                    "count": 6.82,
-                    "details": [
-                        "Minimum: 2.83",
-                        "Mean: 8.54",
-                        "Maximum: 19.91",
-                        "Standard Deviation: 4.72"
-                    ]
-                },
-                "Chanting Guess Rate": {
-                    "count": 0.0,
-                    "details": [
-                        "0/3",
-                        "✗ Bronze: Zetsuai Since 1989 (IN): Morobito Kozorite (Dai 112-ban) by KAY Gasshou-dan",
-                        "✗ Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba",
-                        "✗ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold"
-                    ]
-                }
-            }
-        ],
-        "2": [
-            {
-                "Player": "Mayottatoki",
-                "Guess Rate": {
-                    "count": 45.45,
-                    "details": [
-                        "25/55",
-                        "✓ 22/7 (ED2): One of them by Nagomi Saijou",
-                        "✓ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
-                        "✗ Aikatsu Stars! (IN): Never Give Up☆ by Kana from AIKATSU☆STARS!",
-                        "✗ Arei no Kagami: Way to the Virgin Space (IN): Aoi Mizuumi by Satoko Shimonari",
-                        "✓ Baldr Force EXE Resolution (IN): Face of Fact by KOTOKO",
-                        "✗ Bannou Bunka Neko-Musume (IN): n² no Tsubuyaki by Megumi Hayashibara",
-                        "✓ Bishoujo Senshi Sailor Moon Sailor Stars (ED2): Moonlight Densetsu by Sakurakko Club Sakura-gumi",
-                        "✗ Black Jack (ED1): Kuroge Wagyuu Joshio Tanyaki 680 Yen by Ai Otsuka",
-                        "✓ Blade Runner: Black Lotus (ED7): Intuition by Salem Ilese",
-                        "✗ Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA",
-                        "✓ Catman Series III (IN): Never Going to Drink Again by The Planet Smashers",
-                        "✓ Chou Futsuu Toshi Kashiwa Densetsu (ED1): Ame-iro Paradise by Akebonoyama Chuugaku Band ...",
-                        "✗ Chou Futsuu Toshi Kashiwa Densetsu Z (ED1): MJK Tega-chan by Hikari Nishino",
-                        "✓ Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba",
-                        "✓ Clannad: After Story (IN): Dango Daikazoku by Yuichi Nakamura & Chata",
-                        "✓ Crayon Shin-chan (IN): Happy Fools by TOMORROW X TOGETHER feat. Coi ...",
-                        "✓ D.C.II S.S.: Da Capo II Second Season (OP1): Sakura Amaneku Sekai by yozuca*",
-                        "✗ Dr. Rin ni Kiitemite! (ED2): Kimi to no Mirai by AiM",
-                        "✗ Dr. Stone: Science Future (ED1): Rolling Stone by BREIMEN",
-                        "✗ Futari Solo Camp (OP1): Akari wa Tooku by Skirt",
-                        "✓ Gintama (ED1): Omae no Kaa-chan××Da! by kazmy with Necromancers",
-                        "✗ Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou",
-                        "✓ Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ...",
-                        "✗ Gridman Universe (IN): Heartbeat City by Maaya Uchida",
-                        "✗ Josee to Tora to Sakana-tachi (IN): On This Christmas Night by Evan Call",
-                        "✗ Kono Subarashii Sekai ni Shukufuku o! (ED1): Chiisana Boukensha by Sora Amamiya, Rie Takahashi, ...",
-                        "✗ Koukou Hoshi Kageki (IN): Yume Tsubomi by Kensho Ono & Yoshitsugu ...",
-                        "✗ Koukou Hoshi Kageki (OP2): Yume Iro ~team Hiiragi Ver.~ by team Hiiragi",
-                        "✓ Love Live! School Idol Project (IN): Private Wars by A-RISE",
-                        "✗ Love♥Love? (IN): Inori no Uta by rainbow colors",
-                        "✓ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold",
-                        "✗ Magi: Sinbad no Bouken (ED1): Polaris by Fujifabric",
-                        "✗ Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri",
-                        "✗ Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri",
-                        "✓ Mama wa Shougaku 4-nensei (OP1): Ai o + One by Hiromi Iwasaki",
-                        "✓ Mazinger Z: Infinity (OP1): Mazinger Z by Ichiro Mizuki",
-                        "✗ Mikeneko Holmes no Yuurei Joushu (ED1): Anata ni Deaete Yokatta by Eri Hiramatsu",
-                        "✓ One Outs (ED1): Moment by TRIBAL CHAIR",
-                        "✓ Rokushin Gattai God Mars (OP1): Uchuu no Ouja God Mars by Ippo Hiura",
-                        "✗ Sabi-iro no Armor: Reimei (IN): Blue Eyes by Taiki Satou",
-                        "✗ Sekai Seifuku: Bouryaku no Zvezda (ED2): Koi wa Missile Launcher by Erii Yamazaki",
-                        "✓ Senki Zesshou Symphogear AXZ (IN): Shitou -Ewigkeit- (German ver.) by Minako Kotobuki×Shouta ...",
-                        "✓ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
-                        "✗ Shinryaku!! Ika Musume (ED1): Puzzle by Kanae Itou",
-                        "✓ Shuffle! (OP1): YOU by YURIA",
-                        "✓ Shuumatsu Nani Shitemasu ka? Isogashii desu ka? ... (IN): I call you by Tamaru Yamada",
-                        "✓ Soreike! Anpanman: Tsumiki-jou no Himitsu (IN): Tsumiki no Tou by Ryusei Nakao",
-                        "✗ Taka no Tsume 8: Yoshida-kun no × File (ED1): Ichigo Ichie by Monkichi",
-                        "✗ Tanjou: Debut (ED1): Sayonara ni Furenai by Miina Tominaga, Hiroko ...",
-                        "✗ Uchuu Senkan Yamato 2199 (ED1): Hoshi ga Towa o Terashiteru by Aira Yuuki",
-                        "✗ Video Senshi Lezarion (IN): Traveling Band by ALFEE",
-                        "✗ Wakakusa Monogatari (ED1): Haru no Kizashi by Mitsuko Horie",
-                        "✓ Watashi ni Tenshi ga Maiorita! (IN): Tenshi no Manazashi Epilogue by Maria Sashide, Rika Nagae, ...",
-                        "✗ Yamato Takeru: After War (ED1): Twilight Songs by Naoko Hamasaki",
-                        "✗ Yuukoku no Moriarty (ED1): ALPHA by STEREO DIVE FOUNDATION"
-                    ]
-                },
-                "Lives Taken": 5,
-                "Lives Taken Details": [
-                    "Chou Futsuu Toshi Kashiwa Densetsu (ED1): Ame-iro Paradise by Akebonoyama Chuugaku Band ... (from Team konomi)",
-                    "Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba (from Team konomi)",
-                    "D.C.II S.S.: Da Capo II Second Season (OP1): Sakura Amaneku Sekai by yozuca* (from Team konomi)",
-                    "Mama wa Shougaku 4-nensei (OP1): Ai o + One by Hiromi Iwasaki (from Team konomi)",
-                    "Soreike! Anpanman: Tsumiki-jou no Himitsu (IN): Tsumiki no Tou by Ryusei Nakao (from Team Mami)"
-                ],
-                "Lives Saved": 2.0,
-                "Lives Saved Details": [
-                    "Catman Series III (IN): Never Going to Drink Again by The Planet Smashers (from mahzrunner in Team konomi)",
-                    "Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ... (from Mami/chaabdu92)"
-                ],
-                "Contribution Rate": {
-                    "count": 28.0,
-                    "details": [
-                        "7/25",
-                        "✗ 22/7 (ED2): One of them by Nagomi Saijou",
-                        "✗ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
-                        "✗ Baldr Force EXE Resolution (IN): Face of Fact by KOTOKO",
-                        "✗ Bishoujo Senshi Sailor Moon Sailor Stars (ED2): Moonlight Densetsu by Sakurakko Club Sakura-gumi",
-                        "✗ Blade Runner: Black Lotus (ED7): Intuition by Salem Ilese",
-                        "✓ Catman Series III (IN): Never Going to Drink Again by The Planet Smashers (saved from mahzrunner in Team konomi)",
-                        "✓ Chou Futsuu Toshi Kashiwa Densetsu (ED1): Ame-iro Paradise by Akebonoyama Chuugaku Band ... (taken from Team konomi)",
-                        "✓ Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba (taken from Team konomi)",
-                        "✗ Clannad: After Story (IN): Dango Daikazoku by Yuichi Nakamura & Chata",
-                        "✗ Crayon Shin-chan (IN): Happy Fools by TOMORROW X TOGETHER feat. Coi ...",
-                        "✓ D.C.II S.S.: Da Capo II Second Season (OP1): Sakura Amaneku Sekai by yozuca* (taken from Team konomi)",
-                        "✗ Gintama (ED1): Omae no Kaa-chan××Da! by kazmy with Necromancers",
-                        "✓ Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ... (saved from Mami/chaabdu92)",
-                        "✗ Love Live! School Idol Project (IN): Private Wars by A-RISE",
-                        "✗ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold",
-                        "✓ Mama wa Shougaku 4-nensei (OP1): Ai o + One by Hiromi Iwasaki (taken from Team konomi)",
-                        "✗ Mazinger Z: Infinity (OP1): Mazinger Z by Ichiro Mizuki",
-                        "✗ One Outs (ED1): Moment by TRIBAL CHAIR",
-                        "✗ Rokushin Gattai God Mars (OP1): Uchuu no Ouja God Mars by Ippo Hiura",
-                        "✗ Senki Zesshou Symphogear AXZ (IN): Shitou -Ewigkeit- (German ver.) by Minako Kotobuki×Shouta ...",
-                        "✗ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
-                        "✗ Shuffle! (OP1): YOU by YURIA",
-                        "✗ Shuumatsu Nani Shitemasu ka? Isogashii desu ka? ... (IN): I call you by Tamaru Yamada",
-                        "✓ Soreike! Anpanman: Tsumiki-jou no Himitsu (IN): Tsumiki no Tou by Ryusei Nakao (taken from Team Mami)",
-                        "✗ Watashi ni Tenshi ga Maiorita! (IN): Tenshi no Manazashi Epilogue by Maria Sashide, Rika Nagae, ..."
-                    ]
-                },
-                "Median Time": {
-                    "count": 7.45,
-                    "details": [
-                        "Minimum: 2.98",
-                        "Mean: 8.11",
-                        "Maximum: 16.76",
-                        "Standard Deviation: 4.02"
-                    ]
-                },
-                "Chanting Guess Rate": {
-                    "count": 100.0,
-                    "details": [
-                        "2/2",
-                        "✓ Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba",
-                        "✓ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold"
-                    ]
-                }
-            },
-            {
-                "Player": "KaedeDayo",
-                "Guess Rate": {
-                    "count": 28.33,
-                    "details": [
-                        "17/60",
+                        "24/60",
                         "✓ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
                         "✗ Arei no Kagami: Way to the Virgin Space (IN): Aoi Mizuumi by Satoko Shimonari",
                         "✗ Bats & Terry (IN): DOWNTOWN STEP by Stardust☆Revue & Momoko ...",
                         "✗ Bouken Shite mo Ii Koro (ED1): Puzzling Day by PARIS-TEXAS",
-                        "✓ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
-                        "✓ Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA",
+                        "✗ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
+                        "✗ Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA",
                         "✗ Crayon Shin-chan (IN): Happy Fools by TOMORROW X TOGETHER feat. Coi ...",
-                        "✓ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
-                        "✗ Dog Days'' (ED1): Stay With Me by Yui Horie",
+                        "✗ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
+                        "✓ Dog Days'' (ED1): Stay With Me by Yui Horie",
                         "✓ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
-                        "✗ Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK",
-                        "✓ Fumetsu no Anata e Season 2 (ED1): Roots by Masashi Hamauzu",
+                        "✓ Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK",
+                        "✗ Fumetsu no Anata e Season 2 (ED1): Roots by Masashi Hamauzu",
                         "✗ Futari Solo Camp (OP1): Akari wa Tooku by Skirt",
-                        "✓ Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki",
-                        "✗ Ginga e Kickoff!! (OP1): Across my world by knotlamp",
-                        "✗ Gintama' (IN): Yuke! Kaien by singman",
-                        "✓ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
-                        "✗ Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou",
-                        "✗ Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ...",
+                        "✗ Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki",
+                        "✓ Ginga e Kickoff!! (OP1): Across my world by knotlamp",
+                        "✓ Gintama' (IN): Yuke! Kaien by singman",
+                        "✗ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
+                        "✓ Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou",
+                        "✓ Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ...",
                         "✗ Haruzora to Akizora (ED1): Haruzora to Akizora by ViANKiE",
-                        "✗ Inuyashiki Last Hero (ED1): Ai o Oshiete Kureta Kimi e by Qaijff",
+                        "✓ Inuyashiki Last Hero (ED1): Ai o Oshiete Kureta Kimi e by Qaijff",
                         "✓ Josee to Tora to Sakana-tachi (IN): On This Christmas Night by Evan Call",
-                        "✗ Kamui no Ken (ED1): Kamui no Ken by Noriko Watanabe",
-                        "✗ Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka",
+                        "✓ Kamui no Ken (ED1): Kamui no Ken by Noriko Watanabe",
+                        "✓ Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka",
                         "✗ King of Prism: Your Endless Call - Mi~nna ... (IN): Lovepara! -Endless Love,Love- by SePTENTRION",
-                        "✗ Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar",
+                        "✓ Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar",
                         "✓ Love Live! School Idol Project (IN): Private Wars by A-RISE",
                         "✗ Maeterlinck no Aoi Tori: Tyltyl Mytyl no Bouken ... (ED1): Mado Akari by Hideki Osuga",
                         "✗ Magi: Sinbad no Bouken (ED1): Polaris by Fujifabric",
                         "✗ Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri",
                         "✗ Marshmallow Times (ED1): Aruitekou by Grace",
-                        "✓ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
+                        "✗ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
                         "✗ Mikagura Gakuen Kumikyoku (ED3): Sekirara Candy by Ari Ozawa",
                         "✗ Mikeneko Holmes no Yuurei Joushu (ED1): Anata ni Deaete Yokatta by Eri Hiramatsu",
                         "✗ Mousou Kagaku Series Wandaba Style (IN): Rocket Girl by Mix JUICE",
-                        "✗ Naruto (OP1): R★O★C★K★S by Hound Dog",
-                        "✗ Nepos Napos (ED1): smile by Ayaka Hirahara",
+                        "✓ Naruto (OP1): R★O★C★K★S by Hound Dog",
+                        "✓ Nepos Napos (ED1): smile by Ayaka Hirahara",
                         "✗ Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ...",
                         "✗ Nyan Koi! (ED1): Strawberry ~Amaku Setsunai Namida~ by Asami Imai",
                         "✗ Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani",
-                        "✓ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa",
-                        "✗ Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada",
+                        "✗ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa",
+                        "✓ Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada",
                         "✗ Peeping Life: The Perfect Edition (ED1): Satori no Sho by detune.",
                         "✗ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
-                        "✗ Psycho Armor Govarian (ED1): Lullaby by Neverland",
+                        "✓ Psycho Armor Govarian (ED1): Lullaby by Neverland",
                         "✗ Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara",
                         "✗ Sabi-iro no Armor: Reimei (IN): Blue Eyes by Taiki Satou",
-                        "✗ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
+                        "✓ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
                         "✓ Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ...",
                         "✗ Soreike! Anpanman: Tsumiki-jou no Himitsu (IN): Tsumiki no Tou by Ryusei Nakao",
                         "✓ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
-                        "✓ The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ...",
+                        "✗ The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ...",
                         "✗ Uchuu Senkan Yamato 2199 (ED1): Hoshi ga Towa o Terashiteru by Aira Yuuki",
-                        "✗ Vampire Hunter D (ED1): YOUR SONG by TM NETWORK",
+                        "✓ Vampire Hunter D (ED1): YOUR SONG by TM NETWORK",
                         "✗ Wakakusa Monogatari (ED1): Haru no Kizashi by Mitsuko Horie",
                         "✗ Yamato Takeru: After War (ED1): Twilight Songs by Naoko Hamasaki",
                         "✓ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
@@ -4395,45 +4138,59 @@
                         "✗ Youjo Shachou (OP1): Susume! Mujina Company by Neko Hacker feat. Rina Hidaka ..."
                     ]
                 },
-                "Lives Taken": 0,
-                "Lives Taken Details": [],
-                "Lives Saved": 4.0,
+                "Lives Taken": 5,
+                "Lives Taken Details": [
+                    "Ginga e Kickoff!! (OP1): Across my world by knotlamp (from Team SUS_DOMESTICUS)",
+                    "Gintama' (IN): Yuke! Kaien by singman (from Team SUS_DOMESTICUS)",
+                    "Kamui no Ken (ED1): Kamui no Ken by Noriko Watanabe (from Team SUS_DOMESTICUS)",
+                    "Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar (from Team SUS_DOMESTICUS)",
+                    "Psycho Armor Govarian (ED1): Lullaby by Neverland (from Team SUS_DOMESTICUS)"
+                ],
+                "Lives Saved": 5.0,
                 "Lives Saved Details": [
-                    "Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA (from ArronChu/legrandort)",
-                    "Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki (from Selaph in Team SUS_DOMESTICUS)",
-                    "One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa (from Team SUS_DOMESTICUS)",
-                    "The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ... (from SUS_DOMESTICUS/Selaph)"
+                    "Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK (from SUS_DOMESTICUS)",
+                    "Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou (from ArronChu)",
+                    "Nepos Napos (ED1): smile by Ayaka Hirahara (from SUS_DOMESTICUS)",
+                    "Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada (from SUS_DOMESTICUS)",
+                    "Vampire Hunter D (ED1): YOUR SONG by TM NETWORK (from SUS_DOMESTICUS)"
                 ],
                 "Contribution Rate": {
-                    "count": 23.53,
+                    "count": 41.67,
                     "details": [
-                        "4/17",
+                        "10/24",
                         "✗ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
-                        "✗ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
-                        "✓ Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA (saved from ArronChu/legrandort)",
-                        "✗ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
+                        "✗ Dog Days'' (ED1): Stay With Me by Yui Horie",
                         "✗ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
-                        "✗ Fumetsu no Anata e Season 2 (ED1): Roots by Masashi Hamauzu",
-                        "✓ Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki (saved from Selaph in Team SUS_DOMESTICUS)",
-                        "✗ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
+                        "✓ Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK (saved from SUS_DOMESTICUS)",
+                        "✓ Ginga e Kickoff!! (OP1): Across my world by knotlamp (taken from Team SUS_DOMESTICUS)",
+                        "✓ Gintama' (IN): Yuke! Kaien by singman (taken from Team SUS_DOMESTICUS)",
+                        "✓ Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou (saved from ArronChu)",
+                        "✗ Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ...",
+                        "✗ Inuyashiki Last Hero (ED1): Ai o Oshiete Kureta Kimi e by Qaijff",
                         "✗ Josee to Tora to Sakana-tachi (IN): On This Christmas Night by Evan Call",
+                        "✓ Kamui no Ken (ED1): Kamui no Ken by Noriko Watanabe (taken from Team SUS_DOMESTICUS)",
+                        "✗ Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka",
+                        "✓ Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar (taken from Team SUS_DOMESTICUS)",
                         "✗ Love Live! School Idol Project (IN): Private Wars by A-RISE",
-                        "✗ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
-                        "✓ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa (saved from Team SUS_DOMESTICUS)",
+                        "✗ Naruto (OP1): R★O★C★K★S by Hound Dog",
+                        "✓ Nepos Napos (ED1): smile by Ayaka Hirahara (saved from SUS_DOMESTICUS)",
+                        "✓ Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada (saved from SUS_DOMESTICUS)",
+                        "✓ Psycho Armor Govarian (ED1): Lullaby by Neverland (taken from Team SUS_DOMESTICUS)",
+                        "✗ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
                         "✗ Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ...",
                         "✗ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
-                        "✓ The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ... (saved from SUS_DOMESTICUS/Selaph)",
+                        "✓ Vampire Hunter D (ED1): YOUR SONG by TM NETWORK (saved from SUS_DOMESTICUS)",
                         "✗ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
                         "✗ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5"
                     ]
                 },
                 "Median Time": {
-                    "count": 5.63,
+                    "count": 8.12,
                     "details": [
-                        "Minimum: 2.72",
-                        "Mean: 6.50",
-                        "Maximum: 15.92",
-                        "Standard Deviation: 3.84"
+                        "Minimum: 4.46",
+                        "Mean: 8.93",
+                        "Maximum: 17.04",
+                        "Standard Deviation: 3.59"
                     ]
                 },
                 "Chanting Guess Rate": {
@@ -4442,7 +4199,9 @@
                         "0/0"
                     ]
                 }
-            },
+            }
+        ],
+        "2": [
             {
                 "Player": "Selaph",
                 "Guess Rate": {
@@ -4565,6 +4324,247 @@
                     "details": [
                         "0/1",
                         "✗ Bronze: Zetsuai Since 1989 (IN): Morobito Kozorite (Dai 112-ban) by KAY Gasshou-dan"
+                    ]
+                }
+            },
+            {
+                "Player": "KaedeDayo",
+                "Guess Rate": {
+                    "count": 28.33,
+                    "details": [
+                        "17/60",
+                        "✓ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
+                        "✗ Arei no Kagami: Way to the Virgin Space (IN): Aoi Mizuumi by Satoko Shimonari",
+                        "✗ Bats & Terry (IN): DOWNTOWN STEP by Stardust☆Revue & Momoko ...",
+                        "✗ Bouken Shite mo Ii Koro (ED1): Puzzling Day by PARIS-TEXAS",
+                        "✓ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
+                        "✓ Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA",
+                        "✗ Crayon Shin-chan (IN): Happy Fools by TOMORROW X TOGETHER feat. Coi ...",
+                        "✓ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
+                        "✗ Dog Days'' (ED1): Stay With Me by Yui Horie",
+                        "✓ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
+                        "✗ Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK",
+                        "✓ Fumetsu no Anata e Season 2 (ED1): Roots by Masashi Hamauzu",
+                        "✗ Futari Solo Camp (OP1): Akari wa Tooku by Skirt",
+                        "✓ Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki",
+                        "✗ Ginga e Kickoff!! (OP1): Across my world by knotlamp",
+                        "✗ Gintama' (IN): Yuke! Kaien by singman",
+                        "✓ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
+                        "✗ Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou",
+                        "✗ Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ...",
+                        "✗ Haruzora to Akizora (ED1): Haruzora to Akizora by ViANKiE",
+                        "✗ Inuyashiki Last Hero (ED1): Ai o Oshiete Kureta Kimi e by Qaijff",
+                        "✓ Josee to Tora to Sakana-tachi (IN): On This Christmas Night by Evan Call",
+                        "✗ Kamui no Ken (ED1): Kamui no Ken by Noriko Watanabe",
+                        "✗ Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka",
+                        "✗ King of Prism: Your Endless Call - Mi~nna ... (IN): Lovepara! -Endless Love,Love- by SePTENTRION",
+                        "✗ Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar",
+                        "✓ Love Live! School Idol Project (IN): Private Wars by A-RISE",
+                        "✗ Maeterlinck no Aoi Tori: Tyltyl Mytyl no Bouken ... (ED1): Mado Akari by Hideki Osuga",
+                        "✗ Magi: Sinbad no Bouken (ED1): Polaris by Fujifabric",
+                        "✗ Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri",
+                        "✗ Marshmallow Times (ED1): Aruitekou by Grace",
+                        "✓ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
+                        "✗ Mikagura Gakuen Kumikyoku (ED3): Sekirara Candy by Ari Ozawa",
+                        "✗ Mikeneko Holmes no Yuurei Joushu (ED1): Anata ni Deaete Yokatta by Eri Hiramatsu",
+                        "✗ Mousou Kagaku Series Wandaba Style (IN): Rocket Girl by Mix JUICE",
+                        "✗ Naruto (OP1): R★O★C★K★S by Hound Dog",
+                        "✗ Nepos Napos (ED1): smile by Ayaka Hirahara",
+                        "✗ Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ...",
+                        "✗ Nyan Koi! (ED1): Strawberry ~Amaku Setsunai Namida~ by Asami Imai",
+                        "✗ Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani",
+                        "✓ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa",
+                        "✗ Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada",
+                        "✗ Peeping Life: The Perfect Edition (ED1): Satori no Sho by detune.",
+                        "✗ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
+                        "✗ Psycho Armor Govarian (ED1): Lullaby by Neverland",
+                        "✗ Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara",
+                        "✗ Sabi-iro no Armor: Reimei (IN): Blue Eyes by Taiki Satou",
+                        "✗ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
+                        "✓ Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ...",
+                        "✗ Soreike! Anpanman: Tsumiki-jou no Himitsu (IN): Tsumiki no Tou by Ryusei Nakao",
+                        "✓ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
+                        "✓ The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ...",
+                        "✗ Uchuu Senkan Yamato 2199 (ED1): Hoshi ga Towa o Terashiteru by Aira Yuuki",
+                        "✗ Vampire Hunter D (ED1): YOUR SONG by TM NETWORK",
+                        "✗ Wakakusa Monogatari (ED1): Haru no Kizashi by Mitsuko Horie",
+                        "✗ Yamato Takeru: After War (ED1): Twilight Songs by Naoko Hamasaki",
+                        "✓ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
+                        "✓ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5",
+                        "✗ Yoasobi Gurashi! (ED1): Heart Balance by Yukanyun",
+                        "✗ Youjo Shachou (OP1): Susume! Mujina Company by Neko Hacker feat. Rina Hidaka ..."
+                    ]
+                },
+                "Lives Taken": 0,
+                "Lives Taken Details": [],
+                "Lives Saved": 4.0,
+                "Lives Saved Details": [
+                    "Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA (from ArronChu/legrandort)",
+                    "Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki (from Selaph in Team SUS_DOMESTICUS)",
+                    "One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa (from Team SUS_DOMESTICUS)",
+                    "The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ... (from SUS_DOMESTICUS/Selaph)"
+                ],
+                "Contribution Rate": {
+                    "count": 23.53,
+                    "details": [
+                        "4/17",
+                        "✗ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
+                        "✗ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
+                        "✓ Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA (saved from ArronChu/legrandort)",
+                        "✗ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
+                        "✗ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
+                        "✗ Fumetsu no Anata e Season 2 (ED1): Roots by Masashi Hamauzu",
+                        "✓ Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki (saved from Selaph in Team SUS_DOMESTICUS)",
+                        "✗ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
+                        "✗ Josee to Tora to Sakana-tachi (IN): On This Christmas Night by Evan Call",
+                        "✗ Love Live! School Idol Project (IN): Private Wars by A-RISE",
+                        "✗ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
+                        "✓ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa (saved from Team SUS_DOMESTICUS)",
+                        "✗ Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ...",
+                        "✗ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
+                        "✓ The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ... (saved from SUS_DOMESTICUS/Selaph)",
+                        "✗ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
+                        "✗ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5"
+                    ]
+                },
+                "Median Time": {
+                    "count": 5.63,
+                    "details": [
+                        "Minimum: 2.72",
+                        "Mean: 6.50",
+                        "Maximum: 15.92",
+                        "Standard Deviation: 3.84"
+                    ]
+                },
+                "Chanting Guess Rate": {
+                    "count": 0.0,
+                    "details": [
+                        "0/0"
+                    ]
+                }
+            },
+            {
+                "Player": "Mayottatoki",
+                "Guess Rate": {
+                    "count": 45.45,
+                    "details": [
+                        "25/55",
+                        "✓ 22/7 (ED2): One of them by Nagomi Saijou",
+                        "✓ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
+                        "✗ Aikatsu Stars! (IN): Never Give Up☆ by Kana from AIKATSU☆STARS!",
+                        "✗ Arei no Kagami: Way to the Virgin Space (IN): Aoi Mizuumi by Satoko Shimonari",
+                        "✓ Baldr Force EXE Resolution (IN): Face of Fact by KOTOKO",
+                        "✗ Bannou Bunka Neko-Musume (IN): n² no Tsubuyaki by Megumi Hayashibara",
+                        "✓ Bishoujo Senshi Sailor Moon Sailor Stars (ED2): Moonlight Densetsu by Sakurakko Club Sakura-gumi",
+                        "✗ Black Jack (ED1): Kuroge Wagyuu Joshio Tanyaki 680 Yen by Ai Otsuka",
+                        "✓ Blade Runner: Black Lotus (ED7): Intuition by Salem Ilese",
+                        "✗ Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA",
+                        "✓ Catman Series III (IN): Never Going to Drink Again by The Planet Smashers",
+                        "✓ Chou Futsuu Toshi Kashiwa Densetsu (ED1): Ame-iro Paradise by Akebonoyama Chuugaku Band ...",
+                        "✗ Chou Futsuu Toshi Kashiwa Densetsu Z (ED1): MJK Tega-chan by Hikari Nishino",
+                        "✓ Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba",
+                        "✓ Clannad: After Story (IN): Dango Daikazoku by Yuichi Nakamura & Chata",
+                        "✓ Crayon Shin-chan (IN): Happy Fools by TOMORROW X TOGETHER feat. Coi ...",
+                        "✓ D.C.II S.S.: Da Capo II Second Season (OP1): Sakura Amaneku Sekai by yozuca*",
+                        "✗ Dr. Rin ni Kiitemite! (ED2): Kimi to no Mirai by AiM",
+                        "✗ Dr. Stone: Science Future (ED1): Rolling Stone by BREIMEN",
+                        "✗ Futari Solo Camp (OP1): Akari wa Tooku by Skirt",
+                        "✓ Gintama (ED1): Omae no Kaa-chan××Da! by kazmy with Necromancers",
+                        "✗ Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou",
+                        "✓ Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ...",
+                        "✗ Gridman Universe (IN): Heartbeat City by Maaya Uchida",
+                        "✗ Josee to Tora to Sakana-tachi (IN): On This Christmas Night by Evan Call",
+                        "✗ Kono Subarashii Sekai ni Shukufuku o! (ED1): Chiisana Boukensha by Sora Amamiya, Rie Takahashi, ...",
+                        "✗ Koukou Hoshi Kageki (IN): Yume Tsubomi by Kensho Ono & Yoshitsugu ...",
+                        "✗ Koukou Hoshi Kageki (OP2): Yume Iro ~team Hiiragi Ver.~ by team Hiiragi",
+                        "✓ Love Live! School Idol Project (IN): Private Wars by A-RISE",
+                        "✗ Love♥Love? (IN): Inori no Uta by rainbow colors",
+                        "✓ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold",
+                        "✗ Magi: Sinbad no Bouken (ED1): Polaris by Fujifabric",
+                        "✗ Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri",
+                        "✗ Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri",
+                        "✓ Mama wa Shougaku 4-nensei (OP1): Ai o + One by Hiromi Iwasaki",
+                        "✓ Mazinger Z: Infinity (OP1): Mazinger Z by Ichiro Mizuki",
+                        "✗ Mikeneko Holmes no Yuurei Joushu (ED1): Anata ni Deaete Yokatta by Eri Hiramatsu",
+                        "✓ One Outs (ED1): Moment by TRIBAL CHAIR",
+                        "✓ Rokushin Gattai God Mars (OP1): Uchuu no Ouja God Mars by Ippo Hiura",
+                        "✗ Sabi-iro no Armor: Reimei (IN): Blue Eyes by Taiki Satou",
+                        "✗ Sekai Seifuku: Bouryaku no Zvezda (ED2): Koi wa Missile Launcher by Erii Yamazaki",
+                        "✓ Senki Zesshou Symphogear AXZ (IN): Shitou -Ewigkeit- (German ver.) by Minako Kotobuki×Shouta ...",
+                        "✓ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
+                        "✗ Shinryaku!! Ika Musume (ED1): Puzzle by Kanae Itou",
+                        "✓ Shuffle! (OP1): YOU by YURIA",
+                        "✓ Shuumatsu Nani Shitemasu ka? Isogashii desu ka? ... (IN): I call you by Tamaru Yamada",
+                        "✓ Soreike! Anpanman: Tsumiki-jou no Himitsu (IN): Tsumiki no Tou by Ryusei Nakao",
+                        "✗ Taka no Tsume 8: Yoshida-kun no × File (ED1): Ichigo Ichie by Monkichi",
+                        "✗ Tanjou: Debut (ED1): Sayonara ni Furenai by Miina Tominaga, Hiroko ...",
+                        "✗ Uchuu Senkan Yamato 2199 (ED1): Hoshi ga Towa o Terashiteru by Aira Yuuki",
+                        "✗ Video Senshi Lezarion (IN): Traveling Band by ALFEE",
+                        "✗ Wakakusa Monogatari (ED1): Haru no Kizashi by Mitsuko Horie",
+                        "✓ Watashi ni Tenshi ga Maiorita! (IN): Tenshi no Manazashi Epilogue by Maria Sashide, Rika Nagae, ...",
+                        "✗ Yamato Takeru: After War (ED1): Twilight Songs by Naoko Hamasaki",
+                        "✗ Yuukoku no Moriarty (ED1): ALPHA by STEREO DIVE FOUNDATION"
+                    ]
+                },
+                "Lives Taken": 5,
+                "Lives Taken Details": [
+                    "Chou Futsuu Toshi Kashiwa Densetsu (ED1): Ame-iro Paradise by Akebonoyama Chuugaku Band ... (from Team konomi)",
+                    "Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba (from Team konomi)",
+                    "D.C.II S.S.: Da Capo II Second Season (OP1): Sakura Amaneku Sekai by yozuca* (from Team konomi)",
+                    "Mama wa Shougaku 4-nensei (OP1): Ai o + One by Hiromi Iwasaki (from Team konomi)",
+                    "Soreike! Anpanman: Tsumiki-jou no Himitsu (IN): Tsumiki no Tou by Ryusei Nakao (from Team Mami)"
+                ],
+                "Lives Saved": 2.0,
+                "Lives Saved Details": [
+                    "Catman Series III (IN): Never Going to Drink Again by The Planet Smashers (from mahzrunner in Team konomi)",
+                    "Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ... (from Mami/chaabdu92)"
+                ],
+                "Contribution Rate": {
+                    "count": 28.0,
+                    "details": [
+                        "7/25",
+                        "✗ 22/7 (ED2): One of them by Nagomi Saijou",
+                        "✗ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
+                        "✗ Baldr Force EXE Resolution (IN): Face of Fact by KOTOKO",
+                        "✗ Bishoujo Senshi Sailor Moon Sailor Stars (ED2): Moonlight Densetsu by Sakurakko Club Sakura-gumi",
+                        "✗ Blade Runner: Black Lotus (ED7): Intuition by Salem Ilese",
+                        "✓ Catman Series III (IN): Never Going to Drink Again by The Planet Smashers (saved from mahzrunner in Team konomi)",
+                        "✓ Chou Futsuu Toshi Kashiwa Densetsu (ED1): Ame-iro Paradise by Akebonoyama Chuugaku Band ... (taken from Team konomi)",
+                        "✓ Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba (taken from Team konomi)",
+                        "✗ Clannad: After Story (IN): Dango Daikazoku by Yuichi Nakamura & Chata",
+                        "✗ Crayon Shin-chan (IN): Happy Fools by TOMORROW X TOGETHER feat. Coi ...",
+                        "✓ D.C.II S.S.: Da Capo II Second Season (OP1): Sakura Amaneku Sekai by yozuca* (taken from Team konomi)",
+                        "✗ Gintama (ED1): Omae no Kaa-chan××Da! by kazmy with Necromancers",
+                        "✓ Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ... (saved from Mami/chaabdu92)",
+                        "✗ Love Live! School Idol Project (IN): Private Wars by A-RISE",
+                        "✗ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold",
+                        "✓ Mama wa Shougaku 4-nensei (OP1): Ai o + One by Hiromi Iwasaki (taken from Team konomi)",
+                        "✗ Mazinger Z: Infinity (OP1): Mazinger Z by Ichiro Mizuki",
+                        "✗ One Outs (ED1): Moment by TRIBAL CHAIR",
+                        "✗ Rokushin Gattai God Mars (OP1): Uchuu no Ouja God Mars by Ippo Hiura",
+                        "✗ Senki Zesshou Symphogear AXZ (IN): Shitou -Ewigkeit- (German ver.) by Minako Kotobuki×Shouta ...",
+                        "✗ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
+                        "✗ Shuffle! (OP1): YOU by YURIA",
+                        "✗ Shuumatsu Nani Shitemasu ka? Isogashii desu ka? ... (IN): I call you by Tamaru Yamada",
+                        "✓ Soreike! Anpanman: Tsumiki-jou no Himitsu (IN): Tsumiki no Tou by Ryusei Nakao (taken from Team Mami)",
+                        "✗ Watashi ni Tenshi ga Maiorita! (IN): Tenshi no Manazashi Epilogue by Maria Sashide, Rika Nagae, ..."
+                    ]
+                },
+                "Median Time": {
+                    "count": 7.45,
+                    "details": [
+                        "Minimum: 2.98",
+                        "Mean: 8.11",
+                        "Maximum: 16.76",
+                        "Standard Deviation: 4.02"
+                    ]
+                },
+                "Chanting Guess Rate": {
+                    "count": 100.0,
+                    "details": [
+                        "2/2",
+                        "✓ Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba",
+                        "✓ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold"
                     ]
                 }
             },
@@ -4794,6 +4794,111 @@
                         "1/2",
                         "✗ Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba",
                         "✓ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold"
+                    ]
+                }
+            },
+            {
+                "Player": "Vr0003",
+                "Guess Rate": {
+                    "count": 15.25,
+                    "details": [
+                        "9/59",
+                        "✗ Bats & Terry (IN): DOWNTOWN STEP by Stardust☆Revue & Momoko ...",
+                        "✗ Bouken Shite mo Ii Koro (ED1): Puzzling Day by PARIS-TEXAS",
+                        "✗ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
+                        "✗ Bronze: Zetsuai Since 1989 (IN): Morobito Kozorite (Dai 112-ban) by KAY Gasshou-dan",
+                        "✓ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
+                        "✓ Dog Days'' (ED1): Stay With Me by Yui Horie",
+                        "✗ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
+                        "✗ Dorohedoro (ED4): Strange Meat Pie by (K)NoW_NAME:Ayaka Tachibana",
+                        "✗ Eiga Doraemon: Nobita no Shin Kyouryuu (IN): Kimi to Kasaneta Monologue by Mr.Children",
+                        "✗ Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK",
+                        "✗ Fumetsu no Anata e Season 2 (ED1): Roots by Masashi Hamauzu",
+                        "✗ Gdleen (ED1): IN MY ROOM by Hirofumi Banba",
+                        "✗ Gekijouban Overlord: Sei Oukoku-hen (ED1): WHEELER-DEALER by OxT",
+                        "✗ Gekijouban Tokimeki Restaurant☆☆☆ MIRACLE6 (ED2): E→Motion by Shoichiro Hirata",
+                        "✗ Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki",
+                        "✗ Ginga e Kickoff!! (OP1): Across my world by knotlamp",
+                        "✗ Gintama' (IN): Yuke! Kaien by singman",
+                        "✓ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
+                        "✗ Haruzora to Akizora (ED1): Haruzora to Akizora by ViANKiE",
+                        "✗ Heart Cocktail Colorful (ED1): Tenderly by Sarah Vaughan",
+                        "✗ Imawa no Kuni no Alice (OP1): NEXTAGE by i☆Ris",
+                        "✗ Inuyashiki Last Hero (ED1): Ai o Oshiete Kureta Kimi e by Qaijff",
+                        "✗ Jashin-chan Dropkick' (IN): Jinbouchou Aika by Aina Suzuki",
+                        "✗ Kamui no Ken (ED1): Kamui no Ken by Noriko Watanabe",
+                        "✗ Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka",
+                        "✗ King of Prism: Your Endless Call - Mi~nna ... (IN): Lovepara! -Endless Love,Love- by SePTENTRION",
+                        "✗ Koukou Hoshi Kageki (IN): Hoshi no Stride by Natsuki Hanae",
+                        "✗ Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar",
+                        "✗ Maeterlinck no Aoi Tori: Tyltyl Mytyl no Bouken ... (ED1): Mado Akari by Hideki Osuga",
+                        "✗ Majutsushi Orphen Haguretabi: Kimluck-hen (ED1): Marionette Coup d'État by Mai Fuchigami",
+                        "✗ Marshmallow Times (ED1): Aruitekou by Grace",
+                        "✓ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
+                        "✗ Mikagura Gakuen Kumikyoku (ED3): Sekirara Candy by Ari Ozawa",
+                        "✗ Monster Strike: Rain of Memories (ED1): Aurora by WHITE ASH",
+                        "✗ Mousou Kagaku Series Wandaba Style (IN): Rocket Girl by Mix JUICE",
+                        "✓ Naruto (OP1): R★O★C★K★S by Hound Dog",
+                        "✗ Nepos Napos (ED1): smile by Ayaka Hirahara",
+                        "✗ Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ...",
+                        "✗ Nyan Koi! (ED1): Strawberry ~Amaku Setsunai Namida~ by Asami Imai",
+                        "✗ Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani",
+                        "✓ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa",
+                        "✗ Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada",
+                        "✗ Peeping Life: The Perfect Edition (ED1): Satori no Sho by detune.",
+                        "✓ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
+                        "✗ Psycho Armor Govarian (ED1): Lullaby by Neverland",
+                        "✓ Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara",
+                        "✗ Ryuuichi Manga Gekijou: Onbu Obake (ED1): Onbu wa ne by Etsuko Hamura",
+                        "✗ Shakugan no Shana-tan Final Destruction (ED2): Yoake Umare Kuru Shoujo by Yoko Takahashi",
+                        "✗ Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ...",
+                        "✓ Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela",
+                        "✗ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
+                        "✗ The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ...",
+                        "✗ Twin Bee Paradise (ED1): Aikotoba wa Be!! by Mariko Kouda",
+                        "✗ Uta no☆Prince-sama♪Maji Love Legend Star (IN): Visible Elf by Kousuke Toriumi & Daiki ...",
+                        "✗ Vampire Hunter D (ED1): YOUR SONG by TM NETWORK",
+                        "✗ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
+                        "✗ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5",
+                        "✗ Yoasobi Gurashi! (ED1): Heart Balance by Yukanyun",
+                        "✗ Youjo Shachou (OP1): Susume! Mujina Company by Neko Hacker feat. Rina Hidaka ..."
+                    ]
+                },
+                "Lives Taken": 1,
+                "Lives Taken Details": [
+                    "Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara (from Team Mami)"
+                ],
+                "Lives Saved": 0.0,
+                "Lives Saved Details": [],
+                "Contribution Rate": {
+                    "count": 11.11,
+                    "details": [
+                        "1/9",
+                        "✗ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
+                        "✗ Dog Days'' (ED1): Stay With Me by Yui Horie",
+                        "✗ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
+                        "✗ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
+                        "✗ Naruto (OP1): R★O★C★K★S by Hound Dog",
+                        "✗ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa",
+                        "✗ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
+                        "✓ Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara (taken from Team Mami)",
+                        "✗ Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela"
+                    ]
+                },
+                "Median Time": {
+                    "count": 7.88,
+                    "details": [
+                        "Minimum: 4.08",
+                        "Mean: 10.46",
+                        "Maximum: 19.46",
+                        "Standard Deviation: 6.00"
+                    ]
+                },
+                "Chanting Guess Rate": {
+                    "count": 0.0,
+                    "details": [
+                        "0/1",
+                        "✗ Bronze: Zetsuai Since 1989 (IN): Morobito Kozorite (Dai 112-ban) by KAY Gasshou-dan"
                     ]
                 }
             },
@@ -5030,13 +5135,123 @@
                         "✗ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold"
                     ]
                 }
+            }
+        ],
+        "4": [
+            {
+                "Player": "Edwardd",
+                "Guess Rate": {
+                    "count": 18.33,
+                    "details": [
+                        "11/60",
+                        "✓ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
+                        "✗ Arei no Kagami: Way to the Virgin Space (IN): Aoi Mizuumi by Satoko Shimonari",
+                        "✗ Bats & Terry (IN): DOWNTOWN STEP by Stardust☆Revue & Momoko ...",
+                        "✗ Bouken Shite mo Ii Koro (ED1): Puzzling Day by PARIS-TEXAS",
+                        "✓ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
+                        "✗ Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA",
+                        "✗ Crayon Shin-chan (IN): Happy Fools by TOMORROW X TOGETHER feat. Coi ...",
+                        "✗ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
+                        "✗ Dog Days'' (ED1): Stay With Me by Yui Horie",
+                        "✓ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
+                        "✗ Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK",
+                        "✗ Fumetsu no Anata e Season 2 (ED1): Roots by Masashi Hamauzu",
+                        "✗ Futari Solo Camp (OP1): Akari wa Tooku by Skirt",
+                        "✗ Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki",
+                        "✓ Ginga e Kickoff!! (OP1): Across my world by knotlamp",
+                        "✗ Gintama' (IN): Yuke! Kaien by singman",
+                        "✗ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
+                        "✗ Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou",
+                        "✗ Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ...",
+                        "✗ Haruzora to Akizora (ED1): Haruzora to Akizora by ViANKiE",
+                        "✗ Inuyashiki Last Hero (ED1): Ai o Oshiete Kureta Kimi e by Qaijff",
+                        "✗ Josee to Tora to Sakana-tachi (IN): On This Christmas Night by Evan Call",
+                        "✗ Kamui no Ken (ED1): Kamui no Ken by Noriko Watanabe",
+                        "✓ Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka",
+                        "✗ King of Prism: Your Endless Call - Mi~nna ... (IN): Lovepara! -Endless Love,Love- by SePTENTRION",
+                        "✗ Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar",
+                        "✗ Love Live! School Idol Project (IN): Private Wars by A-RISE",
+                        "✗ Maeterlinck no Aoi Tori: Tyltyl Mytyl no Bouken ... (ED1): Mado Akari by Hideki Osuga",
+                        "✗ Magi: Sinbad no Bouken (ED1): Polaris by Fujifabric",
+                        "✗ Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri",
+                        "✗ Marshmallow Times (ED1): Aruitekou by Grace",
+                        "✗ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
+                        "✗ Mikagura Gakuen Kumikyoku (ED3): Sekirara Candy by Ari Ozawa",
+                        "✗ Mikeneko Holmes no Yuurei Joushu (ED1): Anata ni Deaete Yokatta by Eri Hiramatsu",
+                        "✗ Mousou Kagaku Series Wandaba Style (IN): Rocket Girl by Mix JUICE",
+                        "✗ Naruto (OP1): R★O★C★K★S by Hound Dog",
+                        "✗ Nepos Napos (ED1): smile by Ayaka Hirahara",
+                        "✗ Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ...",
+                        "✗ Nyan Koi! (ED1): Strawberry ~Amaku Setsunai Namida~ by Asami Imai",
+                        "✗ Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani",
+                        "✗ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa",
+                        "✗ Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada",
+                        "✗ Peeping Life: The Perfect Edition (ED1): Satori no Sho by detune.",
+                        "✓ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
+                        "✓ Psycho Armor Govarian (ED1): Lullaby by Neverland",
+                        "✗ Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara",
+                        "✗ Sabi-iro no Armor: Reimei (IN): Blue Eyes by Taiki Satou",
+                        "✓ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
+                        "✗ Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ...",
+                        "✗ Soreike! Anpanman: Tsumiki-jou no Himitsu (IN): Tsumiki no Tou by Ryusei Nakao",
+                        "✓ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
+                        "✗ The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ...",
+                        "✗ Uchuu Senkan Yamato 2199 (ED1): Hoshi ga Towa o Terashiteru by Aira Yuuki",
+                        "✗ Vampire Hunter D (ED1): YOUR SONG by TM NETWORK",
+                        "✗ Wakakusa Monogatari (ED1): Haru no Kizashi by Mitsuko Horie",
+                        "✗ Yamato Takeru: After War (ED1): Twilight Songs by Naoko Hamasaki",
+                        "✓ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
+                        "✓ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5",
+                        "✗ Yoasobi Gurashi! (ED1): Heart Balance by Yukanyun",
+                        "✗ Youjo Shachou (OP1): Susume! Mujina Company by Neko Hacker feat. Rina Hidaka ..."
+                    ]
+                },
+                "Lives Taken": 2,
+                "Lives Taken Details": [
+                    "Ginga e Kickoff!! (OP1): Across my world by knotlamp (from Team SUS_DOMESTICUS)",
+                    "Psycho Armor Govarian (ED1): Lullaby by Neverland (from Team SUS_DOMESTICUS)"
+                ],
+                "Lives Saved": 0.0,
+                "Lives Saved Details": [],
+                "Contribution Rate": {
+                    "count": 18.18,
+                    "details": [
+                        "2/11",
+                        "✗ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
+                        "✗ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
+                        "✗ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
+                        "✓ Ginga e Kickoff!! (OP1): Across my world by knotlamp (taken from Team SUS_DOMESTICUS)",
+                        "✗ Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka",
+                        "✗ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
+                        "✓ Psycho Armor Govarian (ED1): Lullaby by Neverland (taken from Team SUS_DOMESTICUS)",
+                        "✗ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
+                        "✗ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
+                        "✗ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
+                        "✗ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5"
+                    ]
+                },
+                "Median Time": {
+                    "count": 7.56,
+                    "details": [
+                        "Minimum: 3.76",
+                        "Mean: 7.84",
+                        "Maximum: 19.18",
+                        "Standard Deviation: 4.14"
+                    ]
+                },
+                "Chanting Guess Rate": {
+                    "count": 0.0,
+                    "details": [
+                        "0/0"
+                    ]
+                }
             },
             {
-                "Player": "Vr0003",
+                "Player": "Iuna",
                 "Guess Rate": {
-                    "count": 15.25,
+                    "count": 16.95,
                     "details": [
-                        "9/59",
+                        "10/59",
                         "✗ Bats & Terry (IN): DOWNTOWN STEP by Stardust☆Revue & Momoko ...",
                         "✗ Bouken Shite mo Ii Koro (ED1): Puzzling Day by PARIS-TEXAS",
                         "✗ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
@@ -5044,7 +5259,7 @@
                         "✓ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
                         "✓ Dog Days'' (ED1): Stay With Me by Yui Horie",
                         "✗ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
-                        "✗ Dorohedoro (ED4): Strange Meat Pie by (K)NoW_NAME:Ayaka Tachibana",
+                        "✓ Dorohedoro (ED4): Strange Meat Pie by (K)NoW_NAME:Ayaka Tachibana",
                         "✗ Eiga Doraemon: Nobita no Shin Kyouryuu (IN): Kimi to Kasaneta Monologue by Mr.Children",
                         "✗ Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK",
                         "✗ Fumetsu no Anata e Season 2 (ED1): Roots by Masashi Hamauzu",
@@ -5054,7 +5269,7 @@
                         "✗ Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki",
                         "✗ Ginga e Kickoff!! (OP1): Across my world by knotlamp",
                         "✗ Gintama' (IN): Yuke! Kaien by singman",
-                        "✓ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
+                        "✗ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
                         "✗ Haruzora to Akizora (ED1): Haruzora to Akizora by ViANKiE",
                         "✗ Heart Cocktail Colorful (ED1): Tenderly by Sarah Vaughan",
                         "✗ Imawa no Kuni no Alice (OP1): NEXTAGE by i☆Ris",
@@ -5072,60 +5287,62 @@
                         "✗ Mikagura Gakuen Kumikyoku (ED3): Sekirara Candy by Ari Ozawa",
                         "✗ Monster Strike: Rain of Memories (ED1): Aurora by WHITE ASH",
                         "✗ Mousou Kagaku Series Wandaba Style (IN): Rocket Girl by Mix JUICE",
-                        "✓ Naruto (OP1): R★O★C★K★S by Hound Dog",
+                        "✗ Naruto (OP1): R★O★C★K★S by Hound Dog",
                         "✗ Nepos Napos (ED1): smile by Ayaka Hirahara",
-                        "✗ Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ...",
+                        "✓ Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ...",
                         "✗ Nyan Koi! (ED1): Strawberry ~Amaku Setsunai Namida~ by Asami Imai",
-                        "✗ Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani",
+                        "✓ Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani",
                         "✓ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa",
                         "✗ Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada",
                         "✗ Peeping Life: The Perfect Edition (ED1): Satori no Sho by detune.",
-                        "✓ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
+                        "✗ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
                         "✗ Psycho Armor Govarian (ED1): Lullaby by Neverland",
-                        "✓ Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara",
+                        "✗ Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara",
                         "✗ Ryuuichi Manga Gekijou: Onbu Obake (ED1): Onbu wa ne by Etsuko Hamura",
-                        "✗ Shakugan no Shana-tan Final Destruction (ED2): Yoake Umare Kuru Shoujo by Yoko Takahashi",
+                        "✓ Shakugan no Shana-tan Final Destruction (ED2): Yoake Umare Kuru Shoujo by Yoko Takahashi",
                         "✗ Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ...",
-                        "✓ Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela",
-                        "✗ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
+                        "✗ Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela",
+                        "✓ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
                         "✗ The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ...",
                         "✗ Twin Bee Paradise (ED1): Aikotoba wa Be!! by Mariko Kouda",
                         "✗ Uta no☆Prince-sama♪Maji Love Legend Star (IN): Visible Elf by Kousuke Toriumi & Daiki ...",
                         "✗ Vampire Hunter D (ED1): YOUR SONG by TM NETWORK",
                         "✗ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
-                        "✗ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5",
+                        "✓ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5",
                         "✗ Yoasobi Gurashi! (ED1): Heart Balance by Yukanyun",
                         "✗ Youjo Shachou (OP1): Susume! Mujina Company by Neko Hacker feat. Rina Hidaka ..."
                     ]
                 },
-                "Lives Taken": 1,
+                "Lives Taken": 2,
                 "Lives Taken Details": [
-                    "Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara (from Team Mami)"
+                    "Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ... (from Team Mami)",
+                    "Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani (from Team Mami)"
                 ],
                 "Lives Saved": 0.0,
                 "Lives Saved Details": [],
                 "Contribution Rate": {
-                    "count": 11.11,
+                    "count": 20.0,
                     "details": [
-                        "1/9",
+                        "2/10",
                         "✗ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
                         "✗ Dog Days'' (ED1): Stay With Me by Yui Horie",
-                        "✗ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
+                        "✗ Dorohedoro (ED4): Strange Meat Pie by (K)NoW_NAME:Ayaka Tachibana",
                         "✗ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
-                        "✗ Naruto (OP1): R★O★C★K★S by Hound Dog",
+                        "✓ Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ... (taken from Team Mami)",
+                        "✓ Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani (taken from Team Mami)",
                         "✗ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa",
-                        "✗ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
-                        "✓ Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara (taken from Team Mami)",
-                        "✗ Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela"
+                        "✗ Shakugan no Shana-tan Final Destruction (ED2): Yoake Umare Kuru Shoujo by Yoko Takahashi",
+                        "✗ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
+                        "✗ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5"
                     ]
                 },
                 "Median Time": {
-                    "count": 7.88,
+                    "count": 8.39,
                     "details": [
-                        "Minimum: 4.08",
-                        "Mean: 10.46",
-                        "Maximum: 19.46",
-                        "Standard Deviation: 6.00"
+                        "Minimum: 4.50",
+                        "Mean: 9.91",
+                        "Maximum: 17.53",
+                        "Standard Deviation: 4.96"
                     ]
                 },
                 "Chanting Guess Rate": {
@@ -5135,9 +5352,7 @@
                         "✗ Bronze: Zetsuai Since 1989 (IN): Morobito Kozorite (Dai 112-ban) by KAY Gasshou-dan"
                     ]
                 }
-            }
-        ],
-        "4": [
+            },
             {
                 "Player": "zomg",
                 "Guess Rate": {
@@ -5354,221 +5569,6 @@
                         "✗ Bronze: Zetsuai Since 1989 (IN): Morobito Kozorite (Dai 112-ban) by KAY Gasshou-dan",
                         "✗ Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba",
                         "✓ Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold"
-                    ]
-                }
-            },
-            {
-                "Player": "Edwardd",
-                "Guess Rate": {
-                    "count": 18.33,
-                    "details": [
-                        "11/60",
-                        "✓ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
-                        "✗ Arei no Kagami: Way to the Virgin Space (IN): Aoi Mizuumi by Satoko Shimonari",
-                        "✗ Bats & Terry (IN): DOWNTOWN STEP by Stardust☆Revue & Momoko ...",
-                        "✗ Bouken Shite mo Ii Koro (ED1): Puzzling Day by PARIS-TEXAS",
-                        "✓ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
-                        "✗ Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA",
-                        "✗ Crayon Shin-chan (IN): Happy Fools by TOMORROW X TOGETHER feat. Coi ...",
-                        "✗ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
-                        "✗ Dog Days'' (ED1): Stay With Me by Yui Horie",
-                        "✓ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
-                        "✗ Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK",
-                        "✗ Fumetsu no Anata e Season 2 (ED1): Roots by Masashi Hamauzu",
-                        "✗ Futari Solo Camp (OP1): Akari wa Tooku by Skirt",
-                        "✗ Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki",
-                        "✓ Ginga e Kickoff!! (OP1): Across my world by knotlamp",
-                        "✗ Gintama' (IN): Yuke! Kaien by singman",
-                        "✗ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
-                        "✗ Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou",
-                        "✗ Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ...",
-                        "✗ Haruzora to Akizora (ED1): Haruzora to Akizora by ViANKiE",
-                        "✗ Inuyashiki Last Hero (ED1): Ai o Oshiete Kureta Kimi e by Qaijff",
-                        "✗ Josee to Tora to Sakana-tachi (IN): On This Christmas Night by Evan Call",
-                        "✗ Kamui no Ken (ED1): Kamui no Ken by Noriko Watanabe",
-                        "✓ Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka",
-                        "✗ King of Prism: Your Endless Call - Mi~nna ... (IN): Lovepara! -Endless Love,Love- by SePTENTRION",
-                        "✗ Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar",
-                        "✗ Love Live! School Idol Project (IN): Private Wars by A-RISE",
-                        "✗ Maeterlinck no Aoi Tori: Tyltyl Mytyl no Bouken ... (ED1): Mado Akari by Hideki Osuga",
-                        "✗ Magi: Sinbad no Bouken (ED1): Polaris by Fujifabric",
-                        "✗ Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri",
-                        "✗ Marshmallow Times (ED1): Aruitekou by Grace",
-                        "✗ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
-                        "✗ Mikagura Gakuen Kumikyoku (ED3): Sekirara Candy by Ari Ozawa",
-                        "✗ Mikeneko Holmes no Yuurei Joushu (ED1): Anata ni Deaete Yokatta by Eri Hiramatsu",
-                        "✗ Mousou Kagaku Series Wandaba Style (IN): Rocket Girl by Mix JUICE",
-                        "✗ Naruto (OP1): R★O★C★K★S by Hound Dog",
-                        "✗ Nepos Napos (ED1): smile by Ayaka Hirahara",
-                        "✗ Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ...",
-                        "✗ Nyan Koi! (ED1): Strawberry ~Amaku Setsunai Namida~ by Asami Imai",
-                        "✗ Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani",
-                        "✗ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa",
-                        "✗ Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada",
-                        "✗ Peeping Life: The Perfect Edition (ED1): Satori no Sho by detune.",
-                        "✓ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
-                        "✓ Psycho Armor Govarian (ED1): Lullaby by Neverland",
-                        "✗ Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara",
-                        "✗ Sabi-iro no Armor: Reimei (IN): Blue Eyes by Taiki Satou",
-                        "✓ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
-                        "✗ Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ...",
-                        "✗ Soreike! Anpanman: Tsumiki-jou no Himitsu (IN): Tsumiki no Tou by Ryusei Nakao",
-                        "✓ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
-                        "✗ The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ...",
-                        "✗ Uchuu Senkan Yamato 2199 (ED1): Hoshi ga Towa o Terashiteru by Aira Yuuki",
-                        "✗ Vampire Hunter D (ED1): YOUR SONG by TM NETWORK",
-                        "✗ Wakakusa Monogatari (ED1): Haru no Kizashi by Mitsuko Horie",
-                        "✗ Yamato Takeru: After War (ED1): Twilight Songs by Naoko Hamasaki",
-                        "✓ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
-                        "✓ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5",
-                        "✗ Yoasobi Gurashi! (ED1): Heart Balance by Yukanyun",
-                        "✗ Youjo Shachou (OP1): Susume! Mujina Company by Neko Hacker feat. Rina Hidaka ..."
-                    ]
-                },
-                "Lives Taken": 2,
-                "Lives Taken Details": [
-                    "Ginga e Kickoff!! (OP1): Across my world by knotlamp (from Team SUS_DOMESTICUS)",
-                    "Psycho Armor Govarian (ED1): Lullaby by Neverland (from Team SUS_DOMESTICUS)"
-                ],
-                "Lives Saved": 0.0,
-                "Lives Saved Details": [],
-                "Contribution Rate": {
-                    "count": 18.18,
-                    "details": [
-                        "2/11",
-                        "✗ Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ...",
-                        "✗ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
-                        "✗ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
-                        "✓ Ginga e Kickoff!! (OP1): Across my world by knotlamp (taken from Team SUS_DOMESTICUS)",
-                        "✗ Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka",
-                        "✗ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
-                        "✓ Psycho Armor Govarian (ED1): Lullaby by Neverland (taken from Team SUS_DOMESTICUS)",
-                        "✗ Shingeki no Kyojin (IN): Call your name by mpi & CASG",
-                        "✗ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
-                        "✗ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
-                        "✗ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5"
-                    ]
-                },
-                "Median Time": {
-                    "count": 7.56,
-                    "details": [
-                        "Minimum: 3.76",
-                        "Mean: 7.84",
-                        "Maximum: 19.18",
-                        "Standard Deviation: 4.14"
-                    ]
-                },
-                "Chanting Guess Rate": {
-                    "count": 0.0,
-                    "details": [
-                        "0/0"
-                    ]
-                }
-            },
-            {
-                "Player": "Iuna",
-                "Guess Rate": {
-                    "count": 16.95,
-                    "details": [
-                        "10/59",
-                        "✗ Bats & Terry (IN): DOWNTOWN STEP by Stardust☆Revue & Momoko ...",
-                        "✗ Bouken Shite mo Ii Koro (ED1): Puzzling Day by PARIS-TEXAS",
-                        "✗ Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou",
-                        "✗ Bronze: Zetsuai Since 1989 (IN): Morobito Kozorite (Dai 112-ban) by KAY Gasshou-dan",
-                        "✓ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
-                        "✓ Dog Days'' (ED1): Stay With Me by Yui Horie",
-                        "✗ Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura",
-                        "✓ Dorohedoro (ED4): Strange Meat Pie by (K)NoW_NAME:Ayaka Tachibana",
-                        "✗ Eiga Doraemon: Nobita no Shin Kyouryuu (IN): Kimi to Kasaneta Monologue by Mr.Children",
-                        "✗ Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK",
-                        "✗ Fumetsu no Anata e Season 2 (ED1): Roots by Masashi Hamauzu",
-                        "✗ Gdleen (ED1): IN MY ROOM by Hirofumi Banba",
-                        "✗ Gekijouban Overlord: Sei Oukoku-hen (ED1): WHEELER-DEALER by OxT",
-                        "✗ Gekijouban Tokimeki Restaurant☆☆☆ MIRACLE6 (ED2): E→Motion by Shoichiro Hirata",
-                        "✗ Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki",
-                        "✗ Ginga e Kickoff!! (OP1): Across my world by knotlamp",
-                        "✗ Gintama' (IN): Yuke! Kaien by singman",
-                        "✗ Girls Band Cry (IN): Kara no Hako by Rina, Yuri",
-                        "✗ Haruzora to Akizora (ED1): Haruzora to Akizora by ViANKiE",
-                        "✗ Heart Cocktail Colorful (ED1): Tenderly by Sarah Vaughan",
-                        "✗ Imawa no Kuni no Alice (OP1): NEXTAGE by i☆Ris",
-                        "✗ Inuyashiki Last Hero (ED1): Ai o Oshiete Kureta Kimi e by Qaijff",
-                        "✗ Jashin-chan Dropkick' (IN): Jinbouchou Aika by Aina Suzuki",
-                        "✗ Kamui no Ken (ED1): Kamui no Ken by Noriko Watanabe",
-                        "✗ Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka",
-                        "✗ King of Prism: Your Endless Call - Mi~nna ... (IN): Lovepara! -Endless Love,Love- by SePTENTRION",
-                        "✗ Koukou Hoshi Kageki (IN): Hoshi no Stride by Natsuki Hanae",
-                        "✗ Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar",
-                        "✗ Maeterlinck no Aoi Tori: Tyltyl Mytyl no Bouken ... (ED1): Mado Akari by Hideki Osuga",
-                        "✗ Majutsushi Orphen Haguretabi: Kimluck-hen (ED1): Marionette Coup d'État by Mai Fuchigami",
-                        "✗ Marshmallow Times (ED1): Aruitekou by Grace",
-                        "✓ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
-                        "✗ Mikagura Gakuen Kumikyoku (ED3): Sekirara Candy by Ari Ozawa",
-                        "✗ Monster Strike: Rain of Memories (ED1): Aurora by WHITE ASH",
-                        "✗ Mousou Kagaku Series Wandaba Style (IN): Rocket Girl by Mix JUICE",
-                        "✗ Naruto (OP1): R★O★C★K★S by Hound Dog",
-                        "✗ Nepos Napos (ED1): smile by Ayaka Hirahara",
-                        "✓ Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ...",
-                        "✗ Nyan Koi! (ED1): Strawberry ~Amaku Setsunai Namida~ by Asami Imai",
-                        "✓ Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani",
-                        "✓ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa",
-                        "✗ Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada",
-                        "✗ Peeping Life: The Perfect Edition (ED1): Satori no Sho by detune.",
-                        "✗ Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi",
-                        "✗ Psycho Armor Govarian (ED1): Lullaby by Neverland",
-                        "✗ Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara",
-                        "✗ Ryuuichi Manga Gekijou: Onbu Obake (ED1): Onbu wa ne by Etsuko Hamura",
-                        "✓ Shakugan no Shana-tan Final Destruction (ED2): Yoake Umare Kuru Shoujo by Yoko Takahashi",
-                        "✗ Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ...",
-                        "✗ Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela",
-                        "✓ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
-                        "✗ The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ...",
-                        "✗ Twin Bee Paradise (ED1): Aikotoba wa Be!! by Mariko Kouda",
-                        "✗ Uta no☆Prince-sama♪Maji Love Legend Star (IN): Visible Elf by Kousuke Toriumi & Daiki ...",
-                        "✗ Vampire Hunter D (ED1): YOUR SONG by TM NETWORK",
-                        "✗ Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ...",
-                        "✓ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5",
-                        "✗ Yoasobi Gurashi! (ED1): Heart Balance by Yukanyun",
-                        "✗ Youjo Shachou (OP1): Susume! Mujina Company by Neko Hacker feat. Rina Hidaka ..."
-                    ]
-                },
-                "Lives Taken": 2,
-                "Lives Taken Details": [
-                    "Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ... (from Team Mami)",
-                    "Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani (from Team Mami)"
-                ],
-                "Lives Saved": 0.0,
-                "Lives Saved Details": [],
-                "Contribution Rate": {
-                    "count": 20.0,
-                    "details": [
-                        "2/10",
-                        "✗ Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM",
-                        "✗ Dog Days'' (ED1): Stay With Me by Yui Horie",
-                        "✗ Dorohedoro (ED4): Strange Meat Pie by (K)NoW_NAME:Ayaka Tachibana",
-                        "✗ Meitantei Conan (OP16): Growing of my heart by Mai Kuraki",
-                        "✓ Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ... (taken from Team Mami)",
-                        "✓ Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani (taken from Team Mami)",
-                        "✗ One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa",
-                        "✗ Shakugan no Shana-tan Final Destruction (ED2): Yoake Umare Kuru Shoujo by Yoko Takahashi",
-                        "✗ Tenkuu Shinpan (OP1): HON-NO by EMPiRE",
-                        "✗ Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5"
-                    ]
-                },
-                "Median Time": {
-                    "count": 8.39,
-                    "details": [
-                        "Minimum: 4.50",
-                        "Mean: 9.91",
-                        "Maximum: 17.53",
-                        "Standard Deviation: 4.96"
-                    ]
-                },
-                "Chanting Guess Rate": {
-                    "count": 0.0,
-                    "details": [
-                        "0/1",
-                        "✗ Bronze: Zetsuai Since 1989 (IN): Morobito Kozorite (Dai 112-ban) by KAY Gasshou-dan"
                     ]
                 }
             }
@@ -6150,34 +6150,29 @@
         "5-6": [
             "Buta no Liver wa Kanetsu Shiro (OP1): Watashi ga Warau Wake wa by ASCA (Fall 2023/29.04: 3/8)",
             "Josee to Tora to Sakana-tachi (IN): On This Christmas Night by Evan Call (Fall 2020/28.25: 3/8)",
-            "Futari Solo Camp (OP1): Akari wa Tooku by Skirt (Summer 2025/26.74: 0/8)"
+            "Gekijouban Tokimeki Restaurant☆☆☆ MIRACLE6 (ED2): E→Motion by Shoichiro Hirata (Winter 2018/26.15: 1/8)",
+            "Inuyashiki Last Hero (ED1): Ai o Oshiete Kureta Kimi e by Qaijff (Fall 2017/28.88: 3/8)",
+            "Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou (Spring 2017/29.42: 3/8)"
         ],
         "7-6": [
             "Gridman Universe (IN): all this metal 2023 by Shiro SAGISU featuring Hazel ... (Winter 2023/36.07: 3/8)",
-            "Dr. Stone: Science Future (ED1): Rolling Stone by BREIMEN (Winter 2025/39.71: 1/8)",
-            "One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa (Fall 2025/37.99: 5/8)"
+            "Koukou Hoshi Kageki (OP2): Yume Iro ~team Hiiragi Ver.~ by team Hiiragi (Summer 2016/36.28: 4/8)",
+            "Koukou Hoshi Kageki (IN): Yume Tsubomi by Kensho Ono & Yoshitsugu ... (Spring 2017/36.64: 3/8)",
+            "Senki Zesshou Symphogear AXZ (IN): Shitou -Ewigkeit- (German ver.) by Minako Kotobuki×Shouta ... (Summer 2017/39.70: 5/8)"
         ],
         "2-0": [
             "Soreike! Anpanman: Tsumiki-jou no Himitsu (IN): Tsumiki no Tou by Ryusei Nakao (Winter 1992/13.90: 1/8)",
-            "Yamato Takeru: After War (ED1): Twilight Songs by Naoko Hamasaki (Fall 1995/11.69: 2/8)",
             "Ryuuichi Manga Gekijou: Onbu Obake (ED1): Onbu wa ne by Etsuko Hamura (Fall 1972/10.88: 1/8)"
         ],
         "4-4": [
             "Glass no Kamen desu ga (ED2): Glass Masquerade by Mayumi Gojou (Spring 2013/20.65: 2/8)",
-            "Magi: Sinbad no Bouken (ED1): Polaris by Fujifabric (Spring 2016/24.92: 2/8)",
-            "Aikatsu Stars! (IN): Never Give Up☆ by Kana from AIKATSU☆STARS! (Spring 2016/21.36: 1/8)",
-            "Chou Futsuu Toshi Kashiwa Densetsu Z (ED1): MJK Tega-chan by Hikari Nishino (Summer 2019/21.22: 0/8)",
-            "Monster Strike: Rain of Memories (ED1): Aurora by WHITE ASH (Fall 2016/20.45: 1/8)",
-            "Uta no☆Prince-sama♪Maji Love Legend Star (IN): Visible Elf by Kousuke Toriumi & Daiki ... (Fall 2016/22.49: 2/8)",
-            "Dog Days'' (ED1): Stay With Me by Yui Horie (Winter 2015/23.97: 5/8)"
+            "D.C.II S.S.: Da Capo II Second Season (OP1): Sakura Amaneku Sekai by yozuca* (Spring 2008/22.29: 1/8)",
+            "Peeping Life: The Perfect Edition (ED1): Satori no Sho by detune. (Winter 2009/23.55: 1/8)",
+            "Nepos Napos (ED1): smile by Ayaka Hirahara (Winter 2005/21.74: 2/8)"
         ],
         "3-0": [
             "Crayon Shin-chan (IN): Happy Fools by TOMORROW X TOGETHER feat. Coi ... (Spring 1992/18.24: 3/8)",
             "Arei no Kagami: Way to the Virgin Space (IN): Aoi Mizuumi by Satoko Shimonari (Winter 1985/15.27: 1/8)",
-            "Mikeneko Holmes no Yuurei Joushu (ED1): Anata ni Deaete Yokatta by Eri Hiramatsu (Summer 1992/16.23: 1/8)",
-            "Tanjou: Debut (ED1): Sayonara ni Furenai by Miina Tominaga, Hiroko ... (Fall 1994/18.62: 2/8)",
-            "Mama wa Shougaku 4-nensei (OP1): Ai o + One by Hiromi Iwasaki (Winter 1992/16.84: 3/8)",
-            "Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ... (Summer 1996/18.32: 4/8)",
             "Bats & Terry (IN): DOWNTOWN STEP by Stardust☆Revue & Momoko ... (Winter 1987/18.34: 0/8)",
             "Vampire Hunter D (ED1): YOUR SONG by TM NETWORK (Fall 1985/19.22: 2/8)",
             "Maeterlinck no Aoi Tori: Tyltyl Mytyl no Bouken ... (ED1): Mado Akari by Hideki Osuga (Winter 1980/15.91: 0/8)",
@@ -6187,29 +6182,30 @@
         ],
         "3-4": [
             "Uchuu Senkan Yamato 2199 (ED1): Hoshi ga Towa o Terashiteru by Aira Yuuki (Spring 2012/16.74: 0/8)",
-            "Taka no Tsume 8: Yoshida-kun no × File (ED1): Ichigo Ichie by Monkichi (Summer 2016/19.15: 2/8)",
-            "Chou Futsuu Toshi Kashiwa Densetsu (ED1): Ame-iro Paradise by Akebonoyama Chuugaku Band ... (Winter 2016/18.03: 2/8)",
-            "Mikagura Gakuen Kumikyoku (ED3): Sekirara Candy by Ari Ozawa (Spring 2015/16.25: 1/8)"
+            "Nyan Koi! (ED1): Strawberry ~Amaku Setsunai Namida~ by Asami Imai (Fall 2009/17.65: 1/8)"
         ],
-        "8-4": [
+        "8-6": [
             "Aikatsu on Parade! (IN): Lovely Party Collection by Ruka・Mona・Miki from ... (Fall 2019/57.46: 7/8)",
             "Shuumatsu Nani Shitemasu ka? Isogashii desu ka? ... (IN): I call you by Tamaru Yamada (Spring 2017/42.00: 8/8)",
             "Mazinger Z: Infinity (OP1): Mazinger Z by Ichiro Mizuki (Winter 2018/48.77: 7/8)",
             "Kono Subarashii Sekai ni Shukufuku o! (ED1): Chiisana Boukensha by Sora Amamiya, Rie Takahashi, ... (Winter 2016/67.53: 6/8)",
             "Watashi ni Tenshi ga Maiorita! (IN): Tenshi no Manazashi Epilogue by Maria Sashide, Rika Nagae, ... (Winter 2019/60.19: 8/8)"
         ],
-        "2-5": [
+        "2-7": [
             "Sabi-iro no Armor: Reimei (IN): Blue Eyes by Taiki Satou (Winter 2022/14.98: 0/8)"
         ],
-        "7-3": [
+        "7-5": [
             "Shingeki no Kyojin (IN): Call your name by mpi & CASG (Spring 2013/39.03: 6/8)"
         ],
-        "4-6": [
+        "4-8": [
             "Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri (Winter 2026/20.06: 1/8)",
             "Majutsushi Kunon wa Mieteiru (ED1): Story by KOHTA YAMAMOTO feat. katagiri (Winter 2026/20.06: 0/8)",
             "King of Prism: Your Endless Call - Mi~nna ... (IN): Lovepara! -Endless Love,Love- by SePTENTRION (Spring 2025/21.67: 0/8)"
         ],
-        "8-3": [
+        "5-8": [
+            "Futari Solo Camp (OP1): Akari wa Tooku by Skirt (Summer 2025/26.74: 0/8)"
+        ],
+        "8-5": [
             "Love Live! School Idol Project (IN): Private Wars by A-RISE (Spring 2014/58.21: 5/8)"
         ],
         "5-0": [
@@ -6218,63 +6214,74 @@
             "Kikou Souseiki Mospeada: Love, Live, Alive (ED1): Areno e by Jin Haneoka (Summer 1985/27.19: 4/8)",
             "Don Dracula (ED1): Otou-san wa Kyuuketsuki by Yoshimi Niikura (Spring 1982/25.02: 5/8)"
         ],
-        "7-4": [
-            "Koukou Hoshi Kageki (OP2): Yume Iro ~team Hiiragi Ver.~ by team Hiiragi (Summer 2016/36.28: 4/8)",
-            "Koukou Hoshi Kageki (IN): Yume Tsubomi by Kensho Ono & Yoshitsugu ... (Spring 2017/36.64: 3/8)",
-            "Senki Zesshou Symphogear AXZ (IN): Shitou -Ewigkeit- (German ver.) by Minako Kotobuki×Shouta ... (Summer 2017/39.70: 5/8)"
+        "4-6": [
+            "Magi: Sinbad no Bouken (ED1): Polaris by Fujifabric (Spring 2016/24.92: 2/8)",
+            "Aikatsu Stars! (IN): Never Give Up☆ by Kana from AIKATSU☆STARS! (Spring 2016/21.36: 1/8)",
+            "Chou Futsuu Toshi Kashiwa Densetsu Z (ED1): MJK Tega-chan by Hikari Nishino (Summer 2019/21.22: 0/8)",
+            "Monster Strike: Rain of Memories (ED1): Aurora by WHITE ASH (Fall 2016/20.45: 1/8)",
+            "Uta no☆Prince-sama♪Maji Love Legend Star (IN): Visible Elf by Kousuke Toriumi & Daiki ... (Fall 2016/22.49: 2/8)",
+            "Dog Days'' (ED1): Stay With Me by Yui Horie (Winter 2015/23.97: 5/8)"
         ],
-        "4-0": [
+        "2-2": [
+            "Yamato Takeru: After War (ED1): Twilight Songs by Naoko Hamasaki (Fall 1995/11.69: 2/8)"
+        ],
+        "3-1": [
+            "Mikeneko Holmes no Yuurei Joushu (ED1): Anata ni Deaete Yokatta by Eri Hiramatsu (Summer 1992/16.23: 1/8)",
+            "Tanjou: Debut (ED1): Sayonara ni Furenai by Miina Tominaga, Hiroko ... (Fall 1994/18.62: 2/8)",
+            "Mama wa Shougaku 4-nensei (OP1): Ai o + One by Hiromi Iwasaki (Winter 1992/16.84: 3/8)"
+        ],
+        "4-2": [
             "Bannou Bunka Neko-Musume (IN): n² no Tsubuyaki by Megumi Hayashibara (Winter 1998/23.36: 1/8)",
-            "Rokushin Gattai God Mars (OP1): Uchuu no Ouja God Mars by Ippo Hiura (Fall 1981/24.87: 6/8)",
-            "Gdleen (ED1): IN MY ROOM by Hirofumi Banba (Winter 1990/20.74: 1/8)",
             "Bronze: Zetsuai Since 1989 (IN): Morobito Kozorite (Dai 112-ban) by KAY Gasshou-dan (Fall 1996/23.61: 1/8)",
-            "Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki (Fall 1991/20.31: 2/8)",
             "Pocket Monsters: Mewtwo no Gyakushuu (ED1): Kaze to Issho ni by Sachiko Kobayashi (Summer 1998/20.05: 4/8)"
         ],
-        "4-3": [
+        "4-5": [
             "Shinryaku!! Ika Musume (ED1): Puzzle by Kanae Itou (Summer 2012/22.13: 3/8)"
         ],
-        "7-2": [
+        "7-4": [
             "Shuffle! (OP1): YOU by YURIA (Summer 2005/38.39: 7/8)",
             "Yes! Precure 5 GoGo! (OP1): Precure 5, Full Throttle GO GO! by Mayu Kudou with Precure 5 (Winter 2008/39.04: 7/8)"
         ],
-        "8-2": [
+        "8-4": [
             "Clannad: After Story (IN): Dango Daikazoku by Yuichi Nakamura & Chata (Fall 2008/83.77: 8/8)"
         ],
-        "3-3": [
+        "3-5": [
             "Sekai Seifuku: Bouryaku no Zvezda (ED2): Koi wa Missile Launcher by Erii Yamazaki (Winter 2014/17.00: 2/8)",
             "Ginga e Kickoff!! (OP1): Across my world by knotlamp (Spring 2012/17.63: 2/8)",
             "Gintama' (IN): Yuke! Kaien by singman (Spring 2011/15.53: 1/8)",
             "Kuro to Kin no Akanai Kagi. (ED1): Dare mo ga Tadoritsukeru Hazu no Sora e by Antistar (Winter 2013/18.49: 1/8)"
         ],
-        "6-1": [
+        "4-0": [
+            "Rokushin Gattai God Mars (OP1): Uchuu no Ouja God Mars by Ippo Hiura (Fall 1981/24.87: 6/8)"
+        ],
+        "6-3": [
             "Gintama (ED1): Omae no Kaa-chan××Da! by kazmy with Necromancers (Fall 2004/32.45: 6/8)"
         ],
-        "8-0": [
+        "8-2": [
             "Bishoujo Senshi Sailor Moon Sailor Stars (ED2): Moonlight Densetsu by Sakurakko Club Sakura-gumi (Winter 1996/48.22: 5/8)",
             "Meitantei Conan (OP16): Growing of my heart by Mai Kuraki (Winter 1996/43.30: 6/8)"
         ],
-        "8-5": [
+        "8-7": [
             "Yuukoku no Moriarty (ED1): ALPHA by STEREO DIVE FOUNDATION (Fall 2020/43.42: 3/8)",
             "Dorohedoro (ED4): Strange Meat Pie by (K)NoW_NAME:Ayaka Tachibana (Winter 2020/42.79: 5/8)",
             "Cyberpunk: Edgerunners (IN): NIE PYTAJ NAS by ZJEDNOCZENIE SOUNDSYSTEM (Summer 2022/56.89: 6/8)",
             "Girls Band Cry (IN): Kara no Hako by Rina, Yuri (Spring 2024/65.76: 5/8)"
         ],
-        "3-1": [
+        "3-3": [
             "Black Jack (ED1): Kuroge Wagyuu Joshio Tanyaki 680 Yen by Ai Otsuka (Fall 2004/18.66: 1/8)",
             "Dr. Rin ni Kiitemite! (ED2): Kimi to no Mirai by AiM (Spring 2001/15.97: 1/8)",
             "Rurouni Kenshin: Meiji Kenkaku Romantan - ... (ED1): Itoshisa no Kate by Hiroko Kasahara (Fall 2001/17.50: 2/8)",
             "Ojamajo Doremi Dokkaan! (IN): Daisuki na Ehon to Mama no Uta by Ikue Ootani (Winter 2002/19.02: 2/8)",
             "Marshmallow Times (ED1): Aruitekou by Grace (Spring 2004/16.41: 0/8)"
         ],
-        "6-2": [
+        "6-4": [
             "One Outs (ED1): Moment by TRIBAL CHAIR (Fall 2008/31.60: 6/8)"
         ],
-        "4-1": [
+        "4-3": [
             "Chrno Crusade (IN): Azmaria no Uta by Saeko Chiba (Fall 2003/20.06: 3/8)",
             "Love♥Love? (IN): Inori no Uta by rainbow colors (Spring 2004/23.58: 1/8)"
         ],
-        "5-5": [
+        "5-7": [
             "Gridman Universe (IN): Heartbeat City by Maaya Uchida (Winter 2023/29.38: 0/8)",
             "22/7 (ED2): One of them by Nagomi Saijou (Winter 2020/29.24: 5/8)",
             "Jashin-chan Dropkick' (IN): Jinbouchou Aika by Aina Suzuki (Spring 2020/29.53: 2/8)",
@@ -6282,48 +6289,51 @@
             "Fruits Basket 2nd Season (ED1): ad meliora by THE CHARM PARK (Spring 2020/29.08: 2/8)",
             "Yoasobi Gurashi! (ED1): Heart Balance by Yukanyun (Summer 2024/25.57: 1/8)"
         ],
-        "5-2": [
+        "3-6": [
+            "Taka no Tsume 8: Yoshida-kun no × File (ED1): Ichigo Ichie by Monkichi (Summer 2016/19.15: 2/8)",
+            "Chou Futsuu Toshi Kashiwa Densetsu (ED1): Ame-iro Paradise by Akebonoyama Chuugaku Band ... (Winter 2016/18.03: 2/8)",
+            "Mikagura Gakuen Kumikyoku (ED3): Sekirara Candy by Ari Ozawa (Spring 2015/16.25: 1/8)"
+        ],
+        "5-4": [
             "Baldr Force EXE Resolution (IN): Face of Fact by KOTOKO (Fall 2006/28.65: 4/8)",
             "Catman Series III (IN): Never Going to Drink Again by The Planet Smashers (Winter 2008/26.26: 2/8)"
         ],
-        "6-5": [
+        "6-7": [
             "Made in Abyss: Fukaki Tamashii no Reimei (IN): Tozo Hanoline by Kevin Penkin ft. Úyanga Bold (Winter 2020/31.26: 6/8)",
             "Blade Runner: Black Lotus (ED7): Intuition by Salem Ilese (Fall 2021/31.78: 4/8)",
             "Tenkuu Shinpan (OP1): HON-NO by EMPiRE (Winter 2021/34.22: 7/8)",
             "Fumetsu no Anata e Season 2 (ED1): Roots by Masashi Hamauzu (Fall 2022/31.04: 4/8)"
         ],
-        "4-2": [
-            "D.C.II S.S.: Da Capo II Second Season (OP1): Sakura Amaneku Sekai by yozuca* (Spring 2008/22.29: 1/8)",
-            "Peeping Life: The Perfect Edition (ED1): Satori no Sho by detune. (Winter 2009/23.55: 1/8)",
-            "Nepos Napos (ED1): smile by Ayaka Hirahara (Winter 2005/21.74: 2/8)"
+        "7-8": [
+            "Dr. Stone: Science Future (ED1): Rolling Stone by BREIMEN (Winter 2025/39.71: 1/8)",
+            "One Punch Man (ED1): Soko ni Aru Akari by Makoto Furukawa (Fall 2025/37.99: 5/8)"
         ],
-        "6-3": [
+        "4-1": [
+            "Gdleen (ED1): IN MY ROOM by Hirofumi Banba (Winter 1990/20.74: 1/8)",
+            "Genji Tsuushin Agedama (OP2): Jishin Manman Agedaman by Nozomu Sasaki (Fall 1991/20.31: 2/8)"
+        ],
+        "6-5": [
             "Shakugan no Shana-tan Final Destruction (ED2): Yoake Umare Kuru Shoujo by Yoko Takahashi (Winter 2012/31.88: 6/8)"
         ],
-        "3-5": [
+        "3-7": [
             "Eiga Doraemon: Nobita no Shin Kyouryuu (IN): Kimi to Kasaneta Monologue by Mr.Children (Summer 2020/17.51: 1/8)",
             "Majutsushi Orphen Haguretabi: Kimluck-hen (ED1): Marionette Coup d'État by Mai Fuchigami (Winter 2021/19.51: 4/8)"
         ],
-        "5-3": [
+        "5-5": [
             "Imawa no Kuni no Alice (OP1): NEXTAGE by i☆Ris (Fall 2014/26.03: 3/8)"
         ],
-        "7-5": [
+        "7-7": [
             "Gekijouban Overlord: Sei Oukoku-hen (ED1): WHEELER-DEALER by OxT (Summer 2024/35.99: 5/8)"
         ],
-        "5-4": [
-            "Gekijouban Tokimeki Restaurant☆☆☆ MIRACLE6 (ED2): E→Motion by Shoichiro Hirata (Winter 2018/26.15: 1/8)",
-            "Inuyashiki Last Hero (ED1): Ai o Oshiete Kureta Kimi e by Qaijff (Fall 2017/28.88: 3/8)",
-            "Boy's Love Nitro+CHiRAL (IN): Miracles may by Kanako Itou (Spring 2017/29.42: 3/8)"
-        ],
-        "6-4": [
+        "6-6": [
             "Koukou Hoshi Kageki (IN): Hoshi no Stride by Natsuki Hanae (Fall 2015/34.34: 3/8)",
             "Soukyuu no Fafner: The Beyond (IN): Separation[pf] by angela (Spring 2019/31.97: 3/8)",
             "Yarichin Bitch-bu (ED1): Touch you by Shiritsu Morimouri Gakuen-sei ... (Summer 2018/32.67: 5/8)"
         ],
-        "6-0": [
+        "6-2": [
             "Twin Bee Paradise (ED1): Aikotoba wa Be!! by Mariko Kouda (Winter 1998/31.68: 0/8)"
         ],
-        "4-5": [
+        "4-7": [
             "Ore no Yubi de Midarero. Heiten-go Futarikiri no ... (ED1): Yubisaki no Mahou by Wataru Komada (Spring 2020/24.36: 2/8)",
             "Youjo Shachou (OP1): Susume! Mujina Company by Neko Hacker feat. Rina Hidaka ... (Winter 2021/20.99: 2/8)",
             "The iDOLM@STER Million Live! (IN): G Senjou no Aria by Asami Imai, Azusa Tadokoro, ... (Fall 2023/20.49: 3/8)",
@@ -6333,48 +6343,26 @@
             "Ninja Hattori-kun (IN): Ureshii Hinamatsuri by Sadako Kuwana & Columbia ... (Summer 1981/6.66: 2/8)"
         ],
         "3-2": [
-            "Nyan Koi! (ED1): Strawberry ~Amaku Setsunai Namida~ by Asami Imai (Fall 2009/17.65: 1/8)"
+            "Soreike! Anpanman: Soratobu Ehon to Glass no Kutsu (IN): Bokura wa Hero by Keiko Toda, Sumi Shimamoto, ... (Summer 1996/18.32: 4/8)"
         ],
-        "2-1": [
+        "2-3": [
             "Mousou Kagaku Series Wandaba Style (IN): Rocket Girl by Mix JUICE (Spring 2003/14.17: 2/8)"
         ],
-        "8-1": [
+        "8-3": [
             "Naruto (OP1): R★O★C★K★S by Hound Dog (Fall 2002/58.16: 4/8)"
         ]
     },
     "json_scatter": [
         {
-            "acronym": "CHA",
-            "name": "chaabdu92",
-            "over8": 4.42,
-            "vintage": 2017.75,
-            "seasonal_vintage": "Fall 2017",
-            "gr": 31.67,
-            "rig_gr": 71.43,
-            "performance": 53.83,
-            "rig_rate": 11.67
-        },
-        {
-            "acronym": "ZOM",
-            "name": "zomg",
-            "over8": 5.75,
-            "vintage": 2013.75,
-            "seasonal_vintage": "Fall 2013",
-            "gr": 29.09,
+            "acronym": "KAE",
+            "name": "KaedeDayo",
+            "over8": 4.71,
+            "vintage": 2019.75,
+            "seasonal_vintage": "Fall 2019",
+            "gr": 28.33,
             "rig_gr": 80.0,
-            "performance": 61.9,
-            "rig_rate": 9.09
-        },
-        {
-            "acronym": "EDW",
-            "name": "Edwardd",
-            "over8": 4.73,
-            "vintage": 2012.25,
-            "seasonal_vintage": "Spring 2012",
-            "gr": 18.33,
-            "rig_gr": 30.0,
-            "performance": 21.63,
-            "rig_rate": 33.33
+            "performance": 10.88,
+            "rig_rate": 8.33
         },
         {
             "acronym": "MAM",
@@ -6388,15 +6376,26 @@
             "rig_rate": 6.67
         },
         {
-            "acronym": "LEG",
-            "name": "legrandort",
-            "over8": 5.23,
-            "vintage": 2017.25,
-            "seasonal_vintage": "Spring 2017",
-            "gr": 23.64,
-            "rig_gr": 100.0,
-            "performance": 74.52,
-            "rig_rate": 10.91
+            "acronym": "EDW",
+            "name": "Edwardd",
+            "over8": 4.73,
+            "vintage": 2012.25,
+            "seasonal_vintage": "Spring 2012",
+            "gr": 18.33,
+            "rig_gr": 30.0,
+            "performance": 21.63,
+            "rig_rate": 33.33
+        },
+        {
+            "acronym": "CHA",
+            "name": "chaabdu92",
+            "over8": 4.42,
+            "vintage": 2017.75,
+            "seasonal_vintage": "Fall 2017",
+            "gr": 31.67,
+            "rig_gr": 71.43,
+            "performance": 53.83,
+            "rig_rate": 11.67
         },
         {
             "acronym": "MAY",
@@ -6421,15 +6420,26 @@
             "rig_rate": 3.64
         },
         {
-            "acronym": "KAE",
-            "name": "KaedeDayo",
-            "over8": 4.71,
-            "vintage": 2019.75,
-            "seasonal_vintage": "Fall 2019",
-            "gr": 28.33,
+            "acronym": "ZOM",
+            "name": "zomg",
+            "over8": 5.75,
+            "vintage": 2013.75,
+            "seasonal_vintage": "Fall 2013",
+            "gr": 29.09,
             "rig_gr": 80.0,
-            "performance": 10.88,
-            "rig_rate": 8.33
+            "performance": 61.9,
+            "rig_rate": 9.09
+        },
+        {
+            "acronym": "LEG",
+            "name": "legrandort",
+            "over8": 5.23,
+            "vintage": 2017.25,
+            "seasonal_vintage": "Spring 2017",
+            "gr": 23.64,
+            "rig_gr": 100.0,
+            "performance": 74.52,
+            "rig_rate": 10.91
         },
         {
             "acronym": "TUG",
@@ -6441,17 +6451,6 @@
             "rig_gr": 100.0,
             "performance": 30.64,
             "rig_rate": 5.56
-        },
-        {
-            "acronym": "HMS",
-            "name": "hmsuis",
-            "over8": 5.09,
-            "vintage": 2016.62,
-            "seasonal_vintage": "Summer 2016",
-            "gr": 40.74,
-            "rig_gr": 0.0,
-            "performance": 24.06,
-            "rig_rate": 1.85
         },
         {
             "acronym": "MAH",
@@ -6476,26 +6475,15 @@
             "rig_rate": 20.37
         },
         {
-            "acronym": "IUN",
-            "name": "Iuna",
-            "over8": 5.1,
-            "vintage": 2013.5,
-            "seasonal_vintage": "Summer 2013",
-            "gr": 16.95,
+            "acronym": "HMS",
+            "name": "hmsuis",
+            "over8": 5.09,
+            "vintage": 2016.62,
+            "seasonal_vintage": "Summer 2016",
+            "gr": 40.74,
             "rig_gr": 0.0,
-            "performance": 86.1,
-            "rig_rate": 0.0
-        },
-        {
-            "acronym": "VR0",
-            "name": "Vr0003",
-            "over8": 4.44,
-            "vintage": 2015.0,
-            "seasonal_vintage": "Winter 2015",
-            "gr": 15.25,
-            "rig_gr": 85.71,
-            "performance": 26.26,
-            "rig_rate": 11.86
+            "performance": 24.06,
+            "rig_rate": 1.85
         },
         {
             "acronym": "SUS",
@@ -6509,6 +6497,17 @@
             "rig_rate": 25.42
         },
         {
+            "acronym": "IUN",
+            "name": "Iuna",
+            "over8": 5.1,
+            "vintage": 2013.5,
+            "seasonal_vintage": "Summer 2013",
+            "gr": 16.95,
+            "rig_gr": 0.0,
+            "performance": 86.1,
+            "rig_rate": 0.0
+        },
+        {
             "acronym": "SEL",
             "name": "Selaph",
             "over8": 4.09,
@@ -6518,47 +6517,32 @@
             "rig_gr": 0.0,
             "performance": 28.02,
             "rig_rate": 0.0
+        },
+        {
+            "acronym": "VR0",
+            "name": "Vr0003",
+            "over8": 4.44,
+            "vintage": 2015.0,
+            "seasonal_vintage": "Winter 2015",
+            "gr": 15.25,
+            "rig_gr": 85.71,
+            "performance": 26.26,
+            "rig_rate": 11.86
         }
     ],
     "json_arrows": [
         {
-            "acronym": "CHA",
-            "name": "chaabdu92",
-            "x_start": 3.71,
-            "y_start": 2020.75,
-            "seasonal_vintage_start": "Fall 2020",
-            "x_end": 4.42,
-            "y_end": 2017.75,
-            "seasonal_vintage_end": "Fall 2017",
-            "rig_gr": 71.43,
-            "gr": 31.67,
-            "rig_rate": 11.67
-        },
-        {
-            "acronym": "ZOM",
-            "name": "zomg",
-            "x_start": 5.2,
-            "y_start": 2014.25,
-            "seasonal_vintage_start": "Spring 2014",
-            "x_end": 5.75,
-            "y_end": 2013.75,
-            "seasonal_vintage_end": "Fall 2013",
+            "acronym": "KAE",
+            "name": "KaedeDayo",
+            "x_start": 4.6,
+            "y_start": 2022.5,
+            "seasonal_vintage_start": "Summer 2022",
+            "x_end": 4.71,
+            "y_end": 2019.75,
+            "seasonal_vintage_end": "Fall 2019",
             "rig_gr": 80.0,
-            "gr": 29.09,
-            "rig_rate": 9.09
-        },
-        {
-            "acronym": "EDW",
-            "name": "Edwardd",
-            "x_start": 2.55,
-            "y_start": 2002.38,
-            "seasonal_vintage_start": "Spring 2002",
-            "x_end": 4.73,
-            "y_end": 2012.25,
-            "seasonal_vintage_end": "Spring 2012",
-            "rig_gr": 30.0,
-            "gr": 18.33,
-            "rig_rate": 33.33
+            "gr": 28.33,
+            "rig_rate": 8.33
         },
         {
             "acronym": "MAM",
@@ -6574,17 +6558,30 @@
             "rig_rate": 6.67
         },
         {
-            "acronym": "LEG",
-            "name": "legrandort",
-            "x_start": 4.5,
-            "y_start": 2016.12,
-            "seasonal_vintage_start": "Winter 2016",
-            "x_end": 5.23,
-            "y_end": 2017.25,
-            "seasonal_vintage_end": "Spring 2017",
-            "rig_gr": 100.0,
-            "gr": 23.64,
-            "rig_rate": 10.91
+            "acronym": "EDW",
+            "name": "Edwardd",
+            "x_start": 2.55,
+            "y_start": 2002.38,
+            "seasonal_vintage_start": "Spring 2002",
+            "x_end": 4.73,
+            "y_end": 2012.25,
+            "seasonal_vintage_end": "Spring 2012",
+            "rig_gr": 30.0,
+            "gr": 18.33,
+            "rig_rate": 33.33
+        },
+        {
+            "acronym": "CHA",
+            "name": "chaabdu92",
+            "x_start": 3.71,
+            "y_start": 2020.75,
+            "seasonal_vintage_start": "Fall 2020",
+            "x_end": 4.42,
+            "y_end": 2017.75,
+            "seasonal_vintage_end": "Fall 2017",
+            "rig_gr": 71.43,
+            "gr": 31.67,
+            "rig_rate": 11.67
         },
         {
             "acronym": "ARR",
@@ -6600,17 +6597,30 @@
             "rig_rate": 3.64
         },
         {
-            "acronym": "KAE",
-            "name": "KaedeDayo",
-            "x_start": 4.6,
-            "y_start": 2022.5,
-            "seasonal_vintage_start": "Summer 2022",
-            "x_end": 4.71,
-            "y_end": 2019.75,
-            "seasonal_vintage_end": "Fall 2019",
+            "acronym": "ZOM",
+            "name": "zomg",
+            "x_start": 5.2,
+            "y_start": 2014.25,
+            "seasonal_vintage_start": "Spring 2014",
+            "x_end": 5.75,
+            "y_end": 2013.75,
+            "seasonal_vintage_end": "Fall 2013",
             "rig_gr": 80.0,
-            "gr": 28.33,
-            "rig_rate": 8.33
+            "gr": 29.09,
+            "rig_rate": 9.09
+        },
+        {
+            "acronym": "LEG",
+            "name": "legrandort",
+            "x_start": 4.5,
+            "y_start": 2016.12,
+            "seasonal_vintage_start": "Winter 2016",
+            "x_end": 5.23,
+            "y_end": 2017.25,
+            "seasonal_vintage_end": "Spring 2017",
+            "rig_gr": 100.0,
+            "gr": 23.64,
+            "rig_rate": 10.91
         },
         {
             "acronym": "TUG",
@@ -6624,19 +6634,6 @@
             "rig_gr": 100.0,
             "gr": 25.93,
             "rig_rate": 5.56
-        },
-        {
-            "acronym": "HMS",
-            "name": "hmsuis",
-            "x_start": 1.0,
-            "y_start": 1996.75,
-            "seasonal_vintage_start": "Fall 1996",
-            "x_end": 5.09,
-            "y_end": 2016.62,
-            "seasonal_vintage_end": "Summer 2016",
-            "rig_gr": 0.0,
-            "gr": 40.74,
-            "rig_rate": 1.85
         },
         {
             "acronym": "MAH",
@@ -6665,17 +6662,17 @@
             "rig_rate": 20.37
         },
         {
-            "acronym": "VR0",
-            "name": "Vr0003",
-            "x_start": 4.29,
-            "y_start": 2002.75,
-            "seasonal_vintage_start": "Fall 2002",
-            "x_end": 4.44,
-            "y_end": 2015.0,
-            "seasonal_vintage_end": "Winter 2015",
-            "rig_gr": 85.71,
-            "gr": 15.25,
-            "rig_rate": 11.86
+            "acronym": "HMS",
+            "name": "hmsuis",
+            "x_start": 1.0,
+            "y_start": 1996.75,
+            "seasonal_vintage_start": "Fall 1996",
+            "x_end": 5.09,
+            "y_end": 2016.62,
+            "seasonal_vintage_end": "Summer 2016",
+            "rig_gr": 0.0,
+            "gr": 40.74,
+            "rig_rate": 1.85
         },
         {
             "acronym": "SUS",
@@ -6689,6 +6686,19 @@
             "rig_gr": 100.0,
             "gr": 64.41,
             "rig_rate": 25.42
+        },
+        {
+            "acronym": "VR0",
+            "name": "Vr0003",
+            "x_start": 4.29,
+            "y_start": 2002.75,
+            "seasonal_vintage_start": "Fall 2002",
+            "x_end": 4.44,
+            "y_end": 2015.0,
+            "seasonal_vintage_end": "Winter 2015",
+            "rig_gr": 85.71,
+            "gr": 15.25,
+            "rig_rate": 11.86
         }
     ],
     "json_explanations": {
@@ -6711,5 +6721,5 @@
         "Best Solo Rig Converter": "100 * Solo from Solo Rig / Solo Rig<br>Shows the best player at converting their own solo rig into a solo",
         "Worst Solo Rig Converter": "100 * Solo from Solo Rig / Solo Rig<br>Shows the worst player at converting their own solo rig into a solo"
     },
-    "generated_timestamp": 1782298170883
+    "generated_timestamp": 1782298875630
 }
