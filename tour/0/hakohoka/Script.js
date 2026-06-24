@@ -661,14 +661,14 @@ const xLabels = (numX === 8)
 : ['5', '10', '15', '20', '25', '30', '35', '40'];
 
 const yLabels = (numY === 8)
-? [1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030]
-: [1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030];
+? [1995, 2000, 2005, 2010, 2015, 2020, 2025]
+: [1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025];
 
 const matrixBins = {};
 
 songData.forEach(s => {
     let xIdx    = Math.min(Math.floor(s.difficulty / 5), numX - 1);
-    let yIdx    = (numY === 8) ? ((s.vintage < 1990) ? 0 : Math.min(Math.floor((s.vintage - 1990) / 5) + 1, 7)) : Math.min(Math.max(Math.floor((s.vintage - 1985) / 5), 0), 8);
+    let yIdx    = (numY === 8) ? ((s.vintage < 1995) ? 0 : Math.min(Math.floor((s.vintage - 1995) / 5) + 1, 7)) : Math.min(Math.max(Math.floor((s.vintage - 1985) / 5), 0), 8);
     let key     = `${xIdx}-${yIdx}`;
 
     if(!matrixBins[key]) matrixBins[key] = {count: 0, over8Sum: 0};
@@ -688,16 +688,17 @@ for (let i = 0; i < numY; i++) {
     for (let j = 0; j < numX; j++) {
         let key         = `${j}-${i}`;
         let vintageStr  = "";
+        let diffStr     = "";
 
         if (numY === 8) {
-            if (i === 0) vintageStr = "Vintage: <1995";
+            if      (i === 0) vintageStr = "Vintage: <1995";
+            else if (i === 7) vintageStr = "Vintage: >2025";
 
             else {
                 let startYr = 1995 + (i - 1) * 5;
-                let endYr = startYr + 5;
-                vintageStr = `Vintage: ${startYr}-${endYr}`;
+                let endYr   = startYr + 5;
+                vintageStr  = `Vintage: ${startYr}-${endYr}`;
             }
-
         }
 
         else {
@@ -711,39 +712,26 @@ for (let i = 0; i < numY; i++) {
             }
         }
 
-        let diffStr = "";
-
-        if (numX === 4) {
-            if      (j === 0)   diffStr = "Difficulty: <10";
-            else if (j === 1)   diffStr = "Difficulty: 10-20";
-            else if (j === 2)   diffStr = "Difficulty: 20-30";
-            else                diffStr = "Difficulty: >30";
-        }
-
-        else if (numX === 5) {
-            if      (j === 0)   diffStr = "Difficulty: <10";
-            else if (j === 1)   diffStr = "Difficulty: 10-20";
-            else if (j === 2)   diffStr = "Difficulty: 20-30";
-            else if (j === 3)   diffStr = "Difficulty: 30-40";
-            else                diffStr = "Difficulty: >40";
-        }
-
-        else if (numX === 8) {
-            let startDf = j         * 5;
-            let endDf   = startDf   + 5;
-
+        if (numX === 8) {
             if      (j === 0)   diffStr = "Difficulty: <5";
             else if (j === 7)   diffStr = "Difficulty: >35";
-            else                diffStr = `Difficulty: ${startDf}-${endDf}`;
+
+            else {
+                let startDf = j         * 5;
+                let endDf   = startDf   + 5;
+                diffStr     = `Difficulty: ${startDf}-${endDf}`;
+            }
         }
 
         else {
-            let startDf = j         * 5;
-            let endDf   = startDf   + 5;
-
             if      (j === 0)   diffStr = "Difficulty: <5";
             else if (j === 8)   diffStr = "Difficulty: >40";
-            else                diffStr = `Difficulty: ${startDf}-${endDf}`;
+
+            else {
+                let startDf = j         * 5;
+                let endDf   = startDf   + 5;
+                diffStr     = `Difficulty: ${startDf}-${endDf}`;
+            }
         }
 
         if (key in matrixBins) {
@@ -767,7 +755,7 @@ for (let i = 0; i < numY; i++) {
                 song_hover_str = "<br>• " + bin_songs.join("<br>• ");
             }
 
-            rowText.push(`${vintageStr}<br>${diffStr}<br>Mean Over-8: ${val.toFixed(2)}${song_hover_str}`);
+            rowText.push(`<b>${vintageStr}<br>${diffStr}<br>Mean Over-8: ${val.toFixed(2)}</b>${song_hover_str}`);
 
             annotations.push({
                 x               : j,
@@ -782,7 +770,7 @@ for (let i = 0; i < numY; i++) {
 
         else {
             rowZ    .push(null);
-            rowText .push(`${vintageStr}<br>${diffStr}<br>Mean Over-8: N/A`);
+            rowText .push(`<b>${vintageStr}<br>${diffStr}<br>Mean Over-8: N/A</b>`);
         }
     }
 
