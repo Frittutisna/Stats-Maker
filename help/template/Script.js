@@ -639,105 +639,211 @@ for (let i = 0; i < numY; i++) {
 }
 
 Plotly.newPlot('plotlySongChart', [{
-    z: zValues, x: Array.from({length: numX}, (_, i) => i), y: Array.from({length: numY}, (_, i) => i),
-    text: textLabels, hovertemplate: '<span style="text-align: left; display: block;">%{text}</span><extra></extra>',
-    hoverlabel: { align: 'left' }, type: 'heatmap', colorscale: [[0, c0], [0.375, c1], [0.625, c2], [1, c2]],
-    zmin: 0, zmax: 8, showscale: true,
-    colorbar: {
-        title: { text: '<b>Over-8</b>', font: { family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }, side: 'right' },
-        thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
-        tickmode: 'array', tickvals: [0, 3, 5, 8], ticktext: ['0', '3', '5', '8'],
-        tickfont: { family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }
+    z               : zValues,
+    x               : Array.from({length: numX}, (_, i) => i),
+    y               : Array.from({length: numY}, (_, i) => i),
+    text            : textLabels,
+    hovertemplate   : '<span style="text-align: left; display: block;">%{text}</span><extra></extra>',
+    hoverlabel      : {align: 'left'},
+    type            : 'heatmap',
+    colorscale      : [[0, c0], [0.375, c1], [0.625, c2], [1, c2]],
+    zmin            : 0,
+    zmax            : 8,
+    showscale       : true,
+    colorbar        : {
+        title       : {text: '<b>Over-8</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
+        thickness   : 25,
+        len         : 1.0,
+        y           : 0.5,
+        yanchor     : 'middle',
+        x           : 1,
+        xpad        : -10,
+        tickmode    : 'array',
+        tickvals    : [0, 3, 5, 8],
+        ticktext    : ['0', '3', '5', '8'],
+        tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'}
     }
 }], {
-    font: { family: 'Segoe UI' },
-    xaxis: {
-        title: { text: '<b>Difficulty</b>', font: { family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }, pad: 5 },
-        tickmode: 'array', tickvals: Array.from({length: numX - 1}, (_, i) => i + 0.5), ticktext: xLabels,
-        tickfont: { family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' },
-        showgrid: true, zeroline: false, showticklabels: true, ticks: '', fixedrange: true
+    font        : {family: 'Segoe UI'},
+    xaxis       : {
+        title           : {text: '<b>Difficulty</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
+        tickmode        : 'array',
+        tickvals        : Array.from({length: numX - 1}, (_, i) => i + 0.5),
+        ticktext        : xLabels,
+        tickfont        : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'},
+        showgrid        : true,
+        zeroline        : false,
+        showticklabels  : true,
+        ticks           : '',
+        fixedrange      : true
     },
     yaxis: {
-        title: { text: '<b>Vintage</b>', font: { family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }, pad: 5 },
-        tickmode: 'array', tickvals: Array.from({length: numY - 1}, (_, i) => i + 0.5), ticktext: yLabels,
-        tickfont: { family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' },
-        tickangle: -90, showgrid: true, zeroline: false, showticklabels: true, ticks: '', fixedrange: true
+        title           : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
+        tickmode        : 'array',
+        tickvals        : Array.from({length: numY - 1}, (_, i) => i + 0.5),
+        ticktext        : yLabels,
+        tickfont        : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'},
+        tickangle       : -90,
+        showgrid        : true,
+        zeroline        : false,
+        showticklabels  : true,
+        ticks           : '',
+        fixedrange      : true
     },
-    annotations: annotations, margin: { l: 60, r: 0, t: 30, b: 55 }
+    annotations : annotations,
+    margin      : {l: 60, r: 0, t: 30, b: 60}
 }, {responsive: true, displayModeBar: false});
 
-if (document.getElementById('plotlyListChart') && arrowData) {
-    const listHull = get75PercentileHull(arrowData, 'x_start', 'y_start');
-    let listTraces = [];
-    if (listHull) {
-        listTraces.push({ x: listHull.x, y: listHull.y, type: 'scatter', mode: 'lines', line: { color: 'black', width: 0.5, dash: 'solid' }, hoverinfo: 'skip', showlegend: false });
-    }
-    listTraces.push({
-        x: arrowData.map(d => d.x_start), y: arrowData.map(d => d.y_start), text: arrowData.map(d => d.acronym),
-        customdata: arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
-        hovertemplate: '<b>%{customdata[0]}</b><br>Rig Over-8: %{customdata[1]}<br>Rig Vintage: %{customdata[2]}<br>Rig Rate: %{customdata[3]}<br>Rig Guess Rate: %{customdata[4]}<extra></extra>',
-        mode: 'markers+text', textposition: 'top center', textfont: { family: 'Segoe UI', size: 20, weight: 'bold', color: 'black' }, showlegend: false,
-        marker: {
-            size: arrowData.map(d => Math.max(25, Math.pow(d.rig_rate, 2) * 0.025)), opacity: 1, color: arrowData.map(d => d.grid_grs || d.rig_gr),
-            colorscale: [[0, c0], [0.7, c0], [0.8, c1], [0.9, c2], [1, c2]], showscale: true,
-            colorbar: {
-                title: { text: '<b>Rig Guess Rate</b>', font: { family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }, side: 'right' },
-                thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
-                tickmode: 'array', tickvals: [0, 70, 80, 90, 100], ticktext: ['0', '70', '80', '90', '100'],
-                tickfont: { family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }
-            },
-            line: { color: 'black', width: 1 }, cmin: 0, cmax: 100
-        }
-    });
-
-    Plotly.newPlot('plotlyListChart', listTraces, {
-        font: { family: 'Segoe UI' },
-        xaxis: { title: { text: '<b>Over-8</b>', font: { family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }, pad: 5 }, tickfont: { family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }, showgrid: true, tickformat: '.1f', dtick: 0.5, fixedrange: false },
-        yaxis: { title: { text: '<b>Vintage</b>', font: { family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }, pad: 5 }, tickfont: { family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }, tickangle: -90, showgrid: true, tickformat: '.0f', dtick: Math.max(2, Math.ceil((Math.max(...arrowData.map(d => d.y_start)) - Math.min(...arrowData.map(d => d.y_start))) / 5)), fixedrange: false },
-        margin: { l: 60, r: 0, t: 30, b: 55 },
-        annotations: [
-            { x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: { size: 20 }, opacity: 0.75, xanchor: 'left', yanchor: 'top' },
-            { x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: { size: 20 }, opacity: 0.75, xanchor: 'right', yanchor: 'top' },
-            { x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: { size: 20 }, opacity: 0.75, xanchor: 'right', yanchor: 'bottom' },
-            { x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: { size: 20 }, opacity: 0.75, xanchor: 'left', yanchor: 'bottom' }
-        ]
-    }, {responsive: true, displayModeBar: false});
-}
-
-if(scatterData) {
+if (scatterData) {
     const guessHull = get75PercentileHull(scatterData, 'over8', 'vintage');
     let guessTraces = [];
-    if (guessHull) {
-        guessTraces.push({ x: guessHull.x, y: guessHull.y, type: 'scatter', mode: 'lines', line: { color: 'black', width: 0.5, dash: 'solid' }, hoverinfo: 'skip', showlegend: false });
-    }
+
+    if (guessHull) guessTraces.push({
+        x           : guessHull.x,
+        y           : guessHull.y,
+        type        : 'scatter',
+        mode        : 'lines',
+        line        : {color: 'black', width: 0.5, dash: 'solid'},
+        hoverinfo   : 'skip',
+        showlegend  : false
+    });
+
     guessTraces.push({
-        x: scatterData.map(d => d.over8), y: scatterData.map(d => d.vintage), text: scatterData.map(d => d.acronym),
-        customdata: scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), d.performance.toFixed(2)]),
-        hovertemplate: '<b>%{customdata[0]}</b><br>Mean Over-8: %{customdata[1]}<br>Median Vintage: %{customdata[2]}<br>Guess Rate: %{customdata[3]}<br>Score: %{customdata[4]}<extra></extra>',
-        mode: 'markers+text', textposition: 'top center', textfont: { family: 'Segoe UI', size: 20, weight: 'bold', color: 'black' }, showlegend: false,
-        marker: {
-            size: scatterData.map(d => Math.max(25, Math.pow(d.gr, 2) * 0.025)), opacity: 1, color: scatterData.map(d => d.performance),
-            colorscale: [[0, c0], [0.5, c1], [1, c2]], showscale: true,
-            colorbar: {
-                title: { text: '<b>Score</b>', font: { family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }, side: 'right' },
-                thickness: 25, len: 1.0, y: 0.5, yanchor: 'middle', x: 1, xpad: -20,
-                tickmode: 'array', tickvals: [0, 50, 100], ticktext: ['0', '50', '100'],
-                tickfont: { family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }
+        x               : scatterData.map(d => d.over8),
+        y               : scatterData.map(d => d.vintage),
+        text            : scatterData.map(d => d.acronym),
+        customdata      : scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), d.performance.toFixed(2)]),
+        hovertemplate   : '<b>%{customdata[0]}</b><br>Mean Over-8: %{customdata[1]}<br>Median Vintage: %{customdata[2]}<br>Guess Rate: %{customdata[3]}<br>Score: %{customdata[4]}<extra></extra>',
+        mode            : 'markers+text',
+        textposition    : 'top center',
+        textfont        : {family: 'Segoe UI', size: 20, weight: 'bold', color: 'black'}, showlegend: false,
+        marker          : {
+            size        : scatterData.map(d => Math.max(10, d.gr * 2)),
+            opacity     : 1,
+            color       : scatterData.map(d => d.performance),
+            colorscale  : [[0, c0], [0.5, c1], [1, c2]],
+            showscale   : true,
+            colorbar    : {
+                title       : {text: '<b>Score</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
+                thickness   : 25,
+                len         : 1.0,
+                y           : 0.5,
+                yanchor     : 'middle',
+                x           : 1,
+                xpad        : -20,
+                tickmode    : 'array',
+                tickvals    : [0, 50, 100],
+                ticktext    : ['0', '50', '100'],
+                tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'}
             },
-            line: { color: 'black', width: 1 }, cmin: 0, cmax: 100
+            line        : {color: 'black', width: 1},
+            cmin        : 0,
+            cmax        : 100
         }
     });
 
     Plotly.newPlot('plotlyGuessChart', guessTraces, {
-        font: { family: 'Segoe UI' },
-        xaxis: { title: { text: '<b>Over-8</b>', font: { family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }, pad: 5 }, tickfont: { family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }, showgrid: true, tickformat: '.1f', dtick: 0.5, fixedrange: false },
-        yaxis: { title: { text: '<b>Vintage</b>', font: { family: 'Segoe UI', size: 25, color: 'black', weight: 'bold' }, pad: 5 }, tickfont: { family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }, tickangle: -90, showgrid: true, tickformat: '.0f', dtick: Math.max(2, Math.ceil((Math.max(...scatterData.map(d => d.vintage)) - Math.min(...scatterData.map(d => d.vintage))) / 5)), fixedrange: false },
-        margin: { l: 60, r: 0, t: 30, b: 55 },
-        annotations: [
-            { x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: { size: 20 }, opacity: 0.75, xanchor: 'left', yanchor: 'top' },
-            { x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: { size: 20 }, opacity: 0.75, xanchor: 'right', yanchor: 'top' },
-            { x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: { size: 20 }, opacity: 0.75, xanchor: 'right', yanchor: 'bottom' },
-            { x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: { size: 20 }, opacity: 0.75, xanchor: 'left', yanchor: 'bottom' }
+        font        : {family: 'Segoe UI'},
+        xaxis       : {
+            title       : {text: '<b>Over-8</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
+            tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'},
+            showgrid    : true,
+            tickformat  : '.1f',
+            dtick       : 0.5,
+            fixedrange  : false
+        },
+        yaxis       : {
+            title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
+            tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'},
+            tickangle   : -90,
+            showgrid    : true,
+            tickformat  : 'd',
+            dtick       : Math.max(2, Math.ceil((Math.max(...scatterData.map(d => d.vintage)) - Math.min(...scatterData.map(d => d.vintage))) / 5)),
+            fixedrange: false
+        },
+        margin      : {l: 60, r: 0, t: 30, b: 60},
+        annotations : [
+            {x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'top'},
+            {x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'top'},
+            {x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom'},
+            {x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'bottom'}
+        ]
+    }, {responsive: true, displayModeBar: false});
+}
+
+if (document.getElementById('plotlyListChart') && arrowData) {
+    const listHull = get75PercentileHull(arrowData, 'x_start', 'y_start');
+    let listTraces = [];
+
+    if (listHull) listTraces.push({
+        x           : listHull.x,
+        y           : listHull.y,
+        type        : 'scatter',
+        mode        : 'lines',
+        line        : {color: 'black', width: 0.5, dash: 'solid'},
+        hoverinfo   : 'skip',
+        showlegend  : false
+    });
+
+    listTraces.push({
+        x               : arrowData.map(d => d.x_start),
+        y               : arrowData.map(d => d.y_start),
+        text            : arrowData.map(d => d.acronym),
+        customdata      : arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
+        hovertemplate   : '<b>%{customdata[0]}</b><br>Rig Over-8: %{customdata[1]}<br>Rig Vintage: %{customdata[2]}<br>Rig Rate: %{customdata[3]}<br>Rig Guess Rate: %{customdata[4]}<extra></extra>',
+        mode            : 'markers+text',
+        textposition    : 'top inside',
+        textfont        : {family: 'Segoe UI', size: 20, weight: 'bold', color: 'black'},
+        showlegend      : false,
+        marker          : {
+            size        : arrowData.map(d => Math.max(10, d.rig_rate * 2)),
+            opacity     : 1,
+            color       : arrowData.map(d => d.grid_grs || d.rig_gr),
+            colorscale  : [[0, c0], [0.7, c0], [0.8, c1], [0.9, c2], [1, c2]], showscale: true,
+            colorbar    : {
+                title       : {text: '<b>Rig Guess Rate</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
+                thickness   : 25,
+                len         : 1.0,
+                y           : 0.5,
+                yanchor     : 'middle',
+                x           : 1,
+                xpad        : -20,
+                tickmode    : 'array',
+                tickvals    : [0, 70, 80, 90, 100],
+                ticktext    : ['0', '70', '80', '90', '100'],
+                tickfont    : { family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }
+            },
+            line        : {color: 'black', width: 1},
+            cmin        : 0,
+            cmax        : 100
+        }
+    });
+
+    Plotly.newPlot('plotlyListChart', listTraces, {
+        font        : {family: 'Segoe UI'},
+        xaxis       : {
+            title       : {text: '<b>Over-8</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
+            tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'},
+            showgrid    : true,
+            tickformat  : '.1f',
+            dtick       : 0.5,
+            fixedrange  : false
+        },
+        yaxis       : {
+            title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
+            tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'},
+            tickangle   : -90,
+            showgrid    : true,
+            tickformat  : 'd',
+            dtick       : Math.max(2, Math.ceil((Math.max(...arrowData.map(d => d.y_start)) - Math.min(...arrowData.map(d => d.y_start))) / 5)),
+            fixedrange  : false
+        },
+        margin      : {l: 60, r: 0, t: 30, b: 60},
+        annotations : [
+            {x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'top'},
+            {x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'top'},
+            {x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom'},
+            {x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'bottom'}
         ]
     }, {responsive: true, displayModeBar: false});
 }
