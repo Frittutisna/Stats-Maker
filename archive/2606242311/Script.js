@@ -483,7 +483,7 @@ function renderTierCharts() {
             xaxis       : {tickfont: {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true},
             yaxis       : {tickfont: {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: "  " },
             bargap      : 0.0,
-            margin      : {l: 125, r: 0, t: 100, b: 25},
+            margin      : {l: 150, r: 0, t: 100, b: 50},
             height      : yVals.length * 35,
             hoverlabel  : {align: 'left', font: {family: 'Segoe UI', size: 15}}
         };
