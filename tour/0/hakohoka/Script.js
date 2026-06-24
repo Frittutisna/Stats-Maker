@@ -532,42 +532,56 @@ function setupTooltipListeners() {
                     displaySongs.shift();
                 }
 
-                if (displaySongs.length > 10) {
-                    displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
-
-                    displaySongs.sort((a, b) => {
+                const formatAndSortList = (list) => {return list
+                    .sort((a, b) => {
                         const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
                         const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
 
                         return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
-                    });
+                    })
 
-                    displaySongs = displaySongs.map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : isPlayerSubHover ? s : `• ${s}`);
-                    if (songs.length > 10) displaySongs.push(`and ${songs.length - 10 - (containsRegex ? 1 : 0)} more`);
+                    .map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : (isPlayerSubHover ? s : `• ${s}`));
+                };
+
+                if (containsRegex && songs.length > 10) {
+                    const ticks     = displaySongs.filter(s => s.startsWith('✓'));
+                    const crosses   = displaySongs.filter(s => s.startsWith('✗'));
+                    const valid     = ticks.length + crosses.length;
+
+                    let tickTarget  = valid > 0 ? Math.round((ticks.length / valid) * 10) : 5;
+                    let crossTarget = 10 - tickTarget;
+
+                    if (ticks.length < tickTarget) {
+                        tickTarget = ticks.length;
+                        crossTarget = 10 - tickTarget;
+                    }
+
+                    else if (crosses.length < crossTarget) {
+                        crossTarget = crosses.length;
+                        tickTarget  = 10 - crossTarget;
+                    }
+
+                    const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
+                    const sampledCrosses    = crosses   .sort(() => Math.random() - 0.5).slice(0, crossTarget);
+
+                    displaySongs = [...formatAndSortList(sampledTicks), ...formatAndSortList(sampledCrosses)];
                 }
 
                 else {
-                    displaySongs.sort((a, b) => {
-                        const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
-                        const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
-
-                        return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
-                    });
-
-                    displaySongs = displaySongs.map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : isPlayerSubHover ? s : `• ${s}`);
+                    if (displaySongs.length > 10) displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
+                    displaySongs = formatAndSortList(displaySongs);
                 }
 
-                if (containsRegex)  tooltipNode.innerHTML = `${fractionHeader}<br>${displaySongs.join('<br>')}`;
-                else                tooltipNode.innerHTML = displaySongs.join('<br>');
-
+                if (songs.length > 10) displaySongs.push(`and ${songs.length - 10 - (containsRegex ? 1 : 0)} more`);
+                tooltipNode.innerHTML = containsRegex ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>');
                 positionTooltip(e);
             }
 
-            catch(err) {}
+            catch (err) {}
         });
 
-        td.addEventListener('mousemove',    positionTooltip);
-        td.addEventListener('mouseleave',   () => {tooltipNode.style.display = 'none';});
+        td.addEventListener('mousemove', positionTooltip);
+        td.addEventListener('mouseleave', () => {tooltipNode.style.display = 'none';});
     });
 }
 
