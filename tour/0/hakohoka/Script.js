@@ -35,26 +35,14 @@ dynamicStyles.innerHTML = `
 `;
 
 document.head.appendChild(dynamicStyles);
-
 const tabContainer = document.getElementById('tabContainer');
 
-if (use_teams && watched) {
-    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'team-tab')">Team</button>`);
-    document.getElementById('team-tab-container').outerHTML = `<div id='team-tab' class='tab-content'><div class='table-center-wrapper'><table class='main-table' id='teamStatsTable'></table></div></div>`;
-}
-
-if (use_teams) {
-    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
-    document.getElementById('tier-tab-container').outerHTML = `<div id='tier-tab' class='tab-content'><div class='max-w-[1200px] mx-auto space-y-8 bg-white p-6 rounded shadow-md border border-gray-300'><div id='tierChart_GuessRate'></div><div id='tierChart_LivesTaken'></div><div id='tierChart_LivesSaved'></div><div id='tierChart_ContributionRate'></div><div id='tierChart_MedianTime'></div><div id='tierChart_ChantingGuessRate'></div></div></div>`;
-}
+if (use_teams && watched)   tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'team-tab')">Team</button>`);
+if (use_teams)              tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
 
 tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
 tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
-
-if (watched) {
-    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>`);
-    document.getElementById('list-tab-container').outerHTML = `<div id='list-tab' class='tab-content'><div class='max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md'><div class='mb-4 text-lg text-black space-y-1'><p><b>X-Axis:</b> Mean of correct guessers across songs from this player\'s list</p><p><b>Y-Axis:</b> Median vintage across songs from this player\'s list</p><p><b>Size (Rig Rate)</b></p></div><div id='plotlyListChart' style='width:100%; height:750px;'></div></div></div>`;
-}
+if (watched) tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>`);
 
 const thickBorderColumns = new Set([
     "Player",
@@ -233,10 +221,10 @@ function renderTourTable() {
         let classes = [];
 
         if (thickBorderColumns.has(h))  classes.push("border-col-group");
-        if (colExplanations[h])         classes.push("has-explanation");
+        // REMOVED: broken colExplanations[h] check for the static headers 'Metric'/'Value'
 
         let classStr = classes.length > 0 ? ` class="${classes.join(' ')}"` : '';
-        return `<th${classStr} data-metric="${h}">${h.replace(/ /g, '<br>')}</th>`;
+        return `<th${classStr}>${h.replace(/ /g, '<br>')}</th>`;
     }).join('') + "</tr></thead>";
 
     let tbody = "";
@@ -244,19 +232,24 @@ function renderTourTable() {
     tourStats.forEach(row => {
         let rawCell     = row.Value;
         let displayVal  = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
-        let metricClass = colExplanations[row.Metric] ? "border-col-group has-explanation" : "border-col-group";
+        
+        // Add "has-explanation" class dynamically if an explanation exists for this specific row metric
+        let hasExp      = !!colExplanations[row.Metric];
+        let metricClass = hasExp ? "border-col-group has-explanation" : "border-col-group";
+        
+        // CRITICAL FIX: Inject data-metric="${row.Metric}" so setupTooltipListeners() finds it
+        let metricAttr  = `class='${metricClass}' data-metric="${row.Metric}"`;
 
         if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
             let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-            tbody += `<tr><td class='${metricClass}'><b>${row.Metric}</b></td><td data-songs="${encodedDetails}">${displayVal}</td></tr>`;
+            tbody += `<tr><td ${metricAttr}><b>${row.Metric}</b></td><td data-songs="${encodedDetails}">${displayVal}</td></tr>`;
         }
 
-        else tbody += `<tr><td class='${metricClass}'><b>${row.Metric}</b></td><td>${displayVal}</td></tr>`;
+        else tbody += `<tr><td ${metricAttr}><b>${row.Metric}</b></td><td>${displayVal}</td></tr>`;
     });
 
     table.innerHTML = thead + tbody + "</tbody>";
 }
-
 function renderTeamTable() {
     const table = document.getElementById('teamStatsTable');
     if(!table || !teamStats || !teamStats.length) return;
@@ -400,17 +393,23 @@ function renderTierCharts() {
                             const crosses   = displaySongs.filter(s => s.startsWith('✗'));
                             const valid     = ticks.length + crosses.length;
 
-                            let tickTarget  = valid > 0 ? Math.round((ticks.length / valid) * 10) : 5;
+                            let tickTarget = 5;
+
+                            if (valid > 0) {
+                                tickTarget = Math.round((ticks.length / valid) * 10);
+                                if (ticks.length > 0 && crosses.length > 0) tickTarget = Math.max(1, Math.min(9, tickTarget));
+                            }
+
                             let crossTarget = 10 - tickTarget;
 
                             if (ticks.length < tickTarget) {
                                 tickTarget  = ticks.length;
-                                crossTarget = 10 - tickTarget;
+                                crossTarget = Math.min(crosses.length, 10 - tickTarget);
                             }
 
                             else if (crosses.length < crossTarget) {
                                 crossTarget = crosses.length;
-                                tickTarget  = 10 - crossTarget;
+                                tickTarget  = Math.min(ticks.length, 10 - crossTarget);
                             }
 
                             const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
@@ -486,11 +485,11 @@ function renderTierCharts() {
 
         const layout = {
             font        : {family: 'Segoe UI'},
-            title       : {text: titleText, font: {family: 'Segoe UI', size: 15, color: 'black'}, y: 0.95, yanchor: 'top'},
+            title       : {text: titleText, font: {family: 'Segoe UI', size: 15, color: 'black'}, y: 0.925, yanchor: 'top'},
             xaxis       : {tickfont: {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true},
             yaxis       : {tickfont: {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: "  " },
             bargap      : 0.0,
-            margin      : {l: 100, r: 0, t: 100, b: 0},
+            margin      : {l: 100, r: 0, t: 100, b: 25},
             height      : yVals.length * 35,
             hoverlabel  : {align: 'left', font: {family: 'Segoe UI', size: 15}}
         };
@@ -547,7 +546,7 @@ function setupTooltipListeners() {
         tooltipNode.style.top = yPos + 'px';
     }
 
-    document.querySelectorAll('table th[data-metric]').forEach(th => {
+    document.querySelectorAll('table th[data-metric], table td[data-metric]').forEach(th => {
         const metricKey = th.getAttribute('data-metric');
         if (!colExplanations[metricKey]) return;
 
@@ -556,20 +555,26 @@ function setupTooltipListeners() {
         th.addEventListener('mouseleave',   () => {tooltipNode.style.display = 'none';});
     });
 
-    document.querySelectorAll('#tourStatsTable tr td:first-child').forEach(td => {
-        const metricKey = td.innerText.trim();
-        if (!colExplanations[metricKey]) return;
-
-        td.addEventListener('mouseenter',   (e) => {tooltipNode.innerHTML = colExplanations[metricKey]; positionTooltip(e);});
-        td.addEventListener('mousemove',    positionTooltip);
-        td.addEventListener('mouseleave',   () => {tooltipNode.style.display = 'none';});
-    });
-
     document.querySelectorAll('td[data-songs]').forEach(td => {
         td.addEventListener('mouseenter', (e) => {
             try {
                 const songs = JSON.parse(decodeURIComponent(td.getAttribute('data-songs')));
                 if (!songs || songs.length === 0) return;
+
+                if (td.classList.contains('highlight-best')) {
+                    tooltipNode.style.backgroundColor   = c2;
+                    tooltipNode.style.color             = 'white';
+                }
+
+                else if (td.classList.contains('highlight-worst')) {
+                    tooltipNode.style.backgroundColor   = c0;
+                    tooltipNode.style.color             = 'white';
+                }
+
+                else {
+                    tooltipNode.style.backgroundColor   = 'black';
+                    tooltipNode.style.color             = 'white';
+                }
 
                 let displaySongs        = [...songs];
                 const isPlayerSubHover  = td.parentNode.firstElementChild === td;
@@ -613,17 +618,23 @@ function setupTooltipListeners() {
                     const crosses   = displaySongs.filter(s => s.startsWith('✗'));
                     const valid     = ticks.length + crosses.length;
 
-                    let tickTarget  = valid > 0 ? Math.round((ticks.length / valid) * 10) : 5;
+                    let tickTarget = 5;
+
+                    if (valid > 0) {
+                        tickTarget = Math.round((ticks.length / valid) * 10);
+                        if (ticks.length > 0 && crosses.length > 0) tickTarget = Math.max(1, Math.min(9, tickTarget));
+                    }
+
                     let crossTarget = 10 - tickTarget;
 
                     if (ticks.length < tickTarget) {
-                        tickTarget = ticks.length;
-                        crossTarget = 10 - tickTarget;
+                        tickTarget  = ticks.length;
+                        crossTarget = Math.min(crosses.length, 10 - tickTarget);
                     }
 
                     else if (crosses.length < crossTarget) {
                         crossTarget = crosses.length;
-                        tickTarget  = 10 - crossTarget;
+                        tickTarget  = Math.min(ticks.length, 10 - crossTarget);
                     }
 
                     const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
@@ -645,8 +656,12 @@ function setupTooltipListeners() {
             catch (err) {}
         });
 
-        td.addEventListener('mousemove', positionTooltip);
-        td.addEventListener('mouseleave', () => {tooltipNode.style.display = 'none';});
+        td.addEventListener('mousemove',    positionTooltip);
+        td.addEventListener('mouseleave',   () => {
+            tooltipNode.style.display           = 'none';
+            tooltipNode.style.backgroundColor   = 'black';
+            tooltipNode.style.color             = 'white';
+        });
     });
 }
 
@@ -761,7 +776,7 @@ for (let i = 0; i < numY; i++) {
                 x               : j,
                 y               : i,
                 text            : `<b>${matrixBins[key].count}</b>`,
-                font            : {family: 'Segoe UI', size: (numX > 8 ? 50 : 55), color: 'white'},
+                font            : {family: 'Segoe UI', size: (numX > 8 ? 65 : 70), color: 'white'},
                 showarrow       : false,
                 captureevents   : false
             });
@@ -823,7 +838,7 @@ Plotly.newPlot('plotlySongChart', [{
     y               : Array.from({length: numY}, (_, i) => i),
     text            : textLabels,
     hovertemplate   : '<span style="text-align: left; display: block;">%{text}</span><extra></extra>',
-    hoverlabel      : {align: 'left', bgcolor: bgColors},
+    hoverlabel      : {align: 'left', bgcolor: bgColors, font: {family: 'Segoe UI', size: 15}},
     type            : 'heatmap',
     colorscale      : [[0, c0], [0.375, c1], [0.625, c2], [1, c2]],
     zmin            : 0,
@@ -843,7 +858,7 @@ Plotly.newPlot('plotlySongChart', [{
         tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'}
     }
 }], {
-    font        : {family: 'Segoe UI'},
+    font        : {family: 'Segoe UI', size: 50},
     xaxis       : {
         title           : {text: '<b>Difficulty</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
         tickmode        : 'array',
@@ -853,7 +868,9 @@ Plotly.newPlot('plotlySongChart', [{
         showgrid        : true,
         zeroline        : false,
         showticklabels  : true,
-        ticks           : '',
+        ticks           : 'outside',
+        ticklen         : 5,
+        tickcolor       : 'rgba(0, 0, 0, 0)',
         fixedrange      : true
     },
     yaxis: {
@@ -866,12 +883,25 @@ Plotly.newPlot('plotlySongChart', [{
         showgrid        : true,
         zeroline        : false,
         showticklabels  : true,
-        ticks           : '',
+        ticks           : 'outside',
+        ticklen         : 5,
+        tickcolor       : 'rgba(0, 0, 0, 0)',
         fixedrange      : true
     },
     annotations : annotations,
-    margin      : {l: 60, r: 0, t: 30, b: 60}
+    margin      : {l: 75, r: 0, t: 25, b: 75}
 }, {responsive: true, displayModeBar: false});
+
+function hexToRgba(hex, opacity = 0.95) {
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
 
 if (scatterData) {
     const guessHull = get75PercentileHull(scatterData, 'over8', 'vintage');
@@ -893,13 +923,14 @@ if (scatterData) {
         text            : scatterData.map(d => d.acronym),
         customdata      : scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), d.performance.toFixed(2)]),
         hovertemplate   : '<b>%{customdata[0]}</b><br>Mean Over-8: %{customdata[1]}<br>Median Vintage: %{customdata[2]}<br>Guess Rate: %{customdata[3]}<br>Score: %{customdata[4]}<extra></extra>',
+        hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}},
         mode            : 'markers',
         showlegend      : false,
         marker          : {
             size        : scatterData.map(d => Math.max(10, d.gr * 2)),
             opacity     : 0.95,
             color       : scatterData.map(d => d.performance),
-            colorscale  : [[0, c0], [0.5, c1], [1, c2]],
+            colorscale  : [[0, hexToRgba(c0)], [0.5, hexToRgba(c1)], [1, hexToRgba(c2)]],
             showscale   : true,
             colorbar    : {
                 title       : {text: '<b>Score</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
@@ -969,6 +1000,9 @@ if (scatterData) {
             showgrid    : true,
             tickformat  : '.1f',
             dtick       : 0.5,
+            ticks       : 'outside',
+            ticklen     : 5,
+            tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false
         },
         yaxis       : {
@@ -978,9 +1012,12 @@ if (scatterData) {
             showgrid    : true,
             tickformat  : 'd',
             dtick       : Math.max(2, Math.ceil((Math.max(...scatterData.map(d => d.vintage)) - Math.min(...scatterData.map(d => d.vintage))) / 5)),
-            fixedrange: false
+            ticks       : 'outside',
+            ticklen     : 5,
+            tickcolor   : 'rgba(0, 0, 0, 0)',
+            fixedrange  : false
         },
-        margin      : {l: 60, r: 0, t: 30, b: 60},
+        margin      : {l: 75, r: 0, t: 25, b: 75},
         annotations : guessAnnotations
     }, {responsive: true, displayModeBar: false});
 }
@@ -1005,13 +1042,14 @@ if (document.getElementById('plotlyListChart') && arrowData) {
         text            : arrowData.map(d => d.acronym),
         customdata      : arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
         hovertemplate   : '<b>%{customdata[0]}</b><br>Rig Over-8: %{customdata[1]}<br>Rig Vintage: %{customdata[2]}<br>Rig Rate: %{customdata[3]}<br>Rig Guess Rate: %{customdata[4]}<extra></extra>',
+        hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}},
         mode            : 'markers',
         showlegend      : false,
         marker          : {
             size        : arrowData.map(d => Math.max(10, d.rig_rate * 2)),
             opacity     : 0.95,
             color       : arrowData.map(d => d.grid_grs || d.rig_gr),
-            colorscale  : [[0, c0], [0.7, c0], [0.8, c1], [0.9, c2], [1, c2]], showscale: true,
+            colorscale  : [[0, hexToRgba(c0)], [0.7, hexToRgba(c0)], [0.8, hexToRgba(c1)], [0.9, hexToRgba(c2)], [1, hexToRgba(c2)]], showscale: true,
             colorbar    : {
                 title       : {text: '<b>Rig Guess Rate</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
                 thickness   : 25,
@@ -1080,6 +1118,9 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             showgrid    : true,
             tickformat  : '.1f',
             dtick       : 0.5,
+            ticks       : 'outside',
+            ticklen     : 5,
+            tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false
         },
         yaxis       : {
@@ -1089,9 +1130,12 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             showgrid    : true,
             tickformat  : 'd',
             dtick       : Math.max(2, Math.ceil((Math.max(...arrowData.map(d => d.y_start)) - Math.min(...arrowData.map(d => d.y_start))) / 5)),
+            ticks       : 'outside',
+            ticklen     : 5,
+            tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false
         },
-        margin      : {l: 60, r: 0, t: 30, b: 60},
+        margin      : {l: 75, r: 0, t: 25, b: 75},
         annotations : listAnnotations
     }, {responsive: true, displayModeBar: false});
 }
