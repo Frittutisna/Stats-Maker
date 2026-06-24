@@ -1740,6 +1740,16 @@ class TourAnalyzer:
                     } if pd.notnull(row_data[t_labels[tid]]) else np.nan
 
                 if watched:
+                    succ_rig    = self.p_rigs_h [name]
+                    tot_rig     = self.p_rigs   [name]
+                    succ_off    = self.c_counts [name] - succ_rig
+                    tot_off     = self.s_part   [name] - tot_rig
+
+                    self.player_song_details[name]["Rigs"].sort(key = lambda s: s[2:].strip().lower())
+
+                    rig_song_lines  = {s[2:] for s in self.player_song_details[name]["Rigs"]}
+                    off_details     = [s for s in self.player_song_details[name]["Overall"] if s[2:] not in rig_song_lines]
+
                     row.update({
                         "Rigs"              : int   (row_data["Rigs"]),
                         "Rig Rate"          : float (row_data["Rig Rate"]       * 100),
@@ -1747,8 +1757,8 @@ class TourAnalyzer:
                         "Solo Rig Rate"     : float (row_data["Solo Rig Rate"]  * 100),
                         "Rig Over-8"        : float (row_data["Rig Over-8"])            if pd.notnull(row_data["Rig Over-8"])   else np.nan,
                         "Over-8 Delta"      : float (row_data["Over-8 Delta"])          if pd.notnull(row_data["Over-8 Delta"]) else np.nan,
-                        "Rig Guess Rate"    : float (row_data["Rig Guess Rate"] * 100),
-                        "Off Guess Rate"    : float (row_data["Off Guess Rate"] * 100),
+                        "Rig Guess Rate"    : {"count": float(row_data["Rig Guess Rate"] * 100), "details": [f"{succ_rig}/{tot_rig}"] + self.player_song_details[name]["Rigs"]} if pd.notnull(row_data["Rig Guess Rate"]) else np.nan,
+                        "Off Guess Rate"    : {"count": float(row_data["Off Guess Rate"] * 100), "details": [f"{succ_off}/{tot_off}"] + off_details}                            if pd.notnull(row_data["Off Guess Rate"]) else np.nan,
                         "Rig Delta"         : float (row_data["Rig Delta"]      * 100),
                     })
 
@@ -1762,7 +1772,7 @@ class TourAnalyzer:
                     "details"   : [f"{succ_chan}/{seen_chan}"] + self.player_song_details[name]["Chant"]
                 } if pd.notnull(row_data["Chant Guess Rate"]) else np.nan
 
-            for key in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]:
+            for key in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Solo Rigs"]:
                 if key not in row               : continue
                 if key in ["Rigs", "Solo Rigs"] : player_song_details[name][key].sort(key = lambda s: s[2:].strip().lower())
                 else                            : player_song_details[name][key].sort(key = str.lower)
@@ -1807,7 +1817,7 @@ class TourAnalyzer:
 
         asc_cols    = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
         int_cols    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
-        rate_cols   = ["Guess Rate", "OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Chant Guess Rate"]
+        rate_cols   = ["Guess Rate", "OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Chant Guess Rate", "Rig Guess Rate", "Off Guess Rate"]
         stats_hl    = {}
 
         elo_ser     = df_players["Elo"]         .fillna(0.0) if "Elo" in df_players.columns else pd.Series(0.0, index = df_players.index)

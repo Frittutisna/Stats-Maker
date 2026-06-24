@@ -543,7 +543,7 @@ function setupTooltipListeners() {
                     });
 
                     displaySongs = displaySongs.map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : isPlayerSubHover ? s : `• ${s}`);
-                    if (songs.length > 10) displaySongs.push(`and ${songs.length - 11} more`);
+                    if (songs.length > 10) displaySongs.push(`and ${songs.length - 10 - (containsRegex ? 1 : 0)} more`);
                 }
 
                 else {
