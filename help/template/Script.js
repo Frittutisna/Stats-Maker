@@ -714,9 +714,8 @@ if (scatterData) {
         text            : scatterData.map(d => d.acronym),
         customdata      : scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), d.performance.toFixed(2)]),
         hovertemplate   : '<b>%{customdata[0]}</b><br>Mean Over-8: %{customdata[1]}<br>Median Vintage: %{customdata[2]}<br>Guess Rate: %{customdata[3]}<br>Score: %{customdata[4]}<extra></extra>',
-        mode            : 'markers+text',
-        textposition    : 'top center',
-        textfont        : {family: 'Segoe UI', size: 20, weight: 'bold', color: 'black'}, showlegend: false,
+        mode            : 'markers',
+        showlegend      : false,
         marker          : {
             size        : scatterData.map(d => Math.max(10, d.gr * 2)),
             opacity     : 1,
@@ -742,6 +741,47 @@ if (scatterData) {
         }
     });
 
+    const guessAnnotations = [
+        {x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'top'},
+        {x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'top'},
+        {x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom'},
+        {x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'bottom'}
+    ];
+
+    const guessXCenter = scatterData.reduce((sum, d) => sum + d.over8,      0) / scatterData.length;
+    const guessYCenter = scatterData.reduce((sum, d) => sum + d.vintage,    0) / scatterData.length;
+
+    scatterData.forEach(d => {
+        const bubbleSize = Math.max(10, d.gr * 2);
+        const baseOffset = (bubbleSize / 2) + 10;
+
+        const dx = d.over8      - guessXCenter;
+        const dy = d.vintage    - guessYCenter;
+        
+        const angle = (dx === 0 && dy === 0) ? Math.PI / 4 : Math.atan2(dy, dx);
+
+        const axVal = Math.cos(angle) * baseOffset;
+        const ayVal = Math.sin(angle) * baseOffset * -1;
+
+        const xAlign = Math.cos(angle) > 0.1 ? 'left'   : (Math.cos(angle) < -0.1 ? 'right' : 'center');
+        const yAlign = Math.sin(angle) > 0.1 ? 'bottom' : (Math.sin(angle) < -0.1 ? 'top'   : 'middle');
+
+        guessAnnotations.push({
+            x           : d.over8,
+            y           : d.vintage,
+            text        : `<b>${d.acronym}</b>`,
+            font        : {family: 'Segoe UI', size: 20, color: 'black'},
+            showarrow   : true,
+            arrowhead   : 0,
+            arrowwidth  : 1,
+            arrowcolor  : 'rgba(0,0,0,0.5)',
+            ax          : axVal,
+            ay          : ayVal,
+            xanchor     : xAlign,
+            yanchor     : yAlign
+        });
+    });
+
     Plotly.newPlot('plotlyGuessChart', guessTraces, {
         font        : {family: 'Segoe UI'},
         xaxis       : {
@@ -762,12 +802,7 @@ if (scatterData) {
             fixedrange: false
         },
         margin      : {l: 60, r: 0, t: 30, b: 60},
-        annotations : [
-            {x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'top'},
-            {x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'top'},
-            {x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom'},
-            {x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'bottom'}
-        ]
+        annotations : guessAnnotations
     }, {responsive: true, displayModeBar: false});
 }
 
@@ -791,9 +826,7 @@ if (document.getElementById('plotlyListChart') && arrowData) {
         text            : arrowData.map(d => d.acronym),
         customdata      : arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
         hovertemplate   : '<b>%{customdata[0]}</b><br>Rig Over-8: %{customdata[1]}<br>Rig Vintage: %{customdata[2]}<br>Rig Rate: %{customdata[3]}<br>Rig Guess Rate: %{customdata[4]}<extra></extra>',
-        mode            : 'markers+text',
-        textposition    : 'top inside',
-        textfont        : {family: 'Segoe UI', size: 20, weight: 'bold', color: 'black'},
+        mode            : 'markers',
         showlegend      : false,
         marker          : {
             size        : arrowData.map(d => Math.max(10, d.rig_rate * 2)),
@@ -819,6 +852,47 @@ if (document.getElementById('plotlyListChart') && arrowData) {
         }
     });
 
+    const listAnnotations = [
+        {x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'top'},
+        {x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'top'},
+        {x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom'},
+        {x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'bottom'}
+    ];
+
+    const listXCenter = arrowData.reduce((sum, d) => sum + d.x_start, 0) / arrowData.length;
+    const listYCenter = arrowData.reduce((sum, d) => sum + d.y_start, 0) / arrowData.length;
+
+    arrowData.forEach(d => {
+        const bubbleSize = Math.max(10, d.rig_rate * 2);
+        const baseOffset = (bubbleSize / 2) + 10;
+
+        const dx = d.x_start - listXCenter;
+        const dy = d.y_start - listYCenter;
+        
+        const angle = (dx === 0 && dy === 0) ? Math.PI / 4 : Math.atan2(dy, dx);
+
+        const axVal = Math.cos(angle) * baseOffset;
+        const ayVal = Math.sin(angle) * baseOffset * -1;
+
+        const xAlign = Math.cos(angle) > 0.1 ? 'left'   : (Math.cos(angle) < -0.1 ? 'right' : 'center');
+        const yAlign = Math.sin(angle) > 0.1 ? 'bottom' : (Math.sin(angle) < -0.1 ? 'top'   : 'middle');
+
+        listAnnotations.push({
+            x           : d.x_start,
+            y           : d.y_start,
+            text        : `<b>${d.acronym}</b>`,
+            font        : {family: 'Segoe UI', size: 20, color: 'black'},
+            showarrow   : true,
+            arrowhead   : 0,
+            arrowwidth  : 1,
+            arrowcolor  : 'rgba(0,0,0,0.5)',
+            ax          : axVal,
+            ay          : ayVal,
+            xanchor     : xAlign,
+            yanchor     : yAlign
+        });
+    });
+
     Plotly.newPlot('plotlyListChart', listTraces, {
         font        : {family: 'Segoe UI'},
         xaxis       : {
@@ -839,11 +913,6 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             fixedrange  : false
         },
         margin      : {l: 60, r: 0, t: 30, b: 60},
-        annotations : [
-            {x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'top'},
-            {x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'top'},
-            {x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom'},
-            {x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'bottom'}
-        ]
+        annotations : listAnnotations
     }, {responsive: true, displayModeBar: false});
 }
