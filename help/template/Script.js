@@ -671,8 +671,10 @@ songData.forEach(s => {
     let yIdx    = (numY === 8) ? ((s.vintage < 1990) ? 0 : Math.min(Math.floor((s.vintage - 1990) / 5) + 1, 7)) : Math.min(Math.max(Math.floor((s.vintage - 1985) / 5), 0), 8);
     let key     = `${xIdx}-${yIdx}`;
 
-    if(!matrixBins[key]) matrixBins[key] = { count: 0, over8Sum: 0 };
-    matrixBins[key].count++; matrixBins[key].over8Sum += s.correct_count;
+    if(!matrixBins[key]) matrixBins[key] = {count: 0, over8Sum: 0};
+
+    matrixBins[key].count++;
+    matrixBins[key].over8Sum += s.correct_count;
 });
 
 let zValues     = [];
