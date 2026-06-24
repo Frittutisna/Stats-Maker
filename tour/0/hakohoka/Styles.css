@@ -1,147 +1,118 @@
-body, table, th, td, button, input {
-    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif !important;
-}
-
-body {
-    background-color: #ffffff;
-    color: #000000;
-    overflow-x: hidden;
-}
+body, table, th, td, button, input {font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;}
 
 .main-table {
-    border: 3px solid black;
-    border-collapse: collapse;
-    width: max-content;
-    max-width: 100%;
+    border          : 3px solid black;
+    border-collapse : collapse;
+    width           : max-content;
+    max-width       : 100%;
     margin: 0 auto;
-    table-layout: auto;
+    table-layout    : auto;
 }
 
 .main-table th {
-    background-color: #f0f0f0;
-    border: 1px solid black;
-    border-bottom: 3px solid black;
-    padding: 5px 6px;
-    font-weight: bold;
-    font-size: clamp(10px, 1vw, 25px);
-    text-align: center;
-    white-space: normal;
+    background-color    : #f0f0f0;
+    border              : 1px solid black;
+    border-bottom       : 3px solid black;
+    padding             : 3px 6px;
+    font-weight         : bold;
+    font-size           : clamp(10px, 1vw, 25px);
+    text-align          : center;
+    white-space         : normal;
 }
 
 .main-table td {
-    border: 1px solid black;
-    padding: 4px 6px;
-    text-align: center;
-    font-size: clamp(9px, 0.9vw, 22.5px);
-    white-space: normal;
+    border              : 1px solid black;
+    padding             : 3px 6px;
+    text-align          : center;
+    font-size           : clamp(9px, 0.9vw, 22.5px);
+    white-space         : normal;
 }
 
-.main-table tr:nth-child(even) {
-    background-color: #f0f0f0;
-}
+.main-table tr:nth-child(even)  {background-color   : #f0f0f0;}
+.border-group-line td           {border-bottom      : 3px solid black !important;}
+.border-col-group               {border-right       : 3px solid black !important;}
 
-.border-group-line td {
-    border-bottom: 3px solid black !important;
-}
-
-.border-col-group {
-    border-right: 3px solid black !important;
-}
-
-.highlight-best {
-    color: white !important;
-    font-weight: bold;
-}
-
+.highlight-best,
 .highlight-worst {
-    color: white !important;
-    font-weight: bold;
+    color       : white !important;
+    font-weight : bold;
 }
 
 td[data-songs].highlight-best:hover {
-    background-color: #ffffff !important;
-    color: #3232c8 !important;
+    background-color    : #ffffff !important;
+    color               : #3232c8 !important;
 }
 
 td[data-songs].highlight-worst:hover {
-    background-color: #ffffff !important;
-    color: #c83232 !important;
+    background-color    : #ffffff !important;
+    color               : #c83232 !important;
 }
 
 .tab-btn {
-    font-size: clamp(14px, 1.2vw, 22px);
-    font-weight: 600;
-    padding: 10px 24px;
-    border-bottom: 4px solid transparent;
-    transition: all 0.2s;
-    color: #4b5563;
-    cursor: pointer;
+    font-size       : clamp(15px, 1.5vw, 37.5px);
+    font-weight     : bold;
+    padding         : 6px;
+    color           : black;
+    cursor          : pointer;
 }
 
 .tab-btn:hover {
-    color: #000000;
-    background-color: #f3f4f6;
+    background-color    : #f0f0f0;
+    color               : black;
 }
 
 .tab-btn.active-tab {
-    color: #000000;
-    border-bottom-color: #000000;
-    background-color: #f3f4f6;
+    background-color    : #f0f0f0;
+    color               : black;
+    border-bottom       : 3px solid black;
 }
 
 .tab-content {
-    display: none;
-    width: 100%;
-    max-width: 100%;
+    display     : none;
+    width       : 100%;
+    max-width   : 100%;
 }
 
-.tab-content.active-content {
-    display: block;
-}
+.tab-content.active-content {display: block;}
 
 .table-center-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    display                     : flex;
+    flex-direction              : column;
+    align-items                 : center;
+    width                       : 100%;
+    overflow-x                  : auto;
+    -webkit-overflow-scrolling  : touch;
 }
 
 #customJsTooltip {
     position: absolute;
     display: none;
-    background-color: #1e293b;
-    color: #ffffff;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-size: clamp(8px, 0.8vw, 20px);
-    z-index: 99999;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    pointer-events: none;
-    line-height: 1.4;
-    border: 1px solid #475569;
-    text-align: left;
-    max-width: 90vw;
-    word-wrap: break-word;
-    white-space: normal;
+    background-color    : black;
+    color               : white;
+    padding             : 6px 12px;
+    border-radius       : 6px;
+    font-size           : clamp(8px, 0.8vw, 20px);
+    z-index             : 9999;
+    text-align          : left;
+    max-width           : 90vw;
+    word-wrap           : break-word;
+    white-space         : normal;
 }
 
 td[data-songs] {
-    cursor: help;
-    transition: background-color 0.15s ease;
-    position: relative;
+    cursor      : help;
+    position    : relative;
 }
 
 td[data-songs]::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    right: 3px;
-    width: 3px;
-    height: 3px;
-    background-color: #000000;
-    border-radius: 50%;
+    content             : '';
+    position            : absolute;
+    top                 : 3px;
+    right               : 3px;
+    width               : 3px;
+    height              : 3px;
+    background-color    : #000000;
+    border-radius       : 50%;
 }
 
 td[data-songs].highlight-best::after,

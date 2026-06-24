@@ -399,7 +399,7 @@ class TourAnalyzer:
                     "correct_count" : int(len(correct))
                 })
 
-                song_line = f"{anime_name} {type_fmt}: {song_name} by {artist_name} ({vint_pretty}/{safe_diff:.2f}: {len(correct)}/8)"
+                song_line_hover = f"{anime_name} {type_fmt}: {song_name} by {artist_name} ({vint_pretty}/{safe_diff:.2f}: {len(correct)}/8)"
 
                 if isinstance(si.get("animeGenre"), list): self.genre_c .update(si.get("animeGenre"))
                 if isinstance(si.get("animeTags"),  list): self.tag_c   .update([t for t in si.get("animeTags") if t not in EXCLUDED_TAGS])
@@ -415,7 +415,7 @@ class TourAnalyzer:
                     if num_y_v == 8 : y_idx_v = 0 if vint_floor < 1995 else min(int(math.floor((vint_floor - 1995) / 5)) + 1, 7)
                     else            : y_idx_v = min(max(int(math.floor((vint_floor - 1995) / 5)), 0), 8)
 
-                    self.matrix_song_details[f"{x_idx_v}-{y_idx_v}"].append(song_line)
+                    self.matrix_song_details[f"{x_idx_v}-{y_idx_v}"].append(song_line_hover)
 
                 if len(correct) == 0: self.tour_song_details["Total 0/8s"].append(song_line)
 
