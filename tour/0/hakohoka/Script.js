@@ -512,9 +512,10 @@ function setupTooltipListeners() {
         td.addEventListener('mouseenter', (e) => {
             try {
                 const songs = JSON.parse(decodeURIComponent(td.getAttribute('data-songs')));
-                if(!songs || songs.length === 0) return;
-                let displaySongs = [...songs];
-                const isPlayerSubHover = td.parentNode.firstElementChild === td;
+                if (!songs || songs.length === 0) return;
+
+                let displaySongs        = [...songs];
+                const isPlayerSubHover  = td.parentNode.firstElementChild === td;
 
                 if (songs.length === 1 && !songs[0].startsWith('✓') && !songs[0].startsWith('✗') && songs[0].includes('/')) {
                     tooltipNode.innerHTML = songs[0];
@@ -522,7 +523,16 @@ function setupTooltipListeners() {
                     return;
                 }
 
-                if (songs.length > 10) {
+                const fractionRegex = /^\d+\/\d+$/;
+                const containsRegex = fractionRegex.test(songs[0]);
+                let fractionHeader  = "";
+
+                if (containsRegex) {
+                    fractionHeader = `<b>${songs[0]}</b>`;
+                    displaySongs.shift();
+                }
+
+                if (displaySongs.length > 10) {
                     displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
 
                     displaySongs.sort((a, b) => {
@@ -533,7 +543,7 @@ function setupTooltipListeners() {
                     });
 
                     displaySongs = displaySongs.map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : isPlayerSubHover ? s : `• ${s}`);
-                    displaySongs.push(`and ${songs.length - 10} more`);
+                    if (songs.length > 10) displaySongs.push(`and ${songs.length - 11} more`);
                 }
 
                 else {
@@ -547,7 +557,10 @@ function setupTooltipListeners() {
                     displaySongs = displaySongs.map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : isPlayerSubHover ? s : `• ${s}`);
                 }
 
-                tooltipNode.innerHTML = displaySongs.join('<br>'); positionTooltip(e);
+                if (containsRegex)  tooltipNode.innerHTML = `${fractionHeader}<br>${displaySongs.join('<br>')}`;
+                else                tooltipNode.innerHTML = displaySongs.join('<br>');
+
+                positionTooltip(e);
             }
 
             catch(err) {}

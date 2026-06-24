@@ -625,12 +625,25 @@ class TourAnalyzer:
 
                 for name in final_members:
                     if name in correct:
-                        self.c_counts[name]     += 1
-                        self.p_overs_sum[name]  += len(correct)
+                        self.c_counts       [name] += 1
+                        self.p_overs_sum    [name] += len(correct)
 
-                        if st in [1, 2, 3]  : self.p_type_c[name][st]   += 1
-                        if is_chan          : self.p_chan_c[name]       += 1
-                        if yr is not None   : self.p_c_vint[name].append(yr)
+                        if st in [1, 2, 3]: 
+                            self.p_type_c[name][st] += 1
+                            self.player_song_details[name][f"Type {st}"].append(f"✓ {song_line}")
+
+                        if is_chan:          
+                            self.p_chan_c[name] += 1
+                            self.player_song_details[name]["Chant"].append(f"✓ {song_line}")
+
+                        if yr is not None: self.p_c_vint[name].append(yr)
+                        self.player_song_details[name]["Overall"].append(f"✓ {song_line}")
+
+                    else:
+                        if st in [1, 2, 3]  : self.player_song_details[name][f"Type {st}"]  .append(f"✗ {song_line}")
+                        if is_chan          : self.player_song_details[name]["Chant"]       .append(f"✗ {song_line}")
+
+                        self.player_song_details[name]["Overall"].append(f"✗ {song_line}")
 
                     if is_chan: self.p_chan_s[name] += 1
 
@@ -1703,9 +1716,10 @@ class TourAnalyzer:
 
             if row_data is not None:
                 tot, cor = self.s_part[name], self.c_counts[name]
+                for key_details in ["Overall", "Type 1", "Type 2", "Type 3", "Chant"]: self.player_song_details[name][key_details].sort(key = lambda s: s[2:].strip().lower())
 
                 row.update({
-                    "Guess Rate"    : {"count": float(row_data["Guess Rate"] * 100), "details": [f"{cor}/{tot}"]},
+                    "Guess Rate"    : {"count": float(row_data["Guess Rate"] * 100), "details": [f"{cor}/{tot}"] + self.player_song_details[name]["Overall"]},
                     "UF"            : float (row_data["UF"])                if "UF"     in row_data                 else np.nan,
                     "Score"         : float (row_data["Score"])             if "Score"  in row_data                 else np.nan,
                     "1/8s"          : int   (row_data["1/8s"]),
@@ -1722,7 +1736,7 @@ class TourAnalyzer:
 
                     row[t_labels[tid]] = {
                         "count"     : float(row_data[t_labels[tid]] * 100),
-                        "details"   : [f"{succ}/{seen}"]
+                        "details"   : [f"{succ}/{seen}"] + self.player_song_details[name][f"Type {tid}"]
                     } if pd.notnull(row_data[t_labels[tid]]) else np.nan
 
                 if watched:
@@ -1745,7 +1759,7 @@ class TourAnalyzer:
 
                 row["Chant Guess Rate"] = {
                     "count"     : float(row_data["Chant Guess Rate"] * 100),
-                    "details"   : [f"{succ_chan}/{seen_chan}"]
+                    "details"   : [f"{succ_chan}/{seen_chan}"] + self.player_song_details[name]["Chant"]
                 } if pd.notnull(row_data["Chant Guess Rate"]) else np.nan
 
             for key in ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]:
