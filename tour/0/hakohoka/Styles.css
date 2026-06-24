@@ -77,9 +77,8 @@ td[data-songs]:not(.highlight-best):not(.highlight-worst):hover {
 }
 
 .tab-btn.active-tab {
-    background-color    : var(--rittu-grey);
-    color               : black;
-    border-bottom       : var(--bold-border);
+    background-color    : black;
+    color               : white;
 }
 
 .tab-content {
