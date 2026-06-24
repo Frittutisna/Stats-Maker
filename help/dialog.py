@@ -94,16 +94,16 @@ class UnifiedDialog(tk.Toplevel):
         if parent is not None   : self.geometry(f"+{parent.winfo_rootx() + 50}+{parent.winfo_rooty() + 50}")
         else                    : self.geometry("+100+100")
 
-        main_frame = ttk.Frame(self, padding = 10)
+        main_frame = ttk.Frame(self, padding = 8)
         main_frame.pack(fill = tk.BOTH, expand = True)
 
-        if prompt: ttk.Label(main_frame, text = prompt, font = ("Segoe UI", 10)).pack(pady = (0, 6), anchor = "w")
+        if prompt: ttk.Label(main_frame, text = prompt, font = ("Segoe UI", 10)).pack(anchor = "w")
 
         self.container = ttk.Frame(main_frame)
         self.container.pack(fill = tk.BOTH, expand = True)
 
         btn_frame = ttk.Frame(main_frame)
-        btn_frame.pack(fill = tk.X, pady = (8, 0))
+        btn_frame.pack(fill = tk.X)
 
         self.confirm_btn = ttk.Button(btn_frame, text = "Confirm", command = self.on_confirm)
         self.confirm_btn.pack(side = tk.RIGHT)
@@ -143,7 +143,7 @@ class TourSelectionDialog(UnifiedDialog):
             self.vars[tid]  = var
             item_frame      = ttk.Frame(self.container)
 
-            item_frame.pack(anchor = "w", pady = 2)
+            item_frame.pack(anchor = "w")
             initial_bg = self.fill_color if is_active else "white"
 
             box = tk.Canvas(item_frame, width = 10, height = 10, bg = initial_bg, highlightthickness = 1, highlightbackground = "black")
@@ -173,14 +173,14 @@ class TourMetadataDialog(UnifiedDialog):
         super().__init__(parent, f"Tour {tour_id} Configuration", "")
 
         self.fill_color = "#000000"
-        ttk.Label(self.container, text = "What tour is this?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 4))
+        ttk.Label(self.container, text = "What tour is this?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         self.lbl_var    = tk.StringVar(value = init_label if init_label in ["Watched", "Usual"] else "Others")
         self.lbl_boxes  = {}
 
         for opt in ["Watched", "Usual", "Others"]:
             f_opt = ttk.Frame(self.container)
-            f_opt.pack(anchor = "w", pady = 2)
+            f_opt.pack(anchor = "w")
 
             is_sel      = (self.lbl_var.get() == opt)
             bg_color    = self.fill_color if is_sel else "white"
@@ -206,13 +206,13 @@ class TourMetadataDialog(UnifiedDialog):
                 for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_lbl_opt(o))
 
         self._update_lbl_state()
-        ttk.Label(self.container, text = "What are the comma-separated guess rate threshold values?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (6, 4))
+        ttk.Label(self.container, text = "What are the comma-separated guess rate threshold values?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         self.th_var     = tk.StringVar(value = "default")
         self.th_boxes   = {}
 
         f_th1 = ttk.Frame(self.container)
-        f_th1.pack(anchor = "w", pady = 2)
+        f_th1.pack(anchor = "w")
 
         box_th1 = tk.Canvas(f_th1, width = 10, height = 10, bg = self.fill_color, highlightthickness = 1, highlightbackground = "black")
         box_th1.pack(side = tk.LEFT, padx = (0, 4))
@@ -224,7 +224,7 @@ class TourMetadataDialog(UnifiedDialog):
         for w in (box_th1, lbl_th1): w.bind("<Button-1>", lambda _: self._select_th_opt("default"))
 
         f_th2 = ttk.Frame(self.container)
-        f_th2.pack(anchor = "w", pady = 2)
+        f_th2.pack(anchor = "w")
 
         box_th2 = tk.Canvas(f_th2, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
         box_th2.pack(side = tk.LEFT, padx = (0, 4))
@@ -243,14 +243,12 @@ class TourMetadataDialog(UnifiedDialog):
         ttk.Label(self.container, text = "How many rounds have elapsed?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (6, 4))
 
         self.spin = CustomSpinbox(self.container, from_ = 1, to = 6, initial_val = baseline_initial)
-        self.spin.pack(anchor = "w", pady = 2)
+        self.spin.pack(anchor = "w")
 
         self.sub_vars = {}
         self.tour_dir = tour_dir
 
         if sub_candidates and original_players_list:
-            ttk.Label(self.container, text = "Substitution Setup", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (6, 4))
-
             sorted_subs         = sorted(list(sub_candidates),          key = str.lower)
             sorted_originals    = sorted(list(original_players_list),   key = str.lower)
             saved_subs_map      = {}
@@ -264,10 +262,10 @@ class TourMetadataDialog(UnifiedDialog):
 
             for sub_name in sorted_subs:
                 f_sub = ttk.Frame(self.container)
-                f_sub.pack(fill = tk.X, anchor = "w", pady = 2)
+                f_sub.pack(fill = tk.X, anchor = "w")
 
-                lbl = ttk.Label(f_sub, text = f"Who is {sub_name} subbing for?", font = ("Segoe UI", 10))
-                lbl.pack(side = tk.LEFT, padx = (0, 6))
+                lbl = ttk.Label(f_sub, text = f"Who is {sub_name} subbing for?", font = ("Segoe UI", 10, "bold"))
+                lbl.pack(anchor = "w")
 
                 choice_var = tk.StringVar()
                 saved_orig = saved_subs_map.get(sub_name.lower())
@@ -278,10 +276,10 @@ class TourMetadataDialog(UnifiedDialog):
                 self.sub_vars[sub_name] = choice_var
 
                 combo_frame = tk.Frame(f_sub, bg = "white", bd = 1, relief = "solid")
-                combo_frame.pack(side = tk.LEFT, fill = tk.X, expand = True)
+                combo_frame.pack(fill = tk.X)
 
                 entry = tk.Entry(combo_frame, textvariable = choice_var, bg = "white", fg = "black", font = ("Segoe UI", 10), justify = "center", bd = 0, state = "readonly")
-                entry.pack(side = tk.LEFT, fill = tk.X, expand = True, padx = 2)
+                entry.pack(side = tk.LEFT, fill = tk.X, expand = True, padx = 4)
 
                 arrow_btn = tk.Canvas(combo_frame, width = 25, height = 25, bg = "black", highlightthickness = 0, borderwidth = 0, cursor = "hand2")
                 arrow_btn.create_polygon(7, 10, 17, 10, 12, 16, fill = "white")
@@ -338,7 +336,7 @@ class TourMetadataDialog(UnifiedDialog):
             for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_np_opt(o))
 
         self.player_container = ttk.Frame(self.container)
-        self.player_container.pack(fill = tk.BOTH, expand = True, pady = (6, 0))
+        self.player_container.pack(fill = tk.BOTH, expand = True, pady = (4, 0))
 
         self.player_vars    = {}
         player_list         = sorted(list(active_players), key = str.lower)
@@ -353,7 +351,7 @@ class TourMetadataDialog(UnifiedDialog):
             self.player_vars[name]  = var
 
             item_frame              = ttk.Frame(self.player_container)
-            item_frame.grid(row = row, column = col, padx = 4, pady = 2, sticky = "w")
+            item_frame.grid(row = row, column = col, padx = 2, pady = 2, sticky = "w")
 
             box = tk.Canvas(item_frame, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
             box.pack(side = tk.LEFT, padx = (0, 4))
@@ -472,7 +470,7 @@ class MismatchedRoundsDialog(UnifiedDialog):
                         subs_txt_players.add(original_player    .strip().lower())
 
         for _, (name, act) in enumerate(sorted(mismatched_players.items())):
-            p_frame = ttk.LabelFrame(self.container, text = f" {name} ", padding = 8)
+            p_frame = ttk.LabelFrame(self.container, text = f" {name} ", padding = 4)
             p_frame.pack(fill = tk.X, pady = 4, anchor = "w")
 
             is_subbed       = (name.lower() in subbed_players_set) or (name.lower() in subs_txt_players)
@@ -554,7 +552,7 @@ class SubstitutePromptDialog(UnifiedDialog):
         self.subs_txt_path  = tour_dir / "subs.txt"
 
         lbl = ttk.Label(self.container, text = f"Who is {sub_name} subbing for?", font = ("Segoe UI", 10))
-        lbl.grid(row = 0, column = 0, padx = (0, 6), pady = 4, sticky = "w")
+        lbl.grid(row = 0, column = 0, padx = (0, 4), pady = 4, sticky = "w")
 
         self.choice_var     = tk.StringVar()
         self.sorted_players = sorted(list(original_players_list), key = str.lower)
@@ -580,7 +578,7 @@ class SubstitutePromptDialog(UnifiedDialog):
         self.container.grid_columnconfigure(1, weight = 1)
 
         self.entry = tk.Entry(combo_frame, textvariable = self.choice_var, bg = "white", fg = "black", font = ("Segoe UI", 10), justify = "center", bd = 0, state = "readonly")
-        self.entry.pack(side = tk.LEFT, fill = tk.X, expand = True, padx = 2)
+        self.entry.pack(side = tk.LEFT, fill = tk.X, expand = True, padx = 4)
 
         arrow_btn = tk.Canvas(combo_frame, width = 25, height = 25, bg = "black", highlightthickness = 0, borderwidth = 0, cursor = "hand2")
         arrow_btn.create_polygon(7, 10, 17, 10, 12, 16, fill = "white")
