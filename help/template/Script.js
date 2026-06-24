@@ -880,7 +880,9 @@ Plotly.newPlot('plotlySongChart', [{
         showgrid        : true,
         zeroline        : false,
         showticklabels  : true,
-        ticks           : '',
+        ticks           : 'outside',
+        ticklen         : 5,
+        tickcolor       : 'rgba(0, 0, 0, 0)',
         fixedrange      : true
     },
     yaxis: {
@@ -893,11 +895,13 @@ Plotly.newPlot('plotlySongChart', [{
         showgrid        : true,
         zeroline        : false,
         showticklabels  : true,
-        ticks           : '',
+        ticks           : 'outside',
+        ticklen         : 5,
+        tickcolor       : 'rgba(0, 0, 0, 0)',
         fixedrange      : true
     },
     annotations : annotations,
-    margin      : {l: 60, r: 0, t: 30, b: 60}
+    margin      : {l: 75, r: 0, t: 25, b: 75}
 }, {responsive: true, displayModeBar: false});
 
 function hexToRgba(hex, opacity = 0.95) {
@@ -1008,6 +1012,9 @@ if (scatterData) {
             showgrid    : true,
             tickformat  : '.1f',
             dtick       : 0.5,
+            ticks       : 'outside',
+            ticklen     : 5,
+            tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false
         },
         yaxis       : {
@@ -1017,9 +1024,12 @@ if (scatterData) {
             showgrid    : true,
             tickformat  : 'd',
             dtick       : Math.max(2, Math.ceil((Math.max(...scatterData.map(d => d.vintage)) - Math.min(...scatterData.map(d => d.vintage))) / 5)),
-            fixedrange: false
+            ticks       : 'outside',
+            ticklen     : 5,
+            tickcolor   : 'rgba(0, 0, 0, 0)',
+            fixedrange  : false
         },
-        margin      : {l: 60, r: 0, t: 30, b: 60},
+        margin      : {l: 75, r: 0, t: 25, b: 75},
         annotations : guessAnnotations
     }, {responsive: true, displayModeBar: false});
 }
@@ -1120,6 +1130,9 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             showgrid    : true,
             tickformat  : '.1f',
             dtick       : 0.5,
+            ticks       : 'outside',
+            ticklen     : 5,
+            tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false
         },
         yaxis       : {
@@ -1129,9 +1142,12 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             showgrid    : true,
             tickformat  : 'd',
             dtick       : Math.max(2, Math.ceil((Math.max(...arrowData.map(d => d.y_start)) - Math.min(...arrowData.map(d => d.y_start))) / 5)),
+            ticks       : 'outside',
+            ticklen     : 5,
+            tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false
         },
-        margin      : {l: 60, r: 0, t: 30, b: 60},
+        margin      : {l: 75, r: 0, t: 25, b: 75},
         annotations : listAnnotations
     }, {responsive: true, displayModeBar: false});
 }
