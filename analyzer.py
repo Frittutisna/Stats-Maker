@@ -1762,10 +1762,26 @@ class TourAnalyzer:
                         "Rig Delta"         : float (row_data["Rig Delta"]      * 100),
                     })
 
+                times = self.p_answer_times.get(name, [])
+
+                if times:
+                    t_min   = float(np.min(times))
+                    t_mean  = float(np.mean(times))
+                    t_max   = float(np.max(times))
+                    t_std   = float(np.std(times))
+                    t_det   = [
+                        f"Minimum: {t_min:.2f}",
+                        f"Mean: {t_mean:.2f}",
+                        f"Maximum: {t_max:.2f}",
+                        f"Standard Deviation: {t_std:.2f}"
+                    ]
+
+                    row["Median Time"] = {"count": float(row_data["Median Time"]), "details": t_det}
+
+                else: row["Median Time"] = np.nan
+
                 seen_chan = self.p_chan_s[name]
                 succ_chan = self.p_chan_c[name]
-
-                row["Median Time"] = float(row_data["Median Time"]) if pd.notnull(row_data["Median Time"]) else np.nan
 
                 row["Chant Guess Rate"] = {
                     "count"     : float(row_data["Chant Guess Rate"] * 100),
@@ -1828,8 +1844,8 @@ class TourAnalyzer:
 
         for col in df_players.columns:
             if col in desc_cols or col in asc_cols:
-                if col in int_cols or col in rate_cols  : num = df_players[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
-                else                                    : num = df_players[col]
+                if col in int_cols or col in rate_cols or col == "Median Time": num = df_players[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
+                else                                                          : num = df_players[col]
 
                 el_num = num[mask_series].dropna() if col in int_cols else num.dropna()
 
@@ -2017,6 +2033,25 @@ class TourAnalyzer:
                     elif    song in saved_suffix    : contribution_details.append(f"✓ {song_line[2:]} {saved_suffix[song]}")
                     else                            : contribution_details.append(f"✗ {song_line[2:]}")
 
+                times = self.p_answer_times.get(p, [])
+
+                if times and spd is not None and pd.notnull(spd):
+                    t_min   = float(np.min(times))
+                    t_mean  = float(np.mean(times))
+                    t_max   = float(np.max(times))
+                    t_std   = float(np.std(times))
+                    t_det   = {
+                        "count"     : float(round(spd, 2)),
+                        "details"   : [
+                            f"Minimum: {t_min:.2f}",
+                            f"Mean: {t_mean:.2f}",
+                            f"Maximum: {t_max:.2f}",
+                            f"Standard Deviation: {t_std:.2f}"
+                        ]
+                    }
+
+                else: t_det = None
+
                 tier_data[tr].append({
                     "Player"                : p,
                     "Guess Rate"            : {"count": float(round(gen, 2)), "details": [f"{cor}/{tot}"] + player_song_details[p]["Overall"]},
@@ -2025,7 +2060,7 @@ class TourAnalyzer:
                     "Lives Saved"           : float(round(blk, 2)),
                     "Lives Saved Details"   : player_song_details[p]["Lives Saved"],
                     "Contribution Rate"     : {"count": float(round(con, 2)), "details": [f"{int(atk) + int(blk)}/{cor}"] + contribution_details},
-                    "Median Time"           : float(round(spd, 2)) if spd is not None and pd.notnull(spd) else None,
+                    "Median Time"           : t_det,
                     "Chanting Guess Rate"   : {"count": float(round(chn, 2)), "details": [f"{chc}/{cht}"] + player_song_details[p]["Chant"]}
                 })
 

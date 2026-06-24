@@ -310,12 +310,12 @@ function renderTierCharts() {
     if (!document.getElementById('tierChart_GuessRate') || !tierStats) return;
 
     const metrics = [
-        {key: "Guess Rate",             title: "Guess Rate",            isAsc: false,   isRate: true,   isInt: false,   hoverDisabled: false,   isTime: false},
-        {key: "Lives Taken",            title: "Lives Taken",           isAsc: false,   isRate: false,  isInt: true,    hoverDisabled: false,   isTime: false},
-        {key: "Lives Saved",            title: "Lives Saved",           isAsc: false,   isRate: false,  isInt: true,    hoverDisabled: false,   isTime: false},
-        {key: "Contribution Rate",      title: "Contribution Rate",     isAsc: false,   isRate: true,   isInt: false,   hoverDisabled: false,   isTime: false},
-        {key: "Median Time",            title: "Median Time",           isAsc: true,    isRate: false,  isInt: false,   hoverDisabled: true,    isTime: true},
-        {key: "Chanting Guess Rate",    title: "Chanting Guess Rate",   isAsc: false,   isRate: true,   isInt: false,   hoverDisabled: false,   isTime: false}
+        {key: "Guess Rate",             title: "Guess Rate",            isAsc: false,   isRate: true,   isInt: false,   hoverDisabled: false, isTime: false},
+        {key: "Lives Taken",            title: "Lives Taken",           isAsc: false,   isRate: false,  isInt: true,    hoverDisabled: false, isTime: false},
+        {key: "Lives Saved",            title: "Lives Saved",           isAsc: false,   isRate: false,  isInt: true,    hoverDisabled: false, isTime: false},
+        {key: "Contribution Rate",      title: "Contribution Rate",     isAsc: false,   isRate: true,   isInt: false,   hoverDisabled: false, isTime: false},
+        {key: "Median Time",            title: "Median Time",           isAsc: true,    isRate: false,  isInt: false,   hoverDisabled: false, isTime: true},
+        {key: "Chanting Guess Rate",    title: "Chanting Guess Rate",   isAsc: false,   isRate: true,   isInt: false,   hoverDisabled: false, isTime: false}
     ];
 
     const divIds = [
@@ -393,7 +393,9 @@ function renderTierCharts() {
                             });
                         };
 
-                        if (displaySongs.length > 10) {
+                        if (metric.isTime) customHovers.push(displaySongs.join('<br>'));
+
+                        else if (displaySongs.length > 10) {
                             const ticks     = displaySongs.filter(s => s.startsWith('✓'));
                             const crosses   = displaySongs.filter(s => s.startsWith('✗'));
                             const valid     = ticks.length + crosses.length;
@@ -416,12 +418,14 @@ function renderTierCharts() {
 
                             displaySongs = [...formatAndSortList(sampledTicks), ...formatAndSortList(sampledCrosses)];
                             displaySongs.push(`and ${rawVal.details.length - 1 - 10} more`);
+
+                            customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
                         } 
 
-                        else displaySongs = formatAndSortList(displaySongs);
-
-                        customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
-
+                        else {
+                            displaySongs = formatAndSortList(displaySongs);
+                            customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
+                        }
                     }
 
                     else {
@@ -576,6 +580,14 @@ function setupTooltipListeners() {
                     return;
                 }
 
+                const isTimeMetric = songs.some(s => s.startsWith("Minimum:"));
+
+                if (isTimeMetric) {
+                    tooltipNode.innerHTML = displaySongs.join('<br>');
+                    positionTooltip(e);
+                    return;
+                }
+
                 const fractionRegex = /^\d+\/\d+$/;
                 const containsRegex = fractionRegex.test(songs[0]);
                 let fractionHeader  = "";
@@ -718,13 +730,52 @@ for (let i = 0; i < numY; i++) {
     textLabels  .push(rowText);
 }
 
+function getBgColor(val, minZ, maxZ, color0, color1, color2) {
+    if (val === null || val === undefined || isNaN(val)) return 'rgba(0, 0, 0, 0)';
+
+    let norm = Math.max(0, Math.min(1, (val - minZ) / (maxZ - minZ)));
+    let r, g, b;
+
+    const parseHex = (hex) => {
+        let c = hex.replace('#', '');
+        if (c.length === 3) c = c.split('').map(x => x + x).join('');
+        return [parseInt(c.substring(0, 2), 16), parseInt(c.substring(2, 4), 16), parseInt(c.substring(4, 6), 16)];
+    };
+
+    const rgb0 = parseHex(color0);
+    const rgb1 = parseHex(color1);
+    const rgb2 = parseHex(color2);
+
+    if (norm <= 0.375) {
+        let t = norm / 0.375;
+
+        r = rgb0[0] + t * (rgb1[0] - rgb0[0]);
+        g = rgb0[1] + t * (rgb1[1] - rgb0[1]);
+        b = rgb0[2] + t * (rgb1[2] - rgb0[2]);
+    }
+
+    else if (norm <= 0.625) {
+        let t = (norm - 0.375) / (0.25);
+
+        r = rgb1[0] + t * (rgb2[0] - rgb1[0]);
+        g = rgb1[1] + t * (rgb2[1] - rgb1[1]);
+        b = rgb1[2] + t * (rgb2[2] - rgb1[2]);
+    }
+
+    else [r, g, b] = rgb2;
+
+    return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+}
+
+const bgColors = zValues.map(row => row.map(val => getBgColor(val, 0, 8, c0, c1, c2)));
+
 Plotly.newPlot('plotlySongChart', [{
     z               : zValues,
     x               : Array.from({length: numX}, (_, i) => i),
     y               : Array.from({length: numY}, (_, i) => i),
     text            : textLabels,
     hovertemplate   : '<span style="text-align: left; display: block;">%{text}</span><extra></extra>',
-    hoverlabel      : {align: 'left'},
+    hoverlabel      : {align: 'left', bgcolor: bgColors},
     type            : 'heatmap',
     colorscale      : [[0, c0], [0.375, c1], [0.625, c2], [1, c2]],
     zmin            : 0,
@@ -798,7 +849,7 @@ if (scatterData) {
         showlegend      : false,
         marker          : {
             size        : scatterData.map(d => Math.max(10, d.gr * 2)),
-            opacity     : 1,
+            opacity     : 0.95,
             color       : scatterData.map(d => d.performance),
             colorscale  : [[0, c0], [0.5, c1], [1, c2]],
             showscale   : true,
@@ -910,7 +961,7 @@ if (document.getElementById('plotlyListChart') && arrowData) {
         showlegend      : false,
         marker          : {
             size        : arrowData.map(d => Math.max(10, d.rig_rate * 2)),
-            opacity     : 1,
+            opacity     : 0.95,
             color       : arrowData.map(d => d.grid_grs || d.rig_gr),
             colorscale  : [[0, c0], [0.7, c0], [0.8, c1], [0.9, c2], [1, c2]], showscale: true,
             colorbar    : {
