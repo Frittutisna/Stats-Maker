@@ -479,11 +479,11 @@ function renderTierCharts() {
 
         const layout = {
             font        : {family: 'Segoe UI'},
-            title       : {text: titleText, font: {family: 'Segoe UI', size: 15, color: 'black'}, y: 0.925, yanchor: 'top'},
+            title       : {text: titleText, font: {family: 'Segoe UI', size: 15, color: 'black'}, y: 0.95, yanchor: 'top'},
             xaxis       : {tickfont: {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true},
             yaxis       : {tickfont: {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: "  " },
             bargap      : 0.0,
-            margin      : {l: 100, r: 0, t: 100, b: 25},
+            margin      : {l: 100, r: 0, t: 100, b: 100},
             height      : yVals.length * 35,
             hoverlabel  : {align: 'left', font: {family: 'Segoe UI', size: 15}}
         };
@@ -590,7 +590,8 @@ function setupTooltipListeners() {
                     displaySongs = formatAndSortSongsList(displaySongs, !isPlayerSubHover);
                 }
 
-                if (songs.length > 10) displaySongs.push(`and ${songs.length - 10 - (containsRegex ? 1 : 0)} more`);
+                const totalSongsCount = containsRegex ? (songs.length - 1) : songs.length;
+                if (totalSongsCount > 10) displaySongs.push(`and ${totalSongsCount - 10} more`);
                 tooltipNode.innerHTML = containsRegex ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>');
                 positionTooltip(e);
             }
