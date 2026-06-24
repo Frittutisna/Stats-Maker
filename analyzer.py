@@ -1994,6 +1994,29 @@ class TourAnalyzer:
                 player_song_details[p]["Lives Taken"].sort(key = str.lower)
                 player_song_details[p]["Lives Saved"].sort(key = str.lower)
 
+                taken_suffix = {}
+                saved_suffix = {}
+
+                for s in player_song_details[p]["Lives Taken"]:
+                    parts               = s.split(" (from", 1)
+                    song                = parts[0].strip().lower()
+                    taken_suffix[song]  = f"(taken from{parts[1]}" if len(parts) > 1 else ""
+
+                for s in player_song_details[p]["Lives Saved"]:
+                    parts               = s.split(" (from", 1)
+                    song                = parts[0].strip().lower()
+                    saved_suffix[song]  = f"(saved from{parts[1]}" if len(parts) > 1 else ""
+
+                contribution_details = []
+
+                for song_line in player_song_details[p]["Overall"]:
+                    if not song_line.startswith("✓"): continue
+                    song = song_line[2:].strip().lower()
+
+                    if      song in taken_suffix    : contribution_details.append(f"✓ {song_line[2:]} {taken_suffix[song]}")
+                    elif    song in saved_suffix    : contribution_details.append(f"✓ {song_line[2:]} {saved_suffix[song]}")
+                    else                            : contribution_details.append(f"✗ {song_line[2:]}")
+
                 tier_data[tr].append({
                     "Player"                : p,
                     "Guess Rate"            : {"count": float(round(gen, 2)), "details": [f"{cor}/{tot}"] + player_song_details[p]["Overall"]},
@@ -2001,7 +2024,7 @@ class TourAnalyzer:
                     "Lives Taken Details"   : player_song_details[p]["Lives Taken"],
                     "Lives Saved"           : float(round(blk, 2)),
                     "Lives Saved Details"   : player_song_details[p]["Lives Saved"],
-                    "Contribution Rate"     : {"count": float(round(con, 2)), "details": [f"{int(atk) + int(blk)}/{cor}"]},
+                    "Contribution Rate"     : {"count": float(round(con, 2)), "details": [f"{int(atk) + int(blk)}/{cor}"] + contribution_details},
                     "Median Time"           : float(round(spd, 2)) if spd is not None and pd.notnull(spd) else None,
                     "Chanting Guess Rate"   : {"count": float(round(chn, 2)), "details": [f"{chc}/{cht}"] + player_song_details[p]["Chant"]}
                 })

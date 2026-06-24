@@ -345,7 +345,9 @@ function renderTierCharts() {
                 if (va === null || va === undefined) return 1;
                 if (vb === null || vb === undefined) return -1;
 
-                if (va === vb && (metric.key === "Guess Rate" || metric.key === "Chanting Guess Rate")) {
+                const fractionalMetrics = new Set(["Guess Rate", "Contribution Rate", "Chanting Guess Rate"]);
+
+                if (va === vb && fractionalMetrics.has(metric.key)) {
                     let numA = a[metric.key] && a[metric.key].details ? parseInt(a[metric.key].details[0].split('/')[0]) || 0 : 0;
                     let numB = b[metric.key] && b[metric.key].details ? parseInt(b[metric.key].details[0].split('/')[0]) || 0 : 0;
 
