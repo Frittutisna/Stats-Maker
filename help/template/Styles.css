@@ -9,6 +9,11 @@
 
 body, table, th, td, button, input {font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;}
 
+body {
+    -webkit-text-size-adjust    : 100%;
+    text-size-adjust            : 100%;
+}
+
 .main-table {
     border          : var(--bold-border);
     border-collapse : collapse;
