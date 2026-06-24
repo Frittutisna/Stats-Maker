@@ -413,7 +413,7 @@ class TourAnalyzer:
                     vint_floor  = math.floor(float(yr))
 
                     if num_y_v == 8 : y_idx_v = 0 if vint_floor < 1995 else min(int(math.floor((vint_floor - 1995) / 5)) + 1, 7)
-                    else            : y_idx_v = min(max(int(math.floor((vint_floor - 1995) / 5)), 0), 8)
+                    else            : y_idx_v = 0 if vint_floor < 1990 else min(int(math.floor((vint_floor - 1990) / 5)) + 1, 8)
 
                     self.matrix_song_details[f"{x_idx_v}-{y_idx_v}"].append(song_line_hover)
 
