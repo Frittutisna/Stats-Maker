@@ -97,7 +97,7 @@ function switchDashboardTab(evt, tabId) {
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active-tab'));
     document.getElementById(tabId).classList.add('active-content');
     evt.currentTarget.classList.add('active-tab');
-    setTimeout(() => {window.dispatchEvent(new Event('resize'));}, 50);
+    window.dispatchEvent(new Event('resize'));
 }
 
 function getCrossProduct(o, a, b, xKey, yKey) {return (a[xKey] - o[xKey]) * (b[yKey] - o[yKey]) - (a[yKey] - o[yKey]) * (b[xKey] - o[xKey]);}
