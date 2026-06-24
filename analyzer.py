@@ -1996,14 +1996,14 @@ class TourAnalyzer:
 
                 tier_data[tr].append({
                     "Player"                : p,
-                    "Guess Rate"            : {"count": float(round(gen, 2)), "details": [f"{cor}/{tot}"]},
+                    "Guess Rate"            : {"count": float(round(gen, 2)), "details": [f"{cor}/{tot}"] + player_song_details[p]["Overall"]},
                     "Lives Taken"           : int(atk),
                     "Lives Taken Details"   : player_song_details[p]["Lives Taken"],
                     "Lives Saved"           : float(round(blk, 2)),
                     "Lives Saved Details"   : player_song_details[p]["Lives Saved"],
                     "Contribution Rate"     : {"count": float(round(con, 2)), "details": [f"{int(atk) + int(blk)}/{cor}"]},
                     "Median Time"           : float(round(spd, 2)) if spd is not None and pd.notnull(spd) else None,
-                    "Chanting Guess Rate"   : {"count": float(round(chn, 2)), "details": [f"{chc}/{cht}"]}
+                    "Chanting Guess Rate"   : {"count": float(round(chn, 2)), "details": [f"{chc}/{cht}"] + player_song_details[p]["Chant"]}
                 })
 
         return tier_data

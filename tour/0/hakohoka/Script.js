@@ -372,7 +372,55 @@ function renderTierCharts() {
                 yVals.push(p.Player);
 
                 if (!metric.hoverDisabled) {
-                    if (rawVal !== null && typeof rawVal === 'object' && rawVal.details && rawVal.details.length > 0) customHovers.push(rawVal.details[0]);
+                    if (rawVal !== null && typeof rawVal === 'object' && rawVal.details && rawVal.details.length > 0) {
+                        let displaySongs    = [...rawVal.details];
+                        let fractionHeader  = "";
+                        const fractionRegex = /^\d+\/\d+$/;
+
+                        if (fractionRegex.test(displaySongs[0])) {
+                            fractionHeader = `<b>${displaySongs[0]}</b>`;
+                            displaySongs.shift(); 
+                        }
+
+                        const formatAndSortList = (list) => {
+                            return list.sort((a, b) => {
+                                const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
+                                const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
+
+                                return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
+                            });
+                        };
+
+                        if (displaySongs.length > 10) {
+                            const ticks     = displaySongs.filter(s => s.startsWith('✓'));
+                            const crosses   = displaySongs.filter(s => s.startsWith('✗'));
+                            const valid     = ticks.length + crosses.length;
+
+                            let tickTarget  = valid > 0 ? Math.round((ticks.length / valid) * 10) : 5;
+                            let crossTarget = 10 - tickTarget;
+
+                            if (ticks.length < tickTarget) {
+                                tickTarget  = ticks.length;
+                                crossTarget = 10 - tickTarget;
+                            }
+
+                            else if (crosses.length < crossTarget) {
+                                crossTarget = crosses.length;
+                                tickTarget  = 10 - crossTarget;
+                            }
+
+                            const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
+                            const sampledCrosses    = crosses   .sort(() => Math.random() - 0.5).slice(0, crossTarget);
+
+                            displaySongs = [...formatAndSortList(sampledTicks), ...formatAndSortList(sampledCrosses)];
+                            displaySongs.push(`and ${rawVal.details.length - 1 - 10} more`);
+                        } 
+
+                        else displaySongs = formatAndSortList(displaySongs);
+
+                        customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
+
+                    }
 
                     else {
                         let detailKey   = metric.key + " Details";
@@ -391,10 +439,13 @@ function renderTierCharts() {
                                 displaySongs.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
                                 customHovers.push("• " + displaySongs.join("<br>• "));
                             }
+                        }
 
-                        } else customHovers.push("No songs logged");
+                        else customHovers.push("No songs logged");
                     }
-                } else customHovers.push("");
+                } 
+
+                else customHovers.push("");
             });
         });
 
