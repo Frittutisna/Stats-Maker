@@ -60,10 +60,12 @@ body {
 
 td[data-songs].highlight-best:hover {
     background-color: #ffffff !important;
+    color: #3232c8 !important;
 }
 
 td[data-songs].highlight-worst:hover {
     background-color: #ffffff !important;
+    color: #c83232 !important;
 }
 
 .tab-btn {
@@ -145,6 +147,14 @@ td[data-songs]::after {
 td[data-songs].highlight-best::after,
 td[data-songs].highlight-worst::after {
     background-color: #ffffff;
+}
+
+td[data-songs].highlight-best:hover::after {
+    background-color: #3232c8;
+}
+
+td[data-songs].highlight-worst:hover::after {
+    background-color: #c83232;
 }
 
 th.has-explanation:hover,

@@ -1,65 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Tour Dashboard</title>
-    <link rel="stylesheet" href="Styles.css">
-    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-</head>
-<body class="p-6 w-screen max-w-full m-0 box-border">
-    <div id="customJsTooltip"></div>
-
-    <h2 id="dashboardTitle" class="text-5xl font-bold text-center mt-4">Tour Dashboard</h2>
-    <p id="lastUpdatedSubtitle" class="text-xl text-gray-500 text-center mt-1 mb-6 font-semibold"></p>
-    
-    <div id="tabContainer" class="w-full max-w-full border-b border-gray-300 flex flex-wrap justify-center gap-2 mb-8">
-        <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
-        <button class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
-    </div>
-
-    <div class="w-full max-w-full block box-border overflow-hidden">
-        <div id="player-tab" class="tab-content active-content">
-            <div class="table-center-wrapper">
-                <table class="main-table" id="playerStandingsTable"></table>
-            </div>
+<html lang = "en">
+    <head>
+        <meta charset = "UTF-8">
+        <title>Tour Dashboard</title>
+        <link rel = "stylesheet" href = "Styles.css">
+        <script src = "https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+        <script src = "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    </head>
+    <body class = "p-6 w-screen max-w-full m-0 box-border">
+        <div id = "customJsTooltip"></div>
+        <h2 id = "dashboardTitle" class = "text-5xl font-bold text-center mt-4">Tour Dashboard</h2>
+        <p id = "lastUpdatedSubtitle" class = "text-xl text-gray-500 text-center mt-1 mb-6 font-semibold"></p>
+        <div id = "tabContainer" class = "w-full max-w-full border-b border-gray-300 flex flex-wrap justify-center gap-2 mb-8">
+            <button class = "tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
+            <button class = "tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
         </div>
-
-        <div id="tour-tab" class="tab-content">
-            <div class="table-center-wrapper">
-                <table class="main-table" id="tourStatsTable"></table>
-            </div>
+        <div class = "w-full max-w-full block box-border overflow-hidden">
+            <div id = "player-tab" class = "tab-content active-content"><div class = "table-center-wrapper"><table class = "main-table" id = "playerStandingsTable"></table></div></div>
+            <div id = "tour-tab" class = "tab-content"><div class = "table-center-wrapper"><table class = "main-table" id = "tourStatsTable"></table></div></div>
+            <div id = "team-tab-container"></div>
         </div>
-
-        <div id="team-tab-container"></div>
-    </div>
-    
-    <div class="max-w-[2400px] mx-auto mt-4"> 
-        <div id="tier-tab-container"></div>
-
-        <div id="song-tab" class="tab-content">
-            <div class="max-w-[950px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
-                <div id="plotlySongChart" style="width:100%; height:820px;"></div>
-            </div>
+        <div class = "max-w-[2400px] mx-auto mt-4"> 
+            <div id = "tier-tab-container"></div>
+            <div id = "song-tab" class = "tab-content"><div class = "max-w-[950px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md"><div id = "plotlySongChart" style = "width:100%; height:820px;"></div></div></div>
+            <div id = "guess-tab" class = "tab-content"><div class = "max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md"><div class = "mb-4 text-lg text-black space-y-1">
+                <p><b>X-Axis:</b> Mean of correct guessers across songs this player guessed correctly</p>
+                <p><b>Y-Axis:</b> Median vintage across songs this player guessed correctly</p>
+                <p><b>Size (Guess Rate)</b></p>
+                <p><b>Color:</b> Calculates this player's value (Usefulness) against what's expected from their Elo</p>
+            </div><div id = "plotlyGuessChart" style = "width:100%; height:750px;"></div></div></div>
+            <div id = "list-tab-container"></div>
         </div>
-
-        <div id="guess-tab" class="tab-content">
-            <div class="max-w-[1200px] mx-auto border border-gray-300 p-4 bg-white rounded shadow-md">
-                <div class="mb-4 text-lg text-black space-y-1">
-                    <p><b>X-Axis:</b> Mean of correct guessers across songs this player guessed correctly</p>
-                    <p><b>Y-Axis:</b> Median vintage across songs this player guessed correctly</p>
-                    <p><b>Size (Guess Rate)</b></p>
-                    <p><b>Color:</b> Calculates this player's value (Usefulness) against what's expected from their Elo</p>
-                </div>
-                <div id="plotlyGuessChart" style="width:100%; height:750px;"></div>
-            </div>
-        </div>
-
-        <div id="list-tab-container"></div>
-    </div>
-
-    <script>
-        fetch('Data.json')
+        <script>fetch('Data.json')
             .then(response => response.json())
             .then(data => {
                 window.dashboardData = data;
@@ -67,7 +39,7 @@
                 script.src = "Script.js";
                 document.body.appendChild(script);
             })
-            .catch(err => console.error("Could not trace configuration database mapping initialization payload:", err));
-    </script>
-</body>
+            .catch(err => console.error("Could not trace configuration database mapping initialization payload :", err));
+        </script>
+    </body>
 </html>

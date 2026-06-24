@@ -418,7 +418,7 @@ class TourAnalyzer:
                     sw_v = list(correct)[0]
                     self.tour_song_details["Total 1/8s"].append(f"{song_line} ({sw_v})")
                     if sw_v.lower() in self.assignments:
-                        self.team_song_details[self.assignments[sw_v.lower()][0]]["Total 1/8s"].append(song_line)
+                        self.team_song_details[self.assignments[sw_v.lower()][0]]["Total 1/8s"].append(f"{song_line} ({sw_v})")
 
                 elif len(correct) == 2:
                     p_list_v = list(correct)
