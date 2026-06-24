@@ -850,7 +850,7 @@ Plotly.newPlot('plotlySongChart', [{
     y               : Array.from({length: numY}, (_, i) => i),
     text            : textLabels,
     hovertemplate   : '<span style="text-align: left; display: block;">%{text}</span><extra></extra>',
-    hoverlabel      : {align: 'left', bgcolor: bgColors},
+    hoverlabel      : {align: 'left', bgcolor: bgColors, font: {family: 'Segoe UI', size: 15}},
     type            : 'heatmap',
     colorscale      : [[0, c0], [0.375, c1], [0.625, c2], [1, c2]],
     zmin            : 0,
@@ -900,6 +900,17 @@ Plotly.newPlot('plotlySongChart', [{
     margin      : {l: 60, r: 0, t: 30, b: 60}
 }, {responsive: true, displayModeBar: false});
 
+function hexToRgba(hex, opacity = 0.95) {
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
 if (scatterData) {
     const guessHull = get75PercentileHull(scatterData, 'over8', 'vintage');
     let guessTraces = [];
@@ -920,13 +931,14 @@ if (scatterData) {
         text            : scatterData.map(d => d.acronym),
         customdata      : scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), d.performance.toFixed(2)]),
         hovertemplate   : '<b>%{customdata[0]}</b><br>Mean Over-8: %{customdata[1]}<br>Median Vintage: %{customdata[2]}<br>Guess Rate: %{customdata[3]}<br>Score: %{customdata[4]}<extra></extra>',
+        hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}},
         mode            : 'markers',
         showlegend      : false,
         marker          : {
             size        : scatterData.map(d => Math.max(10, d.gr * 2)),
             opacity     : 0.95,
             color       : scatterData.map(d => d.performance),
-            colorscale  : [[0, c0], [0.5, c1], [1, c2]],
+            colorscale  : [[0, hexToRgba(c0)], [0.5, hexToRgba(c1)], [1, hexToRgba(c2)]],
             showscale   : true,
             colorbar    : {
                 title       : {text: '<b>Score</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
@@ -1032,13 +1044,14 @@ if (document.getElementById('plotlyListChart') && arrowData) {
         text            : arrowData.map(d => d.acronym),
         customdata      : arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
         hovertemplate   : '<b>%{customdata[0]}</b><br>Rig Over-8: %{customdata[1]}<br>Rig Vintage: %{customdata[2]}<br>Rig Rate: %{customdata[3]}<br>Rig Guess Rate: %{customdata[4]}<extra></extra>',
+        hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}},
         mode            : 'markers',
         showlegend      : false,
         marker          : {
             size        : arrowData.map(d => Math.max(10, d.rig_rate * 2)),
             opacity     : 0.95,
             color       : arrowData.map(d => d.grid_grs || d.rig_gr),
-            colorscale  : [[0, c0], [0.7, c0], [0.8, c1], [0.9, c2], [1, c2]], showscale: true,
+            colorscale  : [[0, hexToRgba(c0)], [0.7, hexToRgba(c0)], [0.8, hexToRgba(c1)], [0.9, hexToRgba(c2)], [1, hexToRgba(c2)]], showscale: true,
             colorbar    : {
                 title       : {text: '<b>Rig Guess Rate</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
                 thickness   : 25,
