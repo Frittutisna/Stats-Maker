@@ -233,10 +233,10 @@ function renderTourTable() {
         let classes = [];
 
         if (thickBorderColumns.has(h))  classes.push("border-col-group");
-        if (colExplanations[h])         classes.push("has-explanation");
+        // REMOVED: broken colExplanations[h] check for the static headers 'Metric'/'Value'
 
         let classStr = classes.length > 0 ? ` class="${classes.join(' ')}"` : '';
-        return `<th${classStr} data-metric="${h}">${h.replace(/ /g, '<br>')}</th>`;
+        return `<th${classStr}>${h.replace(/ /g, '<br>')}</th>`;
     }).join('') + "</tr></thead>";
 
     let tbody = "";
@@ -244,19 +244,24 @@ function renderTourTable() {
     tourStats.forEach(row => {
         let rawCell     = row.Value;
         let displayVal  = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
-        let metricClass = colExplanations[row.Metric] ? "border-col-group has-explanation" : "border-col-group";
+        
+        // Add "has-explanation" class dynamically if an explanation exists for this specific row metric
+        let hasExp      = !!colExplanations[row.Metric];
+        let metricClass = hasExp ? "border-col-group has-explanation" : "border-col-group";
+        
+        // CRITICAL FIX: Inject data-metric="${row.Metric}" so setupTooltipListeners() finds it
+        let metricAttr  = `class='${metricClass}' data-metric="${row.Metric}"`;
 
         if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
             let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-            tbody += `<tr><td class='${metricClass}'><b>${row.Metric}</b></td><td data-songs="${encodedDetails}">${displayVal}</td></tr>`;
+            tbody += `<tr><td ${metricAttr}><b>${row.Metric}</b></td><td data-songs="${encodedDetails}">${displayVal}</td></tr>`;
         }
 
-        else tbody += `<tr><td class='${metricClass}'><b>${row.Metric}</b></td><td>${displayVal}</td></tr>`;
+        else tbody += `<tr><td ${metricAttr}><b>${row.Metric}</b></td><td>${displayVal}</td></tr>`;
     });
 
     table.innerHTML = thead + tbody + "</tbody>";
 }
-
 function renderTeamTable() {
     const table = document.getElementById('teamStatsTable');
     if(!table || !teamStats || !teamStats.length) return;
@@ -553,7 +558,7 @@ function setupTooltipListeners() {
         tooltipNode.style.top = yPos + 'px';
     }
 
-    document.querySelectorAll('table th[data-metric]').forEach(th => {
+    document.querySelectorAll('table th[data-metric], table td[data-metric]').forEach(th => {
         const metricKey = th.getAttribute('data-metric');
         if (!colExplanations[metricKey]) return;
 
@@ -562,20 +567,26 @@ function setupTooltipListeners() {
         th.addEventListener('mouseleave',   () => {tooltipNode.style.display = 'none';});
     });
 
-    document.querySelectorAll('#tourStatsTable tr td:first-child').forEach(td => {
-        const metricKey = td.innerText.trim();
-        if (!colExplanations[metricKey]) return;
-
-        td.addEventListener('mouseenter',   (e) => {tooltipNode.innerHTML = colExplanations[metricKey]; positionTooltip(e);});
-        td.addEventListener('mousemove',    positionTooltip);
-        td.addEventListener('mouseleave',   () => {tooltipNode.style.display = 'none';});
-    });
-
     document.querySelectorAll('td[data-songs]').forEach(td => {
         td.addEventListener('mouseenter', (e) => {
             try {
                 const songs = JSON.parse(decodeURIComponent(td.getAttribute('data-songs')));
                 if (!songs || songs.length === 0) return;
+
+                if (td.classList.contains('highlight-best')) {
+                    tooltipNode.style.backgroundColor   = c2;
+                    tooltipNode.style.color             = 'white';
+                }
+
+                else if (td.classList.contains('highlight-worst')) {
+                    tooltipNode.style.backgroundColor   = c0;
+                    tooltipNode.style.color             = 'white';
+                }
+
+                else {
+                    tooltipNode.style.backgroundColor   = 'black';
+                    tooltipNode.style.color             = 'white';
+                }
 
                 let displaySongs        = [...songs];
                 const isPlayerSubHover  = td.parentNode.firstElementChild === td;
@@ -657,8 +668,12 @@ function setupTooltipListeners() {
             catch (err) {}
         });
 
-        td.addEventListener('mousemove', positionTooltip);
-        td.addEventListener('mouseleave', () => {tooltipNode.style.display = 'none';});
+        td.addEventListener('mousemove',    positionTooltip);
+        td.addEventListener('mouseleave',   () => {
+            tooltipNode.style.display           = 'none';
+            tooltipNode.style.backgroundColor   = 'black';
+            tooltipNode.style.color             = 'white';
+        });
     });
 }
 
