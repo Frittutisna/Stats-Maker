@@ -36,7 +36,7 @@ class CustomSpinbox(tk.Frame):
             validatecommand     = vcmd
         )
 
-        self.entry.grid(row = 0, column = 1, padx = 0, sticky = "ns")
+        self.entry.grid(row = 0, column = 1, sticky = "ns")
         self.grid_columnconfigure(1, minsize = btn_width)
 
         self.btn_inc = tk.Canvas(self, width = btn_width, height = btn_height, bg = "black", highlightthickness = 0, borderwidth = 0, cursor = "hand2")
@@ -95,12 +95,12 @@ class UnifiedDialog(tk.Toplevel):
         else                    : self.geometry("+100+100")
 
         main_frame = ttk.Frame(self, padding = 8)
-        main_frame.pack(fill = tk.BOTH, expand = True)
+        main_frame.pack(fill = tk.BOTH)
 
         if prompt: ttk.Label(main_frame, text = prompt, font = ("Segoe UI", 10)).pack(anchor = "w")
 
         self.container = ttk.Frame(main_frame)
-        self.container.pack(fill = tk.BOTH, expand = True)
+        self.container.pack(fill = tk.BOTH)
 
         btn_frame = ttk.Frame(main_frame)
         btn_frame.pack(fill = tk.X)
@@ -240,7 +240,7 @@ class TourMetadataDialog(UnifiedDialog):
 
         for w in (box_th2, lbl_th2): w.bind("<Button-1>", lambda _: self._select_th_opt("custom"))
         self._update_th_state()
-        ttk.Label(self.container, text = "How many rounds have elapsed?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (6, 4))
+        ttk.Label(self.container, text = "How many rounds have elapsed?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         self.spin = CustomSpinbox(self.container, from_ = 1, to = 6, initial_val = baseline_initial)
         self.spin.pack(anchor = "w")
@@ -262,7 +262,7 @@ class TourMetadataDialog(UnifiedDialog):
 
             for sub_name in sorted_subs:
                 f_sub = ttk.Frame(self.container)
-                f_sub.pack(fill = tk.X, anchor = "w")
+                f_sub.pack(anchor = "w") 
 
                 lbl = ttk.Label(f_sub, text = f"Who is {sub_name} subbing for?", font = ("Segoe UI", 10, "bold"))
                 lbl.pack(anchor = "w")
@@ -276,10 +276,10 @@ class TourMetadataDialog(UnifiedDialog):
                 self.sub_vars[sub_name] = choice_var
 
                 combo_frame = tk.Frame(f_sub, bg = "white", bd = 1, relief = "solid")
-                combo_frame.pack(fill = tk.X)
+                combo_frame.pack(anchor = "w")
 
                 entry = tk.Entry(combo_frame, textvariable = choice_var, bg = "white", fg = "black", font = ("Segoe UI", 10), justify = "center", bd = 0, state = "readonly")
-                entry.pack(side = tk.LEFT, fill = tk.X, expand = True, padx = 4)
+                entry.pack(side = tk.LEFT)
 
                 arrow_btn = tk.Canvas(combo_frame, width = 25, height = 25, bg = "black", highlightthickness = 0, borderwidth = 0, cursor = "hand2")
                 arrow_btn.create_polygon(7, 10, 17, 10, 12, 16, fill = "white")
@@ -297,7 +297,7 @@ class TourMetadataDialog(UnifiedDialog):
                 arrow_btn   .bind("<Button-1>", show_menu_func)
                 entry       .bind("<Button-1>", show_menu_func)
 
-        ttk.Label(self.container, text = "Are there any new players?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (6, 4))
+        ttk.Label(self.container, text = "Are there any new players?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         has_round_elo       = False
         round_elo_players   = set()
@@ -321,7 +321,7 @@ class TourMetadataDialog(UnifiedDialog):
 
         for opt in ["No", "Yes"]:
             f_np = ttk.Frame(self.container)
-            f_np.pack(anchor = "w", pady = 2)
+            f_np.pack(anchor = "w")
 
             is_sel      = (self.np_var.get() == opt)
             bg_color    = self.fill_color if is_sel else "white"
@@ -336,7 +336,7 @@ class TourMetadataDialog(UnifiedDialog):
             for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_np_opt(o))
 
         self.player_container = ttk.Frame(self.container)
-        self.player_container.pack(fill = tk.BOTH, expand = True, pady = (4, 0))
+        self.player_container.pack(fill = tk.BOTH)
 
         self.player_vars    = {}
         player_list         = sorted(list(active_players), key = str.lower)
@@ -351,7 +351,7 @@ class TourMetadataDialog(UnifiedDialog):
             self.player_vars[name]  = var
 
             item_frame              = ttk.Frame(self.player_container)
-            item_frame.grid(row = row, column = col, padx = 2, pady = 2, sticky = "w")
+            item_frame.grid(row = row, column = col, padx = 4, sticky = "w")
 
             box = tk.Canvas(item_frame, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
             box.pack(side = tk.LEFT, padx = (0, 4))
@@ -445,13 +445,13 @@ class MismatchedRoundsDialog(UnifiedDialog):
         title_part = "These players appear" if len(mismatched_players) > 1 else "This player appears"
 
         prompt_text = (
-            f"{title_part} in fewer JSONs than expected; how many rounds were they expected to be in?\n\n"
+            f"{title_part} in fewer JSONs than expected; how many rounds were they expected to be in?\n"
             '● "Use the current round count" is primarily used if the player has 0/0 round(s)\n'
             '● "Use the current JSON count" is primarily used if the player was subbed in/out\n'
-            '● "Ignore mismatch" is primarily used for non-Watched tours\n'
+            '● "Ignore mismatch" is primarily used for non-Watched tours'
         )
 
-        super().__init__(parent, "Mismatched Round Counts", prompt_text)
+        super().__init__(parent, "Round Count Mismatch", prompt_text)
 
         self.base_exp       = base_exp
         self.player_configs = {}
@@ -470,8 +470,8 @@ class MismatchedRoundsDialog(UnifiedDialog):
                         subs_txt_players.add(original_player    .strip().lower())
 
         for _, (name, act) in enumerate(sorted(mismatched_players.items())):
-            p_frame = ttk.LabelFrame(self.container, text = f" {name} ", padding = 4)
-            p_frame.pack(fill = tk.X, pady = 4, anchor = "w")
+            p_frame = ttk.LabelFrame(self.container, text = name, padding = 4)
+            p_frame.pack(fill = tk.X, anchor = "w")
 
             is_subbed       = (name.lower() in subbed_players_set) or (name.lower() in subs_txt_players)
             initial_mode    = "custom" if not is_watched else ("json" if is_subbed else "round")
@@ -479,7 +479,7 @@ class MismatchedRoundsDialog(UnifiedDialog):
             boxes           = {}
 
             f_r1 = ttk.Frame(p_frame)
-            f_r1.pack(anchor = "w", pady = 2)
+            f_r1.pack(anchor = "w")
 
             box_r1 = tk.Canvas(f_r1, width = 10, height = 10, bg = self.fill_color if initial_mode == "round" else "white", highlightthickness = 1, highlightbackground = "black")
             box_r1.pack(side = tk.LEFT, padx = (0, 4))
@@ -490,7 +490,7 @@ class MismatchedRoundsDialog(UnifiedDialog):
             lbl_r1.pack(side = tk.LEFT)
 
             f_r2 = ttk.Frame(p_frame)
-            f_r2.pack(anchor = "w", pady = 2)
+            f_r2.pack(anchor = "w")
 
             box_r2 = tk.Canvas(f_r2, width = 10, height = 10, bg = self.fill_color if initial_mode == "json" else "white", highlightthickness = 1, highlightbackground = "black")
             box_r2.pack(side = tk.LEFT, padx = (0, 4))
@@ -501,7 +501,7 @@ class MismatchedRoundsDialog(UnifiedDialog):
             lbl_r2.pack(side = tk.LEFT)
 
             f_custom = ttk.Frame(p_frame)
-            f_custom.pack(anchor = "w", pady = 2)
+            f_custom.pack(anchor = "w")
 
             box_r3 = tk.Canvas(f_custom, width = 10, height = 10, bg = self.fill_color if initial_mode == "custom" else "white", highlightthickness = 1, highlightbackground = "black")
             box_r3.pack(side = tk.LEFT, padx = (0, 4))
@@ -541,76 +541,4 @@ class MismatchedRoundsDialog(UnifiedDialog):
             elif    mode == "json"  : self.result[name] = cfg["act"]
             else                    : self.result[name] = "ignore"
 
-        super().on_confirm()
-
-class SubstitutePromptDialog(UnifiedDialog):
-    def __init__(self, parent, sub_name, original_players_list, tour_dir):
-        super().__init__(parent, "Substitute Setup", "")
-
-        self.result         = None
-        self._sub_name      = sub_name
-        self.subs_txt_path  = tour_dir / "subs.txt"
-
-        lbl = ttk.Label(self.container, text = f"Who is {sub_name} subbing for?", font = ("Segoe UI", 10))
-        lbl.grid(row = 0, column = 0, padx = (0, 4), pady = 4, sticky = "w")
-
-        self.choice_var     = tk.StringVar()
-        self.sorted_players = sorted(list(original_players_list), key = str.lower)
-
-        saved_original = None
-
-        if self.subs_txt_path.exists():
-            with open(self.subs_txt_path, "r", encoding = "utf-8") as f:
-                for line in f:
-                    if "," in line:
-                        s_name, o_name = line.strip().split(",", 1)
-
-                        if s_name.strip().lower() == sub_name.lower():
-                            saved_original = next((p for p in self.sorted_players if p.lower() == o_name.strip().lower()), None)
-                            if saved_original: break
-
-        if      saved_original      : self.choice_var.set(saved_original)
-        elif    self.sorted_players : self.choice_var.set(self.sorted_players[0])
-
-        combo_frame = tk.Frame(self.container, bg = "white", bd = 1, relief = "solid")
-        combo_frame.grid(row = 0, column = 1, pady = 4, sticky = "ew")
-
-        self.container.grid_columnconfigure(1, weight = 1)
-
-        self.entry = tk.Entry(combo_frame, textvariable = self.choice_var, bg = "white", fg = "black", font = ("Segoe UI", 10), justify = "center", bd = 0, state = "readonly")
-        self.entry.pack(side = tk.LEFT, fill = tk.X, expand = True, padx = 4)
-
-        arrow_btn = tk.Canvas(combo_frame, width = 25, height = 25, bg = "black", highlightthickness = 0, borderwidth = 0, cursor = "hand2")
-        arrow_btn.create_polygon(7, 10, 17, 10, 12, 16, fill = "white")
-        arrow_btn.pack(side = tk.RIGHT)
-
-        def show_menu(event):
-            menu = tk.Menu(self, tearoff = 0)
-            for p in self.sorted_players: menu.add_command(label = p, command = lambda val = p: self.choice_var.set(val))
-            menu.post(event.x_root, event.y_root)
-
-        arrow_btn   .bind("<Button-1>", show_menu)
-        self.entry  .bind("<Button-1>", show_menu)
-
-        def on_close_cancel():
-            self.result = None
-            self.destroy()
-
-        self.protocol       ("WM_DELETE_WINDOW", on_close_cancel)
-        self.grab_set       ()
-        self.wait_window    ()
-
-    def on_confirm(self):
-        self.result     = self.choice_var.get()
-        existing_lines  = []
-
-        if self.subs_txt_path.exists():
-            with open(self.subs_txt_path, "r", encoding = "utf-8") as f:
-                for line in f:
-                    if "," in line:
-                        s_part, _ = line.split(",", 1)
-                        if s_part.strip().lower() != self._sub_name.lower(): existing_lines.append(line.strip())
-
-        existing_lines.append(f"{self._sub_name}, {self.result}")        
-        with open(self.subs_txt_path, "w", encoding = "utf-8") as f: f.write("\n".join(existing_lines) + "\n")
         super().on_confirm()
