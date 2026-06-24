@@ -864,9 +864,9 @@ class TourAnalyzer:
 
         unresolved_players = [p for p in all_known if p.lower() not in assignments]
 
-        if unresolved_players:
-            messagebox.showerror("Roster Mismatch", f"These players are in the JSONs but not in codes.txt: {', '.join(unresolved_players)}")
-            return False
+        # if unresolved_players:
+        #    messagebox.showerror("Roster Mismatch", f"These players are in the JSONs but not in codes.txt: {', '.join(unresolved_players)}")
+        #    return False
 
         original_players_display = [p for p in all_known if p.lower() in assignments and p.lower() not in [s.lower() for s in sub_candidates_raw]]
 
