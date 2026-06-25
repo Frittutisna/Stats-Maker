@@ -51,7 +51,7 @@
                         <p><b>Color:</b> Mean of correct guessers across songs in this vintage-difficulty bin</p>
                     </div>
                     <div class="mt-5 p-5 bg-gray-50 border">
-                            <b><p>Example:</p>
+                            <b><p>Example</p>
                             <ul>
                                 <li>Vintage: 2015-2020</li>
                                 <li>Difficulty: 25-30</li>
@@ -70,7 +70,7 @@
                         <p><b>Size (Guess Rate)</b></p>
                         <p><b>Color:</b> Calculates this player's value (Usefulness) against what's expected from their Elo</p>
                         <div class="mt-5 p-5 bg-gray-50 border">
-                            <p><b>Example:</b><br>A <b>small, <span style="color: #3232c8;">blue</span></b> circle in the <b>bottom-left</b> means that, on average, this player:</p>
+                            <p><b>Example</b><br>A <b>small, <span style="color: #3232c8;">blue</span></b> circle in the <b>bottom-left</b> means that, on average, this player:</p>
                             <ul class="list-disc pl-5">
                                 <li>Has low Guess Rate (<b>small</b>),</li>
                                 <li>Is over-performing their Elo (<b><span style="color: #3232c8;">blue</span></b>), and</li>
@@ -88,7 +88,7 @@
                         <p><b>Y-Axis:</b> Median vintage across songs from this player's list</p>
                         <p><b>Size (Rig Rate)</b></p>
                         <div class="mt-5 p-5 bg-gray-50 border">
-                            <p><b>Example:</b><br>A <b>big, <span style="color: #c83232;">red</span></b> circle in the <b>top-right</b> means that, on average, this player's list:</p>
+                            <p><b>Example</b><br>A <b>big, <span style="color: #c83232;">red</span></b> circle in the <b>top-right</b> means that, on average, this player's list:</p>
                             <ul class="list-disc pl-5">
                                 <li>Usually has newer (<b>top</b>) songs,</li>
                                 <li>Appears a lot (<b>big</b>),</li>
@@ -98,6 +98,45 @@
                         </div>
                     </div>
                     <div id="plotlyListChart" style="width:1000px; height:1000px;"></div>
+                </div>
+            </div>
+            <div id="search-tab" class="tab-content">
+                <div class="mx-auto w-full">
+                    <div class="w-full bg-gray-50 border p-5 mb-5">
+                        <p class="font-bold">Guide</p>
+                        <p class="mb-1">
+                            Filter songs using <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> 
+                            or <code class="bg-gray-200 px-1 rounded font-mono text-xs">columnName:value</code><br> 
+                            You can also swap the 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> 
+                            for arithmetic operators (
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">&lt;</code>, 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">&gt;</code>, 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">&lt;=</code>, 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">&gt;=</code>)<br>
+                            Wrap multi-word values in 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code>
+                        </p>
+                        <div class="grid grid-cols-2 gap-1 mt-1 pt-1 border-t text-xs">
+                            <div>
+                                <span class="block font-mono mb-1">japanese, english, song, artist, composer, arranger, songtype, guessers, listers, animetype, tags, genres, rebroadcast, dub</span>
+                                <code class="bg-gray-200 px-1 rounded font-mono">japanese:aikatsu artist:nanase</code> returns Nanase songs from Aikatsu<br>
+                                <code class="bg-gray-200 px-1 rounded font-mono">songtype:ed animetype:movie</code> returns movie ending songs<br>
+                                <code class="bg-gray-200 px-1 rounded font-mono">guessers:furlain tags:shounen</code> returns shounen songs FurLain guessed correctly<br>
+                            </div>
+                            <div>
+                                <span class="block font-mono mb-1">difficulty, guessers, listers, vintage, rank, score</span>
+                                <code class="bg-gray-200 px-1 rounded font-mono">difficulty&lt;30 listers&gt;4</code> returns songs with difficulty less than 30 listed by more than 4 people<br>
+                                <code class="bg-gray-200 px-1 rounded font-mono">vintage&lt;"Summer 2023"</code> returns songs from anime before Summer 2023<br>
+                                <code class="bg-gray-200 px-1 rounded font-mono">rank&gt;100 scores&gt;=80</code> returns songs from anime rated 80+ outside the Top 100<br>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full flex items-left gap-1 mb-5">
+                        <div class="w-full max-w-xl"><input type="text" id="songSearchInput" placeholder="japanese:chobits:, songtype:ed" class="w-full px-4 py-2 border"></div>
+                        <div id="searchCounter" class="font-bold bg-black px-4 py-2 text-white border">0/0</div>
+                    </div>
+                    <div class="w-full overflow-x-auto border bg-white"><table class="main-table" id="searchSongsTable""></table></div>
                 </div>
             </div>
         </div>

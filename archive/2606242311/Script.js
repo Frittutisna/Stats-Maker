@@ -42,7 +42,10 @@ if (use_teams)              tabContainer.insertAdjacentHTML('beforeend', `<butto
 
 tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
 tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
+
 if (watched) tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>`);
+
+tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
 
 const thickBorderColumns = new Set([
     "Player",
@@ -1032,3 +1035,435 @@ if (document.getElementById('plotlyListChart') && arrowData) {
         annotations : buildScatterAnnotations(arrowData, 'x_start', 'y_start', 'rig_rate')
     }, {responsive: true, displayModeBar: false});
 }
+
+let globalSearchData    = [];
+let globalSortState     = {columnName: "Japanese", ascending: true};
+
+function trimArtists(arr) {
+    if (arr.length <= 3) return arr.join(', ');
+    return `${arr.slice(0, 2).join(', ')}, and more`;
+}
+
+function parseVintageToFloat(vintStr) {
+    const parts = vintStr.trim().split(/\s+/);    
+    if (parts.length === 1 && !isNaN(parts[0])) return parseFloat(parts[0]);
+
+    const season        = parts[0].toLowerCase();
+    const year          = parseInt(parts[1]);
+    let seasonWeight    = 0.0;
+
+    if      (season === "winter")   seasonWeight = 0.1;
+    else if (season === "spring")   seasonWeight = 0.2;
+    else if (season === "summer")   seasonWeight = 0.3;
+    else if (season === "fall")     seasonWeight = 0.4;
+
+    return year + seasonWeight;
+}
+
+function sortSearchData() {
+    const { columnName, ascending } = globalSortState;
+
+    globalSearchData.sort((a, b) => {
+        let valA, valB;
+
+        switch (columnName) {
+            case "Japanese":    valA = a.romaji         || "";
+                                valB = b.romaji         || "";
+                                break;
+
+            case "English":     valA = a.english        || "";
+                                valB = b.english        || "";
+                                break;
+
+            case "Song":        valA = a.song           || "";
+                                valB = b.song           || "";
+                                break;
+
+            case "Artist":      valA = a.artist_raw     || "";
+                                valB = b.artist_raw     || "";
+                                break;
+
+            case "Composer":    valA = a.composer       || "";
+                                valB = b.composer       || "";
+                                break;
+
+            case "Arranger":    valA = a.arranger       || "";
+                                valB = b.arranger       || "";
+                                break;
+
+            case "Song Type":   valA = a.type           || "";
+                                valB = b.type           || "";
+                                break;
+
+            case "Anime Type":  valA = a.anime_type     || "";
+                                valB = b.anime_type     || "";
+                                break;
+
+            case "Vintage":     valA = parseVintageToFloat(a.vintage);
+                                valB = parseVintageToFloat(b.vintage);
+                                break;
+
+            case "Rebroadcast": valA = a.rebroadcast    || "";
+                                valB = b.rebroadcast    || "";
+                                break;
+
+            case "Dub":         valA = a.dub            || "";
+                                valB = b.dub            || "";
+                                break;
+
+            case "Difficulty":  valA = a.difficulty === "Unrated" ? -Infinity               : parseFloat(a.difficulty);
+                                valB = b.difficulty === "Unrated" ? -Infinity               : parseFloat(b.difficulty);
+                                break;
+
+            case "Score":       valA = a.score      === "N/A"     ? -1                      : parseFloat(a.score);
+                                valB = b.score      === "N/A"     ? -1                      : parseFloat(b.score);
+                                break;
+
+            case "Rank":        valA = a.rank       === "None"   ? Infinity                 : parseFloat(a.rank);
+                                valB = b.rank       === "None"   ? Infinity                 : parseFloat(b.rank);
+                                break;
+
+            case "Guessers":    valA = a.guessers_flat          ? a.guessers_flat.length    : 0;
+                                valB = b.guessers_flat          ? b.guessers_flat.length    : 0;
+                                break;
+
+            case "Listers":     valA = a.listers_flat           ? a.listers_flat.length     : 0;
+                                valB = b.listers_flat           ? b.listers_flat.length     : 0;
+                                break;
+
+            case "Tags":        valA = a.tags_arr               ? a.tags_arr.length         : 0;
+                                valB = b.tags_arr               ? b.tags_arr.length         : 0;
+                                break;
+
+            case "Genres":      valA = a.genres_arr             ? a.genres_arr.length       : 0;
+                                valB = b.genres_arr             ? b.genres_arr.length       : 0;
+                                break;
+
+            default:            return 0;
+        }
+
+        let comparison = 0;
+
+        if (typeof valA === "string" && typeof valB === "string") comparison = valA.localeCompare(valB, undefined, {sensitivity: 'base', numeric: true});
+
+        else {
+            if (valA < valB) comparison = -1;
+            if (valA > valB) comparison = 1;
+        }
+
+        return ascending ? comparison : -comparison;
+    });
+}
+
+window.handleSearchSort = function(columnHeaderName) {
+    if (globalSortState.columnName === columnHeaderName) globalSortState.ascending = !globalSortState.ascending;
+
+    else {
+        globalSortState.columnName = columnHeaderName;
+
+        if (columnHeaderName === "Rank")    globalSortState.ascending = true;
+        else                                globalSortState.ascending = false;
+    }
+
+    sortSearchData();
+    const searchInput = document.getElementById('songSearchInput');
+
+    if (searchInput && searchInput.value.trim())    searchInput.dispatchEvent(new Event('input'));
+    else                                            renderSearchTable(globalSearchData);
+};
+
+function matchNumericConstraint(targetVal, operator, criterionText, isRank = false) {
+    const numTarget = parseFloat(targetVal);
+    const numCrit   = parseFloat(criterionText);
+
+    if      (isNaN(numTarget) || isNaN(numCrit))    return false;
+    else if (operator === ":")                      return Math.floor(numTarget) === Math.floor(numCrit);
+
+    let op = operator;
+
+    if (isRank) {
+        if      (op === "<")    op = ">";
+        else if (op === ">")    op = "<";
+        else if (op === "<=")   op = ">=";
+        else if (op === ">=")   op = "<=";
+    }
+
+    switch (op) {
+        case "<"    : return numTarget <    numCrit;
+        case ">"    : return numTarget >    numCrit;
+        case "<="   : return numTarget <=   numCrit;
+        case ">="   : return numTarget >=   numCrit;
+        default     : return false;
+    }
+}
+
+function evaluateQuery(song, key, operator, value) {
+    const cleanValue = value.replace(/^"|"$/g, '').toLowerCase().trim();
+    const stringKeys = ["japanese", "english", "song", "artist", "composer", "arranger", "tags", "genres", "animetype"];
+
+    if (stringKeys.includes(key)) {
+        switch (key) {
+            case "japanese"     : return song.romaji                        .toLowerCase().includes(cleanValue);
+            case "english"      : return song.english                       .toLowerCase().includes(cleanValue);
+            case "song"         : return song.song                          .toLowerCase().includes(cleanValue);
+            case "artist"       : return song.artist_raw                    .toLowerCase().includes(cleanValue);
+            case "composer"     : return song.composer                      .toLowerCase().includes(cleanValue);
+            case "arranger"     : return song.arranger                      .toLowerCase().includes(cleanValue);
+            case "animetype"    : return song.anime_type                    .toLowerCase().includes(cleanValue);
+            case "tags"         : return song.tags_arr      .some(t => t    .toLowerCase().includes(cleanValue));
+            case "genres"       : return song.genres_arr    .some(g => g    .toLowerCase().includes(cleanValue));
+            default             : return false;
+        }
+    }
+
+    if (["difficulty", "rank", "score", "guessers", "listers"].includes(key)) {
+        if ((key === "guessers" || key === "listers") && isNaN(parseFloat(cleanValue)) && operator === ":") {
+            const arr = key === "guessers" ? song.guessers_flat : song.listers_flat;
+            return arr.some(p => p.toLowerCase().includes(cleanValue));
+        }
+
+        let target;
+
+        if      (key === "difficulty")  target = song.difficulty    === "Unrated"   ? NaN : song.difficulty;
+        else if (key === "rank")        target = song.rank          === "N/A"       ? NaN : song.rank;
+        else if (key === "score")       target = song.score         === "N/A"       ? NaN : song.score;
+
+        else if (key === "guessers")    target = song.guessers_flat .length;
+        else if (key === "listers")     target = song.listers_flat  .length;
+
+        return matchNumericConstraint(target, operator, cleanValue, key === "rank");
+    }
+
+    if (key === "vintage") {
+        if (operator === ":") return song.vintage.toLowerCase().includes(cleanValue);
+
+        const targetWeight  = parseVintageToFloat(song.vintage);
+        const critWeight    = parseVintageToFloat(cleanValue);
+
+        switch (operator) {
+            case "<"    : return targetWeight <     critWeight;
+            case ">"    : return targetWeight >     critWeight;
+            case "<="   : return targetWeight <=    critWeight;
+            case ">="   : return targetWeight >=    critWeight;
+            default     : return false;
+        }
+    }
+
+    if (key === "songtype") {
+        const typeLower = song.type.toLowerCase();
+
+        if      (cleanValue === "op" || cleanValue === "opening")   return typeLower.includes("opening");
+        else if (cleanValue === "ed" || cleanValue === "ending")    return typeLower.includes("ending");
+        else if (cleanValue === "in" || cleanValue === "insert")    return typeLower.includes("insert");
+        else                                                        return false;
+    }
+
+    if (key === "rebroadcast" || key === "dub") {
+        const state     = (key === "rebroadcast" ? song.rebroadcast : song.dub).toLowerCase() === "yes";
+        const truthy    = ["true", "yes", "1"].includes(cleanValue);
+
+        return state === truthy;
+    }
+
+    return false;
+}
+
+function renderSearchTable(filteredSongs) {
+    const table         = document.getElementById('searchSongsTable');
+    const counterNode   = document.getElementById('searchCounter');
+
+    if (!table)         return;
+    if (counterNode)    counterNode.innerText = `${filteredSongs.length}/${globalSearchData.length}`;
+
+    if (filteredSongs.length === 0) {
+        table.innerHTML = `<thead><tr><th>Error</th></tr></thead><tbody><tr><td class="p-1 text-center">No songs matched your specific constraints</td></tr></tbody>`;
+        return;
+    }
+
+    const headersConfig = [
+        {name: "Japanese",      group: false},
+        {name: "English",       group: true},
+        {name: "Song",          group: false},
+        {name: "Artist",        group: false},
+        {name: "Composer",      group: false},
+        {name: "Arranger",      group: true},
+        {name: "Song Type",     group: false},
+        {name: "Difficulty",    group: false},
+        {name: "Guessers",      group: false},
+        {name: "Listers",       group: true},
+        {name: "Vintage",       group: false},
+        {name: "Anime Type",    group: false},
+        {name: "Tags",          group: false},
+        {name: "Genres",        group: false},
+        {name: "Rebroadcast",   group: false},
+        {name: "Dub",           group: false},
+        {name: "Rank",          group: false},
+        {name: "Score",         group: false}
+    ];
+
+    let thead = "<thead><tr>" + headersConfig.map(c => {
+        let baseClass   = "cursor-pointer";
+        let classStr    = c.group ? ` class="search-group-border ${baseClass}"` : ` class="${baseClass}"`;
+        let arrow       = " ▶";
+
+        if (globalSortState.columnName === c.name) arrow = globalSortState.ascending ? " ▲" : " ▼";
+        return `<th${classStr} style="white-space: nowrap;" onclick="handleSearchSort('${c.name}')">${c.name}${arrow}</th>`;
+    }).join('') + "</tr></thead>";
+
+    let tbody = "<tbody>";
+
+    filteredSongs.forEach(song => {
+        tbody += `<tr>`;
+
+        const mergeTitles = (song.romaji && song.english && song.romaji.toLowerCase() === song.english.toLowerCase()) || !song.english;
+
+        if (mergeTitles) tbody += `<td colspan="2" class="search-group-border text-left"><a href="${song.ann_url}" target="_blank" class="hover:opacity-60 text-black" style="font-weight: normal; text-decoration: underline;">${song.romaji}</a></td>`;
+
+        else {
+            tbody += `<td class="text-left"><a href="${song.ann_url}" target="_blank" class="hover:opacity-60 text-black" style="font-weight: normal; text-decoration: underline;">${song.romaji}</a></td>`;
+            tbody += `<td class="search-group-border text-left"><a href="${song.ann_url}" target="_blank" class="hover:opacity-60 text-black" style="font-weight: normal; text-decoration: underline;">${song.english}</a></td>`;
+        }
+
+        tbody += `<td class="text-left" style="white-space: normal;"><a href="${song.video_url}" target="_blank" class="hover:opacity-60 text-black" style="font-weight: normal; text-decoration: underline;">${song.song}</a></td>`;
+
+        const isMultArt     = song.artist_arr && song.artist_arr.length > 3;
+        const matchCompArt  = (song.composer.toLowerCase() === song.artist_raw  .toLowerCase()) && !isMultArt;
+        const matchCompArr  = (song.composer.toLowerCase() === song.arranger    .toLowerCase());
+        let artistCellAttr  = "";
+
+        if (isMultArt) {
+            let encodedArtists  = encodeURIComponent(JSON.stringify(song.artist_arr));
+            artistCellAttr      = ` class="cursor-help hover:bg-gray-100" data-songs="${encodedArtists}"`;
+        }
+
+        if (matchCompArt && matchCompArr)  tbody += `<td colspan="3" class="search-group-border text-left" style="white-space: normal;">${song.artist_raw}</td>`;
+
+        else if (matchCompArt) {
+            tbody += `<td colspan="2" class="text-left" style="white-space: normal;">${song.artist_raw}</td>`;
+            tbody += `<td class="search-group-border text-left" style="white-space: normal;">${song.arranger}</td>`;
+        }
+
+        else if (matchCompArr) {
+            tbody += `<td${artistCellAttr} class="text-left" style="white-space: normal;">${trimArtists(song.artist_arr)}</td>`;
+            tbody += `<td colspan="2" class="search-group-border text-left" style="white-space: normal;">${song.composer}</td>`;
+        }
+
+        else {
+            tbody += `<td${artistCellAttr} class="text-left" style="white-space: normal;">${trimArtists(song.artist_arr)}</td>`;
+            tbody += `<td class="text-left" style="white-space: normal;">${song.composer}</td>`;
+            tbody += `<td class="search-group-border text-left" style="white-space: normal;">${song.arranger}</td>`;
+        }
+
+        tbody += `<td class="text-center" style="white-space: nowrap;">${song.type}</td>`;
+        tbody += `<td class="text-center">${song.difficulty}</td>`;
+
+        let encodedGuesses  = encodeURIComponent(JSON.stringify(song.guessers_hover));
+        let guessAttr       = song.guessers_hover.length > 0 ? ` class="cursor-help hover:bg-gray-100 text-black" data-songs="${encodedGuesses}"` : ' class="text-black"';
+
+        tbody += `<td${guessAttr}>${song.guessers_hover.length}</td>`;
+
+        let encodedLists    = encodeURIComponent(JSON.stringify(song.listers_hover));
+        let listAttr        = song.listers_hover.length > 0 ? ` class="search-group-border cursor-help hover:bg-gray-100 text-black" data-songs="${encodedLists}"` : ' class="search-group-border text-black"';
+
+        tbody += `<td${listAttr}>${song.listers_hover.length}</td>`;
+        tbody += `<td class="text-center" style="white-space: nowrap;">${song.vintage}</td>`;
+        tbody += `<td class="text-center">${song.anime_type}</td>`;
+
+        let encodedTags = encodeURIComponent(JSON.stringify(song.tags_arr));
+        let tagAttr     = song.tags_arr.length > 0 ? ` class="text-center cursor-help hover:bg-gray-100" data-songs="${encodedTags}"` : ' class="text-center"';
+
+        tbody += `<td${tagAttr}>${song.tags_arr.length}</td>`;
+
+        let encodedGenres   = encodeURIComponent(JSON.stringify(song.genres_arr));
+        let genreAttr       = song.genres_arr.length > 0 ? ` class="text-center cursor-help hover:bg-gray-100" data-songs="${encodedGenres}"` : ' class="text-center"';
+
+        tbody += `<td${genreAttr}>${song.genres_arr.length}</td>`;
+        tbody += `<td class="text-center">${song.rebroadcast}</td>`;
+        tbody += `<td class="text-center">${song.dub}</td>`;
+        tbody += `<td class="text-center">${song.rank}</td>`;
+        tbody += `<td class="text-center">${song.score}</td>`;
+        tbody += `</tr>`;
+    });
+
+    tbody += "</tbody>";
+    table.innerHTML = thead + tbody;
+    setupTooltipListeners();
+}
+
+fetch('Search.json')
+    .then(res => res.json())
+    .then(searchJson => {
+        globalSearchData = searchJson;
+        globalSortState.columnName = "Japanese";
+        globalSortState.ascending = true;
+
+        sortSearchData      ();
+        renderSearchTable   (globalSearchData);
+
+        const searchInput = document.getElementById('songSearchInput');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const rawQuery = e.target.value.trim();
+
+                if (!rawQuery) {
+                    renderSearchTable(globalSearchData);
+                    return;
+                }
+
+                const tokenRegex    = /[^\s"]+|"([^"]*)"/g;
+                const tokens        = [];
+
+                let match;
+                while ((match = tokenRegex.exec(rawQuery)) !== null) tokens.push(match[0]);
+
+                const advancedQueries   = [];
+                const globalKeywords    = [];
+                const queryRegex        = /^([a-zA-Z]+)(<=|>=|[:<>])(.+)$/;
+
+                tokens.forEach(token => {
+                    const parsedMatch = token.match(queryRegex);
+
+                    if (parsedMatch) {
+                        advancedQueries.push({
+                            key         : parsedMatch[1].toLowerCase(),
+                            operator    : parsedMatch[2],
+                            value       : parsedMatch[3]
+                        });
+                    }
+
+                    else globalKeywords.push(token.toLowerCase());
+                });
+
+                const filtered = globalSearchData.filter(song => {
+                    for (let q of advancedQueries) if (!evaluateQuery(song, q.key, q.operator, q.value)) return false;
+
+                    for (let word of globalKeywords) {
+                        const wordClean = word.replace(/^"|"$/g, '');
+
+                        const matchKeyword = 
+                            song.romaji                         .toLowerCase().includes(wordClean)  ||
+                            song.english                        .toLowerCase().includes(wordClean)  ||
+                            song.song                           .toLowerCase().includes(wordClean)  ||
+                            song.artist_raw                     .toLowerCase().includes(wordClean)  ||
+                            song.composer                       .toLowerCase().includes(wordClean)  ||
+                            song.arranger                       .toLowerCase().includes(wordClean)  ||
+                            song.type                           .toLowerCase().includes(wordClean)  ||
+                            song.vintage                        .toLowerCase().includes(wordClean)  ||
+                            song.difficulty                     .toLowerCase().includes(wordClean)  ||
+                            song.anime_type                     .toLowerCase().includes(wordClean)  ||
+                            song.guessers_flat  .some(p => p    .toLowerCase().includes(wordClean)) ||
+                            song.listers_flat   .some(p => p    .toLowerCase().includes(wordClean));
+
+                        if (!matchKeyword) return false;
+                    }
+
+                    return true;
+                });
+
+                renderSearchTable(filtered);
+            });
+        }
+    })
+
+    .catch(err => console.error("Failed to construct the search table:", err));

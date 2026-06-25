@@ -45,7 +45,7 @@ tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="s
 
 if (watched) tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>`);
 
-tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search ⚠︎</button>`);
+tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
 
 const thickBorderColumns = new Set([
     "Player",
@@ -1036,7 +1036,8 @@ if (document.getElementById('plotlyListChart') && arrowData) {
     }, {responsive: true, displayModeBar: false});
 }
 
-let globalSearchData = [];
+let globalSearchData    = [];
+let globalSortState     = {columnName: "Japanese", ascending: true};
 
 function trimArtists(arr) {
     if (arr.length <= 3) return arr.join(', ');
@@ -1044,7 +1045,9 @@ function trimArtists(arr) {
 }
 
 function parseVintageToFloat(vintStr) {
-    const parts         = vintStr.trim().split(/\s+/);    
+    const parts = vintStr.trim().split(/\s+/);    
+    if (parts.length === 1 && !isNaN(parts[0])) return parseFloat(parts[0]);
+
     const season        = parts[0].toLowerCase();
     const year          = parseInt(parts[1]);
     let seasonWeight    = 0.0;
@@ -1057,11 +1060,123 @@ function parseVintageToFloat(vintStr) {
     return year + seasonWeight;
 }
 
+function sortSearchData() {
+    const { columnName, ascending } = globalSortState;
+
+    globalSearchData.sort((a, b) => {
+        let valA, valB;
+
+        switch (columnName) {
+            case "Japanese":    valA = a.romaji         || "";
+                                valB = b.romaji         || "";
+                                break;
+
+            case "English":     valA = a.english        || "";
+                                valB = b.english        || "";
+                                break;
+
+            case "Song":        valA = a.song           || "";
+                                valB = b.song           || "";
+                                break;
+
+            case "Artist":      valA = a.artist_raw     || "";
+                                valB = b.artist_raw     || "";
+                                break;
+
+            case "Composer":    valA = a.composer       || "";
+                                valB = b.composer       || "";
+                                break;
+
+            case "Arranger":    valA = a.arranger       || "";
+                                valB = b.arranger       || "";
+                                break;
+
+            case "Song Type":   valA = a.type           || "";
+                                valB = b.type           || "";
+                                break;
+
+            case "Anime Type":  valA = a.anime_type     || "";
+                                valB = b.anime_type     || "";
+                                break;
+
+            case "Vintage":     valA = parseVintageToFloat(a.vintage);
+                                valB = parseVintageToFloat(b.vintage);
+                                break;
+
+            case "Rebroadcast": valA = a.rebroadcast    || "";
+                                valB = b.rebroadcast    || "";
+                                break;
+
+            case "Dub":         valA = a.dub            || "";
+                                valB = b.dub            || "";
+                                break;
+
+            case "Difficulty":  valA = a.difficulty === "Unrated" ? -Infinity               : parseFloat(a.difficulty);
+                                valB = b.difficulty === "Unrated" ? -Infinity               : parseFloat(b.difficulty);
+                                break;
+
+            case "Score":       valA = a.score      === "N/A"     ? -1                      : parseFloat(a.score);
+                                valB = b.score      === "N/A"     ? -1                      : parseFloat(b.score);
+                                break;
+
+            case "Rank":        valA = a.rank       === "None"   ? Infinity                 : parseFloat(a.rank);
+                                valB = b.rank       === "None"   ? Infinity                 : parseFloat(b.rank);
+                                break;
+
+            case "Guessers":    valA = a.guessers_flat          ? a.guessers_flat.length    : 0;
+                                valB = b.guessers_flat          ? b.guessers_flat.length    : 0;
+                                break;
+
+            case "Listers":     valA = a.listers_flat           ? a.listers_flat.length     : 0;
+                                valB = b.listers_flat           ? b.listers_flat.length     : 0;
+                                break;
+
+            case "Tags":        valA = a.tags_arr               ? a.tags_arr.length         : 0;
+                                valB = b.tags_arr               ? b.tags_arr.length         : 0;
+                                break;
+
+            case "Genres":      valA = a.genres_arr             ? a.genres_arr.length       : 0;
+                                valB = b.genres_arr             ? b.genres_arr.length       : 0;
+                                break;
+
+            default:            return 0;
+        }
+
+        let comparison = 0;
+
+        if (typeof valA === "string" && typeof valB === "string") comparison = valA.localeCompare(valB, undefined, {sensitivity: 'base', numeric: true});
+
+        else {
+            if (valA < valB) comparison = -1;
+            if (valA > valB) comparison = 1;
+        }
+
+        return ascending ? comparison : -comparison;
+    });
+}
+
+window.handleSearchSort = function(columnHeaderName) {
+    if (globalSortState.columnName === columnHeaderName) globalSortState.ascending = !globalSortState.ascending;
+
+    else {
+        globalSortState.columnName = columnHeaderName;
+
+        if (columnHeaderName === "Rank")    globalSortState.ascending = true;
+        else                                globalSortState.ascending = false;
+    }
+
+    sortSearchData();
+    const searchInput = document.getElementById('songSearchInput');
+
+    if (searchInput && searchInput.value.trim())    searchInput.dispatchEvent(new Event('input'));
+    else                                            renderSearchTable(globalSearchData);
+};
+
 function matchNumericConstraint(targetVal, operator, criterionText, isRank = false) {
     const numTarget = parseFloat(targetVal);
     const numCrit   = parseFloat(criterionText);
 
-    if      (isNaN(numTarget) || isNan(numCrit))    return false;
+    if      (isNaN(numTarget) || isNaN(numCrit))    return false;
     else if (operator === ":")                      return Math.floor(numTarget) === Math.floor(numCrit);
 
     let op = operator;
@@ -1113,8 +1228,8 @@ function evaluateQuery(song, key, operator, value) {
         else if (key === "rank")        target = song.rank          === "N/A"       ? NaN : song.rank;
         else if (key === "score")       target = song.score         === "N/A"       ? NaN : song.score;
 
-        else if (key === "guessers")    target = song.guessers_hover    .length;
-        else if (key === "listers")     target = song.listers_hover .length;
+        else if (key === "guessers")    target = song.guessers_flat .length;
+        else if (key === "listers")     target = song.listers_flat  .length;
 
         return matchNumericConstraint(target, operator, cleanValue, key === "rank");
     }
@@ -1161,11 +1276,11 @@ function renderSearchTable(filteredSongs) {
     if (counterNode)    counterNode.innerText = `${filteredSongs.length}/${globalSearchData.length}`;
 
     if (filteredSongs.length === 0) {
-        table.innerHTML = `<thead><tr><th>Search Query Output</th></tr></thead><tbody><tr><td class="p-8 text-xl font-bold text-center">No songs matched your specific constraints</td></tr></tbody>`;
+        table.innerHTML = `<thead><tr><th>Error</th></tr></thead><tbody><tr><td class="p-1 text-center">No songs matched your specific constraints</td></tr></tbody>`;
         return;
     }
 
-    const columns = [
+    const headersConfig = [
         {name: "Japanese",      group: false},
         {name: "English",       group: true},
         {name: "Song",          group: false},
@@ -1186,12 +1301,17 @@ function renderSearchTable(filteredSongs) {
         {name: "Score",         group: false}
     ];
 
-    let thead = "<thead><tr>" + columns.map(c => {
-        let classStr = c.group ? ' class="search-group-border"' : '';
-        return `<th${classStr} style="white-space: nowrap;">${c.name}</th>`;
+    let thead = "<thead><tr>" + headersConfig.map(c => {
+        let baseClass   = "cursor-pointer";
+        let classStr    = c.group ? ` class="search-group-border ${baseClass}"` : ` class="${baseClass}"`;
+        let arrow       = " ▶";
+
+        if (globalSortState.columnName === c.name) arrow = globalSortState.ascending ? " ▲" : " ▼";
+        return `<th${classStr} style="white-space: nowrap;" onclick="handleSearchSort('${c.name}')">${c.name}${arrow}</th>`;
     }).join('') + "</tr></thead>";
 
     let tbody = "<tbody>";
+
     filteredSongs.forEach(song => {
         tbody += `<tr>`;
 
@@ -1234,7 +1354,7 @@ function renderSearchTable(filteredSongs) {
             tbody += `<td class="search-group-border text-left" style="white-space: normal;">${song.arranger}</td>`;
         }
 
-        tbody += `<td class="text-center">${song.type}</td>`;
+        tbody += `<td class="text-center" style="white-space: nowrap;">${song.type}</td>`;
         tbody += `<td class="text-center">${song.difficulty}</td>`;
 
         let encodedGuesses  = encodeURIComponent(JSON.stringify(song.guessers_hover));
@@ -1246,7 +1366,7 @@ function renderSearchTable(filteredSongs) {
         let listAttr        = song.listers_hover.length > 0 ? ` class="search-group-border cursor-help hover:bg-gray-100 text-black" data-songs="${encodedLists}"` : ' class="search-group-border text-black"';
 
         tbody += `<td${listAttr}>${song.listers_hover.length}</td>`;
-        tbody += `<td class="text-center">${song.vintage}</td>`;
+        tbody += `<td class="text-center" style="white-space: nowrap;">${song.vintage}</td>`;
         tbody += `<td class="text-center">${song.anime_type}</td>`;
 
         let encodedTags = encodeURIComponent(JSON.stringify(song.tags_arr));
@@ -1272,10 +1392,14 @@ function renderSearchTable(filteredSongs) {
 
 fetch('Search.json')
     .then(res => res.json())
-
     .then(searchJson => {
         globalSearchData = searchJson;
-        renderSearchTable(globalSearchData);
+        globalSortState.columnName = "Japanese";
+        globalSortState.ascending = true;
+
+        sortSearchData      ();
+        renderSearchTable   (globalSearchData);
+
         const searchInput = document.getElementById('songSearchInput');
 
         if (searchInput) {
@@ -1317,19 +1441,19 @@ fetch('Search.json')
                     for (let word of globalKeywords) {
                         const wordClean = word.replace(/^"|"$/g, '');
 
-                        const matchKeyword  = 
-                            song.romaji         .toLowerCase().includes(wordClean) ||
-                            song.english        .toLowerCase().includes(wordClean) ||
-                            song.song           .toLowerCase().includes(wordClean) ||
-                            song.artist_raw     .toLowerCase().includes(wordClean) ||
-                            song.composer       .toLowerCase().includes(wordClean) ||
-                            song.arranger       .toLowerCase().includes(wordClean) ||
-                            song.type           .toLowerCase().includes(wordClean) ||
-                            song.vintage        .toLowerCase().includes(wordClean) ||
-                            song.difficulty     .toLowerCase().includes(wordClean) ||
-                            song.anime_type     .toLowerCase().includes(wordClean) ||
-                            song.guessers_query .toLowerCase().includes(wordClean) ||
-                            song.listers_query  .toLowerCase().includes(wordClean);
+                        const matchKeyword = 
+                            song.romaji                         .toLowerCase().includes(wordClean)  ||
+                            song.english                        .toLowerCase().includes(wordClean)  ||
+                            song.song                           .toLowerCase().includes(wordClean)  ||
+                            song.artist_raw                     .toLowerCase().includes(wordClean)  ||
+                            song.composer                       .toLowerCase().includes(wordClean)  ||
+                            song.arranger                       .toLowerCase().includes(wordClean)  ||
+                            song.type                           .toLowerCase().includes(wordClean)  ||
+                            song.vintage                        .toLowerCase().includes(wordClean)  ||
+                            song.difficulty                     .toLowerCase().includes(wordClean)  ||
+                            song.anime_type                     .toLowerCase().includes(wordClean)  ||
+                            song.guessers_flat  .some(p => p    .toLowerCase().includes(wordClean)) ||
+                            song.listers_flat   .some(p => p    .toLowerCase().includes(wordClean));
 
                         if (!matchKeyword) return false;
                     }

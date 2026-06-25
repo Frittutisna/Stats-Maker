@@ -37,6 +37,13 @@ body, table, th, td, button, input {font-family: 'Segoe UI', Roboto, Helvetica, 
     white-space         : normal;
 }
 
+#searchSongsTable th {
+    font-size: clamp(10px, 1vw, 20px);
+}
+#searchSongsTable td {
+    font-size: clamp(9px, 0.9vw, 18px);
+}
+
 .main-table tr:nth-child(even)  {background-color   : var(--rittu-grey);}
 .border-group-line td           {border-bottom      : var(--bold-border) !important;}
 .border-col-group               {border-right       : var(--bold-border) !important;}
@@ -144,4 +151,8 @@ td[data-songs].highlight-best:hover::after {
 
 td[data-songs].highlight-worst:hover::after {
     background-color: var(--rittu-red);
+}
+
+.search-group-border {
+    border-right: 3px solid black !important;
 }
