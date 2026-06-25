@@ -254,31 +254,8 @@ class TourAnalyzer:
         self.val_str        = meta_res["th_str"]
         self.base_exp       = meta_res["base_exp"]
         self.new_players    = meta_res["selected_new"]
-        self.exp_map        = {}
-        mismatched_players  = {}
 
-        for name in list(all_known):
-            act = len(self.apps.get(name, []))
-
-            if act < self.base_exp  : mismatched_players[name]  = act
-            else                    : self.exp_map[name]        = self.base_exp
-
-        if mismatched_players:
-            mismatch_dialog = MismatchedRoundsDialog(None, mismatched_players, self.base_exp, self.subbed_players_set, self.tour_dir, watched_valid)
-            if mismatch_dialog.result is None: sys.exit(0)
-            mismatch_res = mismatch_dialog.result
-
-            for name, target in mismatch_res.items():
-                act                 = len(self.apps.get(name, []))
-                self.exp_map[name]  = target
-
-                if target == "ignore": continue
-
-                if target > act:
-                    avg_songs_per_json  = sum(len(self.apps.get(n, [])) for n in all_known) / len(all_known)
-                    missing_rounds      = target - act
-                    self.s_part[name]   += int(missing_rounds * avg_songs_per_json)
-
+        self.exp_map = {name: self.base_exp for name in all_known}
         return True
 
     def process_and_generate(self):
@@ -896,11 +873,6 @@ class TourAnalyzer:
 
             is_eligible = not ("▼" in d_name or "▲" in d_name)
             eligibility.append(is_eligible)
-            act = len(apps.get(name, []))
-
-            if target != "ignore" and act < target:
-                syms = ["", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)"]
-                if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
 
             row = {"Player": d_name}
             if self.use_teams: row["Elo"] = elo_map.get(name.lower(), np.nan)
@@ -1701,12 +1673,6 @@ class TourAnalyzer:
             is_eligible = not ("▼" in d_name or "▲" in d_name)
             eligibility.append(is_eligible)
 
-            act = len(self.apps.get(name, []))
-
-            if target != "ignore" and act < target:
-                syms = ["", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)"]
-                if 0 < (target-act) < len(syms): d_name += f" {syms[target-act]}"
-
             row = {"Player": {"count": d_name, "details": [sub_hover] if sub_hover else []}}
 
             if self.use_teams: 
@@ -2194,7 +2160,7 @@ class TourAnalyzer:
         render_songs          = self._render_dashboard_song()
 
         explanations = {
-            "Player"                    : "★: New player<br>▲/▼: Subbed in/out<br>(X): 0 rigs/corrects in X round(s)",
+            "Player"                    : "★ New player<br>▲ Subbed in<br>▼ Subbed out",
             "UF"                        : "Usefulness<br>Calculates this player's contribution to their team, scaled by Elo and songs played",
             "Score"                     : "Calculates this player's value (Usefulness) against what's expected from their Elo<br>50 means this player is playing to expectations",
             "Mean Over-8"               : "Average of correct guessers across songs this player/team guessed correctly",
