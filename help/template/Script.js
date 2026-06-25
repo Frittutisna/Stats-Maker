@@ -1339,28 +1339,60 @@ function renderSearchTable(filteredSongs) {
                     tbody += `<td class="text-left search-c2-text"><a href="${song.video_url}" target="_blank" class="hover:underline">${song.song}</a></td>`;
                     break;
 
-                case "artist":
-                    const rawArt        = song.artist_raw           || "";
-                    const rawComp       = song.composer             || "";
-                    let artistDisplay   = trimNames(song.artist_arr || []);                   
-                    const isOverflown   = song.artist_arr && song.artist_arr.length > 3;
-                    const artAttr       = isOverflown ? ` class="cursor-help hover:bg-gray-100 text-left text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.artist_arr))}"` : ' class="text-left text-black font-normal"';
-                    tbody += `<td${artAttr}>${artistDisplay}</td>`;
-                    break;
+                case "artist": {
+                    const compVisible   = activeCols.some(c => c.id === "composer");
+                    const arrVisible    = activeCols.some(c => c.id === "arranger");
 
-                case "composer":
-                    const compText      = song.composer     || "";
-                    const artText       = song.artist_raw   || "";
-                    let composerDisplay = trimNames(compText);                    
-                    tbody += `<td class="text-left font-normal text-black">${composerDisplay}</td>`;
-                    break;
+                    const matchComp     = compVisible   && (song.artist_raw === song.composer);
+                    const matchArr      = arrVisible    && (song.composer   === song.arranger);
 
-                case "arranger":
-                    const arrText       = song.arranger || "";
-                    const composerText  = song.composer || "";
-                    let arrangerDisplay = trimNames(arrText);
-                    tbody += `<td class="text-left font-normal text-black">${arrangerDisplay}</td>`;
+                    if (matchComp && matchArr) {
+                        tbody += `<td colspan="3" class="text-left text-black font-normal">${trimNames(song.artist_arr || [])}</td>`;
+                        song._skipComposer = true;
+                        song._skipArranger = true;
+                    }
+
+                    else if (matchComp) {
+                        tbody += `<td colspan="2" class="text-left text-black font-normal">${trimNames(song.artist_arr || [])}</td>`;
+                        song._skipComposer = true;
+                    }
+
+                    else {
+                        const isOverflown   = song.artist_arr && song.artist_arr.length > 3;
+                        const artAttr       = isOverflown ? ` class="cursor-help hover:bg-gray-100 text-left text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.artist_arr))}"` : ' class="text-left text-black font-normal"';
+                        tbody += `<td${artAttr}>${trimNames(song.artist_arr || [])}</td>`;
+                    }
                     break;
+                }
+
+                case "composer": {
+                    if (song._skipComposer) {
+                        delete song._skipComposer;
+                        break;
+                    }
+
+                    const arrVisible    = activeCols.some(c => c.id === "arranger");
+                    const matchArr      = arrVisible && (song.composer === song.arranger);
+
+                    if (matchArr) {
+                        tbody += `<td colspan="2" class="text-left font-normal text-black">${trimNames(song.composer)}</td>`;
+                        song._skipArranger = true;
+                    }
+                    
+                    else tbody += `<td class="text-left font-normal text-black">${trimNames(song.composer)}</td>`;
+
+                    break;
+                }
+
+                case "arranger": {
+                    if (song._skipArranger) {
+                        delete song._skipArranger;
+                        break;
+                    }
+
+                    tbody += `<td class="text-left font-normal text-black">${trimNames(song.arranger)}</td>`;
+                    break;
+                }
 
                 case "guessers":
                     const hasGuesses    = song.guessers_hover && song.guessers_hover.length > 0;
