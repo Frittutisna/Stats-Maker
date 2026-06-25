@@ -44,8 +44,8 @@ else            tourTabBtn.innerText = "Tour";
 
 if (use_teams)  tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
                 tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
-                tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
-if (watched)    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>`);
+if (watched)    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess/List</button>`);
+else            tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
                 tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
 
 const thickBorderColumns = new Set([
@@ -783,7 +783,7 @@ for (let i = 0; i < numY; i++) {
                 song_hover_str = "<br>• " + bin_songs.join("<br>• ");
             }
 
-            rowText.push(`<b>${vintageStr}<br>${diffStr}<br>Mean Over-8: ${val.toFixed(2)}</b>${song_hover_str}`);
+            rowText.push(`<b>${diffStr}<br>${vintageStr}<br>Over-8: ${val.toFixed(2)}</b>${song_hover_str}`);
 
             annotations.push({
                 x               : j,
@@ -1057,12 +1057,7 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             y           : d.y_start,
             size        : d.rig_rate,
             color       : d.grid_grs || d.rig_gr, 
-            hoverText   : `
-            <b>${d.name}</b><br>
-            Rig Over-8: ${d.x_start.toFixed(2)}<br>
-            Rig Vintage: ${d.seasonal_vintage_start}<br>
-            Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>
-            Rig Guess Rate: ${d.rig_gr.toFixed(2)}<extra></extra>`
+            hoverText   : `<b>${d.name}</b><br>Rig Over-8: ${d.x_start.toFixed(2)}<br>Rig Vintage: ${d.seasonal_vintage_start}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig Guess Rate: ${d.rig_gr.toFixed(2)}<extra></extra>`
         })),
 
         "HIT": arrowData.map(d => ({
@@ -1072,12 +1067,7 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             y           : d.y_end,
             size        : d.rig_rate, 
             color       : d.grid_grs || d.rig_gr, 
-            hoverText   : `
-            <b>${d.name}</b><br>
-            Hit Rig Over-8: ${d.x_end.toFixed(2)}<br>
-            Hit Rig Vintage: ${d.seasonal_vintage || d.seasonal_vintage_end}<br>
-            Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>
-            Rig Guess Rate: ${d.rig_gr.toFixed(2)}<extra></extra>`
+            hoverText   : `<b>${d.name}</b><br>Hit Rig Over-8: ${d.x_end.toFixed(2)}<br>Hit Rig Vintage: ${d.seasonal_vintage || d.seasonal_vintage_end}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig Guess Rate: ${d.rig_gr.toFixed(2)}<extra></extra>`
         }))
     };
 
@@ -1143,7 +1133,7 @@ function renderListChart() {
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
-            fixedrange  : true,
+            fixedrange  : false,
             range       : [window.listChartGlobalLimits.xMin, window.listChartGlobalLimits.xMax]
         },
         yaxis       : {
@@ -1156,7 +1146,7 @@ function renderListChart() {
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
-            fixedrange  : true,
+            fixedrange  : false,
             range       : [window.listChartGlobalLimits.yMin, window.listChartGlobalLimits.yMax]
         },
         margin      : {l: 75, r: 0, t: 25, b: 75},
@@ -1164,30 +1154,67 @@ function renderListChart() {
     }, {responsive: true, displayModeBar: false});
 }
 
+if (watched) {
+    const glBtn = document.getElementById("guessListToggleBtn");
+    if (glBtn) glBtn.classList.remove("hidden");
+}
+
+let currentGuessListViewMode = "GUESS";
+
+window.toggleGuessListViewMode = function() {
+    const btn           = document.getElementById("guessListToggleBtn");
+    const guessCtx      = document.getElementById("guessViewSubContext");
+    const listCtx       = document.getElementById("listViewSubContext");
+    const guessChart    = document.getElementById("guessChartContainer");
+    const listChart     = document.getElementById("listChartContainer");
+    const listSubToggle = document.getElementById("listModeToggleContainer");
+
+    if (currentGuessListViewMode === "GUESS") {
+        currentGuessListViewMode    = "LIST";
+        btn.innerText               = "LIST";
+
+        if (guessCtx)       guessCtx        .classList.add      ("hidden");
+        if (guessChart)     guessChart      .classList.add      ("hidden");
+        if (listCtx)        listCtx         .classList.remove   ("hidden");
+        if (listChart)      listChart       .classList.remove   ("hidden");
+        if (listSubToggle)  listSubToggle   .classList.remove   ("hidden");
+
+        renderListChart();
+    }
+
+    else {
+        currentGuessListViewMode    = "GUESS";
+        btn.innerText               = "GUESS";
+
+        if (guessCtx)       guessCtx        .classList.remove   ("hidden");
+        if (guessChart)     guessChart      .classList.remove   ("hidden");
+        if (listCtx)        listCtx         .classList.add      ("hidden");
+        if (listChart)      listChart       .classList.add      ("hidden");
+        if (listSubToggle)  listSubToggle   .classList.add      ("hidden");
+
+        window.dispatchEvent(new Event('resize'));
+    }
+};
+
 window.toggleListChartMode = function() {
     const btn               = document.getElementById("listModeToggleBtn");
     currentListChartMode    = currentListChartMode === "ALL" ? "HIT" : "ALL";
     btn.innerText           = currentListChartMode;
-    const listTabDiv        = document.getElementById("list-tab");
+    const xAxisDesc         = document.getElementById("listXAxisDescription");
+    const yAxisDesc         = document.getElementById("listYAxisDescription");
 
-    if (listTabDiv) {
-        const paragraphs = listTabDiv.getElementsByTagName("p");
+    if (currentListChartMode === "HIT") {
+        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis:</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
+        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis:</b> Median vintage across songs that this player guessed correctly from their own list";
+    }
 
-        if (paragraphs.length >= 2) {
-            if (currentListChartMode === "HIT") {
-                paragraphs[0].innerHTML = "<b>X-Axis:</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
-                paragraphs[1].innerHTML = "<b>Y-Axis:</b> Median vintage across songs that this player guessed correctly from their own list";
-            }
-
-            else {
-                paragraphs[0].innerHTML = "<b>X-Axis:</b> Mean of correct guessers across songs from this player's list";
-                paragraphs[1].innerHTML = "<b>Y-Axis:</b> Median vintage across songs from this player's list";
-            }
-        }
+    else {
+        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis:</b> Mean of correct guessers across songs from this player's list";
+        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis:</b> Median vintage across songs from this player's list";
     }
 
     renderListChart();
-    };
+};
 
 let globalSearchData    = [];
 let globalSortState     = {columnName: "Anime", ascending: true};
