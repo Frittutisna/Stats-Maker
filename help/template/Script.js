@@ -332,6 +332,16 @@ function renderTeamTable() {
     table.innerHTML = thead + tbody + "</tbody>";
 }
 
+let currentTierChartMode = "TIER";
+
+window.toggleTierChartMode = function() {
+    const btn               = document.getElementById("tierModeToggleBtn");
+    currentTierChartMode    = currentTierChartMode === "TIER" ? "ALL" : "TIER";
+    btn.innerText           = currentTierChartMode;
+
+    renderTierCharts();
+};
+
 function renderTierCharts() {
     if (!document.getElementById('tierChart_GuessRate') || !tierStats) return;
 
@@ -360,95 +370,110 @@ function renderTierCharts() {
         let yVals           = [];
         let customHovers    = [];
 
-        ["1", "2", "3", "4"].forEach((tr, tIdx) => {
-            if (!tierStats[tr] || tierStats[tr].length === 0) return;
-            let playersInTier = [...tierStats[tr]];
+        const sortComparator = (a, b) => {
+            let va = (a[metric.key] !== null && typeof a[metric.key] === 'object') ? a[metric.key].count : a[metric.key];
+            let vb = (b[metric.key] !== null && typeof b[metric.key] === 'object') ? b[metric.key].count : b[metric.key];
 
-            playersInTier.sort((a, b) => {
-                let va = (a[metric.key] !== null && typeof a[metric.key] === 'object') ? a[metric.key].count : a[metric.key];
-                let vb = (b[metric.key] !== null && typeof b[metric.key] === 'object') ? b[metric.key].count : b[metric.key];
+            if (va === null || va === undefined) return 1;
+            if (vb === null || vb === undefined) return -1;
 
-                if (va === null || va === undefined) return 1;
-                if (vb === null || vb === undefined) return -1;
+            const fractionalMetrics = new Set(["Guess Rate", "Contribution Rate", "Chanting Guess Rate"]);
 
-                const fractionalMetrics = new Set(["Guess Rate", "Contribution Rate", "Chanting Guess Rate"]);
+            if (va === vb && fractionalMetrics.has(metric.key)) {
+                let numA = a[metric.key] && a[metric.key].details ? parseInt(a[metric.key].details[0].split('/')[0]) || 0 : 0;
+                let numB = b[metric.key] && b[metric.key].details ? parseInt(b[metric.key].details[0].split('/')[0]) || 0 : 0;
 
-                if (va === vb && fractionalMetrics.has(metric.key)) {
-                    let numA = a[metric.key] && a[metric.key].details ? parseInt(a[metric.key].details[0].split('/')[0]) || 0 : 0;
-                    let numB = b[metric.key] && b[metric.key].details ? parseInt(b[metric.key].details[0].split('/')[0]) || 0 : 0;
+                if (numA !== numB) return numB - numA;
+            }
 
-                    if (numA !== numB) return numB - numA;
-                }
+            return metric.isAsc ? va - vb : vb - va;
+        };
 
-                return metric.isAsc ? va - vb : vb - va;
+        let playerPool = [];
+
+        if (currentTierChartMode === "TIER") {
+            ["1", "2", "3", "4"].forEach((tr) => {
+                if (!tierStats[tr] || tierStats[tr].length === 0) return;
+                let playersInTier = [...tierStats[tr]];
+                playersInTier.sort(sortComparator);
+
+                playerPool.push(...playersInTier);
+                playerPool.push({isSpacer: true});
             });
 
-            if (xVals.length > 0) {
+            if (playerPool.length > 0 && playerPool[playerPool.length - 1].isSpacer) playerPool.pop();
+        }
+
+        else {
+            ["1", "2", "3", "4"].forEach((tr) => {if (tierStats[tr]) playerPool.push(...tierStats[tr]);});
+            playerPool.sort(sortComparator);
+        }
+
+        playerPool.forEach(p => {
+            if (p.isSpacer) {
                 xVals           .push(null);
                 yVals           .push(" ".repeat(gapCounter++));
                 customHovers    .push("");
+                return;
             }
 
-            playersInTier.forEach(p => {
-                let rawVal      = p[metric.key];
-                let val         = (rawVal !== null && typeof rawVal === 'object') ? rawVal.count : rawVal;
-                let finalVal    = 0;
+            let rawVal      = p[metric.key];
+            let val         = (rawVal !== null && typeof rawVal === 'object') ? rawVal.count : rawVal;
+            let finalVal    = 0;
 
-                if (val !== null && val !== undefined && val !== Infinity) finalVal = metric.isInt ? Math.round(val) : Number(val.toFixed(2));
+            if (val !== null && val !== undefined && val !== Infinity) finalVal = metric.isInt ? Math.round(val) : Number(val.toFixed(2));
 
-                xVals.push(finalVal);
-                yVals.push(p.Player);
+            xVals.push(finalVal);
+            yVals.push(p.Player);
 
-                if (!metric.hoverDisabled) {
-                    if (rawVal !== null && typeof rawVal === 'object' && rawVal.details && rawVal.details.length > 0) {
-                        let displaySongs    = [...rawVal.details];
-                        let fractionHeader  = "";
-                        const fractionRegex = /^\d+\/\d+$/;
+            if (!metric.hoverDisabled) {
+                if (rawVal !== null && typeof rawVal === 'object' && rawVal.details && rawVal.details.length > 0) {
+                    let displaySongs    = [...rawVal.details];
+                    let fractionHeader  = "";
+                    const fractionRegex = /^\d+\/\d+$/;
 
-                        if (fractionRegex.test(displaySongs[0])) {
-                            fractionHeader = `<b>${displaySongs[0]}</b>`;
-                            displaySongs.shift(); 
-                        }
+                    if (fractionRegex.test(displaySongs[0])) {
+                        fractionHeader = `<b>${displaySongs[0]}</b>`;
+                        displaySongs.shift(); 
+                    }
 
-                        if (metric.isTime) customHovers.push(displaySongs.join('<br>'));
+                    if (metric.isTime) customHovers.push(displaySongs.join('<br>'));
 
-                        else if (displaySongs.length > 10) {
-                            displaySongs = sampleLargeSongList(displaySongs);
-                            displaySongs.push(`and ${rawVal.details.length - 1 - 10} more`);
-                            customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
-                        }
-
-                        else {
-                            displaySongs = formatAndSortSongsList(displaySongs);
-                            customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
-                        }
+                    else if (displaySongs.length > 10) {
+                        displaySongs = sampleLargeSongList(displaySongs);
+                        displaySongs.push(`and ${rawVal.details.length - 1 - 10} more`);
+                        customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
                     }
 
                     else {
-                        let detailKey   = metric.key + " Details";
-                        let songs       = p[detailKey] || [];
+                        displaySongs = formatAndSortSongsList(displaySongs);
+                        customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
+                    }
+                }
 
-                        if (songs.length > 0) {
-                            let displaySongs = [...songs];
+                else {
+                    let detailKey   = metric.key + " Details";
+                    let songs       = p[detailKey] || [];
 
-                            if (songs.length > 10) {
-                                displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
-                                displaySongs = formatAndSortSongsList(displaySongs, false);
-                                customHovers.push("• " + displaySongs.join("<br>• ") + "<br>and " + (songs.length - 10) + " more");
-                            }
+                    if (songs.length > 0) {
+                        let displaySongs = [...songs];
 
-                            else {
-                                displaySongs = formatAndSortSongsList(displaySongs, false);
-                                customHovers.push("• " + displaySongs.join("<br>• "));
-                            }
+                        if (songs.length > 10) {
+                            displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
+                            displaySongs = formatAndSortSongsList(displaySongs, false);
+                            customHovers.push("• " + displaySongs.join("<br>• ") + "<br>and " + (songs.length - 10) + " more");
                         }
 
-                        else customHovers.push("No songs logged");
+                        else {
+                            displaySongs = formatAndSortSongsList(displaySongs, false);
+                            customHovers.push("• " + displaySongs.join("<br>• "));
+                        }
                     }
-                } 
 
-                else customHovers.push("");
-            });
+                    else customHovers.push("No songs logged");
+                }
+            } 
+            else customHovers.push("");
         });
 
         xVals           .reverse();
@@ -482,17 +507,20 @@ function renderTierCharts() {
 
         const layout = {
             font        : {family: 'Segoe UI'},
-            title       : {text: titleText, font: {family: 'Segoe UI', size: 15, color: 'black'}, y: 0.95, yanchor: 'top'},
+            title       : {text: titleText, font: {family: 'Segoe UI', size: 15, color: 'black'}, yref: 'container', y: 15, yanchor: 'top'},
             xaxis       : {tickfont: {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true},
             yaxis       : {tickfont: {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: "  " },
             bargap      : 0.0,
-            margin      : {l: 150, r: 0, t: 100, b: 50},
-            height      : yVals.length * 35,
+            margin      : {l: 150, r: 0, t: 100, b: 25},
             hoverlabel  : {align: 'left', font: {family: 'Segoe UI', size: 15}}
         };
 
         if      (metric.isRate) {layout.xaxis.tickmode = 'array'; layout.xaxis.tickvals = [0, 20, 40, 60, 80, 100]; layout.xaxis.range = [0, 105];}
         else if (metric.isTime) {layout.xaxis.tickmode = 'array'; layout.xaxis.tickvals = [0, 4, 8, 12, 16, 20];    layout.xaxis.range = [0, 21];}
+
+        const totalPlayers  = playerPool.filter(p => !p.isSpacer).length;
+        const totalSpacers  = playerPool.filter(p => p.isSpacer).length;
+        layout.height       = 35 * (totalPlayers + totalSpacers);
 
         Plotly.newPlot(divIds[mIdx], [trace], layout, {responsive: true, displayModeBar: false});
 
@@ -500,14 +528,18 @@ function renderTierCharts() {
             const titleEl = document.querySelector(`#${divIds[mIdx]} .g-title`);
 
             if (titleEl) {
-                titleEl.style.cursor = 'help'; titleEl.style.pointerEvents = 'all';
+                titleEl.style.cursor        = 'help';
+                titleEl.style.pointerEvents = 'all';
+                const cleanEl               = titleEl.cloneNode(true);
 
-                titleEl.addEventListener('mouseenter', (e) => {
+                titleEl.parentNode.replaceChild(cleanEl, titleEl);
+
+                cleanEl.addEventListener('mouseenter', (e) => {
                     const tooltipNode = document.getElementById('customJsTooltip');
                     tooltipNode.innerHTML = colExplanations[metric.key]; tooltipNode.style.display = 'block';
                 });
 
-                titleEl.addEventListener('mousemove', (e) => {
+                cleanEl.addEventListener('mousemove', (e) => {
                     const tooltipNode = document.getElementById('customJsTooltip');
 
                     let xPos = e.pageX + 15;
@@ -517,7 +549,7 @@ function renderTierCharts() {
                     tooltipNode.style.left = xPos + 'px'; tooltipNode.style.top = yPos + 'px';
                 });
 
-                titleEl.addEventListener('mouseleave', () => { document.getElementById('customJsTooltip').style.display = 'none'; });
+                cleanEl.addEventListener('mouseleave', () => { document.getElementById('customJsTooltip').style.display = 'none'; });
             }
         }, 300);}
     });
