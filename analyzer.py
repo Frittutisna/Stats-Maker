@@ -2239,7 +2239,131 @@ class TourAnalyzer:
             "generated_timestamp"   : int(time.time() * 1000)
         }
 
-        with open(path / "Data.json", "w", encoding = "utf-8") as f: json.dump(data_payload, f, ensure_ascii = False, indent = 4)
+        search_songs_list   = []
+        seen_global_ann_ids = set()
+
+        for path_json in self.json_paths:
+            try:
+                with open(path_json, encoding = "utf-8") as f: data_j = json.load(f)
+
+            except: continue
+            
+            for song in data_j.get("songs", []):
+                si          = song.get("songInfo", {})
+                ann_id_raw  = si.get("annId")
+
+                if not ann_id_raw: continue
+
+                ann_id_str = str(ann_id_raw)
+                if ann_id_str in seen_global_ann_ids: continue
+                seen_global_ann_ids.add(ann_id_str)
+
+                anime_romaji    = si.get("animeNames",  {})         .get("romaji",  "Unknown")  .strip()
+                anime_english   = si.get("animeNames",  {})         .get("english", "")         .strip()
+                song_name       = si.get("songName",    "Unknown")                              .strip()
+                raw_artist      = si.get("artist",      "Unknown")                              .strip()
+
+                artist_arr      = [a.strip() for a in raw_artist.split(",") if a.strip()]   if raw_artist               else []
+                composer_name   = si.get("composerInfo", {}).get("name", "Unknown").strip() if si.get("composerInfo")   else "Unknown"
+                arranger_name   = si.get("arrangerInfo", {}).get("name", "Unknown").strip() if si.get("arrangerInfo")   else "Unknown"
+
+                st     = si.get("type", 3)
+                t_num  = si.get("typeNumber", 0)
+
+                if   st == 1 : type_fmt = f"Opening {t_num}"
+                elif st == 2 : type_fmt = f"Ending {t_num}"
+                else         : type_fmt = "Insert"
+
+                ann_url = f"https://www.animenewsnetwork.com/encyclopedia/anime.php?id={ann_id_str}"
+
+                try     : score_scaled = int(float(si.get("animeScore", 0.0)) * 10)
+                except  : score_scaled = "N/A"
+
+                anime_type_raw = str(si.get("animeType", "N/A")).strip()
+
+                if      anime_type_raw.lower() == "movie"   : anime_type = "Movie"
+                elif    anime_type_raw.lower() == "special" : anime_type = "Special"
+                else                                        : anime_type = anime_type_raw
+
+                vint_raw = str(si.get("vintage", "Unknown")).strip().replace("\n", " ").replace("\r", " ")
+
+                try:
+                    diff_val    = si.get("animeDifficulty")
+                    safe_diff   = f"{float(diff_val):.2f}" if diff_val is not None and float(diff_val) > 0 else "Unrated"
+
+                except: safe_diff = "Unrated"
+
+                tags_arr   = si.get("animeTags",    []) if si.get("animeTags")  else []
+                genres_arr = si.get("animeGenre",   []) if si.get("animeGenre") else []
+                
+                rebroadcast_val = "Yes" if si.get("rebroadcast")    == 1 else "No"
+                dub_val         = "Yes" if si.get("dub")            == 1 else "No"
+
+                pop_rank = str(si.get("popularityRank", "N/A")).strip()
+
+                video_url   = song.get("videoUrl",              "")
+                raw_correct = song.get("correctGuessPlayers",   [])
+
+                guessers_flat   = []
+                guessers_hover  = []
+
+                for p in raw_correct:
+                    if isinstance(p, str):
+                        guessers_flat.append(p)
+                        guessers_hover.append(f"{p} (N/A)")
+
+                    elif isinstance(p, dict) and "name" in p:
+                        p_name = p["name"]
+                        guessers_flat.append(p_name)
+
+                        t_val = p.get("answerTime")
+                        t_str = f"{float(t_val):.2f}" if t_val is not None else "N/A"
+
+                        guessers_hover.append(f"{p_name} ({t_str})")
+
+                raw_lists = song.get("listStates", [])
+
+                listers_flat    = []
+                listers_hover   = []
+
+                for ls in raw_lists:
+                    if isinstance(ls, dict) and "name" in ls:
+                        p_name = ls["name"]
+
+                        listers_flat    .append(p_name)
+                        listers_hover   .append(p_name)
+
+                search_songs_list.append({
+                    "romaji"            : anime_romaji,
+                    "english"           : anime_english,
+                    "song"              : song_name,
+                    "artist_raw"        : raw_artist,
+                    "artist_arr"        : artist_arr,
+                    "composer"          : composer_name,
+                    "arranger"          : arranger_name,
+                    "type"              : type_fmt,
+                    "ann_url"           : ann_url,
+                    "score"             : str(score_scaled),
+                    "anime_type"        : anime_type,
+                    "vintage"           : vint_raw,
+                    "difficulty"        : safe_diff,
+                    "tags_arr"          : tags_arr,
+                    "genres_arr"        : genres_arr,
+                    "rebroadcast"       : rebroadcast_val,
+                    "dub"               : dub_val,
+                    "rank"              : pop_rank,
+                    "video_url"         : video_url,
+                    "guessers_flat"     : guessers_flat,
+                    "guessers_hover"    : guessers_hover,
+                    "listers_flat"      : listers_flat,
+                    "listers_hover"     : listers_hover
+                })
+
+        search_songs_list.sort(key = lambda x: x["romaji"].lower())
+
+        with open(path / "Search.json", "w", encoding = "utf-8") as f: json.dump(search_songs_list, f, ensure_ascii = False, indent = 4)
+        with open(path / "Data.json",   "w", encoding = "utf-8") as f: json.dump(data_payload,      f, ensure_ascii = False, indent = 4)
+
         template_dir = self.script_dir / "help" / "template"
 
         shutil.copy(template_dir / "Dashboard.html",    path / "Dashboard.html")

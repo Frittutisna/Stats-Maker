@@ -145,3 +145,7 @@ td[data-songs].highlight-best:hover::after {
 td[data-songs].highlight-worst:hover::after {
     background-color: var(--rittu-red);
 }
+
+.search-group-border {
+    border-right: 3px solid black !important;
+}
