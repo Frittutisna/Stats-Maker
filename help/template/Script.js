@@ -959,9 +959,58 @@ if (scatterData) {
     }, {responsive: true, displayModeBar: false});
 }
 
+let currentListChartMode = "ALL"; 
+
 if (document.getElementById('plotlyListChart') && arrowData) {
-    const listHull  = get75PercentileHull(arrowData, 'x_start', 'y_start');
-    let listTraces  = [];
+    const allXValues = [...arrowData.map(d => d.x_start), ...arrowData.map(d => d.x_end)];
+    const allYValues = [...arrowData.map(d => d.y_start), ...arrowData.map(d => d.y_end)];
+
+    window.listChartGlobalLimits = {
+        xMin: Math.min(...allXValues) - 0.1,
+        xMax: Math.max(...allXValues) + 0.1,
+        yMin: Math.min(...allYValues) - 1,
+        yMax: Math.max(...allYValues) + 1
+    };
+
+    window.listDataPool = {
+        "ALL": arrowData.map(d => ({
+            acronym     : d.acronym,
+            name        : d.name,
+            x           : d.x_start,
+            y           : d.y_start,
+            size        : d.rig_rate,
+            color       : d.grid_grs || d.rig_gr, 
+            hoverText   : `
+            <b>${d.name}</b><br>
+            Rig Over-8: ${d.x_start.toFixed(2)}<br>
+            Rig Vintage: ${d.seasonal_vintage_start}<br>
+            Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>
+            Rig Guess Rate: ${d.rig_gr.toFixed(2)}<extra></extra>`
+        })),
+
+        "HIT": arrowData.map(d => ({
+            acronym     : d.acronym,
+            name        : d.name,
+            x           : d.x_end, 
+            y           : d.y_end,
+            size        : d.rig_rate, 
+            color       : d.grid_grs || d.rig_gr, 
+            hoverText   : `
+            <b>${d.name}</b><br>
+            Hit Rig Over-8: ${d.x_end.toFixed(2)}<br>
+            Hit Rig Vintage: ${d.seasonal_vintage || d.seasonal_vintage_end}<br>
+            Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>
+            Rig Guess Rate: ${d.rig_gr.toFixed(2)}<extra></extra>`
+        }))
+    };
+
+    renderListChart();
+}
+
+function renderListChart() {
+    const activeScatterSource   = window.listDataPool[currentListChartMode];
+    const listHull              = get75PercentileHull(activeScatterSource, 'x', 'y');
+    let listTraces              = [];
 
     if (listHull) listTraces.push({
         x           : listHull.x,
@@ -974,19 +1023,19 @@ if (document.getElementById('plotlyListChart') && arrowData) {
     });
 
     listTraces.push({
-        x               : arrowData.map(d => d.x_start),
-        y               : arrowData.map(d => d.y_start),
-        text            : arrowData.map(d => d.acronym),
-        customdata      : arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.grid_rate !== undefined ? d.grid_rate.toFixed(2) : d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
-        hovertemplate   : '<b>%{customdata[0]}</b><br>Rig Over-8: %{customdata[1]}<br>Rig Vintage: %{customdata[2]}<br>Rig Rate: %{customdata[3]}<br>Rig Guess Rate: %{customdata[4]}<extra></extra>',
-        hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}},
+        x               : activeScatterSource.map(d => d.x),
+        y               : activeScatterSource.map(d => d.y),
+        text            : activeScatterSource.map(d => d.acronym),
+        hovertemplate   : activeScatterSource.map(d => d.hoverText),
+        hoverlabel      : { align: 'left', font: { family: 'Segoe UI', size: 15 } },
         mode            : 'markers',
         showlegend      : false,
         marker          : {
-            size        : arrowData.map(d => Math.max(10, d.rig_rate * 2)),
+            size        : activeScatterSource.map(d => Math.max(10, d.size * 2)),
             opacity     : 0.95,
-            color       : arrowData.map(d => d.grid_grs || d.rig_gr),
-            colorscale  : [[0, hexToRgba(c0)], [0.7, hexToRgba(c0)], [0.8, hexToRgba(c1)], [0.9, hexToRgba(c2)], [1, hexToRgba(c2)]], showscale: true,
+            color       : activeScatterSource.map(d => d.color),
+            colorscale  : [[0, hexToRgba(c0)], [0.7, hexToRgba(c0)], [0.8, hexToRgba(c1)], [0.9, hexToRgba(c2)], [1, hexToRgba(c2)]],
+            showscale   : true,
             colorbar    : {
                 title       : {text: '<b>Rig Guess Rate</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
                 thickness   : 25,
@@ -1017,7 +1066,8 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
-            fixedrange  : false
+            fixedrange  : true,
+            range       : [window.listChartGlobalLimits.xMin, window.listChartGlobalLimits.xMax]
         },
         yaxis       : {
             title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
@@ -1025,16 +1075,42 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             tickangle   : -90,
             showgrid    : true,
             tickformat  : 'd',
-            dtick       : Math.max(2, Math.ceil((Math.max(...arrowData.map(d => d.y_start)) - Math.min(...arrowData.map(d => d.y_start))) / 5)),
+            dtick       : Math.max(2, Math.ceil((window.listChartGlobalLimits.yMax - window.listChartGlobalLimits.yMin) / 5)),
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
-            fixedrange  : false
+            fixedrange  : true,
+            range       : [window.listChartGlobalLimits.yMin, window.listChartGlobalLimits.yMax]
         },
         margin      : {l: 75, r: 0, t: 25, b: 75},
-        annotations : buildScatterAnnotations(arrowData, 'x_start', 'y_start', 'rig_rate')
+        annotations : buildScatterAnnotations(activeScatterSource, 'x', 'y', 'size')
     }, {responsive: true, displayModeBar: false});
 }
+
+window.toggleListChartMode = function() {
+    const btn               = document.getElementById("listModeToggleBtn");
+    currentListChartMode    = currentListChartMode === "ALL" ? "HIT" : "ALL";
+    btn.innerText           = currentListChartMode;
+    const listTabDiv        = document.getElementById("list-tab");
+
+    if (listTabDiv) {
+        const paragraphs = listTabDiv.getElementsByTagName("p");
+
+        if (paragraphs.length >= 2) {
+            if (currentListChartMode === "HIT") {
+                paragraphs[0].innerHTML = "<b>X-Axis:</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
+                paragraphs[1].innerHTML = "<b>Y-Axis:</b> Median vintage across songs that this player guessed correctly from their own list";
+            }
+
+            else {
+                paragraphs[0].innerHTML = "<b>X-Axis:</b> Mean of correct guessers across songs from this player's list";
+                paragraphs[1].innerHTML = "<b>Y-Axis:</b> Median vintage across songs from this player's list";
+            }
+        }
+    }
+
+    renderListChart();
+    };
 
 let globalSearchData    = [];
 let globalSortState     = {columnName: "Anime", ascending: true};
