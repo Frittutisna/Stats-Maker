@@ -8,7 +8,7 @@ BROWSER_PATHS = [
 ]
 
 COLOR_0     = "#C83232"
-COLOR_1     = "#646464"
+COLOR_1     = "#7D327D"
 COLOR_2     = "#3232C8"
 CONST_CONV  = 3
 DIR_CREDS   = "cred"
