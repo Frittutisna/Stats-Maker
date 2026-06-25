@@ -1036,38 +1036,39 @@ if (document.getElementById('plotlyListChart') && arrowData) {
     }, {responsive: true, displayModeBar: false});
 }
 
-// --- SEARCH SYSTEM VARIABLE STATE MANAGEMENT ---
 let globalSearchData    = [];
 let globalSortState     = {columnName: "Anime", ascending: true};
 let currentSearchLang   = "JP"; 
 
 const searchHeadersConfig = [
-    { id: "anime",       name: "Anime",       visible: true  },
-    { id: "type",        name: "Song Type",   visible: true  },
-    { id: "anime_type",  name: "Anime Type",  visible: false },
-    { id: "vintage",     name: "Vintage",     visible: false },
-    { id: "difficulty",  name: "Difficulty",  visible: false },
-    { id: "song",        name: "Song",        visible: true  },
-    { id: "artist",      name: "Artist",      visible: true  },
-    { id: "composer",    name: "Composer",    visible: false },
-    { id: "arranger",    name: "Arranger",    visible: false },
-    { id: "guessers",    name: "Correct",     visible: true  },
-    { id: "listers",     name: "List",        visible: false }
+    {id: "anime",       name: "Anime",      visible: true},
+    {id: "type",        name: "Song Type",  visible: true},
+    {id: "chanting",    name: "Chanting",   visible: false},
+    {id: "anime_type",  name: "Anime Type", visible: false},
+    {id: "vintage",     name: "Vintage",    visible: false},
+    {id: "difficulty",  name: "Difficulty", visible: false},
+    {id: "song",        name: "Song",       visible: true},
+    {id: "artist",      name: "Artist",     visible: true},
+    {id: "composer",    name: "Composer",   visible: false},
+    {id: "arranger",    name: "Arranger",   visible: false},
+    {id: "guessers",    name: "Correct",    visible: true},
+    {id: "listers",     name: "List",       visible: false}
 ];
 
-function trimArtists(arr) {
-    if (!arr || arr.length === 0) return "Unknown";
-    if (arr.length <= 3) return arr.join(', ');
-    return `${arr.slice(0, 2).join(', ')}, and more`;
+function trimNames(input) {
+    let arr = Array.isArray(input) ? input : (input ? input.split(',').map(x => x.trim()) : []);
+    arr = arr.filter(Boolean);
+
+    if (arr.length <= 3)    return arr.join(', ');
+    else                    return `${arr.slice(0, 2).join(', ')}, and more`;
 }
 
 function parseVintageToFloat(vintStr) {
-    if (!vintStr) return 0;
     const parts = vintStr.trim().split(/\s+/);    
     if (parts.length === 1 && !isNaN(parts[0])) return parseFloat(parts[0]);
 
     const season        = parts[0].toLowerCase();
-    const year          = parseInt(parts[1]) || 0;
+    const year          = parseInt(parts[1]);
     let seasonWeight    = 0.0;
 
     if      (season === "winter")   seasonWeight = 0.1;
@@ -1096,117 +1097,119 @@ document.addEventListener("click", () => {
     if (menu) menu.classList.add("hidden");
 });
 
-document.getElementById("columnSettingsDropdown").addEventListener("click", (e) => {
-    e.stopPropagation();
-});
+document.getElementById("columnSettingsDropdown").addEventListener("click", (e) => {e.stopPropagation();});
 
 function initColumnSettingsCheckboxes() {
     const container = document.getElementById("columnCheckboxContainer");
     const masterChk = document.getElementById("allColumnsMasterCheckbox");
-    if(!container || !masterChk) return;
+
+    if (!container || !masterChk) return;
     container.innerHTML = "";
-    
+
     function updateMasterCheckboxState() {
-        const allChecked = searchHeadersConfig.every(c => c.visible);
-        const noneChecked = searchHeadersConfig.every(c => !c.visible);
-        masterChk.checked = allChecked;
+        const allChecked        = searchHeadersConfig.every(c => c.visible);
+        const noneChecked       = searchHeadersConfig.every(c => !c.visible);
+        masterChk.checked       = allChecked;
         masterChk.indeterminate = !allChecked && !noneChecked;
     }
-    
+
     masterChk.addEventListener("change", () => {
         searchHeadersConfig.forEach(c => { c.visible = masterChk.checked; });
-        document.querySelectorAll(".col-toggle-checkbox").forEach(chk => {
-            chk.checked = masterChk.checked;
-        });
+        document.querySelectorAll(".col-toggle-checkbox").forEach(chk => {chk.checked = masterChk.checked;});
         triggerTableRefresh();
     });
-    
+
     searchHeadersConfig.forEach(col => {
-        const label = document.createElement("label");
-        label.className = "flex items-center gap-2 cursor-pointer select-none py-0.5 hover:bg-gray-50 text-black w-full text-left";
+        const label     = document.createElement("label");
+        label.className = "flex items-center gap-2 cursor-pointer w-full text-left";
         
-        const chk = document.createElement("input");
-        chk.type = "checkbox";
-        chk.className = "col-toggle-checkbox rounded text-black focus:ring-black";
-        chk.checked = col.visible;
+        const chk       = document.createElement("input");
+        chk.type        = "checkbox";
+        chk.className   = "col-toggle-checkbox rounded text-black focus:ring-black";
+        chk.checked     = col.visible;
         
         chk.addEventListener("change", () => {
             col.visible = chk.checked;
             updateMasterCheckboxState();
             triggerTableRefresh();
         });
-        
-        label.appendChild(chk);
-        label.appendChild(document.createTextNode(col.name));
-        container.appendChild(label);
+
+        label       .appendChild(chk);
+        label       .appendChild(document.createTextNode(col.name));
+        container   .appendChild(label);
     });
-    
+
     updateMasterCheckboxState();
 }
 
 function triggerTableRefresh() {
     const searchInput = document.getElementById('songSearchInput');
-    if (searchInput) {
-        searchInput.dispatchEvent(new Event('input'));
-    } else {
-        renderSearchTable(globalSearchData);
-    }
+
+    if (searchInput)    searchInput.dispatchEvent(new Event('input'));
+    else                renderSearchTable(globalSearchData);
 }
 
 function sortSearchData() {
-    const { columnName, ascending } = globalSortState;
+    const {columnName, ascending} = globalSortState;
 
     globalSearchData.sort((a, b) => {
         let valA, valB;
         switch (columnName) {
-            case "Anime":
-                valA = (currentSearchLang === "JP" ? a.romaji : a.english) || "";
-                valB = (currentSearchLang === "JP" ? b.romaji : b.english) || "";
-                break;
-            case "Song Type":   valA = a.type           || ""; valB = b.type           || ""; break;
-            case "Anime Type":  valA = a.anime_type     || ""; valB = b.anime_type     || ""; break;
-            case "Vintage":     valA = parseVintageToFloat(a.vintage); valB = parseVintageToFloat(b.vintage); break;
-            case "Difficulty":  valA = a.difficulty === "Unrated" ? -Infinity : parseFloat(a.difficulty);
-                                valB = b.difficulty === "Unrated" ? -Infinity : parseFloat(b.difficulty); break;
-            case "Song":        valA = a.song           || ""; valB = b.song           || ""; break;
-            case "Artist":      valA = a.artist_raw     || ""; valB = b.artist_raw     || ""; break;
-            case "Composer":    valA = a.composer       || ""; valB = b.composer       || ""; break;
-            case "Arranger":    valA = a.arranger       || ""; valB = b.arranger       || ""; break;
-            case "Correct":     valA = a.guessers_hover ? a.guessers_hover.length : 0;
-                                valB = b.guessers_hover ? b.guessers_hover.length : 0; break;
-            case "List":        valA = a.listers_hover  ? a.listers_hover.length  : 0;
-                                valB = b.listers_hover  ? b.listers_hover.length  : 0; break;
-            default:            return 0;
+            case "Anime": valA = (currentSearchLang === "JP" ? a.romaji : a.english) || ""; valB = (currentSearchLang === "JP" ? b.romaji : b.english) || ""; break;
+
+            case "Song Type"    : valA = a.type         || ""; valB = b.type        || ""; break;
+            case "Anime Type"   : valA = a.anime_type   || ""; valB = b.anime_type  || ""; break;
+            case "Song"         : valA = a.song         || ""; valB = b.song        || ""; break;
+            case "Artist"       : valA = a.artist_raw   || ""; valB = b.artist_raw  || ""; break;
+            case "Composer"     : valA = a.composer     || ""; valB = b.composer    || ""; break;
+            case "Arranger"     : valA = a.arranger     || ""; valB = b.arranger    || ""; break;
+            case "Chanting"     : valA = a.chanting     || ""; valB = b.chanting    || ""; break;
+
+            case "Vintage": valA = parseVintageToFloat(a.vintage); valB = parseVintageToFloat(b.vintage); break;
+
+            case "Difficulty"   : valA = a.difficulty === "Unrated" ? -Infinity                 : parseFloat(a.difficulty);
+                                  valB = b.difficulty === "Unrated" ? -Infinity                 : parseFloat(b.difficulty); break;
+
+            case "Correct"      : valA = a.guessers_flat            ? a.guessers_flat.length    : 0;
+                                  valB = b.guessers_flat            ? b.guessers_flat.length    : 0; break;
+
+            case "List"         : valA = a.listers_flat             ? a.listers_flat.length     : 0;
+                                  valB = b.listers_flat             ? b.listers_flat.length     : 0; break;
+
+            default: return 0;
         }
 
         let comparison = 0;
-        if (typeof valA === "string" && typeof valB === "string") {
-            comparison = valA.localeCompare(valB, undefined, {sensitivity: 'base', numeric: true});
-        } else {
+
+        if (typeof valA === "string" && typeof valB === "string") comparison = valA.localeCompare(valB, undefined, {sensitivity: 'base', numeric: true});
+
+        else {
             if (valA < valB) comparison = -1;
             if (valA > valB) comparison = 1;
         }
+
         return ascending ? comparison : -comparison;
     });
 }
 
 window.handleSearchSort = function(columnHeaderName) {
-    if (globalSortState.columnName === columnHeaderName) {
-        globalSortState.ascending = !globalSortState.ascending;
-    } else {
-        globalSortState.columnName = columnHeaderName;
-        globalSortState.ascending = true;
+    if (globalSortState.columnName === columnHeaderName) globalSortState.ascending = !globalSortState.ascending;
+
+    else {
+        globalSortState.columnName  = columnHeaderName;
+        globalSortState.ascending   = true;
     }
-    sortSearchData();
-    triggerTableRefresh();
+
+    sortSearchData      ();
+    triggerTableRefresh ();
 };
 
 function matchNumericConstraint(targetVal, operator, criterionText) {
     const numTarget = parseFloat(targetVal);
     const numCrit   = parseFloat(criterionText);
 
-    if (isNaN(numTarget) || isNaN(numCrit)) return false;
-    if (operator === ":" || operator === "=") return Math.floor(numTarget) === Math.floor(numCrit);
+    if (isNaN(numTarget) || isNaN(numCrit))     return false;
+    if (operator === ":" || operator === "=")   return Math.floor(numTarget) === Math.floor(numCrit);
 
     switch (operator) {
         case "<"    : return numTarget <    numCrit;
@@ -1224,29 +1227,41 @@ function evaluateQuery(song, key, operator, value) {
         const titleTarget = (currentSearchLang === "JP" ? song.romaji : song.english).toLowerCase();
         return titleTarget.includes(cleanValue);
     }
-    
+
     switch (key) {
-        case "song"         : return song.song.toLowerCase().includes(cleanValue);
-        case "artist"       : return song.artist_raw.toLowerCase().includes(cleanValue);
-        case "composer"     : return song.composer.toLowerCase().includes(cleanValue);
-        case "arranger"     : return song.arranger.toLowerCase().includes(cleanValue);
-        case "animetype"    : return song.anime_type.toLowerCase().includes(cleanValue);
-        case "songtype"     : 
+        case "song"         : return song.song          .toLowerCase().includes(cleanValue);
+        case "artist"       : return song.artist_raw    .toLowerCase().includes(cleanValue);
+        case "composer"     : return song.composer      .toLowerCase().includes(cleanValue);
+        case "arranger"     : return song.arranger      .toLowerCase().includes(cleanValue);
+        case "animetype"    : return song.anime_type    .toLowerCase().includes(cleanValue);
+        case "chanting"     : return song.chanting      .toLowerCase().includes(cleanValue);
+
+        case "songtype": 
             const typeLower = song.type.toLowerCase();
-            if (cleanValue === "op" || cleanValue === "opening") return typeLower.includes("opening");
-            if (cleanValue === "ed" || cleanValue === "ending")  return typeLower.includes("ending");
-            if (cleanValue === "in" || cleanValue === "insert")  return typeLower.includes("insert");
+
+            if (cleanValue === "op" || cleanValue === "opening")    return typeLower.includes("opening");
+            if (cleanValue === "ed" || cleanValue === "ending")     return typeLower.includes("ending");
+            if (cleanValue === "in" || cleanValue === "insert")     return typeLower.includes("insert");
+
             return typeLower.includes(cleanValue);
     }
 
-    // FIXED: If user passes a username instead of a numeric value, perform text mapping inside lists
     if (key === "guessers" || key === "listers") {
-        const targetArray = (key === "guessers") ? (song.guessers_flat || []) : (song.listers_flat || []);
-        
+        const targetArray   = (key === "guessers") ? (song.guessers_flat || []) : (song.listers_flat || []);
+        const roomArray     = song.room_players || [];
+
         if (isNaN(cleanValue)) {
             const hasMatch = targetArray.some(name => name.toLowerCase().includes(cleanValue));
-            return (operator === "!:" || operator === "!=") ? !hasMatch : hasMatch;
-        } else {
+
+            if (operator === "!:" || operator === "!=") {
+                const wasInRoom = roomArray.some(name => name.toLowerCase().includes(cleanValue));
+                return wasInRoom && !hasMatch;
+            }
+
+            return hasMatch;
+        }
+
+        else {
             let numTarget = targetArray.length;
             return matchNumericConstraint(numTarget, operator, cleanValue);
         }
@@ -1269,13 +1284,13 @@ function renderSearchTable(filteredSongs) {
     const table         = document.getElementById('searchSongsTable');
     const counterNode   = document.getElementById('searchCounter');
 
-    if (!table) return;
-    if (counterNode) counterNode.innerText = `${filteredSongs.length}/${globalSearchData.length}`;
+    if (!table)         return;
+    if (counterNode)    counterNode.innerText = `${filteredSongs.length}/${globalSearchData.length}`;
 
     const activeCols = searchHeadersConfig.filter(c => c.visible);
 
     if (activeCols.length === 0) {
-        table.innerHTML = `<thead><tr><th>Error</th></tr></thead><tbody><tr><td class="p-2 text-center text-black">Select visible columns from settings options panel interface.</td></tr></tbody>`;
+        table.innerHTML = `<thead><tr><th>Error</th></tr></thead><tbody><tr><td class="p-2 text-center text-black">Select at least 1 column</td></tr></tbody>`;
         return;
     }
 
@@ -1297,43 +1312,66 @@ function renderSearchTable(filteredSongs) {
             switch (col.id) {
                 case "anime":
                     const displayedTitle = currentSearchLang === "JP" ? song.romaji : song.english;
-                    tbody += `<td class="text-left search-c2-text"><a href="${song.ann_url}" target="_blank" class="hover:underline" style="color: ${c2} !important;">${displayedTitle}</a></td>`;
+                    tbody += `<td class="text-left search-c2-text"><a href="${song.ann_url}" target="_blank" class="hover:underline">${displayedTitle}</a></td>`;
                     break;
+
                 case "type":
                     tbody += `<td class="text-center font-normal text-black" style="white-space: nowrap;">${song.type}</td>`;
                     break;
+
+                case "chanting":
+                    tbody += `<td class="text-center font-normal text-black">${song.chanting}</td>`;
+                    break;
+
                 case "anime_type":
                     tbody += `<td class="text-center font-normal text-black">${song.anime_type}</td>`;
                     break;
+
                 case "vintage":
                     tbody += `<td class="text-center font-normal text-black" style="white-space: nowrap;">${song.vintage}</td>`;
                     break;
+
                 case "difficulty":
                     tbody += `<td class="text-center font-normal font-mono text-black">${song.difficulty}</td>`;
                     break;
+
                 case "song":
-                    tbody += `<td class="text-left search-c2-text"><a href="${song.video_url}" target="_blank" class="hover:underline" style="color: ${c2} !important;">${song.song}</a></td>`;
+                    tbody += `<td class="text-left search-c2-text"><a href="${song.video_url}" target="_blank" class="hover:underline">${song.song}</a></td>`;
                     break;
+
                 case "artist":
-                    const isOverflown = song.artist_arr && song.artist_arr.length > 3;
-                    const artAttr = isOverflown ? ` class="cursor-help hover:bg-gray-100 text-left text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.artist_arr))}"` : ' class="text-left text-black font-normal"';
-                    tbody += `<td${artAttr}>${trimArtists(song.artist_arr || [])}</td>`;
+                    const rawArt        = song.artist_raw           || "";
+                    const rawComp       = song.composer             || "";
+                    let artistDisplay   = trimNames(song.artist_arr || []);                   
+                    const isOverflown   = song.artist_arr && song.artist_arr.length > 3;
+                    const artAttr       = isOverflown ? ` class="cursor-help hover:bg-gray-100 text-left text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.artist_arr))}"` : ' class="text-left text-black font-normal"';
+                    tbody += `<td${artAttr}>${artistDisplay}</td>`;
                     break;
+
                 case "composer":
-                    tbody += `<td class="text-left font-normal text-black">${song.composer}</td>`;
+                    const compText      = song.composer     || "";
+                    const artText       = song.artist_raw   || "";
+                    let composerDisplay = trimNames(compText);                    
+                    tbody += `<td class="text-left font-normal text-black">${composerDisplay}</td>`;
                     break;
+
                 case "arranger":
-                    tbody += `<td class="text-left font-normal text-black">${song.arranger}</td>`;
+                    const arrText       = song.arranger || "";
+                    const composerText  = song.composer || "";
+                    let arrangerDisplay = trimNames(arrText);
+                    tbody += `<td class="text-left font-normal text-black">${arrangerDisplay}</td>`;
                     break;
+
                 case "guessers":
-                    const hasGuesses = song.guessers_hover && song.guessers_hover.length > 0;
-                    const guessAttr = hasGuesses ? ` class="cursor-help hover:bg-gray-100 text-center text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.guessers_hover))}"` : ' class="text-center text-black font-normal"';
-                    tbody += `<td${guessAttr}>${song.guessers_hover ? song.guessers_hover.length : 0}</td>`;
+                    const hasGuesses    = song.guessers_hover && song.guessers_hover.length > 0;
+                    const guessAttr     = hasGuesses ? ` class="cursor-help hover:bg-gray-100 text-center text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.guessers_hover))}"` : ' class="text-center text-black font-normal"';
+                    tbody += `<td${guessAttr}>${song.guessers_flat ? song.guessers_flat.length : 0}</td>`;
                     break;
+
                 case "listers":
                     const hasLists = song.listers_hover && song.listers_hover.length > 0;
                     const listAttr = hasLists ? ` class="cursor-help hover:bg-gray-100 text-center text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.listers_hover))}"` : ' class="text-center text-black font-normal"';
-                    tbody += `<td${listAttr}>${song.listers_hover ? song.listers_hover.length : 0}</td>`;
+                    tbody += `<td${listAttr}>${song.listers_flat ? song.listers_flat.length : 0}</td>`;
                     break;
             }
         });
@@ -1348,21 +1386,18 @@ function renderSearchTable(filteredSongs) {
 
 fetch('Search.json')
     .then(res => res.json())
+
     .then(searchJson => {
-        // Flatten inputs dynamically if backend provided array objects
         globalSearchData = searchJson.map(song => {
-            if (!song.guessers_flat && song.guessers_hover) {
-                song.guessers_flat = song.guessers_hover.map(g => g.split(' (')[0]);
-            }
-            if (!song.listers_flat && song.listers_hover) {
-                song.listers_flat = song.listers_hover;
-            }
+            if (!song.guessers_flat && song.guessers_hover) song.guessers_flat  = song.guessers_hover.map(g => g.split(' (')[0]);
+            if (!song.listers_flat  && song.listers_hover)  song.listers_flat   = song.listers_hover;
+
             return song;
         });
-        
-        initColumnSettingsCheckboxes();
-        sortSearchData();
-        renderSearchTable(globalSearchData);
+
+        initColumnSettingsCheckboxes    ();
+        sortSearchData                  ();
+        renderSearchTable               (globalSearchData);
 
         const searchInput = document.getElementById('songSearchInput');
         if (searchInput) {
@@ -1376,10 +1411,9 @@ fetch('Search.json')
 
                 const tokenRegex    = /[^\s"]+|"([^"]*)"/g;
                 const tokens        = [];
+
                 let match;
-                while ((match = tokenRegex.exec(rawQuery)) !== null) {
-                    tokens.push(match[1] ? match[0] : match[0]);
-                }
+                while ((match = tokenRegex.exec(rawQuery)) !== null) tokens.push(match[1] ? match[0] : match[0]);
 
                 const advancedQueries   = [];
                 const globalKeywords    = [];
@@ -1387,43 +1421,44 @@ fetch('Search.json')
 
                 tokens.forEach(token => {
                     const parsedMatch = token.match(queryRegex);
+
                     if (parsedMatch) {
                         let queryKey = parsedMatch[1].toLowerCase();
-                        if (queryKey === "correct" || queryKey === "guessers") queryKey = "guessers";
-                        if (queryKey === "list" || queryKey === "listers")    queryKey = "listers";
-                        if (queryKey === "chanting") queryKey = "songtype";
-                        
+
+                        if (queryKey === "correct") queryKey = "guessers";
+                        if (queryKey === "list"   ) queryKey = "listers";
+
                         advancedQueries.push({
                             key         : queryKey,
                             operator    : parsedMatch[2],
                             value       : parsedMatch[3]
                         });
-                    } else {
-                        globalKeywords.push(token.toLowerCase());
                     }
+
+                    else globalKeywords.push(token.toLowerCase());
                 });
 
                 const filtered = globalSearchData.filter(song => {
-                    for (let q of advancedQueries) {
-                        if (!evaluateQuery(song, q.key, q.operator, q.value)) return false;
-                    }
+                    for (let q of advancedQueries) if (!evaluateQuery(song, q.key, q.operator, q.value)) return false;
 
                     for (let word of globalKeywords) {
                         const wordClean = word.replace(/^"|"$/g, '');
+
                         const matchKeyword = 
-                            song.romaji.toLowerCase().includes(wordClean) ||
-                            song.english.toLowerCase().includes(wordClean) ||
-                            song.song.toLowerCase().includes(wordClean) ||
-                            song.artist_raw.toLowerCase().includes(wordClean) ||
-                            song.composer.toLowerCase().includes(wordClean) ||
-                            song.arranger.toLowerCase().includes(wordClean) ||
-                            song.type.toLowerCase().includes(wordClean) ||
-                            song.vintage.toLowerCase().includes(wordClean) ||
-                            song.difficulty.toLowerCase().includes(wordClean) ||
-                            song.anime_type.toLowerCase().includes(wordClean);
+                            song.romaji     .toLowerCase().includes(wordClean) ||
+                            song.english    .toLowerCase().includes(wordClean) ||
+                            song.song       .toLowerCase().includes(wordClean) ||
+                            song.artist_raw .toLowerCase().includes(wordClean) ||
+                            song.composer   .toLowerCase().includes(wordClean) ||
+                            song.arranger   .toLowerCase().includes(wordClean) ||
+                            song.type       .toLowerCase().includes(wordClean) ||
+                            song.vintage    .toLowerCase().includes(wordClean) ||
+                            song.difficulty .toLowerCase().includes(wordClean) ||
+                            song.anime_type .toLowerCase().includes(wordClean);
 
                         if (!matchKeyword) return false;
                     }
+
                     return true;
                 });
 
@@ -1431,4 +1466,5 @@ fetch('Search.json')
             });
         }
     })
+
     .catch(err => console.error("Error setting up lookup engine layout context mapping:", err));

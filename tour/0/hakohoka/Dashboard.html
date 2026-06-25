@@ -122,16 +122,16 @@
                         </p>
                         <div class="grid grid-cols-2 gap-1 mt-1 pt-1 border-t text-xs">
                             <div>
-                                <span class="block font-mono mb-1">anime, songtype, chanting, animetype, song, artist, composer, arranger, guessers, listers</span>
+                                <span class="block font-mono mb-1">anime, songtype, chanting, animetype, song, artist, composer, arranger, correct, list</span>
                                 <code class="bg-gray-200 px-1 rounded font-mono">anime:aikatsu artist:nanase</code> returns Nanase songs from Aikatsu<br>
                                 <code class="bg-gray-200 px-1 rounded font-mono">songtype:ed animetype:movie</code> returns movie ending songs<br>
-                                <code class="bg-gray-200 px-1 rounded font-mono">guessers!=furlain</code> returns songs FurLain missed<br>
+                                <code class="bg-gray-200 px-1 rounded font-mono">correct!=furlain</code> returns songs FurLain missed<br>
                             </div>
                             <div>
-                                <span class="block font-mono mb-1">vintage, difficulty, guessers, listers</span>
+                                <span class="block font-mono mb-1">vintage, difficulty, correct, list</span>
                                 <code class="bg-gray-200 px-1 rounded font-mono">vintage&lt;"Summer 2023"</code> returns songs from anime before Summer 2023<br>
-                                <code class="bg-gray-200 px-1 rounded font-mono">difficulty&lt;30 listers&gt;4</code> returns songs with difficulty less than 30 listed by more than 4 people<br>
-                                <code class="bg-gray-200 px-1 rounded font-mono">guessers:0</code> returns songs no one got right<br>
+                                <code class="bg-gray-200 px-1 rounded font-mono">difficulty&lt;30 list&gt;4</code> returns songs with difficulty less than 30 listed by more than 4 people<br>
+                                <code class="bg-gray-200 px-1 rounded font-mono">correct:0</code> returns songs no one got right<br>
                             </div>
                         </div>
                     </div>
@@ -153,7 +153,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="w-full overflow-x-auto border"><table class="main-table" id="searchSongsTable"></table></div>
+                    <div class="w-max max-w-full overflow-x-auto"><table class="main-table" id="searchSongsTable"></table></div>
                 </div>
             </div>
         </div>

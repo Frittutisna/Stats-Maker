@@ -2206,43 +2206,64 @@ class TourAnalyzer:
         }
 
         search_songs_list   = []
-        seen_global_ann_ids = set()
 
         for path_json in self.json_paths:
             try:
                 with open(path_json, encoding = "utf-8") as f: data_j = json.load(f)
 
             except: continue
-            
+
+            raw_f_players = set()
+
+            for s in data_j.get("songs", []):
+                for p in s.get("correctGuessPlayers", []):
+                    if      isinstance(p, str)                  : raw_f_players.add(p)
+                    elif    isinstance(p, dict) and "name" in p : raw_f_players.add(p["name"])
+
+                for ls in s.get("listStates", []):
+                    if "name" in ls: raw_f_players.add(ls["name"])
+
+            final_members = set(raw_f_players)
+
+            if self.use_teams:
+                t_in_f = {self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments}
+
+                for tid in t_in_f:
+                    ros = self.rosters[tid]
+
+                    for m_p in ros:
+                        if m_p.lower() not in self.assignments:
+                            for c_p in raw_f_players:
+                                if c_p.lower() in self.assignments and self.assignments[c_p.lower()][0] == tid: self.assignments[m_p.lower()] = self.assignments[c_p.lower()]
+
+                if len(final_members) < 8:
+                    for tid in t_in_f: final_members.update(self.rosters[tid])
+
+            room_players_list = sorted(list(final_members))
+
             for song in data_j.get("songs", []):
                 si          = song.get("songInfo", {})
                 ann_id_raw  = si.get("annId")
 
                 if not ann_id_raw: continue
 
-                ann_id_str = str(ann_id_raw)
-                if ann_id_str in seen_global_ann_ids: continue
-                seen_global_ann_ids.add(ann_id_str)
+                anime_romaji    = si.get("animeNames",  {}).get("romaji",  "Unknown").strip()
+                anime_english   = si.get("animeNames",  {}).get("english", "").strip()
+                song_name       = si.get("songName",    "Unknown").strip()
+                raw_artist      = si.get("artist",      "Unknown").strip()
+                artist_arr      = [a.strip() for a in raw_artist.split(",") if a.strip()] if raw_artist else []
+                composer_name   = si.get("composerInfo", {}).get("name", "Unknown").strip() if si.get("composerInfo") else "Unknown"
+                arranger_name   = si.get("arrangerInfo", {}).get("name", "Unknown").strip() if si.get("arrangerInfo") else "Unknown"
 
-                anime_romaji    = si.get("animeNames",  {})         .get("romaji",  "Unknown")  .strip()
-                anime_english   = si.get("animeNames",  {})         .get("english", "")         .strip()
-                song_name       = si.get("songName",    "Unknown")                              .strip()
-                raw_artist      = si.get("artist",      "Unknown")                              .strip()
-
-                artist_arr      = [a.strip() for a in raw_artist.split(",") if a.strip()]   if raw_artist               else []
-                composer_name   = si.get("composerInfo", {}).get("name", "Unknown").strip() if si.get("composerInfo")   else "Unknown"
-                arranger_name   = si.get("arrangerInfo", {}).get("name", "Unknown").strip() if si.get("arrangerInfo")   else "Unknown"
-
-                st     = si.get("type", 3)
-                t_num  = si.get("typeNumber", 0)
+                st     = si.get("type",         3)
+                t_num  = si.get("typeNumber",   0)
 
                 if   st == 1 : type_fmt = f"Opening {t_num}"
                 elif st == 2 : type_fmt = f"Ending {t_num}"
                 else         : type_fmt = "Insert"
 
-                ann_url = f"https://www.animenewsnetwork.com/encyclopedia/anime.php?id={ann_id_str}"
-
-                anime_type_raw = str(si.get("animeType", "N/A")).strip()
+                ann_url         = f"https://www.animenewsnetwork.com/encyclopedia/anime.php?id={str(ann_id_raw)}"
+                anime_type_raw  = str(si.get("animeType", "N/A")).strip()
 
                 if      anime_type_raw.lower() == "movie"   : anime_type = "Movie"
                 elif    anime_type_raw.lower() == "special" : anime_type = "Special"
@@ -2256,37 +2277,66 @@ class TourAnalyzer:
 
                 except: safe_diff = "Unrated"
 
-                video_url   = song.get("videoUrl",              "")
-                raw_correct = song.get("correctGuessPlayers",   [])
+                video_url       = song.get("videoUrl",              "")
+                raw_correct     = song.get("correctGuessPlayers",   [])
+                ann_song_id_str = str(si.get("annSongId",           ""))
 
-                guessers_flat   = []
-                guessers_hover  = []
+                is_chanting_str = "Yes" if ann_song_id_str in self.chanting_ids else "No"
+                guess_times     = {}
 
                 for p in raw_correct:
-                    if isinstance(p, str):
-                        guessers_flat.append(p)
-                        guessers_hover.append(f"{p} (N/A)")
-
-                    elif isinstance(p, dict) and "name" in p:
-                        p_name = p["name"]
-                        guessers_flat.append(p_name)
-
+                    if isinstance(p, dict) and "name" in p:
                         t_val = p.get("answerTime")
-                        t_str = f"{float(t_val):.2f}" if t_val is not None else "N/A"
+                        guess_times[p["name"].lower()] = f"{float(t_val):.2f}" if t_val is not None else "N/A"
 
-                        guessers_hover.append(f"{p_name} ({t_str})")
+                    elif isinstance(p, str): guess_times[p.lower()] = "N/A"
 
-                raw_lists = song.get("listStates", [])
+                guessers_flat = []
 
-                listers_flat    = []
-                listers_hover   = []
+                for p in raw_correct:
+                    if      isinstance(p, str)                  : guessers_flat.append(p)
+                    elif    isinstance(p, dict) and "name" in p : guessers_flat.append(p["name"])
 
-                for ls in raw_lists:
-                    if isinstance(ls, dict) and "name" in ls:
-                        p_name = ls["name"]
+                raw_lists       = song.get("listStates", [])
+                listers_flat    = [ls["name"] for ls in raw_lists if isinstance(ls, dict) and "name" in ls]
 
-                        listers_flat    .append(p_name)
-                        listers_hover   .append(p_name)
+                def group_by_team_structure(target_players, include_times = False):
+                    if not self.use_teams:
+                        sorted_p = sorted(target_players, key = str.lower)
+                        if include_times: return [f"{p} ({guess_times.get(p.lower(), 'N/A')})" for p in sorted_p]
+                        return sorted_p
+
+                    team_buckets = defaultdict(list)
+
+                    for p in target_players:
+                        tid, _ = self.assignments.get(p.lower(), (None, "5"))
+                        team_buckets[tid].append(p)
+
+                    sorted_tids = sorted([t for t in team_buckets.keys() if t is not None])
+                    hover_lines = []
+
+                    for tid in sorted_tids:
+                        leader_name = self.t1_lookup.get(tid, f"Team {tid}")
+                        pts_sorted  = sorted(team_buckets[tid], key=lambda x: self.assignments.get(x.lower(), (None, "5"))[1])
+                        p_strings   = []
+
+                        for p in pts_sorted:
+                            if include_times    : p_strings.append(f"{p} ({guess_times.get(p.lower(), 'N/A')})")
+                            else                : p_strings.append(p)
+
+                        hover_lines.append(f"Team {leader_name}: {', '.join(p_strings)}")
+
+                    all_active_tids = {self.assignments[p.lower()][0] for p in final_members if p.lower() in self.assignments}
+                    missing_tids    = sorted(list(all_active_tids - set(team_buckets.keys())))
+
+                    for tid in missing_tids:
+                        leader_name = self.t1_lookup.get(tid, f"Team {tid}")
+                        hover_lines.append(f"Team {leader_name}: None")
+
+                    return hover_lines
+
+                guessers_hover = group_by_team_structure(guessers_flat, include_times = True)
+                listers_hover  = group_by_team_structure(listers_flat,  include_times = False)
 
                 search_songs_list.append({
                     "romaji"            : anime_romaji,
@@ -2297,6 +2347,7 @@ class TourAnalyzer:
                     "composer"          : composer_name,
                     "arranger"          : arranger_name,
                     "type"              : type_fmt,
+                    "chanting"          : is_chanting_str,
                     "ann_url"           : ann_url,
                     "anime_type"        : anime_type,
                     "vintage"           : vint_raw,
@@ -2305,7 +2356,8 @@ class TourAnalyzer:
                     "guessers_flat"     : guessers_flat,
                     "guessers_hover"    : guessers_hover,
                     "listers_flat"      : listers_flat,
-                    "listers_hover"     : listers_hover
+                    "listers_hover"     : listers_hover,
+                    "room_players"      : room_players_list
                 })
 
         search_songs_list.sort(key = lambda x: x["romaji"].lower())

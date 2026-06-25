@@ -1043,6 +1043,7 @@ let currentSearchLang   = "JP";
 const searchHeadersConfig = [
     {id: "anime",       name: "Anime",      visible: true},
     {id: "type",        name: "Song Type",  visible: true},
+    {id: "chanting",    name: "Chanting",   visible: false},
     {id: "anime_type",  name: "Anime Type", visible: false},
     {id: "vintage",     name: "Vintage",    visible: false},
     {id: "difficulty",  name: "Difficulty", visible: false},
@@ -1054,10 +1055,12 @@ const searchHeadersConfig = [
     {id: "listers",     name: "List",       visible: false}
 ];
 
-function trimArtists(arr) {
-    if      (!arr || arr.length === 0)  return "Unknown";
-    else if (arr.length <= 3)           return arr.join(', ');
-    else                            return `${arr.slice(0, 2).join(', ')}, and more`;
+function trimNames(input) {
+    let arr = Array.isArray(input) ? input : (input ? input.split(',').map(x => x.trim()) : []);
+    arr = arr.filter(Boolean);
+
+    if (arr.length <= 3)    return arr.join(', ');
+    else                    return `${arr.slice(0, 2).join(', ')}, and more`;
 }
 
 function parseVintageToFloat(vintStr) {
@@ -1160,17 +1163,18 @@ function sortSearchData() {
             case "Artist"       : valA = a.artist_raw   || ""; valB = b.artist_raw  || ""; break;
             case "Composer"     : valA = a.composer     || ""; valB = b.composer    || ""; break;
             case "Arranger"     : valA = a.arranger     || ""; valB = b.arranger    || ""; break;
+            case "Chanting"     : valA = a.chanting     || ""; valB = b.chanting    || ""; break;
 
             case "Vintage": valA = parseVintageToFloat(a.vintage); valB = parseVintageToFloat(b.vintage); break;
 
             case "Difficulty"   : valA = a.difficulty === "Unrated" ? -Infinity                 : parseFloat(a.difficulty);
                                   valB = b.difficulty === "Unrated" ? -Infinity                 : parseFloat(b.difficulty); break;
 
-            case "Correct"      : valA = a.guessers_hover           ? a.guessers_hover.length   : 0;
-                                  valB = b.guessers_hover           ? b.guessers_hover.length   : 0; break;
+            case "Correct"      : valA = a.guessers_flat            ? a.guessers_flat.length    : 0;
+                                  valB = b.guessers_flat            ? b.guessers_flat.length    : 0; break;
 
-            case "List"         : valA = a.listers_hover            ? a.listers_hover.length    : 0;
-                                  valB = b.listers_hover            ? b.listers_hover.length    : 0; break;
+            case "List"         : valA = a.listers_flat             ? a.listers_flat.length     : 0;
+                                  valB = b.listers_flat             ? b.listers_flat.length     : 0; break;
 
             default: return 0;
         }
@@ -1223,13 +1227,14 @@ function evaluateQuery(song, key, operator, value) {
         const titleTarget = (currentSearchLang === "JP" ? song.romaji : song.english).toLowerCase();
         return titleTarget.includes(cleanValue);
     }
-    
+
     switch (key) {
         case "song"         : return song.song          .toLowerCase().includes(cleanValue);
         case "artist"       : return song.artist_raw    .toLowerCase().includes(cleanValue);
         case "composer"     : return song.composer      .toLowerCase().includes(cleanValue);
         case "arranger"     : return song.arranger      .toLowerCase().includes(cleanValue);
         case "animetype"    : return song.anime_type    .toLowerCase().includes(cleanValue);
+        case "chanting"     : return song.chanting      .toLowerCase().includes(cleanValue);
 
         case "songtype": 
             const typeLower = song.type.toLowerCase();
@@ -1242,11 +1247,18 @@ function evaluateQuery(song, key, operator, value) {
     }
 
     if (key === "guessers" || key === "listers") {
-        const targetArray = (key === "guessers") ? (song.guessers_flat || []) : (song.listers_flat || []);
+        const targetArray   = (key === "guessers") ? (song.guessers_flat || []) : (song.listers_flat || []);
+        const roomArray     = song.room_players || [];
 
         if (isNaN(cleanValue)) {
             const hasMatch = targetArray.some(name => name.toLowerCase().includes(cleanValue));
-            return (operator === "!:" || operator === "!=") ? !hasMatch : hasMatch;
+
+            if (operator === "!:" || operator === "!=") {
+                const wasInRoom = roomArray.some(name => name.toLowerCase().includes(cleanValue));
+                return wasInRoom && !hasMatch;
+            }
+
+            return hasMatch;
         }
 
         else {
@@ -1307,6 +1319,10 @@ function renderSearchTable(filteredSongs) {
                     tbody += `<td class="text-center font-normal text-black" style="white-space: nowrap;">${song.type}</td>`;
                     break;
 
+                case "chanting":
+                    tbody += `<td class="text-center font-normal text-black">${song.chanting}</td>`;
+                    break;
+
                 case "anime_type":
                     tbody += `<td class="text-center font-normal text-black">${song.anime_type}</td>`;
                     break;
@@ -1324,29 +1340,38 @@ function renderSearchTable(filteredSongs) {
                     break;
 
                 case "artist":
+                    const rawArt        = song.artist_raw           || "";
+                    const rawComp       = song.composer             || "";
+                    let artistDisplay   = trimNames(song.artist_arr || []);                   
                     const isOverflown   = song.artist_arr && song.artist_arr.length > 3;
                     const artAttr       = isOverflown ? ` class="cursor-help hover:bg-gray-100 text-left text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.artist_arr))}"` : ' class="text-left text-black font-normal"';
-                    tbody += `<td${artAttr}>${trimArtists(song.artist_arr || [])}</td>`;
+                    tbody += `<td${artAttr}>${artistDisplay}</td>`;
                     break;
 
                 case "composer":
-                    tbody += `<td class="text-left font-normal text-black">${song.composer}</td>`;
+                    const compText      = song.composer     || "";
+                    const artText       = song.artist_raw   || "";
+                    let composerDisplay = trimNames(compText);                    
+                    tbody += `<td class="text-left font-normal text-black">${composerDisplay}</td>`;
                     break;
 
                 case "arranger":
-                    tbody += `<td class="text-left font-normal text-black">${song.arranger}</td>`;
+                    const arrText       = song.arranger || "";
+                    const composerText  = song.composer || "";
+                    let arrangerDisplay = trimNames(arrText);
+                    tbody += `<td class="text-left font-normal text-black">${arrangerDisplay}</td>`;
                     break;
 
                 case "guessers":
                     const hasGuesses    = song.guessers_hover && song.guessers_hover.length > 0;
                     const guessAttr     = hasGuesses ? ` class="cursor-help hover:bg-gray-100 text-center text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.guessers_hover))}"` : ' class="text-center text-black font-normal"';
-                    tbody += `<td${guessAttr}>${song.guessers_hover ? song.guessers_hover.length : 0}</td>`;
+                    tbody += `<td${guessAttr}>${song.guessers_flat ? song.guessers_flat.length : 0}</td>`;
                     break;
 
                 case "listers":
                     const hasLists = song.listers_hover && song.listers_hover.length > 0;
                     const listAttr = hasLists ? ` class="cursor-help hover:bg-gray-100 text-center text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.listers_hover))}"` : ' class="text-center text-black font-normal"';
-                    tbody += `<td${listAttr}>${song.listers_hover ? song.listers_hover.length : 0}</td>`;
+                    tbody += `<td${listAttr}>${song.listers_flat ? song.listers_flat.length : 0}</td>`;
                     break;
             }
         });
@@ -1400,9 +1425,8 @@ fetch('Search.json')
                     if (parsedMatch) {
                         let queryKey = parsedMatch[1].toLowerCase();
 
-                        if (queryKey === "correct")     queryKey = "guessers";
-                        if (queryKey === "list"   )     queryKey = "listers";
-                        if (queryKey === "chanting")    queryKey = "chanting"; // Add the actual queryKey later
+                        if (queryKey === "correct") queryKey = "guessers";
+                        if (queryKey === "list"   ) queryKey = "listers";
 
                         advancedQueries.push({
                             key         : queryKey,
