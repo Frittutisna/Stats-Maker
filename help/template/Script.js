@@ -1044,7 +1044,9 @@ function trimArtists(arr) {
 }
 
 function parseVintageToFloat(vintStr) {
-    const parts         = vintStr.trim().split(/\s+/);    
+    const parts = vintStr.trim().split(/\s+/);    
+    if (parts.length === 1 && !isNaN(parts[0])) return parseFloat(parts[0]);
+
     const season        = parts[0].toLowerCase();
     const year          = parseInt(parts[1]);
     let seasonWeight    = 0.0;
@@ -1061,7 +1063,7 @@ function matchNumericConstraint(targetVal, operator, criterionText, isRank = fal
     const numTarget = parseFloat(targetVal);
     const numCrit   = parseFloat(criterionText);
 
-    if      (isNaN(numTarget) || isNan(numCrit))    return false;
+    if      (isNaN(numTarget) || isNaN(numCrit))    return false;
     else if (operator === ":")                      return Math.floor(numTarget) === Math.floor(numCrit);
 
     let op = operator;
@@ -1113,8 +1115,8 @@ function evaluateQuery(song, key, operator, value) {
         else if (key === "rank")        target = song.rank          === "N/A"       ? NaN : song.rank;
         else if (key === "score")       target = song.score         === "N/A"       ? NaN : song.score;
 
-        else if (key === "guessers")    target = song.guessers_hover    .length;
-        else if (key === "listers")     target = song.listers_hover .length;
+        else if (key === "guessers")    target = song.guessers_flat .length;
+        else if (key === "listers")     target = song.listers_flat  .length;
 
         return matchNumericConstraint(target, operator, cleanValue, key === "rank");
     }
@@ -1318,18 +1320,18 @@ fetch('Search.json')
                         const wordClean = word.replace(/^"|"$/g, '');
 
                         const matchKeyword  = 
-                            song.romaji         .toLowerCase().includes(wordClean) ||
-                            song.english        .toLowerCase().includes(wordClean) ||
-                            song.song           .toLowerCase().includes(wordClean) ||
-                            song.artist_raw     .toLowerCase().includes(wordClean) ||
-                            song.composer       .toLowerCase().includes(wordClean) ||
-                            song.arranger       .toLowerCase().includes(wordClean) ||
-                            song.type           .toLowerCase().includes(wordClean) ||
-                            song.vintage        .toLowerCase().includes(wordClean) ||
-                            song.difficulty     .toLowerCase().includes(wordClean) ||
-                            song.anime_type     .toLowerCase().includes(wordClean) ||
-                            song.guessers_query .toLowerCase().includes(wordClean) ||
-                            song.listers_query  .toLowerCase().includes(wordClean);
+                            song.romaji                         .toLowerCase().includes(wordClean)  ||
+                            song.english                        .toLowerCase().includes(wordClean)  ||
+                            song.song                           .toLowerCase().includes(wordClean)  ||
+                            song.artist_raw                     .toLowerCase().includes(wordClean)  ||
+                            song.composer                       .toLowerCase().includes(wordClean)  ||
+                            song.arranger                       .toLowerCase().includes(wordClean)  ||
+                            song.type                           .toLowerCase().includes(wordClean)  ||
+                            song.vintage                        .toLowerCase().includes(wordClean)  ||
+                            song.difficulty                     .toLowerCase().includes(wordClean)  ||
+                            song.anime_type                     .toLowerCase().includes(wordClean)  ||
+                            song.guessers_flat  .some(p => p    .toLowerCase().includes(wordClean)) ||
+                            song.listers_flat   .some(p => p    .toLowerCase().includes(wordClean))
 
                         if (!matchKeyword) return false;
                     }
