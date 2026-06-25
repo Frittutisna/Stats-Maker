@@ -55,13 +55,13 @@ body, table, th, td, button, input {font-family: 'Segoe UI', Roboto, Helvetica, 
 }
 
 td[data-songs].highlight-best:hover {
-    background-color    : white !important;
+    background-color    : white             !important;
     color               : var(--rittu-blue) !important;
 }
 
 td[data-songs].highlight-worst:hover {
-    background-color    : white !important;
-    color               : var(--rittu-red) !important;
+    background-color    : white             !important;
+    color               : var(--rittu-red)  !important;
 }
 
 th.has-explanation:hover,
@@ -155,4 +155,22 @@ td[data-songs].highlight-worst:hover::after {
 
 .search-group-border {
     border-right: 3px solid black !important;
+}
+
+.search-c2-text, 
+.search-c2-text a {
+    text-decoration : underline !important;
+    font-weight     : normal    !important;
+}
+
+.search-c2-text a:hover {
+    text-decoration: underline !important;
+}
+
+#searchSongsTable th {
+    font-weight: bold !important;
+}
+
+#columnSettingsDropdown input[type="checkbox"] {
+    cursor: pointer;
 }

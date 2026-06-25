@@ -2242,9 +2242,6 @@ class TourAnalyzer:
 
                 ann_url = f"https://www.animenewsnetwork.com/encyclopedia/anime.php?id={ann_id_str}"
 
-                try     : score_scaled = int(float(si.get("animeScore", 0.0)) * 10)
-                except  : score_scaled = "N/A"
-
                 anime_type_raw = str(si.get("animeType", "N/A")).strip()
 
                 if      anime_type_raw.lower() == "movie"   : anime_type = "Movie"
@@ -2258,14 +2255,6 @@ class TourAnalyzer:
                     safe_diff   = f"{float(diff_val):.2f}" if diff_val is not None and float(diff_val) > 0 else "Unrated"
 
                 except: safe_diff = "Unrated"
-
-                tags_arr   = si.get("animeTags",    []) if si.get("animeTags")  else []
-                genres_arr = si.get("animeGenre",   []) if si.get("animeGenre") else []
-                
-                rebroadcast_val = "Yes" if si.get("rebroadcast")    == 1 else "No"
-                dub_val         = "Yes" if si.get("dub")            == 1 else "No"
-
-                pop_rank = str(si.get("popularityRank", "N/A")).strip()
 
                 video_url   = song.get("videoUrl",              "")
                 raw_correct = song.get("correctGuessPlayers",   [])
@@ -2309,15 +2298,9 @@ class TourAnalyzer:
                     "arranger"          : arranger_name,
                     "type"              : type_fmt,
                     "ann_url"           : ann_url,
-                    "score"             : str(score_scaled),
                     "anime_type"        : anime_type,
                     "vintage"           : vint_raw,
                     "difficulty"        : safe_diff,
-                    "tags_arr"          : tags_arr,
-                    "genres_arr"        : genres_arr,
-                    "rebroadcast"       : rebroadcast_val,
-                    "dub"               : dub_val,
-                    "rank"              : pop_rank,
                     "video_url"         : video_url,
                     "guessers_flat"     : guessers_flat,
                     "guessers_hover"    : guessers_hover,

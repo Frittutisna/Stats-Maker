@@ -102,7 +102,7 @@
             </div>
             <div id="search-tab" class="tab-content">
                 <div class="mx-auto w-full">
-                    <div class="w-full bg-gray-50 border p-5 mb-5">
+                    <div class="w-full bg-gray-50 border p-5 mb-1">
                         <p class="font-bold">Guide</p>
                         <p class="mb-1">
                             Filter songs using <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> 
@@ -110,6 +110,9 @@
                             You can also swap the 
                             <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> 
                             for arithmetic operators (
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">=</code>, 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">!:</code>, 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">!=</code>, 
                             <code class="bg-gray-200 px-1 rounded font-mono text-xs">&lt;</code>, 
                             <code class="bg-gray-200 px-1 rounded font-mono text-xs">&gt;</code>, 
                             <code class="bg-gray-200 px-1 rounded font-mono text-xs">&lt;=</code>, 
@@ -119,24 +122,38 @@
                         </p>
                         <div class="grid grid-cols-2 gap-1 mt-1 pt-1 border-t text-xs">
                             <div>
-                                <span class="block font-mono mb-1">japanese, english, song, artist, composer, arranger, songtype, guessers, listers, animetype, tags, genres, rebroadcast, dub</span>
-                                <code class="bg-gray-200 px-1 rounded font-mono">japanese:aikatsu artist:nanase</code> returns Nanase songs from Aikatsu<br>
+                                <span class="block font-mono mb-1">anime, songtype, chanting, animetype, song, artist, composer, arranger, correct, list</span>
+                                <code class="bg-gray-200 px-1 rounded font-mono">anime:aikatsu artist:nanase</code> returns Nanase songs from Aikatsu<br>
                                 <code class="bg-gray-200 px-1 rounded font-mono">songtype:ed animetype:movie</code> returns movie ending songs<br>
-                                <code class="bg-gray-200 px-1 rounded font-mono">guessers:furlain tags:shounen</code> returns shounen songs FurLain guessed correctly<br>
+                                <code class="bg-gray-200 px-1 rounded font-mono">correct!=furlain</code> returns songs FurLain missed<br>
                             </div>
                             <div>
-                                <span class="block font-mono mb-1">difficulty, guessers, listers, vintage, rank, score</span>
-                                <code class="bg-gray-200 px-1 rounded font-mono">difficulty&lt;30 listers&gt;4</code> returns songs with difficulty less than 30 listed by more than 4 people<br>
+                                <span class="block font-mono mb-1">vintage, difficulty, correct, list</span>
                                 <code class="bg-gray-200 px-1 rounded font-mono">vintage&lt;"Summer 2023"</code> returns songs from anime before Summer 2023<br>
-                                <code class="bg-gray-200 px-1 rounded font-mono">rank&gt;100 scores&gt;=80</code> returns songs from anime rated 80+ outside the Top 100<br>
+                                <code class="bg-gray-200 px-1 rounded font-mono">difficulty&lt;30 list&gt;4</code> returns songs with difficulty less than 30 listed by more than 4 people<br>
+                                <code class="bg-gray-200 px-1 rounded font-mono">correct:0</code> returns songs no one got right<br>
                             </div>
                         </div>
                     </div>
-                    <div class="w-full flex items-left gap-1 mb-5">
-                        <div class="w-full max-w-xl"><input type="text" id="songSearchInput" placeholder="japanese:chobits songtype:ed" class="w-full px-4 py-2 border"></div>
-                        <div id="searchCounter" class="font-bold bg-black px-4 py-2 text-white border">0/0</div>
+                    <div class="w-full flex items-center justify-start gap-1 mb-1">
+                        <button id="langToggleBtn" class="w-[40px] h-[40px] bg-black border border-black text-white font-bold" onclick="toggleSearchLanguage()">JP</button>
+                        <div class="w-full max-w-xl">
+                            <input type="text" id="songSearchInput" placeholder="anime:chobits songtype:ed" class="w-full h-[40px] px-4 py-2 border">
+                        </div>
+                        <div id="searchCounter" class="w-[80px] h-[40px] font-bold bg-black border text-white flex items-center justify-center">
+                            0/0
+                        </div>
+                        <div class="relative w-[40px] h-[40px]">
+                            <button id="columnSettingsBtn" class="w-[40px] h-[40px] bg-black border text-white text-xl" onclick="toggleColumnSettingsMenu(event)">⚙</button>
+                            <div id="columnSettingsDropdown" class="bg-white border p-4 w-60">
+                                <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
+                                    <input type="checkbox" id="allColumnsMasterCheckbox">All
+                                </label>
+                                <div id="columnCheckboxContainer" class="flex flex-col gap-2 text-sm"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="w-full overflow-x-auto border bg-white"><table class="main-table" id="searchSongsTable""></table></div>
+                    <div class="w-max max-w-full overflow-x-auto"><table class="main-table" id="searchSongsTable"></table></div>
                 </div>
             </div>
         </div>
