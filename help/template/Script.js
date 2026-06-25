@@ -1163,7 +1163,7 @@ function renderSearchTable(filteredSongs) {
     if (counterNode)    counterNode.innerText = `${filteredSongs.length}/${globalSearchData.length}`;
 
     if (filteredSongs.length === 0) {
-        table.innerHTML = `<thead><tr><th>Search Query Output</th></tr></thead><tbody><tr><td class="p-8 text-xl font-bold text-center">No songs matched your specific constraints</td></tr></tbody>`;
+        table.innerHTML = `<thead><tr><th>Error</th></tr></thead><tbody><tr><td class="p-1text-center">No songs matched your specific constraints</td></tr></tbody>`;
         return;
     }
 
