@@ -35,17 +35,18 @@ dynamicStyles.innerHTML = `
 `;
 
 document.head.appendChild(dynamicStyles);
-const tabContainer = document.getElementById('tabContainer');
 
-if (use_teams && watched)   tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'team-tab')">Team</button>`);
-if (use_teams)              tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
+const tabContainer  = document.getElementById('tabContainer');
+const tourTabBtn    = document.getElementById('tourTabBtn');
 
-tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
-tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
+if (use_teams)  tourTabBtn.innerText = "Tour/Team";
+else            tourTabBtn.innerText = "Tour";
 
-if (watched) tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>`);
-
-tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
+if (use_teams)  tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
+                tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
+                tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
+if (watched)    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>`);
+                tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
 
 const thickBorderColumns = new Set([
     "Player",
@@ -253,46 +254,90 @@ function renderPlayerTable() {
 
 function renderTourTable() {
     const table = document.getElementById('tourStatsTable');
-    if(!tourStats) return;
-    let tourHeaders = ['Metric', 'Value'];
+    if (!tourStats || !tourStats.length) return;
 
-    let thead = "<thead><tr>" + tourHeaders.map(h => {
-        let classes = [];
-        if (thickBorderColumns.has(h))  classes.push("border-col-group");
-        let classStr = classes.length > 0 ? ` class="${classes.join(' ')}"` : '';
-        return `<th${classStr}>${h.replace(/ /g, '<br>')}</th>`;
-    }).join('') + "</tr></thead>";
+    const half          = Math.ceil(tourStats.length / 2);
+    const leftSlice     = tourStats.slice(0, half);
+    const rightSlice    = tourStats.slice(half);
 
-    let tbody = "";
+    let thead = `
+        <thead>
+            <tr>
+                <th class="border-col-group">Metric</th>
+                <th class="border-col-group">Value</th>
+                <th class="border-col-group">Metric</th>
+                <th>Value</th>
+            </tr>
+        </thead>`;
 
-    tourStats.forEach(row => {
-        let rawCell     = row.Value;
-        let displayVal  = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
-        let hasExp      = !!colExplanations[row.Metric];
-        let metricClass = hasExp ? "border-col-group has-explanation" : "border-col-group";
-        let metricAttr  = `class='${metricClass}' data-metric="${row.Metric}"`;
+    let tbody = "<tbody>";
 
-        if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
-            let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-            tbody += `<tr><td ${metricAttr}><b>${row.Metric}</b></td><td data-songs="${encodedDetails}">${displayVal}</td></tr>`;
+    for (let i = 0; i < half; i++) {
+        tbody += "<tr>";
+        const leftRow = leftSlice[i];
+
+        if (leftRow) {
+            let rawCell     = leftRow.Value;
+            let displayVal  = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
+            let hasExp      = !!colExplanations[leftRow.Metric];
+            let metricClass = hasExp ? "border-col-group has-explanation" : "border-col-group";
+            let metricAttr  = `class='${metricClass}' data-metric="${leftRow.Metric}"`;
+
+            if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
+                let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
+                tbody += `<td ${metricAttr}><b>${leftRow.Metric}</b></td><td class="border-col-group" data-songs="${encodedDetails}">${displayVal}</td>`;
+            }
+
+            else tbody += `<td ${metricAttr}><b>${leftRow.Metric}</b></td><td class="border-col-group">${displayVal}</td>`;
+
         }
 
-        else tbody += `<tr><td ${metricAttr}><b>${row.Metric}</b></td><td>${displayVal}</td></tr>`;
-    });
+        else tbody += `<td class="border-col-group"></td><td class="border-col-group"></td>`;
+
+        const rightRow = rightSlice[i];
+
+        if (rightRow) {
+            let rawCell     = rightRow.Value;
+            let displayVal  = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
+            let hasExp      = !!colExplanations[rightRow.Metric];
+            let metricClass = hasExp ? "border-col-group has-explanation" : "border-col-group";
+            let metricAttr  = `class='${metricClass}' data-metric="${rightRow.Metric}"`;
+
+            if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
+                let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
+                tbody += `<td ${metricAttr}><b>${rightRow.Metric}</b></td><td data-songs="${encodedDetails}">${displayVal}</td>`;
+            }
+
+            else tbody += `<td ${metricAttr}><b>${rightRow.Metric}</b></td><td>${displayVal}</td>`;
+        }
+
+        else tbody += `<td class="border-col-group"></td><td></td>`;
+
+        tbody += "</tr>";
+    }
 
     table.innerHTML = thead + tbody + "</tbody>";
 }
 
 function renderTeamTable() {
-    const table = document.getElementById('teamStatsTable');
-    if(!table || !teamStats || !teamStats.length) return;
+    const table     = document.getElementById('teamStatsTable');
+    const spacer    = document.getElementById('teamTableSpacer');
+
+    if (!table) return;
+
+    if (!use_teams || !watched || !teamStats || !teamStats.length) {
+        table.innerHTML                     = "";
+        if (spacer) spacer.style.display    = "none";
+        return;
+    }
+
     let headers = Object.keys(teamStats[0]);
 
     let thead = "<thead><tr>" + headers.map(h => {
         let classes = [];
 
-        if (thickBorderColumns.has(h)) classes.push("border-col-group");
-        if (colExplanations[h]) classes.push("has-explanation");
+        if (thickBorderColumns.has(h))  classes.push("border-col-group");
+        if (colExplanations[h])         classes.push("has-explanation");
 
         let classStr = classes.length > 0 ? ` class="${classes.join(' ')}"` : '';
         return `<th${classStr} data-metric="${h}">${h.replace(/ /g, '<br>')}</th>`;

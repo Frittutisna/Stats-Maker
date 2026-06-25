@@ -13,7 +13,7 @@
         <p id="lastUpdatedSubtitle" class="text-xl text-center font-bold mb-5">Last updated: Some time ago</p>
         <div id="tabContainer" class="border-b flex justify-center mb-5">
             <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
-            <button class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
+            <button id="tourTabBtn" class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
         </div>
         <div>
             <div id="player-tab" class="tab-content active-content">
@@ -24,10 +24,7 @@
             <div id="tour-tab" class="tab-content">
                 <div class="table-center-wrapper">
                     <table class="main-table" id="tourStatsTable"></table>
-                </div>
-            </div>
-            <div id="team-tab" class="tab-content">
-                <div class="table-center-wrapper">
+                    <div id="teamTableSpacer" class="my-1"></div>
                     <table class="main-table" id="teamStatsTable"></table>
                 </div>
             </div>
