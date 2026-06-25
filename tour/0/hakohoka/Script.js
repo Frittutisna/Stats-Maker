@@ -35,17 +35,18 @@ dynamicStyles.innerHTML = `
 `;
 
 document.head.appendChild(dynamicStyles);
-const tabContainer = document.getElementById('tabContainer');
 
-if (use_teams && watched)   tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'team-tab')">Team</button>`);
-if (use_teams)              tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
+const tabContainer  = document.getElementById('tabContainer');
+const tourTabBtn    = document.getElementById('tourTabBtn');
 
-tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
-tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
+if (use_teams)  tourTabBtn.innerText = "Tour/Team";
+else            tourTabBtn.innerText = "Tour";
 
-if (watched) tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'list-tab')">List</button>`);
-
-tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
+if (use_teams)  tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
+                tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
+if (watched)    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess/List</button>`);
+else            tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
+                tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
 
 const thickBorderColumns = new Set([
     "Player",
@@ -253,46 +254,90 @@ function renderPlayerTable() {
 
 function renderTourTable() {
     const table = document.getElementById('tourStatsTable');
-    if(!tourStats) return;
-    let tourHeaders = ['Metric', 'Value'];
+    if (!tourStats || !tourStats.length) return;
 
-    let thead = "<thead><tr>" + tourHeaders.map(h => {
-        let classes = [];
-        if (thickBorderColumns.has(h))  classes.push("border-col-group");
-        let classStr = classes.length > 0 ? ` class="${classes.join(' ')}"` : '';
-        return `<th${classStr}>${h.replace(/ /g, '<br>')}</th>`;
-    }).join('') + "</tr></thead>";
+    const half          = Math.ceil(tourStats.length / 2);
+    const leftSlice     = tourStats.slice(0, half);
+    const rightSlice    = tourStats.slice(half);
 
-    let tbody = "";
+    let thead = `
+        <thead>
+            <tr>
+                <th class="border-col-group">Metric</th>
+                <th class="border-col-group">Value</th>
+                <th class="border-col-group">Metric</th>
+                <th>Value</th>
+            </tr>
+        </thead>`;
 
-    tourStats.forEach(row => {
-        let rawCell     = row.Value;
-        let displayVal  = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
-        let hasExp      = !!colExplanations[row.Metric];
-        let metricClass = hasExp ? "border-col-group has-explanation" : "border-col-group";
-        let metricAttr  = `class='${metricClass}' data-metric="${row.Metric}"`;
+    let tbody = "<tbody>";
 
-        if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
-            let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-            tbody += `<tr><td ${metricAttr}><b>${row.Metric}</b></td><td data-songs="${encodedDetails}">${displayVal}</td></tr>`;
+    for (let i = 0; i < half; i++) {
+        tbody += "<tr>";
+        const leftRow = leftSlice[i];
+
+        if (leftRow) {
+            let rawCell     = leftRow.Value;
+            let displayVal  = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
+            let hasExp      = !!colExplanations[leftRow.Metric];
+            let metricClass = hasExp ? "border-col-group has-explanation" : "border-col-group";
+            let metricAttr  = `class='${metricClass}' data-metric="${leftRow.Metric}"`;
+
+            if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
+                let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
+                tbody += `<td ${metricAttr}><b>${leftRow.Metric}</b></td><td class="border-col-group" data-songs="${encodedDetails}">${displayVal}</td>`;
+            }
+
+            else tbody += `<td ${metricAttr}><b>${leftRow.Metric}</b></td><td class="border-col-group">${displayVal}</td>`;
+
         }
 
-        else tbody += `<tr><td ${metricAttr}><b>${row.Metric}</b></td><td>${displayVal}</td></tr>`;
-    });
+        else tbody += `<td class="border-col-group"></td><td class="border-col-group"></td>`;
+
+        const rightRow = rightSlice[i];
+
+        if (rightRow) {
+            let rawCell     = rightRow.Value;
+            let displayVal  = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
+            let hasExp      = !!colExplanations[rightRow.Metric];
+            let metricClass = hasExp ? "border-col-group has-explanation" : "border-col-group";
+            let metricAttr  = `class='${metricClass}' data-metric="${rightRow.Metric}"`;
+
+            if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
+                let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
+                tbody += `<td ${metricAttr}><b>${rightRow.Metric}</b></td><td data-songs="${encodedDetails}">${displayVal}</td>`;
+            }
+
+            else tbody += `<td ${metricAttr}><b>${rightRow.Metric}</b></td><td>${displayVal}</td>`;
+        }
+
+        else tbody += `<td class="border-col-group"></td><td></td>`;
+
+        tbody += "</tr>";
+    }
 
     table.innerHTML = thead + tbody + "</tbody>";
 }
 
 function renderTeamTable() {
-    const table = document.getElementById('teamStatsTable');
-    if(!table || !teamStats || !teamStats.length) return;
+    const table     = document.getElementById('teamStatsTable');
+    const spacer    = document.getElementById('teamTableSpacer');
+
+    if (!table) return;
+
+    if (!use_teams || !watched || !teamStats || !teamStats.length) {
+        table.innerHTML                     = "";
+        if (spacer) spacer.style.display    = "none";
+        return;
+    }
+
     let headers = Object.keys(teamStats[0]);
 
     let thead = "<thead><tr>" + headers.map(h => {
         let classes = [];
 
-        if (thickBorderColumns.has(h)) classes.push("border-col-group");
-        if (colExplanations[h]) classes.push("has-explanation");
+        if (thickBorderColumns.has(h))  classes.push("border-col-group");
+        if (colExplanations[h])         classes.push("has-explanation");
 
         let classStr = classes.length > 0 ? ` class="${classes.join(' ')}"` : '';
         return `<th${classStr} data-metric="${h}">${h.replace(/ /g, '<br>')}</th>`;
@@ -332,6 +377,16 @@ function renderTeamTable() {
     table.innerHTML = thead + tbody + "</tbody>";
 }
 
+let currentTierChartMode = "TIER";
+
+window.toggleTierChartMode = function() {
+    const btn               = document.getElementById("tierModeToggleBtn");
+    currentTierChartMode    = currentTierChartMode === "TIER" ? "ALL" : "TIER";
+    btn.innerText           = currentTierChartMode;
+
+    renderTierCharts();
+};
+
 function renderTierCharts() {
     if (!document.getElementById('tierChart_GuessRate') || !tierStats) return;
 
@@ -360,95 +415,110 @@ function renderTierCharts() {
         let yVals           = [];
         let customHovers    = [];
 
-        ["1", "2", "3", "4"].forEach((tr, tIdx) => {
-            if (!tierStats[tr] || tierStats[tr].length === 0) return;
-            let playersInTier = [...tierStats[tr]];
+        const sortComparator = (a, b) => {
+            let va = (a[metric.key] !== null && typeof a[metric.key] === 'object') ? a[metric.key].count : a[metric.key];
+            let vb = (b[metric.key] !== null && typeof b[metric.key] === 'object') ? b[metric.key].count : b[metric.key];
 
-            playersInTier.sort((a, b) => {
-                let va = (a[metric.key] !== null && typeof a[metric.key] === 'object') ? a[metric.key].count : a[metric.key];
-                let vb = (b[metric.key] !== null && typeof b[metric.key] === 'object') ? b[metric.key].count : b[metric.key];
+            if (va === null || va === undefined) return 1;
+            if (vb === null || vb === undefined) return -1;
 
-                if (va === null || va === undefined) return 1;
-                if (vb === null || vb === undefined) return -1;
+            const fractionalMetrics = new Set(["Guess Rate", "Contribution Rate", "Chanting Guess Rate"]);
 
-                const fractionalMetrics = new Set(["Guess Rate", "Contribution Rate", "Chanting Guess Rate"]);
+            if (va === vb && fractionalMetrics.has(metric.key)) {
+                let numA = a[metric.key] && a[metric.key].details ? parseInt(a[metric.key].details[0].split('/')[0]) || 0 : 0;
+                let numB = b[metric.key] && b[metric.key].details ? parseInt(b[metric.key].details[0].split('/')[0]) || 0 : 0;
 
-                if (va === vb && fractionalMetrics.has(metric.key)) {
-                    let numA = a[metric.key] && a[metric.key].details ? parseInt(a[metric.key].details[0].split('/')[0]) || 0 : 0;
-                    let numB = b[metric.key] && b[metric.key].details ? parseInt(b[metric.key].details[0].split('/')[0]) || 0 : 0;
+                if (numA !== numB) return numB - numA;
+            }
 
-                    if (numA !== numB) return numB - numA;
-                }
+            return metric.isAsc ? va - vb : vb - va;
+        };
 
-                return metric.isAsc ? va - vb : vb - va;
+        let playerPool = [];
+
+        if (currentTierChartMode === "TIER") {
+            ["1", "2", "3", "4"].forEach((tr) => {
+                if (!tierStats[tr] || tierStats[tr].length === 0) return;
+                let playersInTier = [...tierStats[tr]];
+                playersInTier.sort(sortComparator);
+
+                playerPool.push(...playersInTier);
+                playerPool.push({isSpacer: true});
             });
 
-            if (xVals.length > 0) {
+            if (playerPool.length > 0 && playerPool[playerPool.length - 1].isSpacer) playerPool.pop();
+        }
+
+        else {
+            ["1", "2", "3", "4"].forEach((tr) => {if (tierStats[tr]) playerPool.push(...tierStats[tr]);});
+            playerPool.sort(sortComparator);
+        }
+
+        playerPool.forEach(p => {
+            if (p.isSpacer) {
                 xVals           .push(null);
                 yVals           .push(" ".repeat(gapCounter++));
                 customHovers    .push("");
+                return;
             }
 
-            playersInTier.forEach(p => {
-                let rawVal      = p[metric.key];
-                let val         = (rawVal !== null && typeof rawVal === 'object') ? rawVal.count : rawVal;
-                let finalVal    = 0;
+            let rawVal      = p[metric.key];
+            let val         = (rawVal !== null && typeof rawVal === 'object') ? rawVal.count : rawVal;
+            let finalVal    = 0;
 
-                if (val !== null && val !== undefined && val !== Infinity) finalVal = metric.isInt ? Math.round(val) : Number(val.toFixed(2));
+            if (val !== null && val !== undefined && val !== Infinity) finalVal = metric.isInt ? Math.round(val) : Number(val.toFixed(2));
 
-                xVals.push(finalVal);
-                yVals.push(p.Player);
+            xVals.push(finalVal);
+            yVals.push(p.Player);
 
-                if (!metric.hoverDisabled) {
-                    if (rawVal !== null && typeof rawVal === 'object' && rawVal.details && rawVal.details.length > 0) {
-                        let displaySongs    = [...rawVal.details];
-                        let fractionHeader  = "";
-                        const fractionRegex = /^\d+\/\d+$/;
+            if (!metric.hoverDisabled) {
+                if (rawVal !== null && typeof rawVal === 'object' && rawVal.details && rawVal.details.length > 0) {
+                    let displaySongs    = [...rawVal.details];
+                    let fractionHeader  = "";
+                    const fractionRegex = /^\d+\/\d+$/;
 
-                        if (fractionRegex.test(displaySongs[0])) {
-                            fractionHeader = `<b>${displaySongs[0]}</b>`;
-                            displaySongs.shift(); 
-                        }
+                    if (fractionRegex.test(displaySongs[0])) {
+                        fractionHeader = `<b>${displaySongs[0]}</b>`;
+                        displaySongs.shift(); 
+                    }
 
-                        if (metric.isTime) customHovers.push(displaySongs.join('<br>'));
+                    if (metric.isTime) customHovers.push(displaySongs.join('<br>'));
 
-                        else if (displaySongs.length > 10) {
-                            displaySongs = sampleLargeSongList(displaySongs);
-                            displaySongs.push(`and ${rawVal.details.length - 1 - 10} more`);
-                            customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
-                        }
-
-                        else {
-                            displaySongs = formatAndSortSongsList(displaySongs);
-                            customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
-                        }
+                    else if (displaySongs.length > 10) {
+                        displaySongs = sampleLargeSongList(displaySongs);
+                        displaySongs.push(`and ${rawVal.details.length - 1 - 10} more`);
+                        customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
                     }
 
                     else {
-                        let detailKey   = metric.key + " Details";
-                        let songs       = p[detailKey] || [];
+                        displaySongs = formatAndSortSongsList(displaySongs);
+                        customHovers.push(fractionHeader ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>'));
+                    }
+                }
 
-                        if (songs.length > 0) {
-                            let displaySongs = [...songs];
+                else {
+                    let detailKey   = metric.key + " Details";
+                    let songs       = p[detailKey] || [];
 
-                            if (songs.length > 10) {
-                                displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
-                                displaySongs = formatAndSortSongsList(displaySongs, false);
-                                customHovers.push("• " + displaySongs.join("<br>• ") + "<br>and " + (songs.length - 10) + " more");
-                            }
+                    if (songs.length > 0) {
+                        let displaySongs = [...songs];
 
-                            else {
-                                displaySongs = formatAndSortSongsList(displaySongs, false);
-                                customHovers.push("• " + displaySongs.join("<br>• "));
-                            }
+                        if (songs.length > 10) {
+                            displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
+                            displaySongs = formatAndSortSongsList(displaySongs, false);
+                            customHovers.push("• " + displaySongs.join("<br>• ") + "<br>and " + (songs.length - 10) + " more");
                         }
 
-                        else customHovers.push("No songs logged");
+                        else {
+                            displaySongs = formatAndSortSongsList(displaySongs, false);
+                            customHovers.push("• " + displaySongs.join("<br>• "));
+                        }
                     }
-                } 
 
-                else customHovers.push("");
-            });
+                    else customHovers.push("No songs logged");
+                }
+            } 
+            else customHovers.push("");
         });
 
         xVals           .reverse();
@@ -482,17 +552,20 @@ function renderTierCharts() {
 
         const layout = {
             font        : {family: 'Segoe UI'},
-            title       : {text: titleText, font: {family: 'Segoe UI', size: 15, color: 'black'}, y: 0.95, yanchor: 'top'},
+            title       : {text: titleText, font: {family: 'Segoe UI', size: 15, color: 'black'}, yref: 'container', y: 15, yanchor: 'top'},
             xaxis       : {tickfont: {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true},
             yaxis       : {tickfont: {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: "  " },
             bargap      : 0.0,
-            margin      : {l: 150, r: 0, t: 100, b: 50},
-            height      : yVals.length * 35,
+            margin      : {l: 150, r: 0, t: 100, b: 25},
             hoverlabel  : {align: 'left', font: {family: 'Segoe UI', size: 15}}
         };
 
         if      (metric.isRate) {layout.xaxis.tickmode = 'array'; layout.xaxis.tickvals = [0, 20, 40, 60, 80, 100]; layout.xaxis.range = [0, 105];}
         else if (metric.isTime) {layout.xaxis.tickmode = 'array'; layout.xaxis.tickvals = [0, 4, 8, 12, 16, 20];    layout.xaxis.range = [0, 21];}
+
+        const totalPlayers  = playerPool.filter(p => !p.isSpacer).length;
+        const totalSpacers  = playerPool.filter(p => p.isSpacer).length;
+        layout.height       = 35 * (totalPlayers + totalSpacers);
 
         Plotly.newPlot(divIds[mIdx], [trace], layout, {responsive: true, displayModeBar: false});
 
@@ -500,14 +573,18 @@ function renderTierCharts() {
             const titleEl = document.querySelector(`#${divIds[mIdx]} .g-title`);
 
             if (titleEl) {
-                titleEl.style.cursor = 'help'; titleEl.style.pointerEvents = 'all';
+                titleEl.style.cursor        = 'help';
+                titleEl.style.pointerEvents = 'all';
+                const cleanEl               = titleEl.cloneNode(true);
 
-                titleEl.addEventListener('mouseenter', (e) => {
+                titleEl.parentNode.replaceChild(cleanEl, titleEl);
+
+                cleanEl.addEventListener('mouseenter', (e) => {
                     const tooltipNode = document.getElementById('customJsTooltip');
                     tooltipNode.innerHTML = colExplanations[metric.key]; tooltipNode.style.display = 'block';
                 });
 
-                titleEl.addEventListener('mousemove', (e) => {
+                cleanEl.addEventListener('mousemove', (e) => {
                     const tooltipNode = document.getElementById('customJsTooltip');
 
                     let xPos = e.pageX + 15;
@@ -517,7 +594,7 @@ function renderTierCharts() {
                     tooltipNode.style.left = xPos + 'px'; tooltipNode.style.top = yPos + 'px';
                 });
 
-                titleEl.addEventListener('mouseleave', () => { document.getElementById('customJsTooltip').style.display = 'none'; });
+                cleanEl.addEventListener('mouseleave', () => { document.getElementById('customJsTooltip').style.display = 'none'; });
             }
         }, 300);}
     });
@@ -706,7 +783,7 @@ for (let i = 0; i < numY; i++) {
                 song_hover_str = "<br>• " + bin_songs.join("<br>• ");
             }
 
-            rowText.push(`<b>${vintageStr}<br>${diffStr}<br>Mean Over-8: ${val.toFixed(2)}</b>${song_hover_str}`);
+            rowText.push(`<b>${diffStr}<br>${vintageStr}<br>Over-8: ${val.toFixed(2)}</b>${song_hover_str}`);
 
             annotations.push({
                 x               : j,
@@ -959,9 +1036,48 @@ if (scatterData) {
     }, {responsive: true, displayModeBar: false});
 }
 
+let currentListChartMode = "ALL"; 
+
 if (document.getElementById('plotlyListChart') && arrowData) {
-    const listHull  = get75PercentileHull(arrowData, 'x_start', 'y_start');
-    let listTraces  = [];
+    const allXValues = [...arrowData.map(d => d.x_start), ...arrowData.map(d => d.x_end)];
+    const allYValues = [...arrowData.map(d => d.y_start), ...arrowData.map(d => d.y_end)];
+
+    window.listChartGlobalLimits = {
+        xMin: Math.min(...allXValues) - 0.1,
+        xMax: Math.max(...allXValues) + 0.1,
+        yMin: Math.min(...allYValues) - 1,
+        yMax: Math.max(...allYValues) + 1
+    };
+
+    window.listDataPool = {
+        "ALL": arrowData.map(d => ({
+            acronym     : d.acronym,
+            name        : d.name,
+            x           : d.x_start,
+            y           : d.y_start,
+            size        : d.rig_rate,
+            color       : d.grid_grs || d.rig_gr, 
+            hoverText   : `<b>${d.name}</b><br>Rig Over-8: ${d.x_start.toFixed(2)}<br>Rig Vintage: ${d.seasonal_vintage_start}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig Guess Rate: ${d.rig_gr.toFixed(2)}<extra></extra>`
+        })),
+
+        "HIT": arrowData.map(d => ({
+            acronym     : d.acronym,
+            name        : d.name,
+            x           : d.x_end, 
+            y           : d.y_end,
+            size        : d.rig_rate, 
+            color       : d.grid_grs || d.rig_gr, 
+            hoverText   : `<b>${d.name}</b><br>Hit Rig Over-8: ${d.x_end.toFixed(2)}<br>Hit Rig Vintage: ${d.seasonal_vintage || d.seasonal_vintage_end}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig Guess Rate: ${d.rig_gr.toFixed(2)}<extra></extra>`
+        }))
+    };
+
+    renderListChart();
+}
+
+function renderListChart() {
+    const activeScatterSource   = window.listDataPool[currentListChartMode];
+    const listHull              = get75PercentileHull(activeScatterSource, 'x', 'y');
+    let listTraces              = [];
 
     if (listHull) listTraces.push({
         x           : listHull.x,
@@ -974,19 +1090,19 @@ if (document.getElementById('plotlyListChart') && arrowData) {
     });
 
     listTraces.push({
-        x               : arrowData.map(d => d.x_start),
-        y               : arrowData.map(d => d.y_start),
-        text            : arrowData.map(d => d.acronym),
-        customdata      : arrowData.map(d => [d.name, d.x_start.toFixed(2), d.seasonal_vintage_start, d.grid_rate !== undefined ? d.grid_rate.toFixed(2) : d.rig_rate.toFixed(2), d.rig_gr.toFixed(2)]),
-        hovertemplate   : '<b>%{customdata[0]}</b><br>Rig Over-8: %{customdata[1]}<br>Rig Vintage: %{customdata[2]}<br>Rig Rate: %{customdata[3]}<br>Rig Guess Rate: %{customdata[4]}<extra></extra>',
-        hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}},
+        x               : activeScatterSource.map(d => d.x),
+        y               : activeScatterSource.map(d => d.y),
+        text            : activeScatterSource.map(d => d.acronym),
+        hovertemplate   : activeScatterSource.map(d => d.hoverText),
+        hoverlabel      : { align: 'left', font: { family: 'Segoe UI', size: 15 } },
         mode            : 'markers',
         showlegend      : false,
         marker          : {
-            size        : arrowData.map(d => Math.max(10, d.rig_rate * 2)),
+            size        : activeScatterSource.map(d => Math.max(10, d.size * 2)),
             opacity     : 0.95,
-            color       : arrowData.map(d => d.grid_grs || d.rig_gr),
-            colorscale  : [[0, hexToRgba(c0)], [0.7, hexToRgba(c0)], [0.8, hexToRgba(c1)], [0.9, hexToRgba(c2)], [1, hexToRgba(c2)]], showscale: true,
+            color       : activeScatterSource.map(d => d.color),
+            colorscale  : [[0, hexToRgba(c0)], [0.7, hexToRgba(c0)], [0.8, hexToRgba(c1)], [0.9, hexToRgba(c2)], [1, hexToRgba(c2)]],
+            showscale   : true,
             colorbar    : {
                 title       : {text: '<b>Rig Guess Rate</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
                 thickness   : 25,
@@ -1017,7 +1133,8 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
-            fixedrange  : false
+            fixedrange  : false,
+            range       : [window.listChartGlobalLimits.xMin, window.listChartGlobalLimits.xMax]
         },
         yaxis       : {
             title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
@@ -1025,16 +1142,79 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             tickangle   : -90,
             showgrid    : true,
             tickformat  : 'd',
-            dtick       : Math.max(2, Math.ceil((Math.max(...arrowData.map(d => d.y_start)) - Math.min(...arrowData.map(d => d.y_start))) / 5)),
+            dtick       : Math.max(2, Math.ceil((window.listChartGlobalLimits.yMax - window.listChartGlobalLimits.yMin) / 5)),
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
-            fixedrange  : false
+            fixedrange  : false,
+            range       : [window.listChartGlobalLimits.yMin, window.listChartGlobalLimits.yMax]
         },
         margin      : {l: 75, r: 0, t: 25, b: 75},
-        annotations : buildScatterAnnotations(arrowData, 'x_start', 'y_start', 'rig_rate')
+        annotations : buildScatterAnnotations(activeScatterSource, 'x', 'y', 'size')
     }, {responsive: true, displayModeBar: false});
 }
+
+if (watched) {
+    const glBtn = document.getElementById("guessListToggleBtn");
+    if (glBtn) glBtn.classList.remove("hidden");
+}
+
+let currentGuessListViewMode = "GUESS";
+
+window.toggleGuessListViewMode = function() {
+    const btn           = document.getElementById("guessListToggleBtn");
+    const guessCtx      = document.getElementById("guessViewSubContext");
+    const listCtx       = document.getElementById("listViewSubContext");
+    const guessChart    = document.getElementById("guessChartContainer");
+    const listChart     = document.getElementById("listChartContainer");
+    const listSubToggle = document.getElementById("listModeToggleContainer");
+
+    if (currentGuessListViewMode === "GUESS") {
+        currentGuessListViewMode    = "LIST";
+        btn.innerText               = "LIST";
+
+        if (guessCtx)       guessCtx        .classList.add      ("hidden");
+        if (guessChart)     guessChart      .classList.add      ("hidden");
+        if (listCtx)        listCtx         .classList.remove   ("hidden");
+        if (listChart)      listChart       .classList.remove   ("hidden");
+        if (listSubToggle)  listSubToggle   .classList.remove   ("hidden");
+
+        renderListChart();
+    }
+
+    else {
+        currentGuessListViewMode    = "GUESS";
+        btn.innerText               = "GUESS";
+
+        if (guessCtx)       guessCtx        .classList.remove   ("hidden");
+        if (guessChart)     guessChart      .classList.remove   ("hidden");
+        if (listCtx)        listCtx         .classList.add      ("hidden");
+        if (listChart)      listChart       .classList.add      ("hidden");
+        if (listSubToggle)  listSubToggle   .classList.add      ("hidden");
+
+        window.dispatchEvent(new Event('resize'));
+    }
+};
+
+window.toggleListChartMode = function() {
+    const btn               = document.getElementById("listModeToggleBtn");
+    currentListChartMode    = currentListChartMode === "ALL" ? "HIT" : "ALL";
+    btn.innerText           = currentListChartMode;
+    const xAxisDesc         = document.getElementById("listXAxisDescription");
+    const yAxisDesc         = document.getElementById("listYAxisDescription");
+
+    if (currentListChartMode === "HIT") {
+        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis:</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
+        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis:</b> Median vintage across songs that this player guessed correctly from their own list";
+    }
+
+    else {
+        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis:</b> Mean of correct guessers across songs from this player's list";
+        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis:</b> Median vintage across songs from this player's list";
+    }
+
+    renderListChart();
+};
 
 let globalSearchData    = [];
 let globalSortState     = {columnName: "Anime", ascending: true};
@@ -1339,28 +1519,60 @@ function renderSearchTable(filteredSongs) {
                     tbody += `<td class="text-left search-c2-text"><a href="${song.video_url}" target="_blank" class="hover:underline">${song.song}</a></td>`;
                     break;
 
-                case "artist":
-                    const rawArt        = song.artist_raw           || "";
-                    const rawComp       = song.composer             || "";
-                    let artistDisplay   = trimNames(song.artist_arr || []);                   
-                    const isOverflown   = song.artist_arr && song.artist_arr.length > 3;
-                    const artAttr       = isOverflown ? ` class="cursor-help hover:bg-gray-100 text-left text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.artist_arr))}"` : ' class="text-left text-black font-normal"';
-                    tbody += `<td${artAttr}>${artistDisplay}</td>`;
-                    break;
+                case "artist": {
+                    const compVisible   = activeCols.some(c => c.id === "composer");
+                    const arrVisible    = activeCols.some(c => c.id === "arranger");
 
-                case "composer":
-                    const compText      = song.composer     || "";
-                    const artText       = song.artist_raw   || "";
-                    let composerDisplay = trimNames(compText);                    
-                    tbody += `<td class="text-left font-normal text-black">${composerDisplay}</td>`;
-                    break;
+                    const matchComp     = compVisible   && (song.artist_raw === song.composer);
+                    const matchArr      = arrVisible    && (song.composer   === song.arranger);
 
-                case "arranger":
-                    const arrText       = song.arranger || "";
-                    const composerText  = song.composer || "";
-                    let arrangerDisplay = trimNames(arrText);
-                    tbody += `<td class="text-left font-normal text-black">${arrangerDisplay}</td>`;
+                    if (matchComp && matchArr) {
+                        tbody += `<td colspan="3" class="text-left text-black font-normal">${trimNames(song.artist_arr || [])}</td>`;
+                        song._skipComposer = true;
+                        song._skipArranger = true;
+                    }
+
+                    else if (matchComp) {
+                        tbody += `<td colspan="2" class="text-left text-black font-normal">${trimNames(song.artist_arr || [])}</td>`;
+                        song._skipComposer = true;
+                    }
+
+                    else {
+                        const isOverflown   = song.artist_arr && song.artist_arr.length > 3;
+                        const artAttr       = isOverflown ? ` class="cursor-help hover:bg-gray-100 text-left text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.artist_arr))}"` : ' class="text-left text-black font-normal"';
+                        tbody += `<td${artAttr}>${trimNames(song.artist_arr || [])}</td>`;
+                    }
                     break;
+                }
+
+                case "composer": {
+                    if (song._skipComposer) {
+                        delete song._skipComposer;
+                        break;
+                    }
+
+                    const arrVisible    = activeCols.some(c => c.id === "arranger");
+                    const matchArr      = arrVisible && (song.composer === song.arranger);
+
+                    if (matchArr) {
+                        tbody += `<td colspan="2" class="text-left font-normal text-black">${trimNames(song.composer)}</td>`;
+                        song._skipArranger = true;
+                    }
+                    
+                    else tbody += `<td class="text-left font-normal text-black">${trimNames(song.composer)}</td>`;
+
+                    break;
+                }
+
+                case "arranger": {
+                    if (song._skipArranger) {
+                        delete song._skipArranger;
+                        break;
+                    }
+
+                    tbody += `<td class="text-left font-normal text-black">${trimNames(song.arranger)}</td>`;
+                    break;
+                }
 
                 case "guessers":
                     const hasGuesses    = song.guessers_hover && song.guessers_hover.length > 0;

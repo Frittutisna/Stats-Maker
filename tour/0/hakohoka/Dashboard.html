@@ -13,7 +13,7 @@
         <p id="lastUpdatedSubtitle" class="text-xl text-center font-bold mb-5">Last updated: Some time ago</p>
         <div id="tabContainer" class="border-b flex justify-center mb-5">
             <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
-            <button class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
+            <button id="tourTabBtn" class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
         </div>
         <div>
             <div id="player-tab" class="tab-content active-content">
@@ -24,10 +24,7 @@
             <div id="tour-tab" class="tab-content">
                 <div class="table-center-wrapper">
                     <table class="main-table" id="tourStatsTable"></table>
-                </div>
-            </div>
-            <div id="team-tab" class="tab-content">
-                <div class="table-center-wrapper">
+                    <div id="teamTableSpacer" class="my-1"></div>
                     <table class="main-table" id="teamStatsTable"></table>
                 </div>
             </div>
@@ -35,6 +32,9 @@
         <div class="max-w-[2000px] mx-auto"> 
             <div id="tier-tab" class="tab-content">
                 <div class="max-w-[1000px] mx-auto">
+                    <div class="flex justify-end mb-4">
+                        <button id="tierModeToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold cursor-pointer" onclick="toggleTierChartMode()">TIER</button>
+                    </div>
                     <div id="tierChart_GuessRate"></div>
                     <div id="tierChart_LivesTaken"></div>
                     <div id="tierChart_LivesSaved"></div>
@@ -46,58 +46,73 @@
             <div id="song-tab" class="tab-content">
                 <div class="max-w-[1000px] mx-auto">
                     <div>
-                        <p><b>X-Axis:</b> Difficulty bins in steps of 5 bounded by their lower/upper limits</p>
-                        <p><b>Y-Axis:</b> Vintage bins in steps of 5 years< bounded by their lower/upper limits</p>
-                        <p><b>Color:</b> Mean of correct guessers across songs in this vintage-difficulty bin</p>
+                        <p><b>X-Axis (Difficulty):</b> Difficulty bins in steps of 5 bounded by their lower/upper limits</p>
+                        <p><b>Y-Axis (Vintage):</b> Vintage bins in steps of 5 years< bounded by their lower/upper limits</p>
+                        <p><b>Color (Over-8):</b> Mean of correct guessers across songs in this vintage-difficulty bin</p>
                     </div>
                     <div class="mt-5 p-5 bg-gray-50 border">
                             <b><p>Example</p>
                             <ul>
-                                <li>Vintage: 2015-2020</li>
                                 <li>Difficulty: 25-30</li>
-                                <li>Mean Over-8: 4.26</li>
+                                <li>Vintage: 2015-2020</li>
+                                <li>Over-8: <b><span style="color: #3232c8;">6.26</span></b></li>
                             </ul></b>
-                            <p>Means that on average, roughly <b>half of the room</b> got songs from <b>2015-2020</b> with difficulty of <b>25-30</b> correct</p>
+                            <p>Means that on average, <b><span style="color: #3232c8;">6.26/8</span></b> people guessed songs from <b>2015-2020</b> with difficulty of <b>25-30</b> correctly</p>
                         </div>
                     <div id="plotlySongChart" style="width:1000px; height:1000px;"></div>
                 </div>
             </div>
             <div id="guess-tab" class="tab-content">
                 <div class="max-w-[1000px] mx-auto">
-                    <div>
-                        <p><b>X-Axis:</b> Mean of correct guessers across songs this player guessed correctly</p>
-                        <p><b>Y-Axis:</b> Median vintage across songs this player guessed correctly</p>
-                        <p><b>Size (Guess Rate)</b></p>
-                        <p><b>Color:</b> Calculates this player's value (Usefulness) against what's expected from their Elo</p>
-                        <div class="mt-5 p-5 bg-gray-50 border">
-                            <p><b>Example</b><br>A <b>small, <span style="color: #3232c8;">blue</span></b> circle in the <b>bottom-left</b> means that, on average, this player:</p>
-                            <ul class="list-disc pl-5">
-                                <li>Has low Guess Rate (<b>small</b>),</li>
-                                <li>Is over-performing their Elo (<b><span style="color: #3232c8;">blue</span></b>), and</li>
-                                <li>Usually hits hard (<b>left</b>), older (<b>bottom</b>) songs</li>
-                            </ul>
+                    <div class="flex justify-between items-start gap-4 mb-4">
+                        <div>
+                            <div id="guessViewSubContext">
+                                <p><b>X-Axis (Over-8):</b> Mean of correct guessers across songs this player guessed correctly</p>
+                                <p><b>Y-Axis (Vintage):</b> Median vintage across songs this player guessed correctly</p>
+                                <p><b>Size (Guess Rate)</b></p>
+                                <p><b>Color (Score):</b> Calculates this player's value (Usefulness) against what's expected from their Elo</p>
+                            </div>
+                            <div id="listViewSubContext" class="hidden">
+                                <p id="listXAxisDescription"><b>X-Axis (Over-8):</b> Mean of correct guessers across songs from this player's list</p>
+                                <p id="listYAxisDescription"><b>Y-Axis (Vintage):</b> Median vintage across songs from this player's list</p>
+                                <p><b>Size (Rig Rate)</b></p>
+                                <p><b>Color (Rig Guess Rate)</b></p>
+                                <p></p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-1">
+                            <button id="guessListToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold cursor-pointer hidden" onclick="toggleGuessListViewMode()">GUESS</button>
+                            <div id="listModeToggleContainer" class="hidden">
+                                <button id="listModeToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold cursor-pointer" onclick="toggleListChartMode()">ALL</button>
+                            </div>
                         </div>
                     </div>
-                    <div id="plotlyGuessChart" style="width:1000px; height:1000px;"></div>
-                </div>
-            </div>
-            <div id="list-tab" class="tab-content">
-                <div class="max-w-[1000px] mx-auto">
                     <div>
-                        <p><b>X-Axis:</b> Mean of correct guessers across songs from this player's list</p>
-                        <p><b>Y-Axis:</b> Median vintage across songs from this player's list</p>
-                        <p><b>Size (Rig Rate)</b></p>
-                        <div class="mt-5 p-5 bg-gray-50 border">
-                            <p><b>Example</b><br>A <b>big, <span style="color: #c83232;">red</span></b> circle in the <b>top-right</b> means that, on average, this player's list:</p>
-                            <ul class="list-disc pl-5">
-                                <li>Usually has newer (<b>top</b>) songs,</li>
-                                <li>Appears a lot (<b>big</b>),</li>
-                                <li>Is difficult for the player (<b><span style="color: #c83232;">red</span></b>), yet</li>
-                                <li>Easy for others (<b>right</b>)</li>
-                            </ul>
+                        <div id="guessChartContainer">
+                            <div class="mt-5 p-5 bg-gray-50 border mb-5">
+                                <p><b>Example</b><br>A <b>small, <span style="color: #3232c8;">blue</span></b> circle in the <b>bottom-left</b> means that, on average, this player:</p>
+                                <ul class="list-disc pl-5">
+                                    <li>Has low Guess Rate (<b>small</b>), yet</li>
+                                    <li>Is over-performing their Elo (<b><span style="color: #3232c8;">blue</span></b>),</li>
+                                    <li>Usually hits harder (<b>left</b>) songs, and</li>
+                                    <li>Prefers the older (<b>bottom</b>) ones</li>
+                                </ul>
+                            </div>
+                            <div id="plotlyGuessChart" style="width:1000px; height:1000px;"></div>
+                        </div>
+                        <div id="listChartContainer" class="hidden">
+                            <div class="mt-5 p-5 bg-gray-50 border mb-5">
+                                <p><b>Example</b><br>A <b>big, <span style="color: #c83232;">red</span></b> circle in the <b>top-right</b> means that, on average, this player's list:</p>
+                                <ul class="list-disc pl-5">
+                                    <li>Usually has newer (<b>top</b>) songs,</li>
+                                    <li>Appears a lot (<b>big</b>),</li>
+                                    <li>Is difficult for the player (<b><span style="color: #c83232;">red</span></b>), yet</li>
+                                    <li>Easy for others (<b>right</b>)</li>
+                                </ul>
+                            </div>
+                            <div id="plotlyListChart" style="width:1000px; height:1000px;"></div>
                         </div>
                     </div>
-                    <div id="plotlyListChart" style="width:1000px; height:1000px;"></div>
                 </div>
             </div>
             <div id="search-tab" class="tab-content">
@@ -136,15 +151,15 @@
                         </div>
                     </div>
                     <div class="w-full flex items-center justify-start gap-1 mb-1">
-                        <button id="langToggleBtn" class="w-[40px] h-[40px] bg-black border border-black text-white font-bold" onclick="toggleSearchLanguage()">JP</button>
+                        <button id="langToggleBtn" class="w-[30px] h-[30px] bg-black text-white font-bold cursor-pointer" onclick="toggleSearchLanguage()">JP</button>
                         <div class="w-full max-w-xl">
-                            <input type="text" id="songSearchInput" placeholder="anime:chobits songtype:ed" class="w-full h-[40px] px-4 py-2 border">
+                            <input type="text" id="songSearchInput" placeholder="anime:chobits songtype:ed" class="w-full h-[30px] px-2 border">
                         </div>
-                        <div id="searchCounter" class="w-[80px] h-[40px] font-bold bg-black border text-white flex items-center justify-center">
+                        <div id="searchCounter" class="w-[75px] h-[30px] font-bold bg-black text-white flex items-center justify-center">
                             0/0
                         </div>
-                        <div class="relative w-[40px] h-[40px]">
-                            <button id="columnSettingsBtn" class="w-[40px] h-[40px] bg-black border text-white text-xl" onclick="toggleColumnSettingsMenu(event)">⚙</button>
+                        <div class="relative w-[30px] h-[30px]">
+                            <button id="columnSettingsBtn" class="w-[30px] h-[30px] bg-black text-white text-xl cursor-pointer" onclick="toggleColumnSettingsMenu(event)">⚙</button>
                             <div id="columnSettingsDropdown" class="bg-white border p-4 w-60">
                                 <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
                                     <input type="checkbox" id="allColumnsMasterCheckbox">All
