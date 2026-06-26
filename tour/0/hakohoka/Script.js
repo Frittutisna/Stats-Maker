@@ -379,7 +379,7 @@ function processPlayerFiltering(rawQuery) {
     if (!rawQuery) return [...players];
 
     const tokens        = [];
-    const tokenRegex    = /\(|\)|or\b|and\b|[^\s"()]+|"[^"]*"/gi;
+    const tokenRegex    = /\(|\)|or\b|and\b|[a-zA-Z0-9_/-]+(?:<=|>=|!=|!:|[:<>==])"[^"]*"|[^\s"()]+|"[^"]*"/gi;
 
     let match;
     while ((match = tokenRegex.exec(rawQuery)) !== null) tokens.push(match[0]);
@@ -446,10 +446,14 @@ function processPlayerFiltering(rawQuery) {
                 const matchExpr = token.match(exprRegex);
 
                 if (matchExpr) {
-                    const key   = matchExpr[1].toLowerCase();
-                    const op    = matchExpr[2];
-                    const val   = matchExpr[3].replace(/^"|"$/g, '').trim();
-                    evalStack.push(evaluatePlayerConstraint(pRow, key, op, val));
+                    const key       = matchExpr[1].toLowerCase();
+                    const op        = matchExpr[2];
+                    let cleanVal    = matchExpr[3].trim();
+
+                    if (cleanVal.startsWith('"') && cleanVal.endsWith('"')) cleanVal = cleanVal.slice(1, -1).trim();
+                    else                                                    cleanVal = cleanVal.replace(/^"|"$/g, '').trim();
+
+                    evalStack.push(evaluatePlayerConstraint(pRow, key, op, cleanVal));
                 }
 
                 else {
@@ -512,7 +516,7 @@ function sortAndRenderPlayers() {
         classes.push("cursor-pointer select-none");
 
         const isCurrentSort         = (globalPlayerSortState.columnName === h.name);
-        const directionIndicator    = isCurrentSort ? (globalPlayerSortState.ascending ? " ▲" : " ▼")   : " ▶";
+        const directionIndicator    = isCurrentSort ? (globalPlayerSortState.ascending ? "▴" : "▾")   : "▸";
         const blackBgStyle          = isCurrentSort ? ' style="background-color: black; color: white;"' : '';
 
         return `<th class="${classes.join(' ')}"${blackBgStyle} data-player-metric="${h.name}" data-metric="${h.name}">${h.name}${directionIndicator}</th>`;
@@ -1873,7 +1877,7 @@ function renderSearchTable(filteredSongs) {
 
     let theadStr = "<tr>" + activeCols.map(c => {
         const isCurrentSort = (globalSortState.columnName === c.name);
-        const indicator     = isCurrentSort ? (globalSortState.ascending ? " ▲" : " ▼") : " ▶";
+        const indicator     = isCurrentSort ? (globalSortState.ascending ? "▴" : "▾") : "▸";
         const activeStyles  = isCurrentSort ? 'background-color: black; color: white; ' : '';
 
         return `<th class="cursor-pointer select-none" style="${activeStyles}white-space: nowrap;" data-header-name="${c.name}">${c.name}${indicator}</th>`;
@@ -2109,7 +2113,7 @@ fetch('Search.json')
                 }
 
                 const tokens        = [];
-                const tokenRegex    = /\(|\)|or\b|and\b|[^\s"()]+|"[^"]*"/gi;
+                const tokenRegex    = /\(|\)|or\b|and\b|[a-zA-Z0-9_/-]+(?:<=|>=|!=|!:|[:<>==])"[^"]*"|[^\s"()]+|"[^"]*"/gi;
 
                 let match;
                 while ((match = tokenRegex.exec(rawQuery)) !== null) tokens.push(match[0]);
@@ -2164,7 +2168,11 @@ fetch('Search.json')
                         if (queryKey === "correct") queryKey = "guessers";
                         if (queryKey === "list")    queryKey = "listers";
 
-                        return evaluateQuery(song, queryKey, parsedMatch[2], parsedMatch[3].replace(/^"|"$/g, '').toLowerCase().trim());
+                        let cleanVal = parsedMatch[3].trim();
+                        if (cleanVal.startsWith('"') && cleanVal.endsWith('"')) cleanVal = cleanVal.slice(1, -1).trim();
+                        else                                                    cleanVal = cleanVal.replace(/^"|"$/g, '').trim();
+
+                        return evaluateQuery(song, queryKey, parsedMatch[2], cleanVal.toLowerCase());
                     }
 
                     const wordClean = token.replace(/^"|"$/g, '').toLowerCase();

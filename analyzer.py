@@ -194,9 +194,8 @@ class TourAnalyzer:
         self._generate_acronyms(all_known)
         
         loaded = self._load_team_data(all_known)
-        if not loaded: return False
-
         self.use_teams, self.elo_map, self.assignments, self.t1_lookup, self.rosters, all_known, sub_candidates_raw, original_players_display = loaded
+        if not loaded[0]: self.use_teams = False
 
         self.missing_list_count = 0
         self.tour_types         = set()
@@ -744,7 +743,7 @@ class TourAnalyzer:
 
     def _load_team_data(self, all_known):
         codes = self.tour_dir / FILE_CODES
-        if not codes.exists() or os.path.getsize(codes) == 0: return False, {}, {}, {}, defaultdict(set), all_known
+        if not codes.exists() or os.path.getsize(codes) == 0: return False, {}, {}, {}, defaultdict(set), all_known, [], list(all_known)
         with open(codes, "r", encoding = "utf-8") as f: lines = [line.strip() for line in f if line.strip()]
 
         has_avg     = any(l.lower().startswith(("average", "avg")) for l in lines)
@@ -1068,6 +1067,7 @@ class TourAnalyzer:
         self._export_png(df_tour, path, "Tour.png", "Tour Statistics")
 
     def _compute_team_rows(self, assigns, t1_lookup):
+        if not getattr(self, 'use_teams', False): return pd.DataFrame()
         res = []
 
         for tid in self.t_c_ps:
