@@ -1738,9 +1738,10 @@ function debounce(func, wait) {
 function trimNames(input) {
     if (!input) return '';
 
-    let flatString  = Array.isArray(input) ? input.join('/') : String(input);
-    let normalized  = flatString.replace(/\s*(?:,|\/|・|&|×|\bfeat\.)\s*/gi, '/');
-    let arr         = normalized.split('/').map(x => x.trim()).filter(Boolean);
+    // Change the array connector from '/' to '||' to keep internal slashes safe
+    let flatString  = Array.isArray(input) ? input.join('||') : String(input);
+    let normalized  = flatString.replace(/\s*(?:,|\b(?<!\d)\/(?!\d)\b|・|&|×|\bfeat\.)\s*/gi, '||');
+    let arr         = normalized.split('||').map(x => x.trim()).filter(Boolean);
 
     if (arr.length <= 3)    return arr.join(', ');
     else                    return `${arr.slice(0, 2).join(', ')}, and more`;
@@ -2107,8 +2108,8 @@ function renderSearchTable(filteredSongs) {
                     const matchComp = compVisible   && (song.artist_raw === song.composer);
                     const matchArr  = arrVisible    && (song.composer   === song.arranger);
 
-                    let flatString      = Array.isArray(song.artist_arr) ? song.artist_arr.join('/') : String(song.artist_arr || '');
-                    let splitArtists    = flatString.replace(/\s*(?:,|\/|・|&|×|\bfeat\.)\s*/gi, '/').split('/').map(x => x.trim()).filter(Boolean);
+                    let flatString      = Array.isArray(song.artist_arr) ? song.artist_arr.join('||') : String(song.artist_arr || '');
+                    let splitArtists    = flatString.replace(/\s*(?:,|\b(?<!\d)\/(?!\d)\b|・|&|×|\bfeat\.)\s*/gi, '||').split('||').map(x => x.trim()).filter(Boolean);
                     const isOverflown   = splitArtists.length > 3;
 
                     if (matchComp && matchArr) {
@@ -2138,8 +2139,8 @@ function renderSearchTable(filteredSongs) {
                 case "composer": {
                     const matchArr = arrVisible && (song.composer === song.arranger);
                     
-                    let flatComp        = Array.isArray(song.composer) ? song.composer.join('/') : String(song.composer || '');
-                    let splitComps      = flatComp.replace(/\s*(?:,|\/|・|&|×|\bfeat\.)\s*/gi, '/').split('/').map(x => x.trim()).filter(Boolean);
+                    let flatComp        = Array.isArray(song.composer) ? song.composer.join('||') : String(song.composer || '');
+                    let splitComps      = flatComp.replace(/\s*(?:,|\b(?<!\d)\/(?!\d)\b|・|&|×|\bfeat\.)\s*/gi, '||').split('||').map(x => x.trim()).filter(Boolean);
                     const isOverflown   = splitComps.length > 3;
 
                     if (matchArr) {
@@ -2159,8 +2160,8 @@ function renderSearchTable(filteredSongs) {
                 }
 
                 case "arranger": {
-                    let flatArr         = Array.isArray(song.arranger) ? song.arranger.join('/') : String(song.arranger || '');
-                    let splitArrs       = flatArr.replace(/\s*(?:,|\/|・|&|×|\bfeat\.)\s*/gi, '/').split('/').map(x => x.trim()).filter(Boolean);
+                    let flatArr         = Array.isArray(song.arranger) ? song.arranger.join('||') : String(song.arranger || '');
+                    let splitArrs       = flatArr.replace(/\s*(?:,|\b(?<!\d)\/(?!\d)\b|・|&|×|\bfeat\.)\s*/gi, '||').split('||').map(x => x.trim()).filter(Boolean);
                     const isOverflown   = splitArrs.length > 3;
 
                     td.className    = isOverflown ? "cursor-help hover:bg-gray-100 text-left text-black font-normal" : "text-left font-normal text-black";
