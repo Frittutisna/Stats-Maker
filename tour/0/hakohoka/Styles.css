@@ -27,7 +27,6 @@ body, table, th, td, button, input {font-family: 'Segoe UI', Roboto, Helvetica, 
     font-weight         : bold;
     font-size           : clamp(10px, 1vw, 25px);
     text-align          : center;
-    white-space         : nowrap;
 }
 
 .main-table td {
@@ -177,21 +176,21 @@ td[data-songs].highlight-worst:hover::after {
     z-index     : 10;
 }
 
-#playerColumnSettingsDropdown   input   [type="checkbox"],
-#columnSettingsDropdown         input   [type="checkbox"],
-#playerStandingsTable           tr      [onclick],
-#teamStatsTable                 tr      [onclick],
-#tourStatsTable                 tr      [onclick] {
+#playerColumnSettingsDropdown input[type="checkbox"],
+#columnSettingsDropdown       input[type="checkbox"],
+#playerStandingsTable         tr td[onclick],
+#teamStatsTable               tr td[onclick],
+#tourStatsTable               tr td[onclick] {
     cursor: pointer !important;
 }
 
 .w-max.max-w-full.overflow-x-auto,
 .table-center-wrapper {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    -ms-overflow-style  : none;
+    scrollbar-width     : none;
 }
 
 .w-max.max-w-full.overflow-x-auto::-webkit-scrollbar,
 .table-center-wrapper::-webkit-scrollbar {
-    display: none;
+    display         : none;
 }

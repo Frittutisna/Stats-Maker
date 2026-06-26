@@ -549,19 +549,21 @@ function sortAndRenderPlayers() {
             const rawPlayerVal      = row["Player"];
             const currentPlayerName = String((rawPlayerVal !== null && typeof rawPlayerVal === 'object') ? rawPlayerVal.count : rawPlayerVal).toLowerCase();
 
-            if      (h.name === "Guess Rate")       clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName}')"`;
-            else if (h.name === "1/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} correct:1')"`;
-            else if (h.name === "2/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} correct:2')"`;
-            else if (h.name === "7/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct!:${currentPlayerName} correct:7')"`;
-            else if (h.name === "Lives Taken")      clickHandler = ` onclick="searchPlayerMetricFromTable('lifetaken:${currentPlayerName}')"`;
-            else if (h.name === "Lives Saved")      clickHandler = ` onclick="searchPlayerMetricFromTable('lifesaved:${currentPlayerName}')"`;
-            else if (h.name === "OP Guess Rate")    clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:op')"`;
-            else if (h.name === "ED Guess Rate")    clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:ed')"`;
-            else if (h.name === "IN Guess Rate")    clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:in')"`;
-            else if (h.name === "Solo Rigs")        clickHandler = ` onclick="searchPlayerMetricFromTable('list:${currentPlayerName} list:1')"`;
-            else if (h.name === "Rig Guess Rate")   clickHandler = ` onclick="searchPlayerMetricFromTable('list:${currentPlayerName}')"`;
-            else if (h.name === "Off Guess Rate")   clickHandler = ` onclick="searchPlayerMetricFromTable('list!:${currentPlayerName}')"`;
-            else if (h.name === "Chant Guess Rate") clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} chanting:yes')"`;
+            if (parseFloat(displayVal) > 0) {
+                if      (h.name === "Guess Rate")       clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName}')"`;
+                else if (h.name === "1/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} correct:1')"`;
+                else if (h.name === "2/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} correct:2')"`;
+                else if (h.name === "7/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct!:${currentPlayerName} correct:7')"`;
+                else if (h.name === "Lives Taken")      clickHandler = ` onclick="searchPlayerMetricFromTable('lifetaken:${currentPlayerName}')"`;
+                else if (h.name === "Lives Saved")      clickHandler = ` onclick="searchPlayerMetricFromTable('lifesaved:${currentPlayerName}')"`;
+                else if (h.name === "OP Guess Rate")    clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:op')"`;
+                else if (h.name === "ED Guess Rate")    clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:ed')"`;
+                else if (h.name === "IN Guess Rate")    clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:in')"`;
+                else if (h.name === "Solo Rigs")        clickHandler = ` onclick="searchPlayerMetricFromTable('list:${currentPlayerName} list:1')"`;
+                else if (h.name === "Rig Guess Rate")   clickHandler = ` onclick="searchPlayerMetricFromTable('list:${currentPlayerName}')"`;
+                else if (h.name === "Off Guess Rate")   clickHandler = ` onclick="searchPlayerMetricFromTable('list!:${currentPlayerName}')"`;
+                else if (h.name === "Chant Guess Rate") clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} chanting:yes')"`;
+            }
 
             if ((h.name === "Player" && rawCell && rawCell.details && rawCell.details.length > 0) || 
                 (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0)) {
