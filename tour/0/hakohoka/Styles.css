@@ -67,7 +67,8 @@ td[data-songs].highlight-worst:hover {
 
 th.has-explanation:hover,
 #tourStatsTable tr td.has-explanation:hover,
-td[data-songs]:not(.highlight-best):not(.highlight-worst):hover {
+td[data-songs]:not(.highlight-best):not(.highlight-worst):hover,
+#tourStatsTable td[onclick]:hover {
     background-color: var(--hover-overlay) !important;
 }
 
@@ -140,6 +141,14 @@ td.has-explanation::after {
     background-color    : black;
 }
 
+th.has-explanation[style*="background-color: black"]:hover {
+    background-color: black !important;
+}
+
+th.has-explanation[style*="background-color: black"]::after {
+    background-color: white !important;
+}
+
 td[data-songs].highlight-best::after,
 td[data-songs].highlight-worst::after {
     background-color: white;
@@ -162,15 +171,16 @@ td[data-songs].highlight-worst:hover::after {
     text-decoration: underline !important;
 }
 
+#playerColumnSettingsDropdown,
 #columnSettingsDropdown {
     position    : absolute;
     z-index     : 10;
 }
 
-#columnSettingsDropdown input[type="checkbox"] {
-    cursor: pointer;
-}
-
-#teamStatsTable td[onclick] {
+#playerColumnSettingsDropdown   input   [type="checkbox"],
+#columnSettingsDropdown         input   [type="checkbox"],
+#playerStandingsTable           td      [onclick],
+#teamStatsTable                 td      [onclick],
+#tourStatsTable                 td      [onclick] {
     cursor: pointer !important;
 }

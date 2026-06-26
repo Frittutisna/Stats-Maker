@@ -177,9 +177,10 @@ td[data-songs].highlight-worst:hover::after {
     z-index     : 10;
 }
 
-#playerColumnSettingsDropdown input[type="checkbox"],
-#columnSettingsDropdown input[type="checkbox"],
-#teamStatsTable td[onclick],
-#tourStatsTable td[onclick] {
+#playerColumnSettingsDropdown   input   [type="checkbox"],
+#columnSettingsDropdown         input   [type="checkbox"],
+#playerStandingsTable           td      [onclick],
+#teamStatsTable                 td      [onclick],
+#tourStatsTable                 td      [onclick] {
     cursor: pointer !important;
 }

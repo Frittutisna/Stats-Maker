@@ -538,17 +538,34 @@ function sortAndRenderPlayers() {
                 if (h.name !== "Team" && h.name !== "Tier" && isWorst)  cellStyle += "highlight-worst ";
             }
 
-            let intCols         = ["Tier", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"];
-            let formattedVal    = (typeof displayVal === 'number' && !intCols.includes(h.name)) ? displayVal.toFixed(2) : displayVal;
-            let finalVal        = (h.name === "Player") ? `<b>${formattedVal}</b>` : formattedVal;
+            let intCols             = ["Tier", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"];
+            let formattedVal        = (typeof displayVal === 'number' && !intCols.includes(h.name)) ? displayVal.toFixed(2) : displayVal;
+            let finalVal            = (h.name === "Player") ? `<b>${formattedVal}</b>` : formattedVal;
+            let clickHandler        = "";
+            const rawPlayerVal      = row["Player"];
+            const currentPlayerName = String((rawPlayerVal !== null && typeof rawPlayerVal === 'object') ? rawPlayerVal.count : rawPlayerVal).toLowerCase();
+
+            if      (h.name === "Guess Rate")       clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName}')"`;
+            else if (h.name === "1/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} correct:1')"`;
+            else if (h.name === "2/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} correct:2')"`;
+            else if (h.name === "7/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct!:${currentPlayerName} correct:7')"`;
+            else if (h.name === "Lives Taken")      clickHandler = ` onclick="searchPlayerMetricFromTable('lifetaken:${currentPlayerName}')"`;
+            else if (h.name === "Lives Saved")      clickHandler = ` onclick="searchPlayerMetricFromTable('lifesaved:${currentPlayerName}')"`;
+            else if (h.name === "OP Guess Rate")    clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:op')"`;
+            else if (h.name === "ED Guess Rate")    clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:ed')"`;
+            else if (h.name === "IN Guess Rate")    clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:in')"`;
+            else if (h.name === "Solo Rigs")        clickHandler = ` onclick="searchPlayerMetricFromTable('list:${currentPlayerName} list:1')"`;
+            else if (h.name === "Rig Guess Rate")   clickHandler = ` onclick="searchPlayerMetricFromTable('list:${currentPlayerName}')"`;
+            else if (h.name === "Off Guess Rate")   clickHandler = ` onclick="searchPlayerMetricFromTable('list!:${currentPlayerName}')"`;
+            else if (h.name === "Chant Guess Rate") clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} chanting:yes')"`;
 
             if ((h.name === "Player" && rawCell && rawCell.details && rawCell.details.length > 0) || 
                 (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0)) {
                 let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-                tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}">${finalVal}</td>`;
+                tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}"${clickHandler}>${finalVal}</td>`;
             }
 
-            else tbody += `<td class="${cellStyle.trim()}">${finalVal}</td>`;
+            else tbody += `<td class="${cellStyle.trim()}"${clickHandler}>${finalVal}</td>`;
         });
 
         tbody += "</tr>";
@@ -1557,13 +1574,13 @@ window.toggleListChartMode = function() {
     const yAxisDesc         = document.getElementById("listYAxisDescription");
 
     if (currentListChartMode === "HIT") {
-        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis:</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
-        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis:</b> Median vintage across songs that this player guessed correctly from their own list";
+        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
+        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs that this player guessed correctly from their own list";
     }
 
     else {
-        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis:</b> Mean of correct guessers across songs from this player's list";
-        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis:</b> Median vintage across songs from this player's list";
+        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs from this player's list";
+        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs from this player's list";
     }
 
     renderListChart();
@@ -1765,9 +1782,19 @@ function evaluateQuery(song, key, operator, value) {
         case "arranger"     : return song._arrangerLower    .includes(value);
         case "animetype"    : return song._animeTypeLower   .includes(value);
         case "chanting"     : return song._chantingLower    .includes(value);
-        case "songtype"     : return song._typeLower        .includes(value);
-        case "genre"        : return song._genresLower      .some(g => g.includes(value));
-        case "tag"          : return song._tagsLower        .some(t => t.includes(value));
+
+        case "genre"        : return song._genresLower  .some(g => g.includes(value));
+        case "tag"          : return song._tagsLower    .some(t => t.includes(value));
+
+        case "songtype": {
+            let targetValue = value;
+
+            if      (value === "op") targetValue = "opening";
+            else if (value === "ed") targetValue = "ending";
+            else if (value === "in") targetValue = "insert";
+
+            return song._typeLower.includes(targetValue);
+        }
 
         case "seen": {
             const isInRoom = song._roomPlayersLower.some(p => p.includes(value));
@@ -2195,6 +2222,18 @@ fetch('Search.json')
     })
 
     .catch(err => console.error("Error setting up lookup engine layout context mapping:", err));
+
+window.searchPlayerMetricFromTable = function(filterStr) {
+    const searchTabBtn  = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('search-tab'));
+    const searchInput   = document.getElementById('songSearchInput');
+
+    if (searchTabBtn && searchInput) {
+        searchTabBtn.click();
+        searchInput.value = "";
+        searchInput.value = filterStr;
+        searchInput.dispatchEvent(new Event('input-direct'));
+    }
+};
 
 window.searchTourFraction = function(fractionNum) {
     const searchTabBtn  = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('search-tab'));
