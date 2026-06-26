@@ -1683,7 +1683,13 @@ class TourAnalyzer:
 
             row = {"Player": {"count": d_name, "details": [sub_hover] if sub_hover else []}}
 
-            if self.use_teams: 
+            if self.use_teams:
+                t_info      = self.assignments  .get(name.lower(),  (None, "N/A"))
+                team_leader = self.t1_lookup    .get(t_info[0],     "N/A") if t_info[0] is not None else "N/A"
+
+                row["Team"] = team_leader
+                row["Tier"] = t_info[1]
+
                 try     : row["Elo"] = float(self.elo_map.get(name.lower(), np.nan))
                 except  : row["Elo"] = np.nan
 
@@ -1816,6 +1822,8 @@ class TourAnalyzer:
         mask_series = pd.Series(eligibility, index = df_players.index)
 
         for col in df_players.columns:
+            if col in ["Team", "Tier"]: continue
+
             if col in desc_cols or col in asc_cols:
                 if col in int_cols or col in rate_cols or col == "Median Time": num = df_players[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
                 else                                                          : num = df_players[col]
@@ -1874,8 +1882,8 @@ class TourAnalyzer:
             for col in headers:
                 val = row[col]
 
-                if      col == "Player" or isinstance(val, dict)                        : row_dict[col] = val
-                elif    pd.isnull(val)  or (isinstance(val, float) and np.isnan(val))   : row_dict[col] = "N/A"
+                if      col in ["Player", "Team", "Tier"] or isinstance(val, dict)      : row_dict[col] = val
+                elif    pd.isnull(val) or (isinstance(val, float) and np.isnan(val))    : row_dict[col] = "N/A"
                 elif    col in int_cols                                                 : row_dict[col] = int(val)
                 else                                                                    : row_dict[col] = f"{float(val):.2f}"
 
@@ -1929,7 +1937,7 @@ class TourAnalyzer:
             df_teams_temp = pd.DataFrame(team_rows)
 
             for col in df_teams_temp.columns:
-                num = df_teams_temp[col].map(lambda x: x["count"]) if col == "Total 1/8s" else df_teams_temp[col]
+                num     = df_teams_temp[col].map(lambda x: x["count"]) if col == "Total 1/8s" else df_teams_temp[col]
                 desc    = ["Mean Elo", "Mean GR", "Total 1/8s", "Rig Synergy", "Off Synergy", "Shared Rigs"]
                 asc     = ["Mean Over-8"]
 

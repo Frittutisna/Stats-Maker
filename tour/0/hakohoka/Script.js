@@ -50,6 +50,7 @@ else            tabContainer.insertAdjacentHTML('beforeend', `<button class="tab
 
 const thickBorderColumns = new Set([
     "Player",
+    "Tier",
     "Guess Rate",
     "Score",
     "Mean Over-8",
@@ -249,12 +250,11 @@ function renderPlayerTable() {
                 let isBest  = (hlRules[h].best_idx  === idx);
                 let isWorst = (hlRules[h].worst_idx === idx);
 
-                if      (isBest)    cellStyle += "highlight-best ";
-                else if (isWorst)   cellStyle += "highlight-worst ";
+                if (h !== "Team" && h !== "Tier" && isBest)   cellStyle += "highlight-best ";
+                if (h !== "Team" && h !== "Tier" && isWorst)  cellStyle += "highlight-worst ";
             }
 
-            let intCols = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"];
-
+            let intCols         = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs", "Tier"];
             let formattedVal    = (typeof displayVal === 'number' && !intCols.includes(h))  ? displayVal.toFixed(2)     : displayVal;
             let finalVal        = (h === "Player")                                          ? `<b>${formattedVal}</b>`  : formattedVal;
 
