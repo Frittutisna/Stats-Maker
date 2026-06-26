@@ -503,8 +503,12 @@ function sortAndRenderPlayers() {
         if (colExplanations[h.name])        classes.push("has-explanation");
 
         classes.push("cursor-pointer select-none");
-        const directionIndicator = (globalPlayerSortState.columnName === h.name) ? (globalPlayerSortState.ascending ? " ▲" : " ▼") : " ▶";
-        return `<th class="${classes.join(' ')}" data-player-metric="${h.name}" data-metric="${h.name}">${h.name}${directionIndicator}</th>`;
+
+        const isCurrentSort         = (globalPlayerSortState.columnName === h.name);
+        const directionIndicator    = isCurrentSort ? (globalPlayerSortState.ascending ? " ▲" : " ▼")   : " ▶";
+        const blackBgStyle          = isCurrentSort ? ' style="background-color: black; color: white;"' : '';
+
+        return `<th class="${classes.join(' ')}"${blackBgStyle} data-player-metric="${h.name}" data-metric="${h.name}">${h.name}${directionIndicator}</th>`;
     }).join('') + "</tr></thead>";
 
     let tbody = "<tbody>";
@@ -1834,8 +1838,11 @@ function renderSearchTable(filteredSongs) {
     }
 
     let theadStr = "<tr>" + activeCols.map(c => {
-        const indicator = (globalSortState.columnName === c.name) ? (globalSortState.ascending ? " ▲" : " ▼") : " ▶";
-        return `<th class="cursor-pointer select-none" style="white-space: nowrap;" data-header-name="${c.name}">${c.name}${indicator}</th>`;
+        const isCurrentSort = (globalSortState.columnName === c.name);
+        const indicator     = isCurrentSort ? (globalSortState.ascending ? " ▲" : " ▼") : " ▶";
+        const activeStyles  = isCurrentSort ? 'background-color: black; color: white; ' : '';
+
+        return `<th class="cursor-pointer select-none" style="${activeStyles}white-space: nowrap;" data-header-name="${c.name}">${c.name}${indicator}</th>`;
     }).join('') + "</tr>";
     
     table.innerHTML = `<thead>${theadStr}</thead><tbody></tbody>`;

@@ -140,6 +140,14 @@ td.has-explanation::after {
     background-color    : black;
 }
 
+th.has-explanation[style*="background-color: black"]:hover {
+    background-color: black !important;
+}
+
+th.has-explanation[style*="background-color: black"]::after {
+    background-color: white !important;
+}
+
 td[data-songs].highlight-best::after,
 td[data-songs].highlight-worst::after {
     background-color: white;
