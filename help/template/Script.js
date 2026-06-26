@@ -67,6 +67,26 @@ const thickBorderColumns = new Set([
     "Chanting Guess Rate"
 ]);
 
+window.unifiedChartLimits = {xMin: 0, xMax: 8, yMin: 1980, yMax: 2026, dtickY: 5};
+
+if (typeof scatterData !== 'undefined' && scatterData) {
+    const allXValues = [...scatterData.map(d => d.over8)];
+    const allYValues = [...scatterData.map(d => d.vintage)];
+
+    if (typeof arrowData !== 'undefined' && arrowData) {
+        allXValues.push(...arrowData.map(d => d.x_start), ...arrowData.map(d => d.x_end));
+        allYValues.push(...arrowData.map(d => d.y_start), ...arrowData.map(d => d.y_end));
+    }
+
+    window.unifiedChartLimits = {
+        xMin    : Math.min(...allXValues) - 0.25,
+        xMax    : Math.max(...allXValues) + 0.25,
+        yMin    : Math.min(...allYValues) - 1,
+        yMax    : Math.max(...allYValues) + 1,
+        dtickY  : Math.max(2, Math.ceil((Math.max(...allYValues) - Math.min(...allYValues)) / 5))
+    };
+}
+
 function updateTimeSubtitle() {
     const subtitle = document.getElementById('lastUpdatedSubtitle');
     if (!subtitle) return;
@@ -994,7 +1014,6 @@ if (scatterData) {
                 y           : 0.5,
                 yanchor     : 'middle',
                 x           : 1,
-                xpad        : -20,
                 tickmode    : 'array',
                 tickvals    : [0, 50, 100],
                 ticktext    : ['0', '50', '100'],
@@ -1017,7 +1036,8 @@ if (scatterData) {
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
-            fixedrange  : false
+            fixedrange  : false,
+            range       : [window.unifiedChartLimits.xMin, window.unifiedChartLimits.xMax]
         },
         yaxis       : {
             title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
@@ -1025,11 +1045,12 @@ if (scatterData) {
             tickangle   : -90,
             showgrid    : true,
             tickformat  : 'd',
-            dtick       : Math.max(2, Math.ceil((Math.max(...scatterData.map(d => d.vintage)) - Math.min(...scatterData.map(d => d.vintage))) / 5)),
+            dtick       : window.unifiedChartLimits.dtickY,
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
-            fixedrange  : false
+            fixedrange  : false,
+            range       : [window.unifiedChartLimits.yMin, window.unifiedChartLimits.yMax]
         },
         margin      : {l: 75, r: 0, t: 25, b: 75},
         annotations : buildScatterAnnotations(scatterData, 'over8', 'vintage', 'gr')
@@ -1039,16 +1060,6 @@ if (scatterData) {
 let currentListChartMode = "ALL"; 
 
 if (document.getElementById('plotlyListChart') && arrowData) {
-    const allXValues = [...arrowData.map(d => d.x_start), ...arrowData.map(d => d.x_end)];
-    const allYValues = [...arrowData.map(d => d.y_start), ...arrowData.map(d => d.y_end)];
-
-    window.listChartGlobalLimits = {
-        xMin: Math.min(...allXValues) - 0.1,
-        xMax: Math.max(...allXValues) + 0.1,
-        yMin: Math.min(...allYValues) - 1,
-        yMax: Math.max(...allYValues) + 1
-    };
-
     window.listDataPool = {
         "ALL": arrowData.map(d => ({
             acronym     : d.acronym,
@@ -1094,7 +1105,7 @@ function renderListChart() {
         y               : activeScatterSource.map(d => d.y),
         text            : activeScatterSource.map(d => d.acronym),
         hovertemplate   : activeScatterSource.map(d => d.hoverText),
-        hoverlabel      : { align: 'left', font: { family: 'Segoe UI', size: 15 } },
+        hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}},
         mode            : 'markers',
         showlegend      : false,
         marker          : {
@@ -1110,11 +1121,10 @@ function renderListChart() {
                 y           : 0.5,
                 yanchor     : 'middle',
                 x           : 1,
-                xpad        : -20,
                 tickmode    : 'array',
                 tickvals    : [0, 70, 80, 90, 100],
                 ticktext    : ['0', '70', '80', '90', '100'],
-                tickfont    : { family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }
+                tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'}
             },
             line        : {color: 'black', width: 1},
             cmin        : 0,
@@ -1134,7 +1144,7 @@ function renderListChart() {
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false,
-            range       : [window.listChartGlobalLimits.xMin, window.listChartGlobalLimits.xMax]
+            range       : [window.unifiedChartLimits.xMin, window.unifiedChartLimits.xMax]
         },
         yaxis       : {
             title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
@@ -1142,12 +1152,12 @@ function renderListChart() {
             tickangle   : -90,
             showgrid    : true,
             tickformat  : 'd',
-            dtick       : Math.max(2, Math.ceil((window.listChartGlobalLimits.yMax - window.listChartGlobalLimits.yMin) / 5)),
+            dtick       : window.unifiedChartLimits.dtickY,
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false,
-            range       : [window.listChartGlobalLimits.yMin, window.listChartGlobalLimits.yMax]
+            range       : [window.unifiedChartLimits.yMin, window.unifiedChartLimits.yMax]
         },
         margin      : {l: 75, r: 0, t: 25, b: 75},
         annotations : buildScatterAnnotations(activeScatterSource, 'x', 'y', 'size')
