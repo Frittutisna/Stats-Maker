@@ -693,8 +693,9 @@ function renderTeamTable() {
             let finalVal = (h === "Team Leader") ? `<b>${displayVal}</b>` : displayVal;
 
             if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
-                let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-                tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}">${finalVal}</td>`;
+                let encodedDetails  = encodeURIComponent(JSON.stringify(rawCell.details));
+                let clickHandler    = (h === "Total 1/8s") ? ` onclick="searchTeamSolos('${row["Team Leader"]}')"` : "";
+                tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}"${clickHandler}>${finalVal}</td>`;
             }
 
             else tbody += `<td class="${cellStyle.trim()}">${finalVal}</td>`;
@@ -2129,3 +2130,14 @@ fetch('Search.json')
     })
 
     .catch(err => console.error("Error setting up lookup engine layout context mapping:", err));
+
+window.searchTeamSolos = function(teamLeader) {
+    const searchTabBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('search-tab'));
+    const searchInput = document.getElementById('songSearchInput');
+    
+    if (searchTabBtn && searchInput) {
+        searchTabBtn.click();
+        searchInput.value = `correctteam:${teamLeader.toLowerCase()} correct:1`;
+        searchInput.dispatchEvent(new Event('input-direct'));
+    }
+};
