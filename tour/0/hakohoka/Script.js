@@ -231,7 +231,7 @@ function renderPlayerTable() {
         if (colExplanations[h])         classes.push("has-explanation");
 
         let classStr = classes.length > 0 ? ` class="${classes.join(' ')}"` : '';
-        return `<th${classStr} data-metric="${h}">${h.replace(/ /g, '<br>')}</th>`;
+        return `<th${classStr} data-metric="${h}">${h}</th>`;
     }).join('') + "</tr></thead>";
 
     let tbody = "<tbody>";

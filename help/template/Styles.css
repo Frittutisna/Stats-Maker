@@ -27,7 +27,7 @@ body, table, th, td, button, input {font-family: 'Segoe UI', Roboto, Helvetica, 
     font-weight         : bold;
     font-size           : clamp(10px, 1vw, 25px);
     text-align          : center;
-    white-space         : normal;
+    white-space         : nowrap;
 }
 
 .main-table td {
@@ -36,7 +36,7 @@ body, table, th, td, button, input {font-family: 'Segoe UI', Roboto, Helvetica, 
     line-height         : 1.1;
     text-align          : center;
     font-size           : clamp(9px, 0.9vw, 22.5px);
-    white-space         : normal;
+    white-space         : nowrap;
 }
 
 #searchSongsTable th {
