@@ -67,7 +67,8 @@ td[data-songs].highlight-worst:hover {
 
 th.has-explanation:hover,
 #tourStatsTable tr td.has-explanation:hover,
-td[data-songs]:not(.highlight-best):not(.highlight-worst):hover {
+td[data-songs]:not(.highlight-best):not(.highlight-worst):hover,
+#tourStatsTable td[onclick]:hover {
     background-color: var(--hover-overlay) !important;
 }
 

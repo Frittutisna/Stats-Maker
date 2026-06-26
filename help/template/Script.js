@@ -1602,7 +1602,7 @@ function debounce(func, wait) {
 function trimNames(input) {
     if (!input) return '';
 
-    let arr = Array.isArray(input) ? input : input.split(',').map(x => x.trim());
+    let arr = Array.isArray(input) ? input : input.split(/,|\s+&\s+|\/|\s+feat\.\s+/i).map(x => x.trim());
     arr     = arr.filter(Boolean);
 
     if (arr.length <= 3)    return arr.join(', ');
