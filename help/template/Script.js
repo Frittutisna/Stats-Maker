@@ -1440,19 +1440,11 @@ function evaluateQuery(song, key, operator, value) {
         }
 
         case "correctteam": {
-            const teamIndex = window.dashboardData.json_teams.findIndex(t => t["Team Leader"].toLowerCase().includes(value));
-            if (teamIndex === -1) return false;
-            const targetTid = window.dashboardData.json_teams[teamIndex]._tid || window.dashboardData.json_teams[teamIndex].tid;
-
-            const teamRoster = window.dashboardData.json_players
-                .filter (p => window.dashboardData.json_eligibility[window.dashboardData.json_players.indexOf(p)])
-                .map    (p => p.Player.replace(/[★▲▼]/g, '').trim().toLowerCase());
-
-            const teamWasPresent = song._roomPlayersLower.some(p => song._correctTeamsLower.includes(value) || p === value); 
-            const teamGotItRight = (song.correct_teams_flat || []).includes(targetTid);
-
-            if (operator === "!:" || operator === "!=") return teamGotItRight === false; // Present but missed
-            return teamGotItRight;
+            const teamLine = (song.guessers_hover || []).find(line => line.toLowerCase().includes(value));
+            if (!teamLine) return false;
+            const isNone = teamLine.toLowerCase().includes(": none");
+            if (operator === "!:" || operator === "!=") return isNone;
+            return !isNone;
         }
     }
 

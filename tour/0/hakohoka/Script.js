@@ -1440,26 +1440,11 @@ function evaluateQuery(song, key, operator, value) {
         }
 
         case "correctteam": {
-            // Find the team dictionary index matching the searched team leader's name
-            const teamIndex = window.dashboardData.json_teams.findIndex(t => t["Team Leader"].toLowerCase().includes(value));
-            if (teamIndex === -1) return false;
-            
-            // Extract the unique team ID matching your data format constraints
-            const targetTid = window.dashboardData.json_teams[teamIndex]._tid || window.dashboardData.json_teams[teamIndex].tid;
-
-            // FIX: Safely parse the complex nested player structure to isolate active string tokens
-            const teamRoster = window.dashboardData.json_players
-                .filter((p, pIdx) => window.dashboardData.json_eligibility[pIdx])
-                .map(p => {
-                    const nameStr = (p.Player && typeof p.Player === 'object') ? p.Player.count : (p.Player || "");
-                    return nameStr.replace(/[★▲▼]/g, '').trim().toLowerCase();
-                });
-
-            // Evaluate matches using the accurate team layout assignments
-            const teamGotItRight = (song.correct_teams_flat || []).includes(targetTid);
-
-            if (operator === "!:" || operator === "!=") return teamGotItRight === false;
-            return teamGotItRight;
+            const teamLine = (song.guessers_hover || []).find(line => line.toLowerCase().includes(value));
+            if (!teamLine) return false;
+            const isNone = teamLine.toLowerCase().includes(": none");
+            if (operator === "!:" || operator === "!=") return isNone;
+            return !isNone;
         }
     }
 
