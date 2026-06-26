@@ -14,6 +14,28 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23492",
         "anime_type": "TV",
         "vintage": "Fall 2020",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Shounen",
+            "Tragedy",
+            "Otaku Culture",
+            "Coming of Age",
+            "Anti-Hero",
+            "Survival",
+            "Alternate Universe",
+            "Isekai",
+            "Chuunibyou",
+            "Philosophy",
+            "Goblin",
+            "Death Game",
+            "Body Horror"
+        ],
         "difficulty": "27.80",
         "video_url": "https://eudist.animemusicquiz.com/b0ma24.webm",
         "guessers_flat": [
@@ -73,6 +95,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26787",
         "anime_type": "TV",
         "vintage": "Fall 2023",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Time Manipulation",
+            "Otaku Culture",
+            "Primarily Adult Cast",
+            "Drawing",
+            "Work",
+            "Aliens",
+            "Video Games",
+            "Software Development",
+            "Anachronism",
+            "Urban"
+        ],
         "difficulty": "33.81",
         "video_url": "https://naedist.animemusicquiz.com/hqe2v5.mp3",
         "guessers_flat": [
@@ -128,6 +167,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32781",
         "anime_type": "TV",
         "vintage": "Summer 2025",
+        "genres_raw": [
+            "Drama",
+            "Mystery",
+            "Psychological",
+            "Romance",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Gore",
+            "Alternate Universe",
+            "Urban Fantasy"
+        ],
         "difficulty": "30.72",
         "video_url": "https://eudist.animemusicquiz.com/cu1u7p85jf4nqezj.webm",
         "guessers_flat": [
@@ -186,6 +239,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=17703",
         "anime_type": "TV",
         "vintage": "Winter 2016",
+        "genres_raw": [
+            "Action",
+            "Mecha"
+        ],
+        "tags_raw": [
+            "Police",
+            "Henshin",
+            "Primarily Adult Cast",
+            "Work",
+            "Real Robot",
+            "Robots",
+            "Episodic",
+            "Tokusatsu"
+        ],
         "difficulty": "15.29",
         "video_url": "https://naedist.animemusicquiz.com/ksc5po.mp3",
         "guessers_flat": [
@@ -238,6 +305,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=33097",
         "anime_type": "TV",
         "vintage": "Spring 2025",
+        "genres_raw": [
+            "Comedy",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Iyashikei",
+            "Slapstick",
+            "Episodic",
+            "Surreal Comedy",
+            "Kuudere"
+        ],
         "difficulty": "32.51",
         "video_url": "https://naedist.animemusicquiz.com/dvmzii.mp3",
         "guessers_flat": [
@@ -293,6 +373,13 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16109",
         "anime_type": "TV",
         "vintage": "Fall 2014",
+        "genres_raw": [
+            "Comedy",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Achronological Order"
+        ],
         "difficulty": "18.50",
         "video_url": "https://naedist.animemusicquiz.com/v9agtr.mp3",
         "guessers_flat": [
@@ -321,8 +408,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "konomi",
-            "lakumix"
+            "lakumix",
+            "konomi"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -345,6 +432,12 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23717",
         "anime_type": "OVA",
         "vintage": "Spring 1998",
+        "genres_raw": [
+            "Ecchi"
+        ],
+        "tags_raw": [
+            "Primarily Adult Cast"
+        ],
         "difficulty": "21.43",
         "video_url": "https://eudist.animemusicquiz.com/bw6o4j.mp3",
         "guessers_flat": [
@@ -395,6 +488,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24189",
         "anime_type": "TV",
         "vintage": "Winter 2022",
+        "genres_raw": [
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Yuri",
+            "Iyashikei",
+            "Slapstick",
+            "School Club",
+            "Family Life",
+            "Cute Girls Doing Cute Things",
+            "Coming of Age",
+            "Episodic",
+            "Dancing",
+            "Rural",
+            "Primarily Child Cast",
+            "LGBTQ+ Themes",
+            "Boarding School"
+        ],
         "difficulty": "23.14",
         "video_url": "https://eudist.animemusicquiz.com/eiuk55.webm",
         "guessers_flat": [
@@ -450,6 +562,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=17700",
         "anime_type": "TV",
         "vintage": "Summer 2016",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Iyashikei",
+            "School Club",
+            "Scuba Diving",
+            "Coastal"
+        ],
         "difficulty": "23.77",
         "video_url": "https://eudist.animemusicquiz.com/nk3r1e.webm",
         "guessers_flat": [
@@ -500,6 +622,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32874",
         "anime_type": "TV",
         "vintage": "Winter 2025",
+        "genres_raw": [
+            "Action",
+            "Fantasy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Shounen",
+            "Super Power",
+            "Tragedy",
+            "Time Manipulation",
+            "Gods",
+            "Urban Fantasy",
+            "Twins",
+            "Religion",
+            "Exorcism"
+        ],
         "difficulty": "26.01",
         "video_url": "https://eudist.animemusicquiz.com/3z1d8i.webm",
         "guessers_flat": [
@@ -528,8 +667,8 @@
             "anicomi"
         ],
         "lives_taken_flat": [
-            "kyuuuu",
-            "sus_domesticus"
+            "sus_domesticus",
+            "kyuuuu"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -552,6 +691,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15359",
         "anime_type": "TV",
         "vintage": "Fall 2013",
+        "genres_raw": [
+            "Action",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Seinen",
+            "Full CGI",
+            "Post-Apocalyptic",
+            "War",
+            "Tsundere",
+            "Dystopian",
+            "Fugitive",
+            "Ships",
+            "Artificial Intelligence",
+            "Kuudere",
+            "Travel"
+        ],
         "difficulty": "24.88",
         "video_url": "https://naedist.animemusicquiz.com/b3jbzi.mp3",
         "guessers_flat": [
@@ -611,6 +768,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23027",
         "anime_type": "TV",
         "vintage": "Spring 2020",
+        "genres_raw": [
+            "Drama",
+            "Music"
+        ],
+        "tags_raw": [
+            "Full CGI",
+            "Primarily Adult Cast",
+            "Band",
+            "College",
+            "Urban",
+            "Disability",
+            "Rock Music"
+        ],
         "difficulty": "29.17",
         "video_url": "https://naedist.animemusicquiz.com/l54pb1.mp3",
         "guessers_flat": [
@@ -664,6 +834,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26740",
         "anime_type": "TV",
         "vintage": "Fall 2023",
+        "genres_raw": [
+            "Action",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Military",
+            "Tragedy",
+            "War",
+            "Guns",
+            "Dystopian",
+            "Amnesia",
+            "Kemonomimi",
+            "Terrorism",
+            "Conspiracy",
+            "Pandemic"
+        ],
         "difficulty": "24.41",
         "video_url": "https://eudist.animemusicquiz.com/ygzq43.webm",
         "guessers_flat": [
@@ -719,6 +905,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22217",
         "anime_type": "TV",
         "vintage": "Fall 2019",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Drama",
+            "Fantasy",
+            "Mystery",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Swordplay",
+            "Vampire",
+            "Steampunk",
+            "Battle Royale",
+            "Age Gap",
+            "Bullying",
+            "Assassins"
+        ],
         "difficulty": "30.15",
         "video_url": "https://naedist.animemusicquiz.com/v2p1qt.mp3",
         "guessers_flat": [
@@ -775,6 +980,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=12104",
         "anime_type": "TV",
         "vintage": "Spring 2011",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Female Harem",
+            "Seinen",
+            "Nekomimi",
+            "Age Gap",
+            "Isekai",
+            "Maids",
+            "Kemonomimi",
+            "Monster Girl",
+            "Bisexual",
+            "Succubus"
+        ],
         "difficulty": "29.77",
         "video_url": "https://eudist.animemusicquiz.com/afmvke.webm",
         "guessers_flat": [
@@ -827,6 +1051,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32848",
         "anime_type": "TV",
         "vintage": "Summer 2025",
+        "genres_raw": [
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Yuri",
+            "Cute Girls Doing Cute Things",
+            "Tsundere",
+            "Surreal Comedy",
+            "Delinquents",
+            "LGBTQ+ Themes",
+            "Urban",
+            "Camping"
+        ],
         "difficulty": "37.31",
         "video_url": "https://eudist.animemusicquiz.com/m7365r.mp3",
         "guessers_flat": [
@@ -857,9 +1096,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "tbdhater",
             "kaededayo",
-            "patoche49"
+            "patoche49",
+            "tbdhater"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -883,6 +1122,13 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=926",
         "anime_type": "OVA",
         "vintage": "Spring 1994",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Fantasy",
+            "Supernatural"
+        ],
+        "tags_raw": [],
         "difficulty": "21.26",
         "video_url": "https://naedist.animemusicquiz.com/wltdy0.mp3",
         "guessers_flat": [],
@@ -926,6 +1172,17 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=2085",
         "anime_type": "TV",
         "vintage": "Winter 2003",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Sci-Fi",
+            "Sports"
+        ],
+        "tags_raw": [
+            "Primarily Child Cast",
+            "Proxy Battle"
+        ],
         "difficulty": "13.64",
         "video_url": "https://eudist.animemusicquiz.com/biaydc.mp3",
         "guessers_flat": [
@@ -975,6 +1232,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21289",
         "anime_type": "TV",
         "vintage": "Winter 2019",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Full CGI",
+            "Cute Girls Doing Cute Things",
+            "Band",
+            "Idol",
+            "Tsundere",
+            "Chuunibyou",
+            "Ships",
+            "Gyaru",
+            "Twins",
+            "Urban",
+            "Rock Music"
+        ],
         "difficulty": "32.17",
         "video_url": "https://eudist.animemusicquiz.com/dspqzh.webm",
         "guessers_flat": [
@@ -1032,6 +1308,14 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=2731",
         "anime_type": "OVA",
         "vintage": "Winter 1989",
+        "genres_raw": [
+            "Drama",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Boys' Love",
+            "Idol"
+        ],
         "difficulty": "22.28",
         "video_url": "https://eudist.animemusicquiz.com/wzzqs5.webm",
         "guessers_flat": [
@@ -1082,6 +1366,18 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26639",
         "anime_type": "ONA",
         "vintage": "Fall 2022",
+        "genres_raw": [
+            "Slice of Life",
+            "Sports"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Baseball",
+            "Video Games",
+            "Software Development",
+            "Twins",
+            "Advertisement"
+        ],
         "difficulty": "25.39",
         "video_url": "https://eudist.animemusicquiz.com/36y1bo.webm",
         "guessers_flat": [
@@ -1137,6 +1433,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24910",
         "anime_type": "TV",
         "vintage": "Spring 2022",
+        "genres_raw": [
+            "Drama",
+            "Slice of Life",
+            "Sports"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Gambling",
+            "Gangs",
+            "Mafia",
+            "Foreign",
+            "Amnesia",
+            "Golf",
+            "Class Struggle"
+        ],
         "difficulty": "26.66",
         "video_url": "https://naedist.animemusicquiz.com/slycsv.mp3",
         "guessers_flat": [
@@ -1166,8 +1477,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "konomi",
-            "lakumix"
+            "lakumix",
+            "konomi"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -1190,6 +1501,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=30131",
         "anime_type": "TV",
         "vintage": "Fall 2024",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Swordplay",
+            "Shounen",
+            "Super Power",
+            "Tragedy",
+            "Gore",
+            "War",
+            "Ghost",
+            "Archery",
+            "Gods",
+            "Urban Fantasy"
+        ],
         "difficulty": "28.83",
         "video_url": "https://eudist.animemusicquiz.com/tu3a5i.webm",
         "guessers_flat": [
@@ -1240,6 +1568,27 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24090",
         "anime_type": "TV",
         "vintage": "Summer 2021",
+        "genres_raw": [
+            "Drama",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Time Manipulation",
+            "Otaku Culture",
+            "Coming of Age",
+            "Drawing",
+            "Love Triangle",
+            "Work",
+            "Time Skip",
+            "Video Games",
+            "Software Development",
+            "College",
+            "Age Regression",
+            "Acting",
+            "Filmmaking"
+        ],
         "difficulty": "28.84",
         "video_url": "https://eudist.animemusicquiz.com/6674qp.webm",
         "guessers_flat": [
@@ -1301,6 +1650,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26508",
         "anime_type": "TV",
         "vintage": "Fall 2023",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Drama",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Swordplay",
+            "Bullying",
+            "Revenge",
+            "Lost Civilization",
+            "Travel",
+            "Class Struggle"
+        ],
         "difficulty": "28.88",
         "video_url": "https://naedist.animemusicquiz.com/nouzka.mp3",
         "guessers_flat": [
@@ -1363,6 +1728,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=201",
         "anime_type": "OVA",
         "vintage": "Winter 1987",
+        "genres_raw": [
+            "Action",
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Cars",
+            "Police",
+            "Tragedy",
+            "Cyberpunk",
+            "Primarily Adult Cast",
+            "Guns",
+            "Motorcycles",
+            "Robots",
+            "Episodic",
+            "Revenge",
+            "Tanned Skin",
+            "Tokusatsu"
+        ],
         "difficulty": "23.85",
         "video_url": "https://naedist.animemusicquiz.com/f3dq0p.mp3",
         "guessers_flat": [
@@ -1418,6 +1802,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=36857",
         "anime_type": "Movie",
         "vintage": "Summer 2025",
+        "genres_raw": [
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Coming of Age",
+            "Time Skip",
+            "Achronological Order",
+            "Mythology",
+            "Isekai",
+            "Urban Fantasy",
+            "Adoption",
+            "Found Family"
+        ],
         "difficulty": "29.21",
         "video_url": "https://eudist.animemusicquiz.com/au72ju91o79vhtbq.mp3",
         "guessers_flat": [
@@ -1476,6 +1873,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23938",
         "anime_type": "TV",
         "vintage": "Spring 2021",
+        "genres_raw": [
+            "Action",
+            "Adventure"
+        ],
+        "tags_raw": [
+            "Card Battle",
+            "Crossdressing",
+            "Episodic",
+            "LGBTQ+ Themes"
+        ],
         "difficulty": "24.90",
         "video_url": "https://eudist.animemusicquiz.com/bpkawg.webm",
         "guessers_flat": [
@@ -1528,6 +1935,15 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14090",
         "anime_type": "TV",
         "vintage": "Spring 2012",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Card Battle"
+        ],
         "difficulty": "38.84",
         "video_url": "https://eudist.animemusicquiz.com/te7ii9.webm",
         "guessers_flat": [
@@ -1581,6 +1997,30 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16649",
         "anime_type": "TV",
         "vintage": "Summer 2015",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Romance",
+            "Sci-Fi",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Slapstick",
+            "School Club",
+            "Tragedy",
+            "Time Manipulation",
+            "Anti-Hero",
+            "Survival",
+            "Body Swapping",
+            "Tsundere",
+            "Amnesia",
+            "Urban Fantasy",
+            "Memory Manipulation",
+            "Dissociative Identities",
+            "Urban",
+            "Torture"
+        ],
         "difficulty": "32.71",
         "video_url": "https://eudist.animemusicquiz.com/cq0w25.webm",
         "guessers_flat": [
@@ -1645,6 +2085,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24912",
         "anime_type": "TV",
         "vintage": "Spring 2022",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Iyashikei",
+            "Slapstick",
+            "Food",
+            "Work",
+            "Dystopian",
+            "Outdoor Activities",
+            "Surreal Comedy",
+            "Animals",
+            "Primarily Child Cast",
+            "Chimera",
+            "Found Family",
+            "Primarily Animal Cast"
+        ],
         "difficulty": "38.29",
         "video_url": "https://eudist.animemusicquiz.com/eu5wvt.webm",
         "guessers_flat": [
@@ -1697,6 +2156,35 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=602",
         "anime_type": "TV",
         "vintage": "Winter 2001",
+        "genres_raw": [
+            "Adventure",
+            "Drama",
+            "Fantasy",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Military",
+            "Super Power",
+            "CGI",
+            "Henshin",
+            "Educational",
+            "Motorcycles",
+            "Reincarnation",
+            "Rural",
+            "Archery",
+            "Gods",
+            "Urban Fantasy",
+            "Environmental",
+            "Philosophy",
+            "Pandemic",
+            "Disability",
+            "Orphan",
+            "Coastal",
+            "Estranged Family",
+            "Eco-Horror",
+            "Mixed Media"
+        ],
         "difficulty": "26.41",
         "video_url": "https://eudist.animemusicquiz.com/iyhv7k.webm",
         "guessers_flat": [
@@ -1746,6 +2234,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=33207",
         "anime_type": "TV",
         "vintage": "Fall 2025",
+        "genres_raw": [
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Shounen",
+            "Coming of Age",
+            "Bullying",
+            "Rural",
+            "Rehabilitation",
+            "Philosophy"
+        ],
         "difficulty": "29.39",
         "video_url": "https://naedist.animemusicquiz.com/qsolgw.mp3",
         "guessers_flat": [
@@ -1776,8 +2277,8 @@
             "konomi"
         ],
         "lives_taken_flat": [
-            "_shadow",
-            "konomi"
+            "konomi",
+            "_shadow"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -1800,6 +2301,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22475",
         "anime_type": "OVA",
         "vintage": "Winter 2014",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Fantasy",
+            "Mahou Shoujo"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Henshin",
+            "Alternate Universe",
+            "Gods",
+            "Video Games",
+            "Kuudere"
+        ],
         "difficulty": "26.36",
         "video_url": "https://eudist.animemusicquiz.com/5pmwfq.mp3",
         "guessers_flat": [
@@ -1852,6 +2367,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14448",
         "anime_type": "TV",
         "vintage": "Fall 2012",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Slapstick",
+            "School Club",
+            "Coming of Age",
+            "Chuunibyou",
+            "Disability"
+        ],
         "difficulty": "28.97",
         "video_url": "https://naedist.animemusicquiz.com/mgyobv.mp3",
         "guessers_flat": [
@@ -1910,6 +2438,31 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=9701",
         "anime_type": "TV",
         "vintage": "Fall 2008",
+        "genres_raw": [
+            "Drama",
+            "Romance",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Slapstick",
+            "Tragedy",
+            "Family Life",
+            "Time Manipulation",
+            "Coming of Age",
+            "Gangs",
+            "Primarily Adult Cast",
+            "Work",
+            "Alternate Universe",
+            "Afterlife",
+            "Time Skip",
+            "Rehabilitation",
+            "Urban Fantasy",
+            "Philosophy",
+            "Pregnancy",
+            "Marriage",
+            "Parenthood"
+        ],
         "difficulty": "26.48",
         "video_url": "https://eudist.animemusicquiz.com/3rvmdy.mp3",
         "guessers_flat": [
@@ -1964,6 +2517,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=28792",
         "anime_type": "Special",
         "vintage": "Winter 2025",
+        "genres_raw": [
+            "Drama"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Josei",
+            "Military",
+            "Tragedy",
+            "Gore",
+            "War",
+            "Survival",
+            "Crossdressing",
+            "Rural",
+            "Suicide",
+            "Coastal"
+        ],
         "difficulty": "22.46",
         "video_url": "https://naedist.animemusicquiz.com/rwn1za.mp3",
         "guessers_flat": [
@@ -2013,6 +2582,26 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=2908",
         "anime_type": "OVA",
         "vintage": "Spring 2004",
+        "genres_raw": [
+            "Drama",
+            "Horror",
+            "Psychological",
+            "Romance",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Tragedy",
+            "CGI",
+            "Gore",
+            "Drawing",
+            "Age Gap",
+            "Ghost",
+            "Isekai",
+            "Revenge",
+            "Body Horror",
+            "Denpa"
+        ],
         "difficulty": "22.15",
         "video_url": "https://naedist.animemusicquiz.com/j86awg.mp3",
         "guessers_flat": [
@@ -2069,6 +2658,15 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24629",
         "anime_type": "TV",
         "vintage": "Winter 2022",
+        "genres_raw": [
+            "Music"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Idol",
+            "Work",
+            "Acting"
+        ],
         "difficulty": "22.06",
         "video_url": "https://naedist.animemusicquiz.com/ocnsgc.mp3",
         "guessers_flat": [
@@ -2098,8 +2696,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "_shadow",
-            "konomi"
+            "konomi",
+            "_shadow"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -2122,6 +2720,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=13947",
         "anime_type": "TV",
         "vintage": "Summer 2012",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi",
+            "Romance",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Slapstick",
+            "Henshin",
+            "Nudity",
+            "Gods"
+        ],
         "difficulty": "33.74",
         "video_url": "https://eudist.animemusicquiz.com/lsym20.mp3",
         "guessers_flat": [
@@ -2176,6 +2788,33 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18272",
         "anime_type": "TV",
         "vintage": "Summer 2016",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Horror",
+            "Mystery",
+            "Psychological",
+            "Sci-Fi",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Gore",
+            "Anti-Hero",
+            "Meta",
+            "Time Skip",
+            "Teacher",
+            "Dystopian",
+            "Bisexual",
+            "Augmented Reality",
+            "Memory Manipulation",
+            "Philosophy",
+            "LGBTQ+ Themes",
+            "Dissociative Identities",
+            "Crime",
+            "Denpa",
+            "Suicide"
+        ],
         "difficulty": "36.96",
         "video_url": "https://eudist.animemusicquiz.com/lotryu.mp3",
         "guessers_flat": [
@@ -2234,6 +2873,50 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=19850",
         "anime_type": "TV",
         "vintage": "Winter 2018",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Mecha",
+            "Psychological",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Military",
+            "Space",
+            "Tragedy",
+            "Family Life",
+            "Post-Apocalyptic",
+            "Coming of Age",
+            "Politics",
+            "Love Triangle",
+            "Survival",
+            "Super Robot",
+            "Tsundere",
+            "Robots",
+            "Aliens",
+            "Fishing",
+            "Dystopian",
+            "Monster Girl",
+            "Kaiju",
+            "Environmental",
+            "Memory Manipulation",
+            "Pregnancy",
+            "Conspiracy",
+            "Lost Civilization",
+            "LGBTQ+ Themes",
+            "Body Horror",
+            "Monster Boy",
+            "Found Family",
+            "Travel",
+            "Clone",
+            "Orphan",
+            "Marriage",
+            "Unrequited Love",
+            "Psychosexual",
+            "Cohabitation"
+        ],
         "difficulty": "33.13",
         "video_url": "https://eudist.animemusicquiz.com/ei1a72.webm",
         "guessers_flat": [
@@ -2290,6 +2973,27 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21509",
         "anime_type": "TV",
         "vintage": "Winter 2019",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Ecchi",
+            "Fantasy",
+            "Mecha",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Parody",
+            "Super Power",
+            "Slapstick",
+            "Tragedy",
+            "Time Manipulation",
+            "Time Skip",
+            "Tsundere",
+            "Witch",
+            "Urban Fantasy"
+        ],
         "difficulty": "22.83",
         "video_url": "https://naedist.animemusicquiz.com/qxyrk2.mp3",
         "guessers_flat": [
@@ -2341,6 +3045,27 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26303",
         "anime_type": "TV",
         "vintage": "Fall 2023",
+        "genres_raw": [
+            "Comedy",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Seinen",
+            "Slapstick",
+            "Family Life",
+            "Cute Girls Doing Cute Things",
+            "Coming of Age",
+            "Yandere",
+            "Witch",
+            "Episodic",
+            "Surreal Comedy",
+            "Tanned Skin",
+            "Elf",
+            "Adoption",
+            "Found Family",
+            "Parenthood"
+        ],
         "difficulty": "31.28",
         "video_url": "https://naedist.animemusicquiz.com/aru0nl8dg2lc66b0.mp3",
         "guessers_flat": [
@@ -2395,6 +3120,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16723",
         "anime_type": "TV",
         "vintage": "Spring 2015",
+        "genres_raw": [
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Shounen",
+            "Otaku Culture",
+            "Teacher"
+        ],
         "difficulty": "16.37",
         "video_url": "https://eudist.animemusicquiz.com/p6l58d.mp3",
         "guessers_flat": [
@@ -2452,6 +3187,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=797",
         "anime_type": "TV",
         "vintage": "Fall 1999",
+        "genres_raw": [
+            "Comedy",
+            "Fantasy",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Henshin",
+            "Nekomimi",
+            "Work",
+            "Aliens",
+            "Episodic",
+            "Kemonomimi",
+            "Surreal Comedy",
+            "Chibi",
+            "Urban"
+        ],
         "difficulty": "27.05",
         "video_url": "https://eudist.animemusicquiz.com/c5zsc6.webm",
         "guessers_flat": [
@@ -2506,6 +3258,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21205",
         "anime_type": "TV",
         "vintage": "Winter 2019",
+        "genres_raw": [
+            "Drama",
+            "Ecchi",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Tragedy",
+            "Family Life",
+            "Nudity",
+            "Age Gap",
+            "Love Triangle",
+            "Tsundere",
+            "Teacher",
+            "Cohabitation"
+        ],
         "difficulty": "19.07",
         "video_url": "https://eudist.animemusicquiz.com/q796sa.mp3",
         "guessers_flat": [
@@ -2561,6 +3329,30 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=25068",
         "anime_type": "TV",
         "vintage": "Spring 2023",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "CGI",
+            "Post-Apocalyptic",
+            "Educational",
+            "Food",
+            "Survival",
+            "Amnesia",
+            "Ships",
+            "Espionage",
+            "Conspiracy",
+            "Lost Civilization",
+            "Butler",
+            "Agriculture",
+            "Found Family",
+            "Spearplay",
+            "Travel"
+        ],
         "difficulty": "34.72",
         "video_url": "https://eudist.animemusicquiz.com/vbinnc.webm",
         "guessers_flat": [
@@ -2618,6 +3410,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=28620",
         "anime_type": "TV",
         "vintage": "Fall 2023",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Tragedy",
+            "Post-Apocalyptic",
+            "Primarily Adult Cast",
+            "War",
+            "Educational",
+            "Survival",
+            "Guns",
+            "Crossdressing",
+            "Ships",
+            "Conspiracy"
+        ],
         "difficulty": "35.97",
         "video_url": "https://eudist.animemusicquiz.com/gdi1p1.webm",
         "guessers_flat": [
@@ -2675,6 +3486,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23070",
         "anime_type": "Movie",
         "vintage": "Spring 2021",
+        "genres_raw": [
+            "Comedy",
+            "Drama"
+        ],
+        "tags_raw": [
+            "Shoujo",
+            "Coming of Age",
+            "Primarily Adult Cast",
+            "Educational",
+            "Meta",
+            "Work",
+            "Foreign",
+            "Acting",
+            "Filmmaking"
+        ],
         "difficulty": "33.48",
         "video_url": "https://eudist.animemusicquiz.com/60spi3.webm",
         "guessers_flat": [
@@ -2739,6 +3565,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=28763",
         "anime_type": "Movie",
         "vintage": "Summer 2024",
+        "genres_raw": [
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Yuri",
+            "School Club",
+            "Cute Girls Doing Cute Things",
+            "Idol",
+            "Dancing",
+            "Urban",
+            "Coastal"
+        ],
         "difficulty": "38.17",
         "video_url": "https://eudist.animemusicquiz.com/bs9fpa.webm",
         "guessers_flat": [
@@ -2795,6 +3634,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18074",
         "anime_type": "Movie",
         "vintage": "Winter 2016",
+        "genres_raw": [
+            "Music"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Kids",
+            "Magic",
+            "Slapstick",
+            "Henshin",
+            "Virtual World",
+            "Idol",
+            "Dancing",
+            "Chuunibyou",
+            "Surreal Comedy"
+        ],
         "difficulty": "20.64",
         "video_url": "https://eudist.animemusicquiz.com/w2p8bk.webm",
         "guessers_flat": [],
@@ -2847,6 +3701,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=25439",
         "anime_type": "ONA",
         "vintage": "Summer 2022",
+        "genres_raw": [
+            "Fantasy",
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Idol",
+            "Alternate Universe",
+            "Dancing"
+        ],
         "difficulty": "21.86",
         "video_url": "https://naedist.animemusicquiz.com/zpkatg.mp3",
         "guessers_flat": [
@@ -2903,6 +3767,17 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=34192",
         "anime_type": "TV",
         "vintage": "Spring 2025",
+        "genres_raw": [
+            "Comedy"
+        ],
+        "tags_raw": [
+            "Shoujo",
+            "Slapstick",
+            "Primarily Adult Cast",
+            "Work",
+            "Cute Boys Doing Cute Things",
+            "Manzai"
+        ],
         "difficulty": "23.13",
         "video_url": "https://naedist.animemusicquiz.com/8fp0xqkxtu24pqof.mp3",
         "guessers_flat": [
@@ -2955,6 +3830,28 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18984",
         "anime_type": "TV",
         "vintage": "Winter 2018",
+        "genres_raw": [
+            "Action",
+            "Fantasy",
+            "Psychological"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Swordplay",
+            "Post-Apocalyptic",
+            "Gore",
+            "Henshin",
+            "Nudity",
+            "Virtual World",
+            "Survival",
+            "Dystopian",
+            "Amnesia",
+            "Artificial Intelligence",
+            "Dissociative Identities",
+            "Cosmic Horror",
+            "Body Horror",
+            "Spearplay"
+        ],
         "difficulty": "8.88",
         "video_url": "https://naedist.animemusicquiz.com/9bewg6.mp3",
         "guessers_flat": [
@@ -3005,6 +3902,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24414",
         "anime_type": "OVA",
         "vintage": "Spring 2021",
+        "genres_raw": [
+            "Comedy",
+            "Fantasy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Parody",
+            "Swordplay",
+            "Meta",
+            "Crossover",
+            "Tsundere",
+            "Mythology",
+            "Surreal Comedy",
+            "Fencing",
+            "Spearplay"
+        ],
         "difficulty": "28.77",
         "video_url": "https://naedist.animemusicquiz.com/0cuipi.mp3",
         "guessers_flat": [
@@ -3060,6 +3974,38 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15245",
         "anime_type": "TV",
         "vintage": "Summer 2013",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Ecchi",
+            "Fantasy",
+            "Mahou Shoujo"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Parody",
+            "Shounen",
+            "Yuri",
+            "Cute Girls Doing Cute Things",
+            "Otaku Culture",
+            "Henshin",
+            "Nudity",
+            "Nekomimi",
+            "Alternate Universe",
+            "Body Swapping",
+            "Witch",
+            "Mythology",
+            "Isekai",
+            "Archery",
+            "Urban Fantasy",
+            "Dissociative Identities",
+            "Urban",
+            "Kuudere",
+            "Ojou-sama",
+            "Butler",
+            "Adoption",
+            "Anthropomorphism"
+        ],
         "difficulty": "20.66",
         "video_url": "https://naedist.animemusicquiz.com/1vnrxh.mp3",
         "guessers_flat": [
@@ -3114,6 +4060,33 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16166",
         "anime_type": "Movie",
         "vintage": "Fall 2017",
+        "genres_raw": [
+            "Action",
+            "Fantasy",
+            "Psychological",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Swordplay",
+            "Super Power",
+            "CGI",
+            "Gore",
+            "Battle Royale",
+            "War",
+            "Zombie",
+            "Mythology",
+            "Archery",
+            "Urban Fantasy",
+            "Assassins",
+            "Urban",
+            "Cosmic Horror",
+            "Adoption",
+            "Necromancy",
+            "Found Family",
+            "Orphan"
+        ],
         "difficulty": "15.11",
         "video_url": "https://eudist.animemusicquiz.com/bm2di1.webm",
         "guessers_flat": [
@@ -3170,6 +4143,48 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=28887",
         "anime_type": "TV",
         "vintage": "Winter 2026",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy",
+            "Mystery",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Police",
+            "Swordplay",
+            "Vampire",
+            "Gender Bending",
+            "Tragedy",
+            "Gore",
+            "Battle Royale",
+            "War",
+            "Body Swapping",
+            "Guns",
+            "Foreign",
+            "Mythology",
+            "Archery",
+            "Gods",
+            "Urban Fantasy",
+            "Assassins",
+            "Memory Manipulation",
+            "Conspiracy",
+            "LGBTQ+ Themes",
+            "Anachronism",
+            "Skeleton",
+            "Dissociative Identities",
+            "Urban",
+            "Nun",
+            "Death Game",
+            "Shapeshifting",
+            "Chimera",
+            "Cyborg",
+            "Religion",
+            "Curses",
+            "Medieval"
+        ],
         "difficulty": "25.00",
         "video_url": "https://eudist.animemusicquiz.com/j2931ojxot8ixzhm.webm",
         "guessers_flat": [
@@ -3199,8 +4214,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "kyuuuu",
-            "sus_domesticus"
+            "sus_domesticus",
+            "kyuuuu"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -3223,6 +4238,32 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14122",
         "anime_type": "TV",
         "vintage": "Spring 2012",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Swordplay",
+            "Vampire",
+            "Tragedy",
+            "CGI",
+            "Gore",
+            "Battle Royale",
+            "Anti-Hero",
+            "Primarily Adult Cast",
+            "War",
+            "Guns",
+            "Mythology",
+            "Urban Fantasy",
+            "Philosophy",
+            "Death Game",
+            "Body Horror",
+            "Religion",
+            "Spearplay"
+        ],
         "difficulty": "24.16",
         "video_url": "https://eudist.animemusicquiz.com/p5gj1ug3p8gf3zfg.webm",
         "guessers_flat": [
@@ -3283,6 +4324,13 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15715",
         "anime_type": "OVA",
         "vintage": "Fall 2009",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi"
+        ],
+        "tags_raw": [
+            "Nudity"
+        ],
         "difficulty": "22.07",
         "video_url": "https://eudist.animemusicquiz.com/jmnans.webm",
         "guessers_flat": [
@@ -3311,8 +4359,8 @@
             "konomi"
         ],
         "lives_taken_flat": [
-            "konomi",
-            "lakumix"
+            "lakumix",
+            "konomi"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -3335,6 +4383,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24913",
         "anime_type": "Movie",
         "vintage": "Winter 2022",
+        "genres_raw": [
+            "Drama",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Shoujo",
+            "Tragedy",
+            "Family Life",
+            "Coming of Age",
+            "Age Gap",
+            "Afterlife",
+            "Time Skip",
+            "Achronological Order",
+            "Teacher",
+            "Rehabilitation",
+            "Delinquents",
+            "Urban",
+            "Parenthood"
+        ],
         "difficulty": "25.85",
         "video_url": "https://eudist.animemusicquiz.com/6fe1ew.mp3",
         "guessers_flat": [
@@ -3390,6 +4457,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16212",
         "anime_type": "OVA",
         "vintage": "Fall 2014",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Nudity",
+            "Primarily Adult Cast",
+            "Work",
+            "Marriage"
+        ],
         "difficulty": "19.07",
         "video_url": "https://eudist.animemusicquiz.com/pgzs18.webm",
         "guessers_flat": [
@@ -3418,8 +4498,8 @@
             "konomi"
         ],
         "lives_taken_flat": [
-            "konomi",
-            "lakumix"
+            "lakumix",
+            "konomi"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -3444,6 +4524,30 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=3434",
         "anime_type": "TV",
         "vintage": "Winter 2004",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Fantasy",
+            "Mahou Shoujo"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Magic",
+            "Martial Arts",
+            "Swordplay",
+            "School Club",
+            "Henshin",
+            "Superhero",
+            "Episodic",
+            "Isekai",
+            "Urban Fantasy",
+            "Lacrosse",
+            "Primarily Child Cast",
+            "Tokusatsu",
+            "Urban",
+            "Fairy"
+        ],
         "difficulty": "30.75",
         "video_url": "https://eudist.animemusicquiz.com/idt5k9.webm",
         "guessers_flat": [
@@ -3498,6 +4602,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18879",
         "anime_type": "TV",
         "vintage": "Winter 2017",
+        "genres_raw": [
+            "Drama",
+            "Ecchi",
+            "Music",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Shounen",
+            "School Club",
+            "Nudity",
+            "Band",
+            "Idol",
+            "Love Triangle",
+            "LGBTQ+ Themes",
+            "Urban",
+            "Rock Music"
+        ],
         "difficulty": "21.49",
         "video_url": "https://eudist.animemusicquiz.com/81wovg.webm",
         "guessers_flat": [
@@ -3553,6 +4675,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=33435",
         "anime_type": "TV",
         "vintage": "Summer 2025",
+        "genres_raw": [
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Iyashikei",
+            "Slapstick",
+            "Otaku Culture",
+            "Age Gap",
+            "Video Games",
+            "Cosplay",
+            "Language Barrier"
+        ],
         "difficulty": "27.61",
         "video_url": "https://eudist.animemusicquiz.com/76hl2kb9ksopqtjn.webm",
         "guessers_flat": [
@@ -3609,6 +4744,14 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=6960",
         "anime_type": "OVA",
         "vintage": "Winter 1987",
+        "genres_raw": [
+            "Action"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Henshin",
+            "Tokusatsu"
+        ],
         "difficulty": "18.45",
         "video_url": "https://eudist.animemusicquiz.com/u34htc.mp3",
         "guessers_flat": [
@@ -3661,6 +4804,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16943",
         "anime_type": "TV",
         "vintage": "Fall 2015",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Ecchi",
+            "Fantasy",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Swordplay",
+            "Urban Fantasy",
+            "Kuudere"
+        ],
         "difficulty": "38.72",
         "video_url": "https://naedist.animemusicquiz.com/arz4uv.mp3",
         "guessers_flat": [
@@ -3722,6 +4880,14 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23213",
         "anime_type": "TV",
         "vintage": "Spring 2020",
+        "genres_raw": [
+            "Comedy",
+            "Music"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Idol"
+        ],
         "difficulty": "32.65",
         "video_url": "https://eudist.animemusicquiz.com/4ldmua.webm",
         "guessers_flat": [
@@ -3774,6 +4940,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=17526",
         "anime_type": "TV",
         "vintage": "Fall 2015",
+        "genres_raw": [
+            "Action",
+            "Fantasy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Historical",
+            "Magic",
+            "Swordplay",
+            "Henshin",
+            "Primarily Adult Cast",
+            "Superhero",
+            "Episodic",
+            "Tokusatsu",
+            "Body Horror",
+            "Shapeshifting"
+        ],
         "difficulty": "21.54",
         "video_url": "https://eudist.animemusicquiz.com/jbc6ni.webm",
         "guessers_flat": [
@@ -3823,6 +5007,29 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16129",
         "anime_type": "TV",
         "vintage": "Fall 2014",
+        "genres_raw": [
+            "Action",
+            "Fantasy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Historical",
+            "Magic",
+            "Swordplay",
+            "Gore",
+            "Henshin",
+            "Coming of Age",
+            "Witch",
+            "Foreign",
+            "Fugitive",
+            "Rural",
+            "Revenge",
+            "Conspiracy",
+            "Tokusatsu",
+            "Urban",
+            "Body Horror"
+        ],
         "difficulty": "18.02",
         "video_url": "https://naedist.animemusicquiz.com/jjh5ds.mp3",
         "guessers_flat": [
@@ -3875,6 +5082,15 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=11723",
         "anime_type": "Movie",
         "vintage": "Fall 2010",
+        "genres_raw": [
+            "Action",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Super Power",
+            "Afterlife"
+        ],
         "difficulty": "38.61",
         "video_url": "https://eudist.animemusicquiz.com/u47aj7.mp3",
         "guessers_flat": [
@@ -3927,6 +5143,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20674",
         "anime_type": "Movie",
         "vintage": "Winter 2019",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Tragedy",
+            "Mythology",
+            "Gods",
+            "Dungeon",
+            "Kuudere",
+            "Tomboy"
+        ],
         "difficulty": "22.74",
         "video_url": "https://naedist.animemusicquiz.com/fnehl2.mp3",
         "guessers_flat": [
@@ -3982,6 +5215,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=13785",
         "anime_type": "Movie",
         "vintage": "Summer 2012",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Shounen"
+        ],
         "difficulty": "13.88",
         "video_url": "https://eudist.animemusicquiz.com/n0oopz.webm",
         "guessers_flat": [
@@ -4034,6 +5277,27 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=19029",
         "anime_type": "Movie",
         "vintage": "Summer 2017",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy",
+            "Psychological"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Swordplay",
+            "Shounen",
+            "Tragedy",
+            "Henshin",
+            "Battle Royale",
+            "Anti-Hero",
+            "Alternate Universe",
+            "Mythology",
+            "Isekai",
+            "Gods",
+            "Urban Fantasy",
+            "Urban"
+        ],
         "difficulty": "29.90",
         "video_url": "https://naedist.animemusicquiz.com/m1s8vd.mp3",
         "guessers_flat": [
@@ -4089,6 +5353,17 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21102",
         "anime_type": "Movie",
         "vintage": "Spring 2019",
+        "genres_raw": [
+            "Drama",
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "School Club",
+            "Coming of Age",
+            "Band",
+            "Classical Music"
+        ],
         "difficulty": "33.22",
         "video_url": "https://eudist.animemusicquiz.com/uj7dd4.webm",
         "guessers_flat": [
@@ -4146,6 +5421,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22253",
         "anime_type": "Movie",
         "vintage": "Fall 2021",
+        "genres_raw": [
+            "Action",
+            "Mecha",
+            "Music",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Space",
+            "Tragedy",
+            "CGI",
+            "Idol",
+            "Real Robot",
+            "Robots"
+        ],
         "difficulty": "25.45",
         "video_url": "https://eudist.animemusicquiz.com/ep1u4d.webm",
         "guessers_flat": [
@@ -4200,6 +5491,32 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14364",
         "anime_type": "Movie",
         "vintage": "Fall 2012",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy",
+            "Mahou Shoujo",
+            "Psychological",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Yuri",
+            "Tragedy",
+            "Time Manipulation",
+            "Henshin",
+            "Coming of Age",
+            "Guns",
+            "Witch",
+            "Aliens",
+            "Gods",
+            "Urban Fantasy",
+            "Philosophy",
+            "Primarily Child Cast",
+            "Urban",
+            "Cosmic Horror",
+            "Mixed Media"
+        ],
         "difficulty": "25.14",
         "video_url": "https://naedist.animemusicquiz.com/4n3s68.mp3",
         "guessers_flat": [
@@ -4250,6 +5567,32 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14364",
         "anime_type": "Movie",
         "vintage": "Fall 2012",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy",
+            "Mahou Shoujo",
+            "Psychological",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Yuri",
+            "Tragedy",
+            "Time Manipulation",
+            "Henshin",
+            "Coming of Age",
+            "Guns",
+            "Witch",
+            "Aliens",
+            "Gods",
+            "Urban Fantasy",
+            "Philosophy",
+            "Primarily Child Cast",
+            "Urban",
+            "Cosmic Horror",
+            "Mixed Media"
+        ],
         "difficulty": "33.62",
         "video_url": "https://eudist.animemusicquiz.com/n13qw05kf1b7uo0a.webm",
         "guessers_flat": [],
@@ -4295,6 +5638,37 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14850",
         "anime_type": "Movie",
         "vintage": "Fall 2013",
+        "genres_raw": [
+            "Drama",
+            "Fantasy",
+            "Mahou Shoujo",
+            "Mystery",
+            "Psychological",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Yuri",
+            "Tragedy",
+            "Time Manipulation",
+            "Henshin",
+            "Anti-Hero",
+            "Alternate Universe",
+            "Guns",
+            "Witch",
+            "Aliens",
+            "Mythology",
+            "Gods",
+            "Urban Fantasy",
+            "Memory Manipulation",
+            "Philosophy",
+            "Urban",
+            "Cosmic Horror",
+            "Kuudere",
+            "Curses",
+            "Mixed Media"
+        ],
         "difficulty": "19.84",
         "video_url": "https://naedist.animemusicquiz.com/uweg4b.mp3",
         "guessers_flat": [
@@ -4347,6 +5721,37 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14850",
         "anime_type": "Movie",
         "vintage": "Fall 2013",
+        "genres_raw": [
+            "Drama",
+            "Fantasy",
+            "Mahou Shoujo",
+            "Mystery",
+            "Psychological",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Yuri",
+            "Tragedy",
+            "Time Manipulation",
+            "Henshin",
+            "Anti-Hero",
+            "Alternate Universe",
+            "Guns",
+            "Witch",
+            "Aliens",
+            "Mythology",
+            "Gods",
+            "Urban Fantasy",
+            "Memory Manipulation",
+            "Philosophy",
+            "Urban",
+            "Cosmic Horror",
+            "Kuudere",
+            "Curses",
+            "Mixed Media"
+        ],
         "difficulty": "29.05",
         "video_url": "https://eudist.animemusicquiz.com/ai7t0xhb44f1q4w0.webm",
         "guessers_flat": [
@@ -4399,6 +5804,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24922",
         "anime_type": "Movie",
         "vintage": "Fall 2022",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Swordplay",
+            "Virtual World",
+            "Survival",
+            "Isekai",
+            "Video Games",
+            "Dungeon",
+            "Death Game"
+        ],
         "difficulty": "17.26",
         "video_url": "https://eudist.animemusicquiz.com/13yswo.mp3",
         "guessers_flat": [
@@ -4449,6 +5869,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=13635",
         "anime_type": "Movie",
         "vintage": "Winter 2013",
+        "genres_raw": [
+            "Action",
+            "Music",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Space",
+            "Super Power",
+            "Idol",
+            "Urban Fantasy",
+            "Nun"
+        ],
         "difficulty": "21.57",
         "video_url": "https://eudist.animemusicquiz.com/mefm2w.webm",
         "guessers_flat": [
@@ -4508,6 +5941,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=4168",
         "anime_type": "TV",
         "vintage": "Fall 2004",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Seinen",
+            "School Club",
+            "Otaku Culture",
+            "Primarily Adult Cast",
+            "Meta",
+            "Video Games",
+            "Cosplay",
+            "College"
+        ],
         "difficulty": "30.72",
         "video_url": "https://eudist.animemusicquiz.com/1pe5ir.mp3",
         "guessers_flat": [
@@ -4561,6 +6009,31 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16644",
         "anime_type": "TV",
         "vintage": "Spring 2015",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Drama",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Parody",
+            "Swordplay",
+            "Shounen",
+            "Space",
+            "Tragedy",
+            "Gore",
+            "Politics",
+            "Primarily Adult Cast",
+            "Meta",
+            "Aliens",
+            "Ninja",
+            "Samurai",
+            "Philosophy",
+            "Conspiracy",
+            "Anachronism",
+            "Found Family"
+        ],
         "difficulty": "20.45",
         "video_url": "https://eudist.animemusicquiz.com/pwicn2.webm",
         "guessers_flat": [
@@ -4610,6 +6083,18 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=4349",
         "anime_type": "TV",
         "vintage": "Fall 2004",
+        "genres_raw": [
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Tragedy",
+            "Guns",
+            "Foreign",
+            "Conspiracy",
+            "Fencing"
+        ],
         "difficulty": "27.04",
         "video_url": "https://eudist.animemusicquiz.com/yppo00.webm",
         "guessers_flat": [
@@ -4659,6 +6144,13 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22917",
         "anime_type": "ONA",
         "vintage": "Fall 2016",
+        "genres_raw": [
+            "Music"
+        ],
+        "tags_raw": [
+            "Fairy Tale",
+            "Acting"
+        ],
         "difficulty": "17.92",
         "video_url": "https://eudist.animemusicquiz.com/r8unfi.webm",
         "guessers_flat": [
@@ -4708,6 +6200,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14671",
         "anime_type": "TV",
         "vintage": "Winter 2013",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "School Club",
+            "Cute Girls Doing Cute Things",
+            "Tsundere",
+            "Bullying"
+        ],
         "difficulty": "16.67",
         "video_url": "https://naedist.animemusicquiz.com/ico8wm.mp3",
         "guessers_flat": [
@@ -4758,6 +6260,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15901",
         "anime_type": "TV",
         "vintage": "Summer 2014",
+        "genres_raw": [
+            "Romance",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Time Manipulation",
+            "Coming of Age",
+            "Love Triangle",
+            "Episodic",
+            "Rural",
+            "Bisexual",
+            "LGBTQ+ Themes"
+        ],
         "difficulty": "34.17",
         "video_url": "https://naedist.animemusicquiz.com/qsqnwj.mp3",
         "guessers_flat": [
@@ -4814,6 +6330,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15718",
         "anime_type": "TV",
         "vintage": "Spring 2014",
+        "genres_raw": [
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Cute Girls Doing Cute Things",
+            "Work",
+            "Tsundere",
+            "Episodic",
+            "Foreign",
+            "Maids",
+            "Primarily Child Cast",
+            "Kuudere"
+        ],
         "difficulty": "30.44",
         "video_url": "https://eudist.animemusicquiz.com/f40xls.webm",
         "guessers_flat": [
@@ -4868,6 +6398,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16672",
         "anime_type": "Special",
         "vintage": "Spring 2015",
+        "genres_raw": [
+            "Drama",
+            "Ecchi",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Military",
+            "Tragedy",
+            "Gore",
+            "Nudity",
+            "Guns",
+            "Crossdressing",
+            "Terrorism",
+            "Assassins",
+            "Suicide"
+        ],
         "difficulty": "25.05",
         "video_url": "https://naedist.animemusicquiz.com/63j06d.mp3",
         "guessers_flat": [
@@ -4923,6 +6469,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=17948",
         "anime_type": "TV",
         "vintage": "Spring 2016",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Mystery",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Police",
+            "Slapstick",
+            "Primarily Adult Cast",
+            "Work",
+            "Ghost",
+            "Assassins",
+            "Shrine Maiden",
+            "Crime",
+            "Detective"
+        ],
         "difficulty": "25.67",
         "video_url": "https://eudist.animemusicquiz.com/yjqdb6.webm",
         "guessers_flat": [
@@ -4976,6 +6539,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=13719",
         "anime_type": "TV",
         "vintage": "Spring 2012",
+        "genres_raw": [
+            "Comedy",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Parody",
+            "Henshin",
+            "Love Triangle",
+            "Meta",
+            "Tsundere",
+            "Aliens",
+            "Mythology",
+            "Monster Girl",
+            "Surreal Comedy"
+        ],
         "difficulty": "16.60",
         "video_url": "https://eudist.animemusicquiz.com/fim0pp.webm",
         "guessers_flat": [
@@ -5026,6 +6606,15 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=7166",
         "anime_type": "OVA",
         "vintage": "Winter 1990",
+        "genres_raw": [
+            "Adventure",
+            "Drama"
+        ],
+        "tags_raw": [
+            "Shoujo",
+            "Battle Royale",
+            "Delinquents"
+        ],
         "difficulty": "23.23",
         "video_url": "https://eudist.animemusicquiz.com/g1no9v.webm",
         "guessers_flat": [
@@ -5055,9 +6644,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "chommy",
+            "mami",
             "serozero",
-            "mami"
+            "chommy"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -5081,6 +6670,18 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32807",
         "anime_type": "TV",
         "vintage": "Winter 2025",
+        "genres_raw": [
+            "Drama",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "School Club",
+            "Tsundere",
+            "Classic Literature",
+            "Acting",
+            "Coastal"
+        ],
         "difficulty": "30.34",
         "video_url": "https://eudist.animemusicquiz.com/wowo69.webm",
         "guessers_flat": [
@@ -5136,6 +6737,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=10662",
         "anime_type": "TV",
         "vintage": "Spring 2009",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Parody",
+            "Shounen",
+            "Otaku Culture",
+            "Tsundere",
+            "Crossdressing",
+            "Maids",
+            "Nun",
+            "Kuudere",
+            "Butler",
+            "Tomboy"
+        ],
         "difficulty": "27.75",
         "video_url": "https://eudist.animemusicquiz.com/j3gkl6.webm",
         "guessers_flat": [
@@ -5189,6 +6808,15 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16364",
         "anime_type": "TV",
         "vintage": "Spring 2015",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Cute Girls Doing Cute Things",
+            "Tsundere"
+        ],
         "difficulty": "26.58",
         "video_url": "https://eudist.animemusicquiz.com/j2dmec.webm",
         "guessers_flat": [
@@ -5245,6 +6873,27 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=10620",
         "anime_type": "Movie",
         "vintage": "Fall 2009",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Drama",
+            "Mystery",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Police",
+            "Battle Royale",
+            "Primarily Adult Cast",
+            "Foreign",
+            "Amnesia",
+            "Terrorism",
+            "Memory Manipulation",
+            "Conspiracy",
+            "Artificial Intelligence",
+            "Urban",
+            "Crime"
+        ],
         "difficulty": "21.98",
         "video_url": "https://eudist.animemusicquiz.com/s4buek.webm",
         "guessers_flat": [
@@ -5294,6 +6943,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=13225",
         "anime_type": "OVA",
         "vintage": "Winter 2012",
+        "genres_raw": [
+            "Ecchi",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Swordplay",
+            "Seinen",
+            "Vampire",
+            "Tragedy",
+            "Nudity",
+            "Guns",
+            "Tsundere",
+            "Animals",
+            "Shapeshifting",
+            "Religion"
+        ],
         "difficulty": "22.77",
         "video_url": "https://naedist.animemusicquiz.com/0khub2.mp3",
         "guessers_flat": [
@@ -5348,6 +7014,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=30906",
         "anime_type": "TV",
         "vintage": "Fall 2024",
+        "genres_raw": [
+            "Drama",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Josei",
+            "Swordplay",
+            "Politics",
+            "Love Triangle",
+            "Foreign",
+            "Royal Affairs",
+            "Orphan",
+            "Kingdom Management",
+            "Arranged Marriage"
+        ],
         "difficulty": "35.69",
         "video_url": "https://eudist.animemusicquiz.com/2ut1bt.webm",
         "guessers_flat": [
@@ -5379,9 +7061,9 @@
             "anicomi"
         ],
         "lives_taken_flat": [
-            "tbdhater",
             "kaededayo",
-            "patoche49"
+            "patoche49",
+            "tbdhater"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -5405,6 +7087,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=12543",
         "anime_type": "Movie",
         "vintage": "Summer 2011",
+        "genres_raw": [
+            "Drama",
+            "Fantasy",
+            "Romance",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Shoujo",
+            "Iyashikei",
+            "Tragedy",
+            "Coming of Age",
+            "Age Gap",
+            "Time Skip",
+            "Ghost",
+            "Youkai",
+            "Rural",
+            "Urban Fantasy",
+            "Wilderness"
+        ],
         "difficulty": "23.35",
         "video_url": "https://naedist.animemusicquiz.com/9xvl8r.mp3",
         "guessers_flat": [
@@ -5464,6 +7165,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=25141",
         "anime_type": "TV",
         "vintage": "Summer 2022",
+        "genres_raw": [
+            "Drama",
+            "Ecchi",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Nudity",
+            "Nekomimi",
+            "Isekai",
+            "Slavery",
+            "Kemonomimi",
+            "Monster Girl",
+            "Video Games",
+            "Dungeon"
+        ],
         "difficulty": "30.81",
         "video_url": "https://naedist.animemusicquiz.com/gzotuk.mp3",
         "guessers_flat": [
@@ -5520,6 +7239,29 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=27125",
         "anime_type": "TV",
         "vintage": "Winter 2024",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Military",
+            "Swordplay",
+            "Tragedy",
+            "CGI",
+            "Gore",
+            "Battle Royale",
+            "Politics",
+            "Anti-Hero",
+            "War",
+            "Robots",
+            "Dragons",
+            "Isekai",
+            "Espionage",
+            "Class Struggle",
+            "Desert"
+        ],
         "difficulty": "34.43",
         "video_url": "https://naedist.animemusicquiz.com/7lqw7e.mp3",
         "guessers_flat": [
@@ -5575,6 +7317,29 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=27125",
         "anime_type": "TV",
         "vintage": "Winter 2024",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Military",
+            "Swordplay",
+            "Tragedy",
+            "CGI",
+            "Gore",
+            "Battle Royale",
+            "Politics",
+            "Anti-Hero",
+            "War",
+            "Robots",
+            "Dragons",
+            "Isekai",
+            "Espionage",
+            "Class Struggle",
+            "Desert"
+        ],
         "difficulty": "34.37",
         "video_url": "https://eudist.animemusicquiz.com/teit6z.webm",
         "guessers_flat": [
@@ -5633,6 +7398,12 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=1093",
         "anime_type": "TV",
         "vintage": "Fall 1981",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Slice of Life"
+        ],
+        "tags_raw": [],
         "difficulty": "15.81",
         "video_url": "https://naedist.animemusicquiz.com/o381ip.mp3",
         "guessers_flat": [
@@ -5684,6 +7455,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=181",
         "anime_type": "TV",
         "vintage": "Spring 1998",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Swordplay",
+            "Time Manipulation",
+            "Foreign",
+            "Mythology",
+            "Reincarnation",
+            "Urban Fantasy",
+            "Indigenous Cultures"
+        ],
         "difficulty": "23.76",
         "video_url": "https://eudist.animemusicquiz.com/7f1r1q.webm",
         "guessers_flat": [],
@@ -5727,6 +7514,26 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14729",
         "anime_type": "TV",
         "vintage": "Fall 2012",
+        "genres_raw": [
+            "Action",
+            "Adventure"
+        ],
+        "tags_raw": [
+            "Military",
+            "Seinen",
+            "Politics",
+            "Anti-Hero",
+            "Primarily Adult Cast",
+            "War",
+            "Guns",
+            "Foreign",
+            "Terrorism",
+            "Assassins",
+            "Urban",
+            "Tomboy",
+            "Travel",
+            "Orphan"
+        ],
         "difficulty": "21.24",
         "video_url": "https://eudist.animemusicquiz.com/n6g2pd.webm",
         "guessers_flat": [
@@ -5776,6 +7583,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22907",
         "anime_type": "Movie",
         "vintage": "Fall 2020",
+        "genres_raw": [
+            "Drama",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Coming of Age",
+            "Primarily Adult Cast",
+            "Drawing",
+            "Tsundere",
+            "Rehabilitation",
+            "College",
+            "Scuba Diving",
+            "Disability"
+        ],
         "difficulty": "37.75",
         "video_url": "https://eudist.animemusicquiz.com/5hfeu6.mp3",
         "guessers_flat": [
@@ -5833,6 +7655,35 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22944",
         "anime_type": "TV",
         "vintage": "Fall 2020",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Martial Arts",
+            "Swordplay",
+            "Shounen",
+            "Super Power",
+            "Slapstick",
+            "Gore",
+            "Mythology",
+            "Youkai",
+            "Archery",
+            "Urban Fantasy",
+            "Dissociative Identities",
+            "Urban",
+            "Body Horror",
+            "Rotoscoping",
+            "Shapeshifting",
+            "Anthropomorphism",
+            "Orphan",
+            "Boarding School",
+            "Curses",
+            "Exorcism"
+        ],
         "difficulty": "29.44",
         "video_url": "https://naedist.animemusicquiz.com/xhp0fg.mp3",
         "guessers_flat": [
@@ -5893,6 +7744,35 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22944",
         "anime_type": "TV",
         "vintage": "Fall 2020",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Martial Arts",
+            "Swordplay",
+            "Shounen",
+            "Super Power",
+            "Slapstick",
+            "Gore",
+            "Mythology",
+            "Youkai",
+            "Archery",
+            "Urban Fantasy",
+            "Dissociative Identities",
+            "Urban",
+            "Body Horror",
+            "Rotoscoping",
+            "Shapeshifting",
+            "Anthropomorphism",
+            "Orphan",
+            "Boarding School",
+            "Curses",
+            "Exorcism"
+        ],
         "difficulty": "38.31",
         "video_url": "https://eudist.animemusicquiz.com/86kaxj.webm",
         "guessers_flat": [
@@ -5959,6 +7839,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=11262",
         "anime_type": "TV",
         "vintage": "Spring 2010",
+        "genres_raw": [
+            "Comedy",
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Iyashikei",
+            "Slapstick",
+            "School Club",
+            "Cute Girls Doing Cute Things",
+            "Coming of Age",
+            "Band",
+            "Food",
+            "Episodic",
+            "Rock Music"
+        ],
         "difficulty": "26.14",
         "video_url": "https://eudist.animemusicquiz.com/ht30vp.mp3",
         "guessers_flat": [
@@ -6022,6 +7919,36 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=9178",
         "anime_type": "TV",
         "vintage": "Spring 2008",
+        "genres_raw": [
+            "Adventure",
+            "Mystery",
+            "Psychological",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Space",
+            "Gender Bending",
+            "Tragedy",
+            "Post-Apocalyptic",
+            "Cyberpunk",
+            "Body Swapping",
+            "Aliens",
+            "Episodic",
+            "Dystopian",
+            "Fugitive",
+            "Amnesia",
+            "Terrorism",
+            "Memory Manipulation",
+            "Philosophy",
+            "Conspiracy",
+            "Cult",
+            "Cosmic Horror",
+            "Body Horror",
+            "Clone",
+            "Psychosexual",
+            "Brainwashing"
+        ],
         "difficulty": "31.87",
         "video_url": "https://eudist.animemusicquiz.com/iwfr7v.webm",
         "guessers_flat": [
@@ -6076,6 +8003,8 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=33478",
         "anime_type": "TV",
         "vintage": "Fall 2024",
+        "genres_raw": [],
+        "tags_raw": [],
         "difficulty": "33.73",
         "video_url": "https://naedist.animemusicquiz.com/7kyrqp.mp3",
         "guessers_flat": [
@@ -6130,6 +8059,8 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=1000005",
         "anime_type": "Special",
         "vintage": "Summer 2025",
+        "genres_raw": [],
+        "tags_raw": [],
         "difficulty": "30.61",
         "video_url": "https://eudist.animemusicquiz.com/nhx6caujn949fwsr.webm",
         "guessers_flat": [
@@ -6184,6 +8115,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=31168",
         "anime_type": "TV",
         "vintage": "Fall 2024",
+        "genres_raw": [
+            "Drama",
+            "Mystery"
+        ],
+        "tags_raw": [
+            "Police",
+            "Shounen",
+            "Primarily Adult Cast",
+            "Work",
+            "Guns",
+            "Episodic",
+            "Amnesia",
+            "Age Regression",
+            "Urban",
+            "Crime",
+            "Detective",
+            "Criminal Organization"
+        ],
         "difficulty": "25.70",
         "video_url": "https://eudist.animemusicquiz.com/dz4d0u.webm",
         "guessers_flat": [
@@ -6236,6 +8185,26 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=33057",
         "anime_type": "TV",
         "vintage": "Spring 2025",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Swordplay",
+            "Seinen",
+            "Family Life",
+            "CGI",
+            "Coming of Age",
+            "Primarily Adult Cast",
+            "Age Gap",
+            "Teacher",
+            "Found Family",
+            "Medieval"
+        ],
         "difficulty": "30.25",
         "video_url": "https://naedist.animemusicquiz.com/otsdea.mp3",
         "guessers_flat": [
@@ -6294,6 +8263,27 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=6843",
         "anime_type": "TV",
         "vintage": "Fall 2006",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Sci-Fi",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Super Power",
+            "Slapstick",
+            "Time Manipulation",
+            "Coming of Age",
+            "Anti-Hero",
+            "Mafia",
+            "Alternate Universe",
+            "Time Skip",
+            "Urban Fantasy",
+            "Chibi",
+            "Age Regression"
+        ],
         "difficulty": "32.95",
         "video_url": "https://eudist.animemusicquiz.com/g3bke9.webm",
         "guessers_flat": [
@@ -6347,6 +8337,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21078",
         "anime_type": "TV",
         "vintage": "Fall 2018",
+        "genres_raw": [
+            "Drama",
+            "Sports"
+        ],
+        "tags_raw": [
+            "School Club",
+            "CGI",
+            "Primarily Adult Cast",
+            "Fitness",
+            "Outdoor Activities",
+            "Athletics",
+            "Rehabilitation",
+            "College"
+        ],
         "difficulty": "36.11",
         "video_url": "https://naedist.animemusicquiz.com/cwkk3t.mp3",
         "guessers_flat": [
@@ -6400,6 +8404,38 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26935",
         "anime_type": "TV",
         "vintage": "Winter 2024",
+        "genres_raw": [
+            "Adventure",
+            "Comedy",
+            "Ecchi",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Female Harem",
+            "Magic",
+            "Swordplay",
+            "Nudity",
+            "Nekomimi",
+            "Alternate Universe",
+            "Robots",
+            "Dragons",
+            "Isekai",
+            "Kemonomimi",
+            "Monster Girl",
+            "Hikikomori",
+            "Tanned Skin",
+            "Gyaru",
+            "Twins",
+            "Elf",
+            "Ojou-sama",
+            "Tomboy",
+            "Travel",
+            "Royal Affairs",
+            "Marriage",
+            "Polyamorous"
+        ],
         "difficulty": "27.34",
         "video_url": "https://naedist.animemusicquiz.com/4ezgig.mp3",
         "guessers_flat": [
@@ -6453,6 +8489,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21419",
         "anime_type": "TV",
         "vintage": "Spring 2019",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "School Club",
+            "Coming of Age",
+            "Alternate Universe",
+            "Reincarnation",
+            "Isekai",
+            "Gods",
+            "Adoption",
+            "Found Family",
+            "Marriage"
+        ],
         "difficulty": "22.97",
         "video_url": "https://eudist.animemusicquiz.com/q8uapg.mp3",
         "guessers_flat": [
@@ -6506,6 +8561,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=6143",
         "anime_type": "OVA",
         "vintage": "Spring 2006",
+        "genres_raw": [
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Space",
+            "Tragedy",
+            "Full CGI",
+            "Primarily Adult Cast",
+            "War",
+            "Time Skip",
+            "Real Robot"
+        ],
         "difficulty": "21.95",
         "video_url": "https://eudist.animemusicquiz.com/o6jti1.webm",
         "guessers_flat": [
@@ -6555,6 +8624,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18087",
         "anime_type": "TV",
         "vintage": "Spring 2016",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Space",
+            "Politics",
+            "War",
+            "Real Robot",
+            "Space Opera"
+        ],
         "difficulty": "30.78",
         "video_url": "https://eudist.animemusicquiz.com/a6h74z.webm",
         "guessers_flat": [
@@ -6604,6 +8687,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21826",
         "anime_type": "TV",
         "vintage": "Spring 2019",
+        "genres_raw": [
+            "Action",
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Space",
+            "CGI",
+            "Politics",
+            "War",
+            "Real Robot",
+            "Space Opera",
+            "Revenge"
+        ],
         "difficulty": "24.03",
         "video_url": "https://naedist.animemusicquiz.com/bn8kyx.mp3",
         "guessers_flat": [
@@ -6653,6 +8751,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=449",
         "anime_type": "TV",
         "vintage": "Fall 1983",
+        "genres_raw": [
+            "Action",
+            "Mecha"
+        ],
+        "tags_raw": [
+            "Military",
+            "Idol",
+            "Real Robot",
+            "Motorcycles",
+            "Crossdressing",
+            "Aliens",
+            "Aviation",
+            "Travel"
+        ],
         "difficulty": "21.96",
         "video_url": "https://naedist.animemusicquiz.com/7lomtq.mp3",
         "guessers_flat": [
@@ -6705,6 +8817,17 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=7037",
         "anime_type": "Movie",
         "vintage": "Spring 2007",
+        "genres_raw": [
+            "Adventure",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Motorcycles",
+            "Foreign",
+            "Philosophy"
+        ],
         "difficulty": "17.25",
         "video_url": "https://naedist.animemusicquiz.com/oo31b2.mp3",
         "guessers_flat": [
@@ -6754,6 +8877,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20580",
         "anime_type": "TV",
         "vintage": "Spring 2018",
+        "genres_raw": [
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Kids",
+            "CGI",
+            "Cute Girls Doing Cute Things",
+            "Henshin",
+            "Virtual World",
+            "Idol",
+            "Surreal Comedy",
+            "Fashion",
+            "Primarily Child Cast"
+        ],
         "difficulty": "25.62",
         "video_url": "https://eudist.animemusicquiz.com/pwi0ar.webm",
         "guessers_flat": [
@@ -6803,6 +8941,26 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=7867",
         "anime_type": "OVA",
         "vintage": "Winter 2008",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Ecchi",
+            "Sci-Fi",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Police",
+            "Space",
+            "Gore",
+            "Nudity",
+            "Work",
+            "Guns",
+            "Aliens",
+            "Maids",
+            "Assassins",
+            "Noir",
+            "Crime"
+        ],
         "difficulty": "20.09",
         "video_url": "https://eudist.animemusicquiz.com/j6isf9.webm",
         "guessers_flat": [
@@ -6855,6 +9013,26 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=7867",
         "anime_type": "OVA",
         "vintage": "Winter 2008",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Ecchi",
+            "Sci-Fi",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Police",
+            "Space",
+            "Gore",
+            "Nudity",
+            "Work",
+            "Guns",
+            "Aliens",
+            "Maids",
+            "Assassins",
+            "Noir",
+            "Crime"
+        ],
         "difficulty": "22.55",
         "video_url": "https://eudist.animemusicquiz.com/5uhb96.webm",
         "guessers_flat": [
@@ -6904,6 +9082,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=28790",
         "anime_type": "TV",
         "vintage": "Fall 2023",
+        "genres_raw": [
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "CGI",
+            "Virtual World",
+            "Idol",
+            "VTuber"
+        ],
         "difficulty": "23.55",
         "video_url": "https://eudist.animemusicquiz.com/6wugjw.webm",
         "guessers_flat": [
@@ -6957,6 +9145,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22609",
         "anime_type": "TV",
         "vintage": "Winter 2020",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Yuri",
+            "Iyashikei",
+            "School Club",
+            "Cute Girls Doing Cute Things",
+            "Coming of Age",
+            "Educational",
+            "Tsundere",
+            "Outdoor Activities",
+            "LGBTQ+ Themes",
+            "Astronomy"
+        ],
         "difficulty": "32.30",
         "video_url": "https://eudist.animemusicquiz.com/1ybe3q.webm",
         "guessers_flat": [
@@ -7011,6 +9216,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14113",
         "anime_type": "TV",
         "vintage": "Summer 2012",
+        "genres_raw": [
+            "Drama",
+            "Romance",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Gender Bending",
+            "School Club",
+            "Coming of Age",
+            "Love Triangle",
+            "Body Swapping",
+            "Tsundere",
+            "Chuunibyou",
+            "Urban Fantasy",
+            "Philosophy",
+            "Age Regression"
+        ],
         "difficulty": "25.11",
         "video_url": "https://eudist.animemusicquiz.com/wqeduv.mp3",
         "guessers_flat": [
@@ -7069,6 +9292,32 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=11752",
         "anime_type": "TV",
         "vintage": "Winter 2011",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Ecchi",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Vampire",
+            "Gore",
+            "Henshin",
+            "Zombie",
+            "Yandere",
+            "Tsundere",
+            "Crossdressing",
+            "Reincarnation",
+            "Ninja",
+            "Monster Girl",
+            "Chuunibyou",
+            "Surreal Comedy",
+            "Urban Fantasy",
+            "Memory Manipulation",
+            "Kuudere",
+            "Monster Boy"
+        ],
         "difficulty": "16.55",
         "video_url": "https://naedist.animemusicquiz.com/64pv80.mp3",
         "guessers_flat": [
@@ -7125,6 +9374,13 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=7609",
         "anime_type": "TV",
         "vintage": "Spring 2007",
+        "genres_raw": [
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Super Robot"
+        ],
         "difficulty": "24.65",
         "video_url": "https://eudist.animemusicquiz.com/sff0ky.mp3",
         "guessers_flat": [
@@ -7174,6 +9430,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=11348",
         "anime_type": "OVA",
         "vintage": "Fall 2008",
+        "genres_raw": [
+            "Drama",
+            "Music",
+            "Sci-Fi",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Family Life",
+            "Band",
+            "Robots",
+            "Amnesia"
+        ],
         "difficulty": "26.63",
         "video_url": "https://naedist.animemusicquiz.com/qing5g.mp3",
         "guessers_flat": [
@@ -7231,6 +9500,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24151",
         "anime_type": "TV",
         "vintage": "Fall 2021",
+        "genres_raw": [
+            "Fantasy",
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Tragedy",
+            "Coming of Age",
+            "Politics",
+            "Real Robot",
+            "Dystopian",
+            "Revenge",
+            "Terrorism",
+            "Artificial Intelligence"
+        ],
         "difficulty": "25.36",
         "video_url": "https://naedist.animemusicquiz.com/903pk8.mp3",
         "guessers_flat": [
@@ -7285,6 +9570,14 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=3302",
         "anime_type": "OVA",
         "vintage": "Fall 1990",
+        "genres_raw": [
+            "Adventure",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Isekai"
+        ],
         "difficulty": "16.91",
         "video_url": "https://eudist.animemusicquiz.com/i2d7ah.webm",
         "guessers_flat": [
@@ -7338,6 +9631,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14231",
         "anime_type": "TV",
         "vintage": "Fall 2012",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Slapstick",
+            "School Club",
+            "Tragedy",
+            "Coming of Age",
+            "Baseball",
+            "Urban Fantasy",
+            "Memory Manipulation",
+            "Twins",
+            "Kuudere",
+            "Found Family",
+            "Orphan"
+        ],
         "difficulty": "30.33",
         "video_url": "https://eudist.animemusicquiz.com/d31230.webm",
         "guessers_flat": [
@@ -7369,8 +9681,8 @@
             "konomi"
         ],
         "lives_taken_flat": [
-            "_shadow",
-            "konomi"
+            "konomi",
+            "_shadow"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -7393,6 +9705,36 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21727",
         "anime_type": "TV",
         "vintage": "Summer 2019",
+        "genres_raw": [
+            "Drama",
+            "Fantasy",
+            "Mystery",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Vampire",
+            "Trains",
+            "Zombie",
+            "Guns",
+            "Teacher",
+            "Motorcycles",
+            "Foreign",
+            "Ghost",
+            "Maids",
+            "Urban Fantasy",
+            "Werewolf",
+            "Urban",
+            "Astronomy",
+            "Detective",
+            "Ojou-sama",
+            "Religion",
+            "Necromancy",
+            "Spearplay",
+            "Desert",
+            "Fairy",
+            "Snowscape"
+        ],
         "difficulty": "12.54",
         "video_url": "https://naedist.animemusicquiz.com/xbahy7.mp3",
         "guessers_flat": [
@@ -7449,6 +9791,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=7222",
         "anime_type": "TV",
         "vintage": "Spring 2007",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Cute Girls Doing Cute Things",
+            "Otaku Culture",
+            "Coming of Age",
+            "Meta",
+            "Tsundere",
+            "Episodic",
+            "Video Games",
+            "Philosophy",
+            "Twins"
+        ],
         "difficulty": "30.12",
         "video_url": "https://naedist.animemusicquiz.com/d2cl3c.mp3",
         "guessers_flat": [
@@ -7509,6 +9867,17 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=4954",
         "anime_type": "OVA",
         "vintage": "Fall 1984",
+        "genres_raw": [
+            "Comedy",
+            "Fantasy",
+            "Mahou Shoujo",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Henshin",
+            "Idol"
+        ],
         "difficulty": "23.40",
         "video_url": "https://eudist.animemusicquiz.com/k10txz.webm",
         "guessers_flat": [
@@ -7563,6 +9932,15 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15687",
         "anime_type": "TV",
         "vintage": "Winter 2014",
+        "genres_raw": [
+            "Action",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Magic",
+            "War",
+            "Love Triangle"
+        ],
         "difficulty": "25.35",
         "video_url": "https://naedist.animemusicquiz.com/u40qpd.mp3",
         "guessers_flat": [
@@ -7623,6 +10001,42 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=12120",
         "anime_type": "TV",
         "vintage": "Winter 2011",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy",
+            "Mahou Shoujo",
+            "Psychological",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Swordplay",
+            "Yuri",
+            "Tragedy",
+            "Time Manipulation",
+            "Henshin",
+            "Coming of Age",
+            "Anti-Hero",
+            "Survival",
+            "Alternate Universe",
+            "Guns",
+            "Yandere",
+            "Witch",
+            "Aliens",
+            "Gods",
+            "Urban Fantasy",
+            "Philosophy",
+            "Primarily Child Cast",
+            "Urban",
+            "Cosmic Horror",
+            "Denpa",
+            "Kuudere",
+            "Suicide",
+            "Class Struggle",
+            "Time Loop",
+            "Mixed Media"
+        ],
         "difficulty": "25.67",
         "video_url": "https://eudist.animemusicquiz.com/pjwsyv.mp3",
         "guessers_flat": [
@@ -7680,6 +10094,36 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24713",
         "anime_type": "TV",
         "vintage": "Spring 2023",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Ecchi",
+            "Mahou Shoujo"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Parody",
+            "Slapstick",
+            "Tragedy",
+            "Otaku Culture",
+            "Henshin",
+            "War",
+            "Idol",
+            "Survival",
+            "Meta",
+            "Swimming",
+            "Dystopian",
+            "Outdoor Activities",
+            "Surreal Comedy",
+            "Video Games",
+            "Urban Fantasy",
+            "Philosophy",
+            "Drugs",
+            "Urban",
+            "Denpa",
+            "Religion"
+        ],
         "difficulty": "31.51",
         "video_url": "https://eudist.animemusicquiz.com/q3hvl0.webm",
         "guessers_flat": [
@@ -7730,6 +10174,38 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=19762",
         "anime_type": "TV",
         "vintage": "Fall 2017",
+        "genres_raw": [
+            "Drama",
+            "Fantasy",
+            "Romance",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Tragedy",
+            "Gore",
+            "Primarily Adult Cast",
+            "Age Gap",
+            "Teacher",
+            "Foreign",
+            "Mythology",
+            "Dragons",
+            "Rural",
+            "Urban Fantasy",
+            "Philosophy",
+            "Skeleton",
+            "Body Horror",
+            "Shapeshifting",
+            "Chimera",
+            "Suicide",
+            "Monster Boy",
+            "Found Family",
+            "Travel",
+            "Marriage",
+            "Fairy",
+            "Interspecies"
+        ],
         "difficulty": "15.44",
         "video_url": "https://eudist.animemusicquiz.com/fow7pc.webm",
         "guessers_flat": [
@@ -7783,6 +10259,26 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=31056",
         "anime_type": "TV",
         "vintage": "Summer 2024",
+        "genres_raw": [
+            "Comedy",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Satire",
+            "School Club",
+            "Coming of Age",
+            "Love Triangle",
+            "Food",
+            "Meta",
+            "Episodic",
+            "Tanned Skin",
+            "Writing",
+            "Urban",
+            "Tomboy",
+            "Unrequited Love",
+            "Aromantic"
+        ],
         "difficulty": "38.96",
         "video_url": "https://eudist.animemusicquiz.com/3z4au7.webm",
         "guessers_flat": [
@@ -7844,6 +10340,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24548",
         "anime_type": "TV",
         "vintage": "Summer 2022",
+        "genres_raw": [
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Slapstick",
+            "Family Life",
+            "Otaku Culture",
+            "Love Triangle",
+            "Tsundere",
+            "Philosophy",
+            "Cohabitation"
+        ],
         "difficulty": "34.15",
         "video_url": "https://naedist.animemusicquiz.com/3dyy8e.mp3",
         "guessers_flat": [
@@ -7899,6 +10408,10 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=685",
         "anime_type": "TV",
         "vintage": "Summer 2001",
+        "genres_raw": [],
+        "tags_raw": [
+            "Kids"
+        ],
         "difficulty": "22.65",
         "video_url": "https://naedist.animemusicquiz.com/qecjnq.mp3",
         "guessers_flat": [
@@ -7951,6 +10464,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=31656",
         "anime_type": "TV",
         "vintage": "Summer 2024",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "CGI",
+            "Politics",
+            "War",
+            "Guns",
+            "Witch",
+            "Maids",
+            "Conspiracy",
+            "Succubus"
+        ],
         "difficulty": "28.17",
         "video_url": "https://eudist.animemusicquiz.com/4855bx.webm",
         "guessers_flat": [
@@ -8011,6 +10541,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21809",
         "anime_type": "TV",
         "vintage": "Summer 2019",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Female Harem",
+            "Magic",
+            "Parody",
+            "Anti-Hero",
+            "Isekai"
+        ],
         "difficulty": "21.09",
         "video_url": "https://eudist.animemusicquiz.com/3regxq.webm",
         "guessers_flat": [
@@ -8063,6 +10607,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=12090",
         "anime_type": "TV",
         "vintage": "Spring 2011",
+        "genres_raw": [
+            "Comedy"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Seinen",
+            "Yuri",
+            "Nekomimi",
+            "Meta",
+            "Bullying",
+            "Crossdressing",
+            "Maids",
+            "Kuudere",
+            "Tomboy",
+            "Religion",
+            "Femboy",
+            "Boarding School"
+        ],
         "difficulty": "24.48",
         "video_url": "https://eudist.animemusicquiz.com/2yezt5.webm",
         "guessers_flat": [
@@ -8112,6 +10674,18 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=35149",
         "anime_type": "TV",
         "vintage": "Winter 2026",
+        "genres_raw": [
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Shounen",
+            "School Club",
+            "Tsundere",
+            "Acting",
+            "VTuber"
+        ],
         "difficulty": "24.90",
         "video_url": "https://naedist.animemusicquiz.com/mqublo.mp3",
         "guessers_flat": [
@@ -8168,6 +10742,27 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23981",
         "anime_type": "TV",
         "vintage": "Summer 2021",
+        "genres_raw": [
+            "Comedy",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Parody",
+            "Satire",
+            "Post-Apocalyptic",
+            "Anti-Hero",
+            "Work",
+            "Alternate Universe",
+            "Time Skip",
+            "Isekai",
+            "Slavery",
+            "Economics",
+            "Revenge",
+            "Dungeon",
+            "Villainess"
+        ],
         "difficulty": "34.58",
         "video_url": "https://naedist.animemusicquiz.com/zb8c2l.mp3",
         "guessers_flat": [
@@ -8227,6 +10822,17 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=9028",
         "anime_type": "Movie",
         "vintage": "Spring 2008",
+        "genres_raw": [
+            "Music",
+            "Mystery"
+        ],
+        "tags_raw": [
+            "Police",
+            "Shounen",
+            "Age Regression",
+            "Detective",
+            "Classical Music"
+        ],
         "difficulty": "25.73",
         "video_url": "https://eudist.animemusicquiz.com/6xkay8.mp3",
         "guessers_flat": [
@@ -8276,6 +10882,11 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=4456",
         "anime_type": "OVA",
         "vintage": "Spring 2004",
+        "genres_raw": [
+            "Drama",
+            "Romance"
+        ],
+        "tags_raw": [],
         "difficulty": "20.39",
         "video_url": "https://eudist.animemusicquiz.com/7rrvqt.webm",
         "guessers_flat": [
@@ -8330,6 +10941,17 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21254",
         "anime_type": "TV",
         "vintage": "Fall 2018",
+        "genres_raw": [
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Magic",
+            "Amnesia",
+            "Travel",
+            "Fairy",
+            "Creature Taming"
+        ],
         "difficulty": "16.10",
         "video_url": "https://naedist.animemusicquiz.com/bk6yd1.mp3",
         "guessers_flat": [
@@ -8379,6 +11001,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=31074",
         "anime_type": "TV",
         "vintage": "Fall 2024",
+        "genres_raw": [
+            "Sports"
+        ],
+        "tags_raw": [
+            "Cars",
+            "Female Harem",
+            "Seinen",
+            "CGI",
+            "Primarily Adult Cast"
+        ],
         "difficulty": "32.45",
         "video_url": "https://eudist.animemusicquiz.com/dsc120.webm",
         "guessers_flat": [
@@ -8433,6 +11065,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=35279",
         "anime_type": "TV",
         "vintage": "Fall 2025",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Swordplay",
+            "Dungeon"
+        ],
         "difficulty": "20.81",
         "video_url": "https://eudist.animemusicquiz.com/3jnba9qaoicjcf62.webm",
         "guessers_flat": [
@@ -8487,6 +11129,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=35230",
         "anime_type": "ONA",
         "vintage": "Winter 2022",
+        "genres_raw": [
+            "Adventure",
+            "Comedy",
+            "Fantasy",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Cars",
+            "Space",
+            "Full CGI",
+            "CGI",
+            "Cyberpunk",
+            "Robots",
+            "Artificial Intelligence",
+            "Crime",
+            "Cyborg",
+            "Travel"
+        ],
         "difficulty": "24.43",
         "video_url": "https://eudist.animemusicquiz.com/xdwk09.webm",
         "guessers_flat": [
@@ -8542,6 +11202,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32545",
         "anime_type": "TV",
         "vintage": "Spring 2025",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Iyashikei",
+            "School Club",
+            "Cute Girls Doing Cute Things",
+            "Drawing",
+            "Food",
+            "Meta",
+            "Episodic",
+            "Photography",
+            "Animals",
+            "Urban",
+            "Travel"
+        ],
         "difficulty": "39.84",
         "video_url": "https://eudist.animemusicquiz.com/74rseg.webm",
         "guessers_flat": [
@@ -8602,6 +11280,38 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15054",
         "anime_type": "TV",
         "vintage": "Summer 2013",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Mystery",
+            "Psychological",
+            "Romance",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Vampire",
+            "Tragedy",
+            "Post-Apocalyptic",
+            "Time Manipulation",
+            "Nudity",
+            "Coming of Age",
+            "Anti-Hero",
+            "Nekomimi",
+            "Love Triangle",
+            "Meta",
+            "Alternate Universe",
+            "Achronological Order",
+            "Yandere",
+            "Ghost",
+            "Youkai",
+            "Gods",
+            "Urban Fantasy",
+            "Philosophy",
+            "Dissociative Identities",
+            "Denpa",
+            "Unrequited Love"
+        ],
         "difficulty": "25.90",
         "video_url": "https://eudist.animemusicquiz.com/c0iguq.mp3",
         "guessers_flat": [
@@ -8659,6 +11369,13 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14432",
         "anime_type": "Movie",
         "vintage": "Winter 2014",
+        "genres_raw": [
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Space",
+            "Pirates"
+        ],
         "difficulty": "22.27",
         "video_url": "https://eudist.animemusicquiz.com/ohhp67.webm",
         "guessers_flat": [
@@ -8708,6 +11425,26 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24354",
         "anime_type": "TV",
         "vintage": "Fall 2021",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Mecha",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Tragedy",
+            "Time Manipulation",
+            "Coming of Age",
+            "Politics",
+            "War",
+            "Alternate Universe",
+            "Real Robot",
+            "Aliens",
+            "Amnesia",
+            "Isekai"
+        ],
         "difficulty": "11.64",
         "video_url": "https://naedist.animemusicquiz.com/gzcd6t.mp3",
         "guessers_flat": [
@@ -8758,6 +11495,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=13251",
         "anime_type": "TV",
         "vintage": "Summer 2012",
+        "genres_raw": [
+            "Action",
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Tragedy",
+            "Gore",
+            "Politics",
+            "Primarily Adult Cast",
+            "War",
+            "Guns",
+            "Real Robot",
+            "Aliens",
+            "Terrorism"
+        ],
         "difficulty": "20.46",
         "video_url": "https://eudist.animemusicquiz.com/we0bfa.webm",
         "guessers_flat": [
@@ -8786,8 +11540,8 @@
             "konomi"
         ],
         "lives_taken_flat": [
-            "konomi",
-            "lakumix"
+            "lakumix",
+            "konomi"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -8810,6 +11564,39 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=1825",
         "anime_type": "TV",
         "vintage": "Fall 2002",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Drama",
+            "Fantasy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Martial Arts",
+            "Shounen",
+            "Super Power",
+            "Slapstick",
+            "Battle Royale",
+            "Coming of Age",
+            "Achronological Order",
+            "Bullying",
+            "Revenge",
+            "Ninja",
+            "Kaiju",
+            "Philosophy",
+            "Primarily Child Cast",
+            "Anachronism",
+            "Death Game",
+            "Shapeshifting",
+            "Necromancy",
+            "Found Family",
+            "Travel",
+            "Orphan",
+            "Unrequited Love",
+            "Estranged Family",
+            "Criminal Organization"
+        ],
         "difficulty": "25.69",
         "video_url": "https://naedist.animemusicquiz.com/1ggydb.mp3",
         "guessers_flat": [
@@ -8869,6 +11656,42 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=7293",
         "anime_type": "TV",
         "vintage": "Winter 2007",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Drama",
+            "Fantasy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Martial Arts",
+            "Military",
+            "Swordplay",
+            "Shounen",
+            "Super Power",
+            "Tragedy",
+            "Coming of Age",
+            "Politics",
+            "Anti-Hero",
+            "War",
+            "Time Skip",
+            "Achronological Order",
+            "Fugitive",
+            "Revenge",
+            "Gods",
+            "Ninja",
+            "Kaiju",
+            "Terrorism",
+            "Cultivation",
+            "Philosophy",
+            "Conspiracy",
+            "Anachronism",
+            "Necromancy",
+            "Travel",
+            "Orphan",
+            "Criminal Organization"
+        ],
         "difficulty": "23.68",
         "video_url": "https://naedist.animemusicquiz.com/15rzgu.mp3",
         "guessers_flat": [
@@ -8926,6 +11749,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=34087",
         "anime_type": "TV",
         "vintage": "Spring 2025",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Mystery"
+        ],
+        "tags_raw": [
+            "Josei",
+            "Police",
+            "Primarily Adult Cast",
+            "Crime",
+            "Detective",
+            "Butler"
+        ],
         "difficulty": "13.49",
         "video_url": "https://naedist.animemusicquiz.com/qehr0v.mp3",
         "guessers_flat": [
@@ -8979,6 +11815,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22247",
         "anime_type": "TV",
         "vintage": "Winter 2020",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Nudity",
+            "Nekomimi",
+            "Food",
+            "Work",
+            "Tsundere",
+            "Episodic",
+            "Maids",
+            "Kemonomimi",
+            "LGBTQ+ Themes",
+            "Restaurant"
+        ],
         "difficulty": "34.47",
         "video_url": "https://naedist.animemusicquiz.com/vyrvuk.mp3",
         "guessers_flat": [
@@ -9034,6 +11888,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20691",
         "anime_type": "OVA",
         "vintage": "Fall 2017",
+        "genres_raw": [
+            "Comedy",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Nekomimi",
+            "Work",
+            "Maids",
+            "Kemonomimi",
+            "Chibi",
+            "Kuudere",
+            "Restaurant"
+        ],
         "difficulty": "26.67",
         "video_url": "https://naedist.animemusicquiz.com/4rv032.mp3",
         "guessers_flat": [
@@ -9091,6 +11960,27 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=31172",
         "anime_type": "TV",
         "vintage": "Winter 2025",
+        "genres_raw": [
+            "Comedy",
+            "Fantasy",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Iyashikei",
+            "Age Gap",
+            "Food",
+            "Isekai",
+            "Kemonomimi",
+            "Monster Girl",
+            "Urban Fantasy",
+            "Language Barrier",
+            "Elf",
+            "Dungeon",
+            "Travel",
+            "Reverse Isekai"
+        ],
         "difficulty": "35.08",
         "video_url": "https://naedist.animemusicquiz.com/sgb22h.mp3",
         "guessers_flat": [
@@ -9147,6 +12037,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15349",
         "anime_type": "TV",
         "vintage": "Winter 2014",
+        "genres_raw": [
+            "Comedy",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Shounen",
+            "Slapstick",
+            "Coming of Age",
+            "Mafia",
+            "Love Triangle",
+            "Tsundere",
+            "Yakuza",
+            "Kuudere",
+            "Arranged Marriage",
+            "Fake Relationship"
+        ],
         "difficulty": "24.38",
         "video_url": "https://eudist.animemusicquiz.com/i3jt19.webm",
         "guessers_flat": [
@@ -9209,6 +12117,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16645",
         "anime_type": "TV",
         "vintage": "Spring 2015",
+        "genres_raw": [
+            "Comedy",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Shounen",
+            "Mafia",
+            "Love Triangle",
+            "Tsundere",
+            "Yakuza",
+            "Kuudere",
+            "Arranged Marriage",
+            "Fake Relationship"
+        ],
         "difficulty": "25.71",
         "video_url": "https://eudist.animemusicquiz.com/2h57o8.webm",
         "guessers_flat": [
@@ -9264,6 +12188,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=9859",
         "anime_type": "TV",
         "vintage": "Fall 2008",
+        "genres_raw": [
+            "Comedy",
+            "Music",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Josei",
+            "Slapstick",
+            "Primarily Adult Cast",
+            "Band",
+            "Foreign",
+            "College",
+            "Classical Music"
+        ],
         "difficulty": "29.18",
         "video_url": "https://naedist.animemusicquiz.com/uqk11t.mp3",
         "guessers_flat": [
@@ -9316,6 +12255,29 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18156",
         "anime_type": "TV",
         "vintage": "Fall 2016",
+        "genres_raw": [
+            "Mystery",
+            "Sci-Fi",
+            "Supernatural",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Time Manipulation",
+            "Meta",
+            "Afterlife",
+            "Achronological Order",
+            "Ghost",
+            "Philosophy",
+            "Conspiracy",
+            "Dissociative Identities",
+            "Cult",
+            "Urban",
+            "Denpa",
+            "Detective",
+            "Suicide",
+            "Religion"
+        ],
         "difficulty": "39.65",
         "video_url": "https://eudist.animemusicquiz.com/zqbedq.webm",
         "guessers_flat": [
@@ -9370,6 +12332,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=12511",
         "anime_type": "Movie",
         "vintage": "Winter 2011",
+        "genres_raw": [
+            "Drama"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Family Life",
+            "Coming of Age",
+            "Work",
+            "Time Skip",
+            "Economics",
+            "Rural",
+            "Outdoor Activities",
+            "Tanned Skin",
+            "Agriculture",
+            "Orphan",
+            "Marriage"
+        ],
         "difficulty": "16.52",
         "video_url": "https://eudist.animemusicquiz.com/sqj0e9.webm",
         "guessers_flat": [
@@ -9423,6 +12402,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=28892",
         "anime_type": "TV",
         "vintage": "Winter 2025",
+        "genres_raw": [
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Iyashikei",
+            "Cute Girls Doing Cute Things",
+            "Love Triangle",
+            "Educational",
+            "Episodic",
+            "Tanned Skin",
+            "Language Barrier",
+            "Coastal",
+            "Indigenous Cultures"
+        ],
         "difficulty": "32.07",
         "video_url": "https://eudist.animemusicquiz.com/qne4x2.webm",
         "guessers_flat": [
@@ -9476,6 +12471,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14208",
         "anime_type": "TV",
         "vintage": "Spring 2013",
+        "genres_raw": [
+            "Comedy",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Otaku Culture",
+            "Henshin",
+            "Love Triangle",
+            "Tsundere",
+            "Chuunibyou",
+            "Urban"
+        ],
         "difficulty": "18.50",
         "video_url": "https://eudist.animemusicquiz.com/4b7ve4.webm",
         "guessers_flat": [
@@ -9536,6 +12545,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=6619",
         "anime_type": "TV",
         "vintage": "Fall 2006",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Parody",
+            "Crossdressing",
+            "Ghost",
+            "Ojou-sama",
+            "Femboy"
+        ],
         "difficulty": "25.63",
         "video_url": "https://eudist.animemusicquiz.com/elpkhk.webm",
         "guessers_flat": [
@@ -9590,6 +12613,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14179",
         "anime_type": "OVA",
         "vintage": "Summer 2012",
+        "genres_raw": [
+            "Drama",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Gender Bending",
+            "Coming of Age",
+            "Crossdressing",
+            "LGBTQ+ Themes"
+        ],
         "difficulty": "21.65",
         "video_url": "https://eudist.animemusicquiz.com/e2agqv.webm",
         "guessers_flat": [
@@ -9644,6 +12677,32 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24246",
         "anime_type": "TV",
         "vintage": "Fall 2021",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Swordplay",
+            "Seinen",
+            "Tragedy",
+            "Gore",
+            "Coming of Age",
+            "Politics",
+            "War",
+            "Bullying",
+            "Gods",
+            "Assassins",
+            "Fairy Tale",
+            "Conspiracy",
+            "Language Barrier",
+            "Disability",
+            "Travel",
+            "Medieval"
+        ],
         "difficulty": "36.45",
         "video_url": "https://naedist.animemusicquiz.com/hvdqwp.mp3",
         "guessers_flat": [
@@ -9696,6 +12755,27 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=192",
         "anime_type": "Movie",
         "vintage": "Winter 1997",
+        "genres_raw": [
+            "Drama",
+            "Horror",
+            "Psychological",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Gore",
+            "Nudity",
+            "Primarily Adult Cast",
+            "Idol",
+            "Meta",
+            "Work",
+            "Noir",
+            "Philosophy",
+            "Dissociative Identities",
+            "Acting",
+            "Denpa",
+            "Filmmaking"
+        ],
         "difficulty": "37.17",
         "video_url": "https://eudist.animemusicquiz.com/laa8kb.webm",
         "guessers_flat": [
@@ -9754,6 +12834,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=12271",
         "anime_type": "TV",
         "vintage": "Fall 2011",
+        "genres_raw": [
+            "Action",
+            "Mystery"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Super Power",
+            "Tragedy",
+            "Card Battle",
+            "Episodic",
+            "Memory Manipulation",
+            "Conspiracy",
+            "Dissociative Identities",
+            "Acting",
+            "Urban",
+            "Death Game",
+            "Adoption",
+            "Orphan"
+        ],
         "difficulty": "20.43",
         "video_url": "https://eudist.animemusicquiz.com/03xgdt.mp3",
         "guessers_flat": [
@@ -9811,6 +12910,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=656",
         "anime_type": "OVA",
         "vintage": "Fall 1997",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Drama",
+            "Ecchi",
+            "Mecha"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Slapstick",
+            "Nudity",
+            "Love Triangle"
+        ],
         "difficulty": "22.38",
         "video_url": "https://naedist.animemusicquiz.com/hohhmk.mp3",
         "guessers_flat": [
@@ -9864,6 +12977,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=1826",
         "anime_type": "TV",
         "vintage": "Fall 2002",
+        "genres_raw": [
+            "Drama",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Full CGI",
+            "Alternate Universe",
+            "Episodic",
+            "Gyaru",
+            "Artificial Intelligence",
+            "Urban",
+            "Denpa",
+            "Konbini"
+        ],
         "difficulty": "13.21",
         "video_url": "https://eudist.animemusicquiz.com/gkdujt.webm",
         "guessers_flat": [
@@ -9913,6 +13041,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15094",
         "anime_type": "TV",
         "vintage": "Spring 2013",
+        "genres_raw": [
+            "Drama",
+            "Music",
+            "Romance",
+            "Sports"
+        ],
+        "tags_raw": [
+            "Kids",
+            "CGI",
+            "Cute Girls Doing Cute Things",
+            "Coming of Age",
+            "Idol",
+            "Love Triangle",
+            "Ice Skating",
+            "Fashion",
+            "Primarily Child Cast"
+        ],
         "difficulty": "24.28",
         "video_url": "https://eudist.animemusicquiz.com/uqir0g.webm",
         "guessers_flat": [
@@ -9962,6 +13107,29 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18090",
         "anime_type": "TV",
         "vintage": "Spring 2016",
+        "genres_raw": [
+            "Comedy",
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Slapstick",
+            "CGI",
+            "Cute Girls Doing Cute Things",
+            "Henshin",
+            "Virtual World",
+            "Idol",
+            "Crossdressing",
+            "Dancing",
+            "Surreal Comedy",
+            "Fashion",
+            "Primarily Child Cast",
+            "LGBTQ+ Themes",
+            "Twins",
+            "Transgender",
+            "Rock Music"
+        ],
         "difficulty": "39.77",
         "video_url": "https://eudist.animemusicquiz.com/1w38ny.mp3",
         "guessers_flat": [
@@ -10020,6 +13188,35 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14195",
         "anime_type": "TV",
         "vintage": "Fall 2012",
+        "genres_raw": [
+            "Action",
+            "Psychological",
+            "Sci-Fi",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Police",
+            "Tragedy",
+            "Gore",
+            "Anti-Hero",
+            "Cyberpunk",
+            "Primarily Adult Cast",
+            "Guns",
+            "Robots",
+            "Dystopian",
+            "Fugitive",
+            "Revenge",
+            "Terrorism",
+            "Augmented Reality",
+            "Philosophy",
+            "Conspiracy",
+            "Artificial Intelligence",
+            "Urban",
+            "Body Horror",
+            "Crime",
+            "Detective",
+            "Class Struggle"
+        ],
         "difficulty": "30.76",
         "video_url": "https://naedist.animemusicquiz.com/pgt7ng.mp3",
         "guessers_flat": [
@@ -10078,6 +13275,29 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=849",
         "anime_type": "TV",
         "vintage": "Winter 2002",
+        "genres_raw": [
+            "Drama",
+            "Mecha",
+            "Music",
+            "Mystery",
+            "Psychological",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Post-Apocalyptic",
+            "Time Manipulation",
+            "Coming of Age",
+            "War",
+            "Age Gap",
+            "Super Robot",
+            "Aliens",
+            "Mythology",
+            "Amnesia",
+            "Memory Manipulation",
+            "Philosophy"
+        ],
         "difficulty": "24.41",
         "video_url": "https://eudist.animemusicquiz.com/ci7izc.webm",
         "guessers_flat": [
@@ -10133,6 +13353,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21866",
         "anime_type": "TV",
         "vintage": "Summer 2019",
+        "genres_raw": [
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "School Club",
+            "Cute Girls Doing Cute Things",
+            "Idol",
+            "Dancing"
+        ],
         "difficulty": "22.08",
         "video_url": "https://eudist.animemusicquiz.com/9wnag9.webm",
         "guessers_flat": [
@@ -10188,6 +13418,38 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23779",
         "anime_type": "TV",
         "vintage": "Winter 2021",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Drama",
+            "Fantasy",
+            "Psychological",
+            "Romance",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Seinen",
+            "Tragedy",
+            "Gore",
+            "Time Manipulation",
+            "Alternate Universe",
+            "Time Skip",
+            "Witch",
+            "Isekai",
+            "Maids",
+            "Monster Girl",
+            "Hikikomori",
+            "Assassins",
+            "Memory Manipulation",
+            "Cult",
+            "Elf",
+            "Body Horror",
+            "Monster Boy",
+            "Unrequited Love",
+            "Time Loop",
+            "Medieval"
+        ],
         "difficulty": "32.11",
         "video_url": "https://eudist.animemusicquiz.com/et6sp7.mp3",
         "guessers_flat": [
@@ -10219,9 +13481,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "tbdhater",
             "kaededayo",
-            "patoche49"
+            "patoche49",
+            "tbdhater"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -10245,6 +13507,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20467",
         "anime_type": "Movie",
         "vintage": "Fall 2019",
+        "genres_raw": [
+            "Comedy",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Shounen",
+            "School Club",
+            "Otaku Culture",
+            "Meta",
+            "Time Skip",
+            "Tsundere",
+            "Video Games",
+            "Software Development",
+            "Writing"
+        ],
         "difficulty": "26.84",
         "video_url": "https://naedist.animemusicquiz.com/1x295l.mp3",
         "guessers_flat": [
@@ -10299,6 +13578,31 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24312",
         "anime_type": "TV",
         "vintage": "Fall 2021",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy",
+            "Mystery",
+            "Psychological"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Swordplay",
+            "Post-Apocalyptic",
+            "Coming of Age",
+            "Afterlife",
+            "Mythology",
+            "Dragons",
+            "Reincarnation",
+            "Isekai",
+            "Gods",
+            "Skeleton",
+            "Elf",
+            "Adoption",
+            "Religion",
+            "Found Family"
+        ],
         "difficulty": "31.07",
         "video_url": "https://naedist.animemusicquiz.com/mxsj33.mp3",
         "guessers_flat": [
@@ -10360,6 +13664,29 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32767",
         "anime_type": "TV",
         "vintage": "Winter 2025",
+        "genres_raw": [
+            "Action",
+            "Comedy"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Super Power",
+            "Slapstick",
+            "Family Life",
+            "Gore",
+            "Gangs",
+            "Primarily Adult Cast",
+            "Guns",
+            "Yakuza",
+            "Triads",
+            "Espionage",
+            "Urban Fantasy",
+            "Assassins",
+            "Urban",
+            "Crime",
+            "Found Family",
+            "Konbini"
+        ],
         "difficulty": "17.30",
         "video_url": "https://eudist.animemusicquiz.com/ecbm5oufn2d080k4.webm",
         "guessers_flat": [
@@ -10415,6 +13742,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=1016",
         "anime_type": "TV",
         "vintage": "Fall 2000",
+        "genres_raw": [
+            "Drama",
+            "Horror",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Nudity",
+            "Bullying",
+            "Foreign",
+            "Ghost",
+            "Conspiracy",
+            "Urban",
+            "Denpa"
+        ],
         "difficulty": "20.02",
         "video_url": "https://eudist.animemusicquiz.com/szjh5c.webm",
         "guessers_flat": [
@@ -10468,6 +13810,30 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=10873",
         "anime_type": "TV",
         "vintage": "Winter 2010",
+        "genres_raw": [
+            "Action",
+            "Ecchi",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Shounen",
+            "Super Power",
+            "Gender Bending",
+            "Nudity",
+            "Anti-Hero",
+            "Age Gap",
+            "Amnesia",
+            "Revenge",
+            "LGBTQ+ Themes",
+            "Age Regression",
+            "Dissociative Identities",
+            "Cult",
+            "Kuudere",
+            "Religion",
+            "Psychosexual"
+        ],
         "difficulty": "21.70",
         "video_url": "https://eudist.animemusicquiz.com/wbs5q1.webm",
         "guessers_flat": [
@@ -10522,6 +13888,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24949",
         "anime_type": "TV",
         "vintage": "Fall 2024",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Swordplay",
+            "Super Power",
+            "CGI",
+            "Fugitive",
+            "Isekai",
+            "Medieval"
+        ],
         "difficulty": "29.59",
         "video_url": "https://naedist.animemusicquiz.com/royzsb.mp3",
         "guessers_flat": [
@@ -10582,6 +13964,18 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32644",
         "anime_type": "TV",
         "vintage": "Summer 2024",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Time Skip",
+            "Youkai",
+            "Amnesia",
+            "Gods"
+        ],
         "difficulty": "24.41",
         "video_url": "https://eudist.animemusicquiz.com/ej8vk8.webm",
         "guessers_flat": [
@@ -10631,6 +14025,18 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21646",
         "anime_type": "TV",
         "vintage": "Spring 2019",
+        "genres_raw": [
+            "Comedy",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "School Club",
+            "Drawing",
+            "Calligraphy",
+            "Surreal Comedy",
+            "Language Barrier"
+        ],
         "difficulty": "37.73",
         "video_url": "https://eudist.animemusicquiz.com/bymcq0.webm",
         "guessers_flat": [
@@ -10686,6 +14092,14 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24868",
         "anime_type": "ONA",
         "vintage": "Fall 2021",
+        "genres_raw": [
+            "Music"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Idol",
+            "Anachronism"
+        ],
         "difficulty": "30.79",
         "video_url": "https://naedist.animemusicquiz.com/ykbgkn.mp3",
         "guessers_flat": [
@@ -10749,6 +14163,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=33452",
         "anime_type": "TV",
         "vintage": "Winter 2026",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Mystery",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Battle Royale",
+            "Achronological Order",
+            "Philosophy",
+            "Death Game",
+            "Body Horror",
+            "Kuudere",
+            "Ojou-sama",
+            "Suicide",
+            "Mixed Media"
+        ],
         "difficulty": "33.35",
         "video_url": "https://eudist.animemusicquiz.com/oz5o0h9dna2evzlu.webm",
         "guessers_flat": [
@@ -10804,6 +14236,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16189",
         "anime_type": "TV",
         "vintage": "Fall 2014",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Otaku Culture",
+            "Coming of Age",
+            "Primarily Adult Cast",
+            "Drawing",
+            "Educational",
+            "Meta",
+            "Work",
+            "Acting",
+            "Urban",
+            "Office Lady",
+            "Office"
+        ],
         "difficulty": "28.80",
         "video_url": "https://eudist.animemusicquiz.com/hzqf2a.webm",
         "guessers_flat": [
@@ -10860,6 +14311,25 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23923",
         "anime_type": "TV",
         "vintage": "Summer 2021",
+        "genres_raw": [
+            "Drama",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Yuri",
+            "Iyashikei",
+            "Coming of Age",
+            "Primarily Adult Cast",
+            "Educational",
+            "Work",
+            "Time Skip",
+            "Urban Fantasy",
+            "Environmental",
+            "Animals",
+            "Office Lady",
+            "Coastal"
+        ],
         "difficulty": "29.84",
         "video_url": "https://eudist.animemusicquiz.com/qfwq4k.webm",
         "guessers_flat": [
@@ -10915,6 +14385,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=8031",
         "anime_type": "TV",
         "vintage": "Fall 2007",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Iyashikei",
+            "School Club",
+            "Cute Girls Doing Cute Things",
+            "Drawing",
+            "Meta",
+            "Surreal Comedy"
+        ],
         "difficulty": "17.24",
         "video_url": "https://eudist.animemusicquiz.com/zn3j14.mp3",
         "guessers_flat": [
@@ -10964,6 +14447,15 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24902",
         "anime_type": "Special",
         "vintage": "Fall 2021",
+        "genres_raw": [
+            "Slice of Life",
+            "Sports"
+        ],
+        "tags_raw": [
+            "Iyashikei",
+            "Cute Girls Doing Cute Things",
+            "Golf"
+        ],
         "difficulty": "24.94",
         "video_url": "https://naedist.animemusicquiz.com/94klpu.mp3",
         "guessers_flat": [
@@ -11021,6 +14513,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=5251",
         "anime_type": "Special",
         "vintage": "Fall 2005",
+        "genres_raw": [
+            "Drama",
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Tragedy",
+            "Post-Apocalyptic",
+            "War",
+            "Survival",
+            "Real Robot",
+            "Aliens"
+        ],
         "difficulty": "21.26",
         "video_url": "https://eudist.animemusicquiz.com/71dnj5.webm",
         "guessers_flat": [],
@@ -11064,6 +14570,26 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=17890",
         "anime_type": "TV",
         "vintage": "Spring 2016",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Drama",
+            "Fantasy",
+            "Romance",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Swordplay",
+            "Shounen",
+            "Tragedy",
+            "Yandere",
+            "Revenge",
+            "Urban Fantasy",
+            "Exorcism"
+        ],
         "difficulty": "39.75",
         "video_url": "https://eudist.animemusicquiz.com/yq1pyeeg7ue24s44.webm",
         "guessers_flat": [
@@ -11117,6 +14643,35 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20446",
         "anime_type": "TV",
         "vintage": "Spring 2018",
+        "genres_raw": [
+            "Drama",
+            "Psychological",
+            "Sci-Fi",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Military",
+            "Tragedy",
+            "Post-Apocalyptic",
+            "Time Manipulation",
+            "Otaku Culture",
+            "War",
+            "Alternate Universe",
+            "Time Skip",
+            "Dystopian",
+            "Fugitive",
+            "Amnesia",
+            "Chuunibyou",
+            "Memory Manipulation",
+            "Philosophy",
+            "College",
+            "Age Regression",
+            "Artificial Intelligence",
+            "Dissociative Identities",
+            "Urban",
+            "Denpa",
+            "Kuudere"
+        ],
         "difficulty": "25.65",
         "video_url": "https://eudist.animemusicquiz.com/jlhtdz.webm",
         "guessers_flat": [
@@ -11147,8 +14702,8 @@
             "anicomi"
         ],
         "lives_taken_flat": [
-            "kyuuuu",
-            "sus_domesticus"
+            "sus_domesticus",
+            "kyuuuu"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -11171,6 +14726,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14420",
         "anime_type": "TV",
         "vintage": "Fall 2012",
+        "genres_raw": [
+            "Drama",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Shoujo",
+            "Love Triangle",
+            "Bullying",
+            "Rehabilitation"
+        ],
         "difficulty": "32.29",
         "video_url": "https://eudist.animemusicquiz.com/4w2dex.mp3",
         "guessers_flat": [
@@ -11226,6 +14791,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14420",
         "anime_type": "TV",
         "vintage": "Fall 2012",
+        "genres_raw": [
+            "Drama",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Shoujo",
+            "Love Triangle",
+            "Bullying",
+            "Rehabilitation"
+        ],
         "difficulty": "20.53",
         "video_url": "https://eudist.animemusicquiz.com/ck03gg.webm",
         "guessers_flat": [
@@ -11280,6 +14855,17 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23392",
         "anime_type": "ONA",
         "vintage": "Summer 2014",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Full CGI",
+            "Food",
+            "Ninja"
+        ],
         "difficulty": "21.16",
         "video_url": "https://eudist.animemusicquiz.com/rm3ily.webm",
         "guessers_flat": [
@@ -11308,8 +14894,8 @@
             "anicomi"
         ],
         "lives_taken_flat": [
-            "raphtelia",
-            "sus_domesticus"
+            "sus_domesticus",
+            "raphtelia"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -11332,6 +14918,18 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16300",
         "anime_type": "TV",
         "vintage": "Winter 2015",
+        "genres_raw": [
+            "Comedy",
+            "Mystery"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Cute Girls Doing Cute Things",
+            "Idol",
+            "Musical Theater",
+            "Surreal Comedy",
+            "Detective"
+        ],
         "difficulty": "21.45",
         "video_url": "https://eudist.animemusicquiz.com/dztax7.webm",
         "guessers_flat": [
@@ -11385,6 +14983,42 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=19826",
         "anime_type": "TV",
         "vintage": "Winter 2019",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Swordplay",
+            "Tragedy",
+            "CGI",
+            "Gore",
+            "Henshin",
+            "Politics",
+            "Anti-Hero",
+            "Tsundere",
+            "Bullying",
+            "Isekai",
+            "Slavery",
+            "Economics",
+            "Revenge",
+            "Kemonomimi",
+            "Cultivation",
+            "Conspiracy",
+            "Language Barrier",
+            "Cult",
+            "Crime",
+            "Medicine",
+            "Ojou-sama",
+            "Villainess",
+            "Religion",
+            "Spearplay",
+            "Travel",
+            "Matriarchy",
+            "Medieval"
+        ],
         "difficulty": "35.85",
         "video_url": "https://naedist.animemusicquiz.com/matrmm.mp3",
         "guessers_flat": [
@@ -11448,6 +15082,42 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=19826",
         "anime_type": "TV",
         "vintage": "Winter 2019",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Swordplay",
+            "Tragedy",
+            "CGI",
+            "Gore",
+            "Henshin",
+            "Politics",
+            "Anti-Hero",
+            "Tsundere",
+            "Bullying",
+            "Isekai",
+            "Slavery",
+            "Economics",
+            "Revenge",
+            "Kemonomimi",
+            "Cultivation",
+            "Conspiracy",
+            "Language Barrier",
+            "Cult",
+            "Crime",
+            "Medicine",
+            "Ojou-sama",
+            "Villainess",
+            "Religion",
+            "Spearplay",
+            "Travel",
+            "Matriarchy",
+            "Medieval"
+        ],
         "difficulty": "35.85",
         "video_url": "https://eudist.animemusicquiz.com/0jyufx.webm",
         "guessers_flat": [
@@ -11511,6 +15181,18 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22480",
         "anime_type": "TV",
         "vintage": "Fall 2019",
+        "genres_raw": [
+            "Comedy",
+            "Fantasy",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Episodic",
+            "Maids",
+            "Chibi"
+        ],
         "difficulty": "23.44",
         "video_url": "https://eudist.animemusicquiz.com/u06en8.webm",
         "guessers_flat": [
@@ -11563,6 +15245,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32138",
         "anime_type": "TV",
         "vintage": "Fall 2025",
+        "genres_raw": [
+            "Comedy",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Parody",
+            "Shoujo",
+            "Yandere",
+            "Reincarnation",
+            "Isekai",
+            "Chuunibyou",
+            "Villainess",
+            "Royal Affairs"
+        ],
         "difficulty": "19.98",
         "video_url": "https://naedist.animemusicquiz.com/ff3j2a.mp3",
         "guessers_flat": [
@@ -11593,8 +15291,8 @@
             "konomi"
         ],
         "lives_taken_flat": [
-            "_shadow",
-            "konomi"
+            "konomi",
+            "_shadow"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -11617,6 +15315,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23279",
         "anime_type": "TV",
         "vintage": "Summer 2020",
+        "genres_raw": [
+            "Action",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Martial Arts",
+            "Swordplay",
+            "Shounen",
+            "Super Power",
+            "CGI",
+            "Battle Royale",
+            "Foreign",
+            "Gods",
+            "Urban Fantasy",
+            "Cult",
+            "Urban",
+            "Rotoscoping"
+        ],
         "difficulty": "29.70",
         "video_url": "https://eudist.animemusicquiz.com/k5v9sx.webm",
         "guessers_flat": [
@@ -11678,6 +15394,17 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16098",
         "anime_type": "TV",
         "vintage": "Winter 2015",
+        "genres_raw": [
+            "Comedy",
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Idol",
+            "Work",
+            "Dancing"
+        ],
         "difficulty": "26.48",
         "video_url": "https://naedist.animemusicquiz.com/zbt97r.mp3",
         "guessers_flat": [
@@ -11734,6 +15461,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=25490",
         "anime_type": "TV",
         "vintage": "Spring 2023",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Idol",
+            "Work",
+            "Dancing",
+            "Primarily Child Cast",
+            "Acting"
+        ],
         "difficulty": "30.99",
         "video_url": "https://eudist.animemusicquiz.com/kvdp9b.webm",
         "guessers_flat": [
@@ -11789,6 +15530,13 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22443",
         "anime_type": "Special",
         "vintage": "Spring 2018",
+        "genres_raw": [
+            "Music"
+        ],
+        "tags_raw": [
+            "Idol",
+            "Work"
+        ],
         "difficulty": "31.07",
         "video_url": "https://eudist.animemusicquiz.com/wams7d.mp3",
         "guessers_flat": [
@@ -11842,6 +15590,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16184",
         "anime_type": "Movie",
         "vintage": "Fall 2014",
+        "genres_raw": [
+            "Action",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Martial Arts",
+            "Shounen",
+            "Space",
+            "Super Power",
+            "Primarily Adult Cast",
+            "Aliens",
+            "Ninja",
+            "Anachronism",
+            "Orphan"
+        ],
         "difficulty": "22.02",
         "video_url": "https://eudist.animemusicquiz.com/8l6fvj.webm",
         "guessers_flat": [
@@ -11897,6 +15660,40 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=27609",
         "anime_type": "TV",
         "vintage": "Spring 2025",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Mystery",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Satire",
+            "Tragedy",
+            "CGI",
+            "Henshin",
+            "Anti-Hero",
+            "Cyberpunk",
+            "Idol",
+            "Achronological Order",
+            "Superhero",
+            "Robots",
+            "Aliens",
+            "Dystopian",
+            "Revenge",
+            "Urban Fantasy",
+            "Assassins",
+            "Philosophy",
+            "Animals",
+            "Conspiracy",
+            "Cult",
+            "Urban",
+            "Body Horror",
+            "Kuudere",
+            "Suicide",
+            "Orphan",
+            "Mixed Media"
+        ],
         "difficulty": "35.67",
         "video_url": "https://eudist.animemusicquiz.com/rzbzm3n089cwpslw.webm",
         "guessers_flat": [
@@ -11947,6 +15744,22 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=27443",
         "anime_type": "TV",
         "vintage": "Summer 2024",
+        "genres_raw": [
+            "Comedy",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Parody",
+            "School Club",
+            "Otaku Culture",
+            "Politics",
+            "Tsundere",
+            "Maids",
+            "Urban",
+            "Kuudere",
+            "Estranged Family"
+        ],
         "difficulty": "37.96",
         "video_url": "https://naedist.animemusicquiz.com/ex163g.mp3",
         "guessers_flat": [
@@ -12004,6 +15817,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16078",
         "anime_type": "TV",
         "vintage": "Summer 2014",
+        "genres_raw": [
+            "Action",
+            "Fantasy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Super Power",
+            "Terrorism"
+        ],
         "difficulty": "29.89",
         "video_url": "https://eudist.animemusicquiz.com/t8canv.mp3",
         "guessers_flat": [
@@ -12059,6 +15882,30 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23847",
         "anime_type": "TV",
         "vintage": "Spring 2021",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Romance",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Tragedy",
+            "Time Manipulation",
+            "Gangs",
+            "Love Triangle",
+            "Alternate Universe",
+            "Bullying",
+            "Motorcycles",
+            "Revenge",
+            "Urban Fantasy",
+            "Philosophy",
+            "Delinquents",
+            "Age Regression",
+            "Urban",
+            "Crime",
+            "Suicide"
+        ],
         "difficulty": "38.42",
         "video_url": "https://naedist.animemusicquiz.com/xd0nx3.mp3",
         "guessers_flat": [
@@ -12115,6 +15962,14 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15587",
         "anime_type": "TV",
         "vintage": "Winter 2014",
+        "genres_raw": [
+            "Comedy"
+        ],
+        "tags_raw": [
+            "Slapstick",
+            "Shogi",
+            "Episodic"
+        ],
         "difficulty": "27.91",
         "video_url": "https://naedist.animemusicquiz.com/np3g08.mp3",
         "guessers_flat": [
@@ -12170,6 +16025,31 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=3920",
         "anime_type": "OVA",
         "vintage": "Fall 2004",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Space",
+            "Super Power",
+            "Yuri",
+            "Tragedy",
+            "CGI",
+            "Henshin",
+            "Nudity",
+            "Coming of Age",
+            "Super Robot",
+            "Space Opera",
+            "Aliens",
+            "Kaiju",
+            "Surreal Comedy",
+            "LGBTQ+ Themes",
+            "Artificial Intelligence",
+            "Cosmic Horror"
+        ],
         "difficulty": "25.63",
         "video_url": "https://eudist.animemusicquiz.com/gjenm3.webm",
         "guessers_flat": [
@@ -12226,6 +16106,15 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=1121",
         "anime_type": "TV",
         "vintage": "Spring 2000",
+        "genres_raw": [
+            "Adventure",
+            "Comedy",
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Robots"
+        ],
         "difficulty": "19.51",
         "video_url": "https://eudist.animemusicquiz.com/p83tvs.webm",
         "guessers_flat": [
@@ -12275,6 +16164,19 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=1000270",
         "anime_type": "TV",
         "vintage": "Spring 2006",
+        "genres_raw": [
+            "Adventure",
+            "Drama",
+            "Fantasy",
+            "Mystery",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Time Skip",
+            "Amnesia",
+            "Curses"
+        ],
         "difficulty": "32.26",
         "video_url": "https://eudist.animemusicquiz.com/mdw7nlidypib03nv.webm",
         "guessers_flat": [],
@@ -12318,6 +16220,23 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26773",
         "anime_type": "TV",
         "vintage": "Summer 2025",
+        "genres_raw": [
+            "Adventure",
+            "Sports",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Swordplay",
+            "School Club",
+            "Cute Girls Doing Cute Things",
+            "Time Manipulation",
+            "Coming of Age",
+            "Crossdressing",
+            "Samurai",
+            "Arranged Marriage",
+            "Bowling"
+        ],
         "difficulty": "24.24",
         "video_url": "https://eudist.animemusicquiz.com/nidkndfj1iw241hx.webm",
         "guessers_flat": [
@@ -12350,8 +16269,8 @@
             "anicomi"
         ],
         "lives_taken_flat": [
-            "tbdhater",
             "patoche49",
+            "tbdhater",
             "anicomi"
         ],
         "lives_saved_flat": [],
@@ -12376,6 +16295,14 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=1941",
         "anime_type": "Movie",
         "vintage": "Spring 1997",
+        "genres_raw": [
+            "Comedy"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Animals",
+            "Crime"
+        ],
         "difficulty": "17.52",
         "video_url": "https://naedist.animemusicquiz.com/w7q6zw.mp3",
         "guessers_flat": [
@@ -12425,6 +16352,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=31171",
         "anime_type": "Movie",
         "vintage": "Spring 2024",
+        "genres_raw": [
+            "Drama",
+            "Psychological",
+            "Slice of Life",
+            "Sports"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Idol",
+            "Kemonomimi",
+            "Athletics",
+            "Rehabilitation",
+            "Urban",
+            "Disability"
+        ],
         "difficulty": "34.84",
         "video_url": "https://naedist.animemusicquiz.com/hxm5p4.mp3",
         "guessers_flat": [
@@ -12481,6 +16423,15 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=28644",
         "anime_type": "TV",
         "vintage": "Summer 2025",
+        "genres_raw": [
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "School Club",
+            "Coming of Age",
+            "Band"
+        ],
         "difficulty": "35.86",
         "video_url": "https://eudist.animemusicquiz.com/922s39lbxc66qvfp.webm",
         "guessers_flat": [
@@ -12541,6 +16492,30 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24207",
         "anime_type": "TV",
         "vintage": "Summer 2021",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy",
+            "Mystery",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Shounen",
+            "Vampire",
+            "Tragedy",
+            "Gore",
+            "Steampunk",
+            "Anti-Hero",
+            "Primarily Adult Cast",
+            "Tsundere",
+            "Foreign",
+            "Chibi",
+            "Tanned Skin",
+            "Conspiracy",
+            "Anachronism",
+            "Religion"
+        ],
         "difficulty": "27.54",
         "video_url": "https://naedist.animemusicquiz.com/z5wt93.mp3",
         "guessers_flat": [
@@ -12600,6 +16575,34 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=451",
         "anime_type": "TV",
         "vintage": "Fall 1979",
+        "genres_raw": [
+            "Adventure",
+            "Drama",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Military",
+            "Swordplay",
+            "Shoujo",
+            "Gender Bending",
+            "Tragedy",
+            "Politics",
+            "Primarily Adult Cast",
+            "War",
+            "Time Skip",
+            "Guns",
+            "Crossdressing",
+            "Foreign",
+            "Maids",
+            "Philosophy",
+            "LGBTQ+ Themes",
+            "Ojou-sama",
+            "Tomboy",
+            "Suicide",
+            "Royal Affairs",
+            "Class Struggle"
+        ],
         "difficulty": "26.80",
         "video_url": "https://eudist.animemusicquiz.com/zedsmr.mp3",
         "guessers_flat": [
@@ -12649,6 +16652,17 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24787",
         "anime_type": "ONA",
         "vintage": "Summer 2021",
+        "genres_raw": [
+            "Music",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Space",
+            "Idol",
+            "Crossover",
+            "Dancing",
+            "Augmented Reality"
+        ],
         "difficulty": "30.74",
         "video_url": "https://eudist.animemusicquiz.com/cxksn2.webm",
         "guessers_flat": [
@@ -12712,6 +16726,15 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=1175",
         "anime_type": "Special",
         "vintage": "Fall 1997",
+        "genres_raw": [
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Shoujo",
+            "Agender",
+            "Angels"
+        ],
         "difficulty": "39.18",
         "video_url": "https://eudist.animemusicquiz.com/6pps4j.mp3",
         "guessers_flat": [
@@ -12770,6 +16793,31 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=33320",
         "anime_type": "TV",
         "vintage": "Spring 2025",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Fantasy",
+            "Romance",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Parody",
+            "Shounen",
+            "Slapstick",
+            "Otaku Culture",
+            "Meta",
+            "Witch",
+            "Episodic",
+            "Youkai",
+            "Surreal Comedy",
+            "Urban Fantasy",
+            "Werewolf",
+            "Urban",
+            "Found Family",
+            "Cohabitation"
+        ],
         "difficulty": "28.52",
         "video_url": "https://naedist.animemusicquiz.com/rws4pm.mp3",
         "guessers_flat": [
@@ -12823,6 +16871,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=4454",
         "anime_type": "TV",
         "vintage": "Fall 2004",
+        "genres_raw": [
+            "Comedy"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Shounen",
+            "Food",
+            "Meta",
+            "Surreal Comedy"
+        ],
         "difficulty": "26.35",
         "video_url": "https://naedist.animemusicquiz.com/k91mag.mp3",
         "guessers_flat": [
@@ -12852,8 +16910,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "chommy",
-            "mami"
+            "mami",
+            "chommy"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12876,6 +16934,18 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=6234",
         "anime_type": "TV",
         "vintage": "Winter 2006",
+        "genres_raw": [
+            "Drama"
+        ],
+        "tags_raw": [
+            "Military",
+            "Tragedy",
+            "CGI",
+            "Primarily Adult Cast",
+            "Work",
+            "Aviation",
+            "Rescue"
+        ],
         "difficulty": "16.93",
         "video_url": "https://naedist.animemusicquiz.com/vt7f92.mp3",
         "guessers_flat": [
@@ -12904,8 +16974,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "mami",
-            "zomg"
+            "zomg",
+            "mami"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12928,6 +16998,35 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=25413",
         "anime_type": "TV",
         "vintage": "Winter 2024",
+        "genres_raw": [
+            "Drama",
+            "Psychological"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "School Club",
+            "Battle Royale",
+            "Coming of Age",
+            "Politics",
+            "Anti-Hero",
+            "Love Triangle",
+            "Survival",
+            "Tsundere",
+            "Bullying",
+            "Fugitive",
+            "Revenge",
+            "Rehabilitation",
+            "Philosophy",
+            "Delinquents",
+            "Conspiracy",
+            "Dissociative Identities",
+            "Crime",
+            "Kuudere",
+            "Suicide",
+            "Disability",
+            "Boarding School",
+            "Board Game"
+        ],
         "difficulty": "37.16",
         "video_url": "https://eudist.animemusicquiz.com/8p3j68.webm",
         "guessers_flat": [
@@ -12958,8 +17057,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "kyuuuu",
-            "sus_domesticus"
+            "sus_domesticus",
+            "kyuuuu"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12982,6 +17081,26 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26739",
         "anime_type": "TV",
         "vintage": "Spring 2024",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Swordplay",
+            "Shounen",
+            "Super Power",
+            "Tragedy",
+            "Family Life",
+            "Guns",
+            "Yandere",
+            "Revenge",
+            "Surreal Comedy",
+            "Espionage",
+            "Conspiracy",
+            "Body Horror",
+            "Marriage"
+        ],
         "difficulty": "31.12",
         "video_url": "https://eudist.animemusicquiz.com/r9azas.mp3",
         "guessers_flat": [
@@ -13034,6 +17153,21 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15764",
         "anime_type": "TV",
         "vintage": "Spring 2014",
+        "genres_raw": [
+            "Action",
+            "Adventure"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "CGI",
+            "Anti-Hero",
+            "War",
+            "Alternate Universe",
+            "Card Battle",
+            "Dragons",
+            "Circus",
+            "Travel"
+        ],
         "difficulty": "26.69",
         "video_url": "https://eudist.animemusicquiz.com/yu2ri1.webm",
         "guessers_flat": [
@@ -13088,6 +17222,33 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16301",
         "anime_type": "TV",
         "vintage": "Winter 2015",
+        "genres_raw": [
+            "Drama",
+            "Fantasy",
+            "Mahou Shoujo",
+            "Psychological",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Yuri",
+            "Satire",
+            "Tragedy",
+            "Henshin",
+            "Nudity",
+            "Love Triangle",
+            "Meta",
+            "Achronological Order",
+            "Guns",
+            "Bullying",
+            "Amnesia",
+            "Gods",
+            "Philosophy",
+            "Fairy Tale",
+            "Animals",
+            "LGBTQ+ Themes",
+            "Anthropomorphism",
+            "Cohabitation"
+        ],
         "difficulty": "23.21",
         "video_url": "https://naedist.animemusicquiz.com/91qp94.mp3",
         "guessers_flat": [
@@ -13142,6 +17303,27 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=29058",
         "anime_type": "TV",
         "vintage": "Winter 2026",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Military",
+            "Swordplay",
+            "Tragedy",
+            "Gore",
+            "Anti-Hero",
+            "Isekai",
+            "Revenge",
+            "Gods",
+            "Conspiracy",
+            "Cosmic Horror",
+            "Body Horror",
+            "Crime",
+            "Medieval"
+        ],
         "difficulty": "25.23",
         "video_url": "https://naedist.animemusicquiz.com/dtewyv.mp3",
         "guessers_flat": [
@@ -13193,6 +17375,29 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=311",
         "anime_type": "TV",
         "vintage": "Fall 1992",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Martial Arts",
+            "Shounen",
+            "Super Power",
+            "Coming of Age",
+            "Afterlife",
+            "Tsundere",
+            "Ghost",
+            "Youkai",
+            "Urban Fantasy",
+            "Cultivation",
+            "Philosophy",
+            "Delinquents",
+            "Dissociative Identities",
+            "Tomboy"
+        ],
         "difficulty": "30.73",
         "video_url": "https://eudist.animemusicquiz.com/mno32x.webm",
         "guessers_flat": [
@@ -13245,6 +17450,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23043",
         "anime_type": "ONA",
         "vintage": "Winter 2020",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Robots",
+            "Card Battle",
+            "Witch",
+            "Episodic",
+            "Augmented Reality",
+            "Conspiracy",
+            "Artificial Intelligence"
+        ],
         "difficulty": "23.14",
         "video_url": "https://eudist.animemusicquiz.com/82n5lv.webm",
         "guessers_flat": [
@@ -13274,8 +17493,8 @@
             "konomi"
         ],
         "lives_taken_flat": [
-            "konomi",
-            "lakumix"
+            "lakumix",
+            "konomi"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -13298,6 +17517,20 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=19014",
         "anime_type": "TV",
         "vintage": "Spring 2017",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Magic",
+            "War",
+            "Tsundere",
+            "Witch",
+            "Kemonomimi",
+            "Conspiracy",
+            "Anthropomorphism"
+        ],
         "difficulty": "23.46",
         "video_url": "https://eudist.animemusicquiz.com/4a9wk1.webm",
         "guessers_flat": [
@@ -13353,6 +17586,29 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21363",
         "anime_type": "TV",
         "vintage": "Fall 2018",
+        "genres_raw": [
+            "Comedy",
+            "Music",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Satire",
+            "CGI",
+            "Idol",
+            "Zombie",
+            "Time Skip",
+            "Dancing",
+            "Amnesia",
+            "Rural",
+            "Monster Girl",
+            "Surreal Comedy",
+            "LGBTQ+ Themes",
+            "Oiran",
+            "Transgender",
+            "Necromancy",
+            "Body Image"
+        ],
         "difficulty": "23.51",
         "video_url": "https://eudist.animemusicquiz.com/ri4eqa.webm",
         "guessers_flat": [
@@ -13408,6 +17664,17 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=19638",
         "anime_type": "Movie",
         "vintage": "Winter 2017",
+        "genres_raw": [
+            "Comedy",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Food",
+            "Robots",
+            "Rural",
+            "Musical Theater",
+            "Vocal Synth"
+        ],
         "difficulty": "32.50",
         "video_url": "https://eudist.animemusicquiz.com/3lzkvs.webm",
         "guessers_flat": [
@@ -13461,6 +17728,24 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32211",
         "anime_type": "TV",
         "vintage": "Winter 2025",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Swordplay",
+            "Seinen",
+            "Gore",
+            "Anti-Hero",
+            "Reincarnation",
+            "Revenge",
+            "Elf",
+            "Travel",
+            "Medieval"
+        ],
         "difficulty": "33.14",
         "video_url": "https://eudist.animemusicquiz.com/b4dejh.webm",
         "guessers_flat": [
@@ -13513,6 +17798,16 @@
         "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18670",
         "anime_type": "TV",
         "vintage": "Winter 2017",
+        "genres_raw": [
+            "Action",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Police",
+            "Shounen",
+            "Space",
+            "Aliens"
+        ],
         "difficulty": "17.99",
         "video_url": "https://eudist.animemusicquiz.com/0f2y3u.webm",
         "guessers_flat": [

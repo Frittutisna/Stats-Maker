@@ -104,12 +104,12 @@ function updateTimeSubtitle() {
     let displayString = "Last updated: ";
 
     if      (differenceInSeconds    < 60)   displayString += `${differenceInSeconds} seconds ago`;
-    else if (differenceInMinutes    < 60)   displayString += `${differenceInMinutes} minute${differenceInMinutes === 1 ? '' : 's'} ago`;
-    else if (differenceInHours      < 24)   displayString += `${differenceInHours} hour${differenceInHours === 1 ? '' : 's'} ago`;
-    else if (differenceInDays       < 7)    displayString += `${differenceInDays} day${differenceInDays === 1 ? '' : 's'} ago`;
-    else if (differenceInWeeks      < 24)   displayString += `${differenceInWeeks} week${differenceInWeeks === 1 ? '' : 's'} ago`;
-    else if (differenceInMonths     < 24)   displayString += `${differenceInMonths} month${differenceInMonths === 1 ? '' : 's'} ago`;
-    else                                    displayString += `${differenceInYears} year${differenceInDays === 1 ? '' : 's'} ago`;
+    else if (differenceInMinutes    < 60)   displayString += `${differenceInMinutes} minute${differenceInMinutes    === 1 ? '' : 's'} ago`;
+    else if (differenceInHours      < 24)   displayString += `${differenceInHours} hour${differenceInHours          === 1 ? '' : 's'} ago`;
+    else if (differenceInDays       < 7)    displayString += `${differenceInDays} day${differenceInDays             === 1 ? '' : 's'} ago`;
+    else if (differenceInWeeks      < 24)   displayString += `${differenceInWeeks} week${differenceInWeeks          === 1 ? '' : 's'} ago`;
+    else if (differenceInMonths     < 24)   displayString += `${differenceInMonths} month${differenceInMonths       === 1 ? '' : 's'} ago`;
+    else                                    displayString += `${differenceInYears} year${differenceInDays           === 1 ? '' : 's'} ago`;
 
     subtitle.innerText = displayString;
 }
@@ -220,45 +220,319 @@ const sampleLargeSongList = (displaySongs) => {
     return [...formatAndSortSongsList(sampledTicks), ...formatAndSortSongsList(sampledCrosses)];
 };
 
-function renderPlayerTable() {
-    const table = document.getElementById('playerStandingsTable');
-    if(!players || !players.length) return;
-    let headers = Object.keys(players[0]);
+let globalPlayerSortState   = {columnName: "Guess Rate", ascending: false};
+let globalFilteredPlayers   = [];
+let globalMetricHighlights  = {};
 
-    let thead = "<thead><tr>" + headers.map(h => {
+const playerHeadersMasterConfig = [
+    {id: "player",          name: "Player",             ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "team",            name: "Team",               ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
+    {id: "tier",            name: "Tier",               ascMetric: true,    teamReq: true,  watchedReq: false,  def: false},
+    {id: "elo",             name: "Elo",                ascMetric: false,   teamReq: true,  watchedReq: false,  def: true},
+    {id: "guessrate",       name: "Guess Rate",         ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "uf",              name: "UF",                 ascMetric: false,   teamReq: true,  watchedReq: false,  def: true},
+    {id: "score",           name: "Score",              ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
+    {id: "18s",             name: "1/8s",               ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "28s",             name: "2/8s",               ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "78s",             name: "7/8s",               ascMetric: true,    teamReq: false, watchedReq: false,  def: true},
+    {id: "meanover8",       name: "Mean Over-8",        ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
+    {id: "livestaken",      name: "Lives Taken",        ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
+    {id: "livessaved",      name: "Lives Saved",        ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
+    {id: "opguessrate",     name: "OP Guess Rate",      ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "edguessrate",     name: "ED Guess Rate",      ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "inguessrate",     name: "IN Guess Rate",      ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "rigs",            name: "Rigs",               ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
+    {id: "rigrate",         name: "Rig Rate",           ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
+    {id: "solorigs",        name: "Solo Rigs",          ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
+    {id: "solorigrate",     name: "Solo Rig Rate",      ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
+    {id: "rigover8",        name: "Rig Over-8",         ascMetric: true,    teamReq: false, watchedReq: true,   def: false},
+    {id: "over8delta",      name: "Over-8 Delta",       ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
+    {id: "rigguessrate",    name: "Rig Guess Rate",     ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
+    {id: "offguessrate",    name: "Off Guess Rate",     ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
+    {id: "rigdelta",        name: "Rig Delta",          ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
+    {id: "mediantime",      name: "Median Time",        ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
+    {id: "chantguessrate",  name: "Chant Guess Rate",   ascMetric: false,   teamReq: false, watchedReq: false,  def: false}
+];
+
+let activePlayerHeadersConfig = playerHeadersMasterConfig.filter(col => {
+    if (col.teamReq     && !use_teams)  return false;
+    if (col.watchedReq  && !watched)    return false;
+
+    return true;
+});
+
+activePlayerHeadersConfig.forEach(col => {col.visible = col.def;});
+
+window.togglePlayerColumnSettingsMenu = function(event) {
+    event.stopPropagation();
+    document.getElementById("playerColumnSettingsDropdown").classList.toggle("hidden");
+};
+
+document.addEventListener("click", () => {
+    const pMenu = document.getElementById("playerColumnSettingsDropdown");
+    if (pMenu) pMenu.classList.add("hidden");
+});
+
+if (document.getElementById("playerColumnSettingsDropdown")) document.getElementById("playerColumnSettingsDropdown").addEventListener("click", (e) => e.stopPropagation());
+
+function initPlayerColumnSettings() {
+    const container = document.getElementById("playerColumnCheckboxContainer");
+    const masterChk = document.getElementById("playerAllColumnsMasterCheckbox");
+
+    if (!container || !masterChk) return;
+    container.innerHTML = "";
+
+    const updateMasterState = () => {
+        const allChecked        = activePlayerHeadersConfig.every(c => c.visible);
+        const noneChecked       = activePlayerHeadersConfig.every(c => !c.visible);
+        masterChk.checked       = allChecked;
+        masterChk.className     = "rounded accent-black";
+        masterChk.indeterminate = !allChecked && !noneChecked;
+    };
+
+    masterChk.addEventListener("change", () => {
+        activePlayerHeadersConfig.forEach(c => { c.visible = masterChk.checked; });
+        document.querySelectorAll(".player-col-toggle-checkbox").forEach(chk => chk.checked = masterChk.checked);
+        sortAndRenderPlayers();
+    });
+
+    activePlayerHeadersConfig.forEach(col => {
+        const label     = document.createElement("label");
+        label.className = "flex items-center gap-2 cursor-pointer w-full text-left font-normal text-black";
+        const chk       = document.createElement("input");
+        chk.type        = "checkbox";
+        chk.className   = "player-col-toggle-checkbox rounded accent-black";
+        chk.checked     = col.visible;
+
+        chk.addEventListener("change", () => {
+            col.visible = chk.checked;
+
+            updateMasterState       ();
+            sortAndRenderPlayers    ();
+        });
+
+        label.appendChild       (chk);
+        label.appendChild       (document.createTextNode(col.name));
+        container.appendChild   (label);
+    });
+
+    updateMasterState();
+}
+
+function cacheGlobalHighlights() {
+    if (!players || !hlRules) return;
+    globalMetricHighlights = {};
+
+    Object.keys(hlRules).forEach(metricName => {
+        const rule = hlRules[metricName];
+
+        globalMetricHighlights[metricName] = {
+            bestPlayerName  : (rule.best_idx    !== undefined && players[rule.best_idx])    ? players[rule.best_idx]    ["Player"] : null,
+            worstPlayerName : (rule.worst_idx   !== undefined && players[rule.worst_idx])   ? players[rule.worst_idx]   ["Player"] : null
+        };
+    });
+}
+
+function evaluatePlayerConstraint(playerRow, key, operator, value) {
+    const aliasMap = {
+        "gr"            : "guessrate",
+        "usefulness"    : "uf",
+        "solos"         : "18s",
+        "doubles"       : "28s",
+        "sevens"        : "78s",
+        "opgr"          : "opguessrate",
+        "edgr"          : "edguessrate",
+        "ingr"          : "inguessrate",
+        "riggr"         : "rigguessrate",
+        "offgr"         : "offguessrate",
+        "chantgr"       : "chantguessrate"
+    };
+
+    const lookupKey     = aliasMap[key] || key;
+    const matchedHeader = activePlayerHeadersConfig.find(h => h.id === lookupKey);
+
+    if (!matchedHeader) return false;
+
+    let targetRaw = playerRow[matchedHeader.name];
+    let targetVal = (targetRaw !== null && typeof targetRaw === 'object') ? targetRaw.count : targetRaw;
+
+    if (key === "player" || key === "team") {
+        const stringLower = String(targetVal || "").toLowerCase();
+        return stringLower.includes(value.toLowerCase());
+    }
+
+    const parsedTarget  = parseFloat(targetVal);
+    const parsedCrit    = parseFloat(value);
+
+    if (isNaN(parsedTarget) || isNaN(parsedCrit))   return false;
+    if (operator === ":" || operator === "=")       return parsedTarget === parsedCrit;
+    if (operator === "<")                           return parsedTarget <   parsedCrit;
+    if (operator === ">")                           return parsedTarget >   parsedCrit;
+    if (operator === "<=")                          return parsedTarget <=  parsedCrit;
+    if (operator === ">=")                          return parsedTarget >=  parsedCrit;
+    if (operator === "!=" || operator === "!:")     return parsedTarget !== parsedCrit;
+
+    return false;
+}
+
+function processPlayerFiltering(rawQuery) {
+    if (!rawQuery) return [...players];
+
+    const tokens        = [];
+    const tokenRegex    = /\(|\)|or\b|and\b|[^\s"()]+|"[^"]*"/gi;
+
+    let match;
+    while ((match = tokenRegex.exec(rawQuery)) !== null) tokens.push(match[0]);
+
+    const outputQueue   = [];
+    const operatorStack = [];
+    const precedence    = {'or': 1, 'and': 2};
+    let expectOperator  = false;
+
+    tokens.forEach(token => {
+        const lowerToken = token.toLowerCase();
+
+        if (expectOperator && lowerToken !== 'and' && lowerToken !== 'or' && lowerToken !== ')') {
+            while (operatorStack.length && precedence[operatorStack[operatorStack.length - 1]] >= precedence['and']) outputQueue.push(operatorStack.pop());
+            operatorStack.push('and');
+        }
+
+        if (lowerToken === 'and' || lowerToken === 'or') {
+            while (operatorStack.length && precedence[operatorStack[operatorStack.length - 1]] >= precedence[lowerToken]) outputQueue.push(operatorStack.pop());
+            operatorStack.push(lowerToken);
+            expectOperator = false;
+        }
+
+        else if (token === '(') {
+            operatorStack.push(token);
+            expectOperator = false;
+        }
+
+        else if (token === ')') {
+            while (operatorStack.length && operatorStack[operatorStack.length - 1] !== '(') outputQueue.push(operatorStack.pop());
+            operatorStack.pop();
+            expectOperator = true;
+        }
+
+        else {
+            outputQueue.push(token);
+            expectOperator = true;
+        }
+    });
+
+    while (operatorStack.length) outputQueue.push(operatorStack.pop());
+
+    return players.filter(pRow => {
+        if (outputQueue.length === 0) return true;
+        const evalStack = [];
+
+        for (let token of outputQueue) {
+            const lowerToken = typeof token === 'string' ? token.toLowerCase() : '';
+
+            if (lowerToken === 'and') {
+                const b = evalStack.pop();
+                const a = evalStack.pop();
+                evalStack.push(a && b);
+            }
+
+            else if (lowerToken === 'or') {
+                const b = evalStack.pop();
+                const a = evalStack.pop();
+                evalStack.push(a || b);
+            }
+
+            else {
+                const exprRegex = /^([a-zA-Z0-9_/-]+)(<=|>=|!=|!:|[:<>==])(.+)$/;
+                const matchExpr = token.match(exprRegex);
+
+                if (matchExpr) {
+                    const key   = matchExpr[1].toLowerCase();
+                    const op    = matchExpr[2];
+                    const val   = matchExpr[3].replace(/^"|"$/g, '').trim();
+                    evalStack.push(evaluatePlayerConstraint(pRow, key, op, val));
+                }
+
+                else {
+                    const cleanWord     = token.replace(/^"|"$/g, '')   .toLowerCase();
+                    const nameString    = String(pRow["Player"] || "")  .toLowerCase();
+                    evalStack.push(nameString.includes(cleanWord));
+                }
+            }
+        }
+
+        return evalStack[0];
+    });
+}
+
+function sortAndRenderPlayers() {
+    const activeCols    = activePlayerHeadersConfig.filter(c => c.visible);
+    const table         = document.getElementById('playerStandingsTable');
+    const counterNode   = document.getElementById('playerSearchCounter');
+
+    if (!table) return;
+
+    const currentSortField          = globalPlayerSortState.columnName;
+    const configMatch               = activePlayerHeadersConfig.find(h => h.name === currentSortField);
+    const sortingDirectionModifier  = globalPlayerSortState.ascending ? 1 : -1;
+
+    globalFilteredPlayers.sort((a, b) => {
+        let valA = a[currentSortField];
+        let valB = b[currentSortField];
+
+        let extractA = (valA !== null && typeof valA === 'object') ? valA.count : valA;
+        let extractB = (valB !== null && typeof valB === 'object') ? valB.count : valB;
+
+        if (extractA === undefined || extractA === null) return 1;
+        if (extractB === undefined || extractB === null) return -1;
+
+        if (typeof extractA === 'string') return sortingDirectionModifier * extractA.localeCompare(extractB);
+        return (extractA < extractB ? -1 : extractA > extractB ? 1 : 0) * sortingDirectionModifier;
+    });
+
+    if (counterNode) counterNode.innerText = `${globalFilteredPlayers.length}/${players.length}`;
+
+    if (activeCols.length === 0) {
+        table.innerHTML = `<thead><tr><th>Error</th></tr></thead><tbody><tr><td class="p-2 text-center text-black">Select at least 1 column</td></tr></tbody>`;
+        return;
+    }
+
+    let thead = "<thead><tr>" + activeCols.map(h => {
         let classes = [];
 
-        if (thickBorderColumns.has(h))  classes.push("border-col-group");
-        if (colExplanations[h])         classes.push("has-explanation");
+        if (thickBorderColumns.has(h.name)) classes.push("border-col-group");
+        if (colExplanations[h.name])        classes.push("has-explanation");
 
-        let classStr = classes.length > 0 ? ` class="${classes.join(' ')}"` : '';
-        return `<th${classStr} data-metric="${h}">${h}</th>`;
+        classes.push("cursor-pointer select-none");
+        const directionIndicator = (globalPlayerSortState.columnName === h.name) ? (globalPlayerSortState.ascending ? " ▲" : " ▼") : " ▶";
+        return `<th class="${classes.join(' ')}" data-player-metric="${h.name}" data-metric="${h.name}">${h.name}${directionIndicator}</th>`;
     }).join('') + "</tr></thead>";
 
     let tbody = "<tbody>";
 
-    players.forEach((row, idx) => {
+    globalFilteredPlayers.forEach((row, idx) => {
         let groupLine = groupBorders.includes(idx) ? " border-group-line" : "";
         tbody += `<tr class="${groupLine}">`;
 
-        headers.forEach(h => {
-            let rawCell     = row[h];
+        activeCols.forEach(h => {
+            let rawCell     = row[h.name];
             let displayVal  = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
-            let cellStyle   = thickBorderColumns.has(h) ? "border-col-group " : "";
+            let cellStyle   = thickBorderColumns.has(h.name) ? "border-col-group " : "";
 
-            if (hlRules[h]) {
-                let isBest  = (hlRules[h].best_idx  === idx);
-                let isWorst = (hlRules[h].worst_idx === idx);
+            if (globalMetricHighlights[h.name]) {
+                const currentPlayerName = row["Player"];
+                const isBest            = (globalMetricHighlights[h.name].bestPlayerName    === currentPlayerName);
+                const isWorst           = (globalMetricHighlights[h.name].worstPlayerName   === currentPlayerName);
 
-                if (h !== "Team" && h !== "Tier" && isBest)   cellStyle += "highlight-best ";
-                if (h !== "Team" && h !== "Tier" && isWorst)  cellStyle += "highlight-worst ";
+                if (h.name !== "Team" && h.name !== "Tier" && isBest)   cellStyle += "highlight-best ";
+                if (h.name !== "Team" && h.name !== "Tier" && isWorst)  cellStyle += "highlight-worst ";
             }
 
-            let intCols         = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs", "Tier"];
-            let formattedVal    = (typeof displayVal === 'number' && !intCols.includes(h))  ? displayVal.toFixed(2)     : displayVal;
-            let finalVal        = (h === "Player")                                          ? `<b>${formattedVal}</b>`  : formattedVal;
+            let intCols         = ["Tier", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"];
+            let formattedVal    = (typeof displayVal === 'number' && !intCols.includes(h.name)) ? displayVal.toFixed(2) : displayVal;
+            let finalVal        = (h.name === "Player") ? `<b>${formattedVal}</b>` : formattedVal;
 
-            if ((h === "Player" && rawCell && rawCell.details && rawCell.details.length > 0) || (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0)) {
+            if ((h.name === "Player" && rawCell && rawCell.details && rawCell.details.length > 0) || 
+                (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0)) {
                 let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
                 tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}">${finalVal}</td>`;
             }
@@ -270,6 +544,41 @@ function renderPlayerTable() {
     });
 
     table.innerHTML = thead + tbody + "</tbody>";
+
+    table.querySelectorAll('thead th').forEach(th => {
+        th.addEventListener('click', () => {
+            const metricName = th.getAttribute('data-player-metric');
+
+            if (globalPlayerSortState.columnName === metricName) globalPlayerSortState.ascending = !globalPlayerSortState.ascending;
+
+            else {
+                globalPlayerSortState.columnName = metricName;
+                const matchObj = activePlayerHeadersConfig.find(m => m.name === metricName);
+                globalPlayerSortState.ascending = matchObj ? matchObj.ascMetric : false;
+            }
+
+            sortAndRenderPlayers();
+        });
+    });
+
+    setupTooltipListeners();
+}
+
+function renderPlayerTable() {
+    cacheGlobalHighlights       ();
+    initPlayerColumnSettings    ();
+
+    const playerSearchInput = document.getElementById('playerSearchInput');
+
+    const triggerPlayerQueryProcess = () => {
+        const rawQuery = playerSearchInput ? playerSearchInput.value.trim() : "";
+        globalFilteredPlayers = processPlayerFiltering(rawQuery);
+        sortAndRenderPlayers();
+    };
+
+    if (playerSearchInput) playerSearchInput.addEventListener('input', debounce(triggerPlayerQueryProcess, 250));
+    globalFilteredPlayers = [...players];
+    sortAndRenderPlayers();
 }
 
 function renderTourTable() {
@@ -384,8 +693,9 @@ function renderTeamTable() {
             let finalVal = (h === "Team Leader") ? `<b>${displayVal}</b>` : displayVal;
 
             if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
-                let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-                tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}">${finalVal}</td>`;
+                let encodedDetails  = encodeURIComponent(JSON.stringify(rawCell.details));
+                let clickHandler    = (h === "Total 1/8s") ? ` onclick="searchTeamSolos('${row["Team Leader"]}')"` : "";
+                tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}"${clickHandler}>${finalVal}</td>`;
             }
 
             else tbody += `<td class="${cellStyle.trim()}">${finalVal}</td>`;
@@ -644,9 +954,16 @@ function setupTooltipListeners() {
         const metricKey = th.getAttribute('data-metric');
         if (!colExplanations[metricKey]) return;
 
-        th.addEventListener('mouseenter',   (e) => {tooltipNode.innerHTML = colExplanations[metricKey]; positionTooltip(e);});
-        th.addEventListener('mousemove',    positionTooltip);
-        th.addEventListener('mouseleave',   () => {tooltipNode.style.display = 'none';});
+        th.removeEventListener('mouseenter',    th._handlerEnter);
+        th.removeEventListener('mousemove',     positionTooltip);
+        th.removeEventListener('mouseleave',    th._handlerLeave);
+
+        th._handlerEnter = (e)  => {tooltipNode.innerHTML       = colExplanations[metricKey]; positionTooltip(e);};
+        th._handlerLeave = ()   => {tooltipNode.style.display   = 'none'; };
+
+        th.addEventListener('mouseenter', th._handlerEnter);
+        th.addEventListener('mousemove',  positionTooltip);
+        th.addEventListener('mouseleave', th._handlerLeave);
     });
 
     document.querySelectorAll('td[data-songs]').forEach(td => {
@@ -1236,6 +1553,8 @@ const searchHeadersConfig = [
     {id: "chanting",    name: "Chanting",   visible: false},
     {id: "anime_type",  name: "Anime Type", visible: false},
     {id: "vintage",     name: "Vintage",    visible: false},
+    {id: "genre",       name: "Genre",      visible: false},
+    {id: "tag",         name: "Tag",        visible: false},
     {id: "difficulty",  name: "Difficulty", visible: false},
     {id: "song",        name: "Song",       visible: true},
     {id: "artist",      name: "Artist",     visible: true},
@@ -1328,7 +1647,7 @@ function initColumnSettingsCheckboxes() {
         
         const chk       = document.createElement("input");
         chk.type        = "checkbox";
-        chk.className   = "col-toggle-checkbox rounded text-black focus:ring-black";
+        chk.className   = "col-toggle-checkbox rounded accent-black";
         chk.checked     = col.visible;
         
         chk.addEventListener("change", () => {
@@ -1369,6 +1688,8 @@ function sortSearchData() {
             case "Arranger"     : valA = a._arrangerLower;                          valB = b._arrangerLower;                        break;
             case "Chanting"     : valA = a._chantingLower;                          valB = b._chantingLower;                        break;
             case "Vintage"      : valA = a._vintageParsed;                          valB = b._vintageParsed;                        break;
+            case "Genre"        : valA = a._genresCount;                            valB = b._genresCount;                          break;
+            case "Tag"          : valA = a._tagsCount;                              valB = b._tagsCount;                            break;
             case "Difficulty"   : valA = a._diffParsed;                             valB = b._diffParsed;                           break;
             case "Correct"      : valA = a._guessersCount;                          valB = b._guessersCount;                        break;
             case "List"         : valA = a._listersCount;                           valB = b._listersCount;                         break;
@@ -1419,6 +1740,8 @@ function evaluateQuery(song, key, operator, value) {
         case "animetype"    : return song._animeTypeLower   .includes(value);
         case "chanting"     : return song._chantingLower    .includes(value);
         case "songtype"     : return song._typeLower        .includes(value);
+        case "genre"        : return song._genresLower      .some(g => g.includes(value));
+        case "tag"          : return song._tagsLower        .some(t => t.includes(value));
 
         case "seen": {
             const isInRoom = song._roomPlayersLower.some(p => p.includes(value));
@@ -1557,6 +1880,30 @@ function renderSearchTable(filteredSongs) {
                     td.textContent      = song.vintage;
                     break;
 
+                case "genre": {
+                    const hasGenres = song.genres_raw && song.genres_raw.length > 0;
+                    td.className    = hasGenres ? "cursor-help hover:bg-gray-100 text-center text-black font-normal" : "text-center text-black font-normal";
+                    if (hasGenres) {
+                        // Keep the list alphabetical for the user
+                        let sortedGenres = [...song.genres_raw].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                        td.setAttribute("data-songs", encodeURIComponent(JSON.stringify(sortedGenres)));
+                    }
+                    td.textContent = song._genresCount;
+                    break;
+                }
+
+                case "tag": {
+                    const hasTags = song.tags_raw && song.tags_raw.length > 0;
+                    td.className  = hasTags ? "cursor-help hover:bg-gray-100 text-center text-black font-normal" : "text-center text-black font-normal";
+                    if (hasTags) {
+                        // Keep the list alphabetical for the user
+                        let sortedTags = [...song.tags_raw].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                        td.setAttribute("data-songs", encodeURIComponent(JSON.stringify(sortedTags)));
+                    }
+                    td.textContent = song._tagsCount;
+                    break;
+                }
+
                 case "difficulty":
                     td.className    = "text-center font-normal font-mono text-black";
                     td.textContent  = song.difficulty;
@@ -1670,6 +2017,10 @@ fetch('Search.json')
             song._typeLower         = (song.type                || "").toLowerCase();
             song._vintageLower      = (song.vintage             || "").toLowerCase();
             song._animeTypeLower    = (song.anime_type          || "").toLowerCase();
+            song._genresLower       = (song.genres_raw          || []).map(g => g.toLowerCase());
+            song._tagsLower         = (song.tags_raw            || []).map(t => t.toLowerCase());
+            song._genresCount       = (song.genres_raw          || []).length;
+            song._tagsCount         = (song.tags_raw            || []).length;
             song._chantingLower     = (song.chanting            || "").toLowerCase();
             song._roomPlayersLower  = (song.room_players        || []).map(p => p.toLowerCase());
             song._livesTakenLower   = (song.lives_taken_flat    || []);
@@ -1763,17 +2114,19 @@ fetch('Search.json')
                     const wordClean = token.replace(/^"|"$/g, '').toLowerCase();
 
                     return (
-                        song._romajiLower       .includes(wordClean) ||
-                        song._englishLower      .includes(wordClean) ||
-                        song._songLower         .includes(wordClean) ||
-                        song._artistRawLower    .includes(wordClean) ||
-                        song._composerLower     .includes(wordClean) ||
-                        song._arrangerLower     .includes(wordClean) ||
-                        song._typeLower         .includes(wordClean) ||
-                        song._vintageLower      .includes(wordClean) ||
-                        song._animeTypeLower    .includes(wordClean) ||
-                        song._chantingLower     .includes(wordClean) ||
-                        song.difficulty         .toLowerCase().includes(wordClean)
+                        song._romajiLower       .includes               (wordClean)     ||
+                        song._englishLower      .includes               (wordClean)     ||
+                        song._songLower         .includes               (wordClean)     ||
+                        song._artistRawLower    .includes               (wordClean)     ||
+                        song._composerLower     .includes               (wordClean)     ||
+                        song._arrangerLower     .includes               (wordClean)     ||
+                        song._typeLower         .includes               (wordClean)     ||
+                        song._vintageLower      .includes               (wordClean)     ||
+                        song._animeTypeLower    .includes               (wordClean)     ||
+                        song._chantingLower     .includes               (wordClean)     ||
+                        song._genresLower       .some(g => g.includes   (wordClean))    ||
+                        song._tagsLower         .some(t => t.includes   (wordClean))    ||
+                        song.difficulty         .toLowerCase().includes (wordClean)
                     );
                 }
 
@@ -1813,3 +2166,14 @@ fetch('Search.json')
     })
 
     .catch(err => console.error("Error setting up lookup engine layout context mapping:", err));
+
+window.searchTeamSolos = function(teamLeader) {
+    const searchTabBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('search-tab'));
+    const searchInput = document.getElementById('songSearchInput');
+    
+    if (searchTabBtn && searchInput) {
+        searchTabBtn.click();
+        searchInput.value = `correctteam:${teamLeader.toLowerCase()} correct:1`;
+        searchInput.dispatchEvent(new Event('input-direct'));
+    }
+};

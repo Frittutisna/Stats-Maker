@@ -2376,8 +2376,11 @@ class TourAnalyzer:
 
                     return hover_lines
 
-                guessers_hover = group_by_team_structure(guessers_flat, include_times = True)
-                listers_hover  = group_by_team_structure(listers_flat,  include_times = False)
+                guessers_hover  = group_by_team_structure(guessers_flat,    include_times = True)
+                listers_hover   = group_by_team_structure(listers_flat,     include_times = False)
+
+                raw_genres      = si.get("animeGenre",              [])                             if isinstance(si.get("animeGenre"), list) else []
+                raw_tags        = [t for t in si.get("animeTags",   []) if t not in EXCLUDED_TAGS]  if isinstance(si.get("animeTags"),  list) else []
 
                 search_songs_list.append({
                     "romaji"                : anime_romaji,
@@ -2392,6 +2395,8 @@ class TourAnalyzer:
                     "ann_url"               : ann_url,
                     "anime_type"            : anime_type,
                     "vintage"               : vint_raw,
+                    "genres_raw"            : raw_genres,
+                    "tags_raw"              : raw_tags,
                     "difficulty"            : safe_diff,
                     "video_url"             : video_url,
                     "guessers_flat"         : guessers_flat,

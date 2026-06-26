@@ -1553,6 +1553,8 @@ const searchHeadersConfig = [
     {id: "chanting",    name: "Chanting",   visible: false},
     {id: "anime_type",  name: "Anime Type", visible: false},
     {id: "vintage",     name: "Vintage",    visible: false},
+    {id: "genre",       name: "Genre",      visible: false},
+    {id: "tag",         name: "Tag",        visible: false},
     {id: "difficulty",  name: "Difficulty", visible: false},
     {id: "song",        name: "Song",       visible: true},
     {id: "artist",      name: "Artist",     visible: true},
@@ -1686,6 +1688,8 @@ function sortSearchData() {
             case "Arranger"     : valA = a._arrangerLower;                          valB = b._arrangerLower;                        break;
             case "Chanting"     : valA = a._chantingLower;                          valB = b._chantingLower;                        break;
             case "Vintage"      : valA = a._vintageParsed;                          valB = b._vintageParsed;                        break;
+            case "Genre"        : valA = a._genresCount;                            valB = b._genresCount;                          break;
+            case "Tag"          : valA = a._tagsCount;                              valB = b._tagsCount;                            break;
             case "Difficulty"   : valA = a._diffParsed;                             valB = b._diffParsed;                           break;
             case "Correct"      : valA = a._guessersCount;                          valB = b._guessersCount;                        break;
             case "List"         : valA = a._listersCount;                           valB = b._listersCount;                         break;
@@ -1736,6 +1740,8 @@ function evaluateQuery(song, key, operator, value) {
         case "animetype"    : return song._animeTypeLower   .includes(value);
         case "chanting"     : return song._chantingLower    .includes(value);
         case "songtype"     : return song._typeLower        .includes(value);
+        case "genre"        : return song._genresLower      .some(g => g.includes(value));
+        case "tag"          : return song._tagsLower        .some(t => t.includes(value));
 
         case "seen": {
             const isInRoom = song._roomPlayersLower.some(p => p.includes(value));
@@ -1874,6 +1880,30 @@ function renderSearchTable(filteredSongs) {
                     td.textContent      = song.vintage;
                     break;
 
+                case "genre": {
+                    const hasGenres = song.genres_raw && song.genres_raw.length > 0;
+                    td.className    = hasGenres ? "cursor-help hover:bg-gray-100 text-center text-black font-normal" : "text-center text-black font-normal";
+                    if (hasGenres) {
+                        // Keep the list alphabetical for the user
+                        let sortedGenres = [...song.genres_raw].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                        td.setAttribute("data-songs", encodeURIComponent(JSON.stringify(sortedGenres)));
+                    }
+                    td.textContent = song._genresCount;
+                    break;
+                }
+
+                case "tag": {
+                    const hasTags = song.tags_raw && song.tags_raw.length > 0;
+                    td.className  = hasTags ? "cursor-help hover:bg-gray-100 text-center text-black font-normal" : "text-center text-black font-normal";
+                    if (hasTags) {
+                        // Keep the list alphabetical for the user
+                        let sortedTags = [...song.tags_raw].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                        td.setAttribute("data-songs", encodeURIComponent(JSON.stringify(sortedTags)));
+                    }
+                    td.textContent = song._tagsCount;
+                    break;
+                }
+
                 case "difficulty":
                     td.className    = "text-center font-normal font-mono text-black";
                     td.textContent  = song.difficulty;
@@ -1987,6 +2017,10 @@ fetch('Search.json')
             song._typeLower         = (song.type                || "").toLowerCase();
             song._vintageLower      = (song.vintage             || "").toLowerCase();
             song._animeTypeLower    = (song.anime_type          || "").toLowerCase();
+            song._genresLower       = (song.genres_raw          || []).map(g => g.toLowerCase());
+            song._tagsLower         = (song.tags_raw            || []).map(t => t.toLowerCase());
+            song._genresCount       = (song.genres_raw          || []).length;
+            song._tagsCount         = (song.tags_raw            || []).length;
             song._chantingLower     = (song.chanting            || "").toLowerCase();
             song._roomPlayersLower  = (song.room_players        || []).map(p => p.toLowerCase());
             song._livesTakenLower   = (song.lives_taken_flat    || []);
@@ -2080,17 +2114,19 @@ fetch('Search.json')
                     const wordClean = token.replace(/^"|"$/g, '').toLowerCase();
 
                     return (
-                        song._romajiLower       .includes(wordClean) ||
-                        song._englishLower      .includes(wordClean) ||
-                        song._songLower         .includes(wordClean) ||
-                        song._artistRawLower    .includes(wordClean) ||
-                        song._composerLower     .includes(wordClean) ||
-                        song._arrangerLower     .includes(wordClean) ||
-                        song._typeLower         .includes(wordClean) ||
-                        song._vintageLower      .includes(wordClean) ||
-                        song._animeTypeLower    .includes(wordClean) ||
-                        song._chantingLower     .includes(wordClean) ||
-                        song.difficulty         .toLowerCase().includes(wordClean)
+                        song._romajiLower       .includes               (wordClean)     ||
+                        song._englishLower      .includes               (wordClean)     ||
+                        song._songLower         .includes               (wordClean)     ||
+                        song._artistRawLower    .includes               (wordClean)     ||
+                        song._composerLower     .includes               (wordClean)     ||
+                        song._arrangerLower     .includes               (wordClean)     ||
+                        song._typeLower         .includes               (wordClean)     ||
+                        song._vintageLower      .includes               (wordClean)     ||
+                        song._animeTypeLower    .includes               (wordClean)     ||
+                        song._chantingLower     .includes               (wordClean)     ||
+                        song._genresLower       .some(g => g.includes   (wordClean))    ||
+                        song._tagsLower         .some(t => t.includes   (wordClean))    ||
+                        song.difficulty         .toLowerCase().includes (wordClean)
                     );
                 }
 

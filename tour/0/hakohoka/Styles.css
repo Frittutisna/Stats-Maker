@@ -36,7 +36,6 @@ body, table, th, td, button, input {font-family: 'Segoe UI', Roboto, Helvetica, 
     line-height         : 1.1;
     text-align          : center;
     font-size           : clamp(9px, 0.9vw, 22.5px);
-    white-space         : nowrap;
 }
 
 #searchSongsTable th {
@@ -170,4 +169,8 @@ td[data-songs].highlight-worst:hover::after {
 
 #columnSettingsDropdown input[type="checkbox"] {
     cursor: pointer;
+}
+
+#teamStatsTable td[onclick] {
+    cursor: pointer !important;
 }
