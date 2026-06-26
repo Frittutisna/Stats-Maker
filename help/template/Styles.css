@@ -179,7 +179,7 @@ td[data-songs].highlight-worst:hover::after {
 
 #playerColumnSettingsDropdown   input   [type="checkbox"],
 #columnSettingsDropdown         input   [type="checkbox"],
-#playerStandingsTable           td      [onclick],
+#playerStandingsTable           tr      [onclick],
 #teamStatsTable                 td      [onclick],
 #tourStatsTable                 td      [onclick] {
     cursor: pointer !important;
