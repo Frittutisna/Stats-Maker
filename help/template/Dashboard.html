@@ -10,14 +10,52 @@
     <body class="p-5">
         <div id="customJsTooltip"></div>
         <h2 id="dashboardTitle" class="text-4xl text-center font-bold">Tour Dashboard</h2>
-        <p id="lastUpdatedSubtitle" class="text-xl text-center font-bold mb-5">Last updated: Some time ago</p>
-        <div id="tabContainer" class="border-b flex justify-center mb-5">
+        <p id="lastUpdatedSubtitle" class="text-xl text-center font-bold mb-1">Last updated: Some time ago</p>
+        <div id="tabContainer" class="border-b flex justify-center mb-1">
             <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
             <button id="tourTabBtn" class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
         </div>
         <div>
             <div id="player-tab" class="tab-content active-content">
-                <div class="table-center-wrapper">
+                <div class="mx-auto w-full">
+                    <div class="w-full bg-gray-50 border p-5 mb-1">
+                        <p class="font-bold">Guide</p>
+                        <p class="mb-1 pt-1 border-t text-xs">
+                            Combine query terms using explicit <code class="bg-gray-200 px-1 rounded font-mono text-xs">and</code>, 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">or</code> keywords<br>
+                            Group precedence with  
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code><br>
+                            Wrap multi-word values in 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br>
+                            You can replace 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">uf</code> with 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">usefulness</code> and
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">guess rate</code> with 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">gr</code><br>
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">elo&lt;90 or (opgr&gt;80 edguessrate&lt;30)</code><br>
+                            returns players that either have an Elo below 90 or<br>
+                            those who have OP and ED Guess Rates above 80% and below 30%
+                        </p>
+                    </div>
+                    <div class="w-full flex items-center justify-start gap-1 mb-1">
+                        <div class="w-full max-w-xl">
+                            <input type="text" id="playerSearchInput" placeholder="guessrate<40 score>50" class="w-full h-[30px] px-2 border text-sm">
+                        </div>
+                        <div id="playerSearchCounter" class="w-[60px] h-[30px] font-bold bg-black text-white flex items-center justify-center text-sm select-none">
+                            0/0
+                        </div>
+                        <div class="relative w-[30px] h-[30px]">
+                            <button id="playerColumnSettingsBtn" class="w-[30px] h-[30px] bg-black text-white text-xl cursor-pointer flex items-center justify-center" onclick="togglePlayerColumnSettingsMenu(event)">⚙</button>
+                            <div id="playerColumnSettingsDropdown" class="bg-white border p-4 w-64 absolute left-0 top-[32px] hidden z-50 shadow-md">
+                                <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
+                                    <input type="checkbox" id="playerAllColumnsMasterCheckbox">All
+                                </label>
+                                <div id="playerColumnCheckboxContainer" class="flex flex-col gap-2 text-xs max-h-[350px] overflow-y-auto"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-max max-w-full overflow-x-auto">
                     <table class="main-table" id="playerStandingsTable"></table>
                 </div>
             </div>
