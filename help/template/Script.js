@@ -485,8 +485,15 @@ function sortAndRenderPlayers() {
         if (extractA === undefined || extractA === null) return 1;
         if (extractB === undefined || extractB === null) return -1;
 
-        if (typeof extractA === 'string') return sortingDirectionModifier * extractA.localeCompare(extractB);
-        return (extractA < extractB ? -1 : extractA > extractB ? 1 : 0) * sortingDirectionModifier;
+        if (currentSortField === "Player" || currentSortField === "Team") return sortingDirectionModifier * String(extractA).localeCompare(String(extractB));
+
+        let numA = typeof extractA === 'string' ? parseFloat(extractA.replace(/[^0-9.-]/g, '')) : extractA;
+        let numB = typeof extractB === 'string' ? parseFloat(extractB.replace(/[^0-9.-]/g, '')) : extractB;
+
+        if (isNaN(numA)) return 1;
+        if (isNaN(numB)) return -1;
+
+        return (numA < numB ? -1 : numA > numB ? 1 : 0) * sortingDirectionModifier;
     });
 
     if (counterNode) counterNode.innerText = `${globalFilteredPlayers.length}/${players.length}`;
