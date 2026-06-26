@@ -416,9 +416,9 @@ class TourAnalyzer:
                     if amt_correct == 1: self.player_song_details[sw_v]["1/8s"].append(song_line)
 
                     elif amt_correct == 2:
-                        opp_player_v = list(active_correct)[1] if sw_v.casefold() == list(active_correct)[0].casefold() and len(active_correct) > 1 else list(active_correct)[0]
-                        t_sw_v       = self.assignments.get(sw_v.lower(), (None,))[0] if self.use_teams else None
-                        t_opp_v      = self.assignments.get(opp_player_v.lower(), (None,))[0] if self.use_teams else None
+                        opp_player_v = list(active_correct)[1]                                  if sw_v.casefold() == list(active_correct)[0].casefold() and len(active_correct) > 1    else list(active_correct)[0]
+                        t_sw_v       = self.assignments.get(sw_v.lower          (), (None,))[0] if self.use_teams                                                                       else None
+                        t_opp_v      = self.assignments.get(opp_player_v.lower  (), (None,))[0] if self.use_teams                                                                       else None
 
                         if t_sw_v is not None and t_opp_v is not None and t_sw_v == t_opp_v : self.player_song_details[sw_v]["2/8s"].append(f"{song_line} (covered by {opp_player_v})")
                         else                                                                : self.player_song_details[sw_v]["2/8s"].append(f"{song_line} (blocked by {opp_player_v})")
@@ -503,6 +503,9 @@ class TourAnalyzer:
                             if n_v in active_correct and amt_correct == 1   : self.player_song_details[n_v]["Solo Rig Conversions"].append(f"✓ {song_line}")
                             else                                            : self.player_song_details[n_v]["Solo Rig Conversions"].append(f"✗ {song_line} {tag_v}")
 
+                lives_taken_players = []
+                lives_saved_players = []
+
                 if self.use_teams:
                     t_list = list({self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments})
 
@@ -520,9 +523,14 @@ class TourAnalyzer:
                             cC, oC = correct & self.rosters[cur], correct & self.rosters[opp]
 
                             if not oC: 
-                                for p in cC: self.p_pts[p] += 1
+                                for p in cC: 
+                                    self.p_pts[p] += 1
+                                    lives_taken_players.append(p.lower())
 
-                            if len(cC) == 1 and len(oC) > 0: self.p_blks[list(cC)[0]] += 1
+                            if len(cC) == 1 and len(oC) > 0: 
+                                lone_p = list(cC)[0]
+                                self.p_blks[lone_p] += 1
+                                lives_saved_players.append(lone_p.lower())
 
                         for _, opp_v, cC_v, oC_v in [(tA, tB, cA & final_members, cB & final_members), (tB, tA, cB & final_members, cA & final_members)]:
                             oL_v = self.t1_lookup.get(opp_v, f"Team {opp_v}")
@@ -2247,6 +2255,9 @@ class TourAnalyzer:
 
                 if not ann_id_raw: continue
 
+                lives_taken_players = []
+                lives_saved_players = []
+
                 anime_romaji    = si.get("animeNames",  {}).get("romaji",  "Unknown").strip()
                 anime_english   = si.get("animeNames",  {}).get("english", "").strip()
                 song_name       = si.get("songName",    "Unknown").strip()
@@ -2300,6 +2311,28 @@ class TourAnalyzer:
                 raw_lists       = song.get("listStates", [])
                 listers_flat    = [ls["name"] for ls in raw_lists if isinstance(ls, dict) and "name" in ls]
 
+                if self.use_teams:
+                    t_list = list({self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments})
+
+                    if len(t_list) == 2:
+                        tA, tB      = t_list[0], t_list[1]
+                        correct_set = set(guessers_flat)
+                        cA, cB      = correct_set & self.rosters[tA], correct_set & self.rosters[tB]
+
+                        if len(cA) == 4 and not cB: self.t_sweeps[tA] += 1; self.global_stats["sweeps"] += 1
+                        if len(cB) == 4 and not cA: self.t_sweeps[tB] += 1; self.global_stats["sweeps"] += 1
+
+                        for cur, opp in [(tA, tB), (tB, tA)]:
+                            cC, oC = correct_set & self.rosters[cur], correct_set & self.rosters[opp]
+
+                            if not oC: 
+                                for p in cC: 
+                                    lives_taken_players.append(p.lower())
+
+                            if len(cC) == 1 and len(oC) > 0: 
+                                lone_p = list(cC)[0]
+                                lives_saved_players.append(lone_p.lower())
+
                 def group_by_team_structure(target_players, include_times = False):
                     if not self.use_teams:
                         sorted_p = sorted(target_players, key = str.lower)
@@ -2339,25 +2372,28 @@ class TourAnalyzer:
                 listers_hover  = group_by_team_structure(listers_flat,  include_times = False)
 
                 search_songs_list.append({
-                    "romaji"            : anime_romaji,
-                    "english"           : anime_english,
-                    "song"              : song_name,
-                    "artist_raw"        : raw_artist,
-                    "artist_arr"        : artist_arr,
-                    "composer"          : composer_name,
-                    "arranger"          : arranger_name,
-                    "type"              : type_fmt,
-                    "chanting"          : is_chanting_str,
-                    "ann_url"           : ann_url,
-                    "anime_type"        : anime_type,
-                    "vintage"           : vint_raw,
-                    "difficulty"        : safe_diff,
-                    "video_url"         : video_url,
-                    "guessers_flat"     : guessers_flat,
-                    "guessers_hover"    : guessers_hover,
-                    "listers_flat"      : listers_flat,
-                    "listers_hover"     : listers_hover,
-                    "room_players"      : room_players_list
+                    "romaji"                : anime_romaji,
+                    "english"               : anime_english,
+                    "song"                  : song_name,
+                    "artist_raw"            : raw_artist,
+                    "artist_arr"            : artist_arr,
+                    "composer"              : composer_name,
+                    "arranger"              : arranger_name,
+                    "type"                  : type_fmt,
+                    "chanting"              : is_chanting_str,
+                    "ann_url"               : ann_url,
+                    "anime_type"            : anime_type,
+                    "vintage"               : vint_raw,
+                    "difficulty"            : safe_diff,
+                    "video_url"             : video_url,
+                    "guessers_flat"         : guessers_flat,
+                    "guessers_hover"        : guessers_hover,
+                    "listers_flat"          : listers_flat,
+                    "listers_hover"         : listers_hover,
+                    "room_players"          : room_players_list,
+                    "lives_taken_flat"      : lives_taken_players,
+                    "lives_saved_flat"      : lives_saved_players,
+                    "correct_teams_flat"    : [self.assignments[p.lower()][0] for p in guessers_flat if p.lower() in self.assignments]
                 })
 
         search_songs_list.sort(key = lambda x: x["romaji"].lower())

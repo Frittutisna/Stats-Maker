@@ -1419,6 +1419,41 @@ function evaluateQuery(song, key, operator, value) {
         case "animetype"    : return song._animeTypeLower   .includes(value);
         case "chanting"     : return song._chantingLower    .includes(value);
         case "songtype"     : return song._typeLower        .includes(value);
+
+        case "seen": {
+            const isInRoom = song._roomPlayersLower.some(p => p.includes(value));
+            return (operator === "!:" || operator === "!=") ? !isInRoom : isInRoom;
+        }
+
+        case "lifetaken": {
+            const wasInRoom = song._roomPlayersLower    .some(p => p.includes(value));
+            const gotLife   = song._livesTakenLower     .some(p => p.includes(value));
+            if (operator === "!:" || operator === "!=") return wasInRoom && !gotLife;
+            return gotLife;
+        }
+
+        case "lifesaved": {
+            const wasInRoom = song._roomPlayersLower    .some(p => p.includes(value));
+            const savedLife = song._livesSavedLower     .some(p => p.includes(value));
+            if (operator === "!:" || operator === "!=") return wasInRoom && !savedLife;
+            return savedLife;
+        }
+
+        case "correctteam": {
+            const teamIndex = window.dashboardData.json_teams.findIndex(t => t["Team Leader"].toLowerCase().includes(value));
+            if (teamIndex === -1) return false;
+            const targetTid = window.dashboardData.json_teams[teamIndex]._tid || window.dashboardData.json_teams[teamIndex].tid;
+
+            const teamRoster = window.dashboardData.json_players
+                .filter (p => window.dashboardData.json_eligibility[window.dashboardData.json_players.indexOf(p)])
+                .map    (p => p.Player.replace(/[★▲▼]/g, '').trim().toLowerCase());
+
+            const teamWasPresent = song._roomPlayersLower.some(p => song._correctTeamsLower.includes(value) || p === value); 
+            const teamGotItRight = (song.correct_teams_flat || []).includes(targetTid);
+
+            if (operator === "!:" || operator === "!=") return teamGotItRight === false; // Present but missed
+            return teamGotItRight;
+        }
     }
 
     if (key === "guessers" || key === "listers") {
@@ -1634,20 +1669,27 @@ fetch('Search.json')
             if (!song.guessers_flat && song.guessers_hover) song.guessers_flat  = song.guessers_hover.map(g => g.split(' (')[0]);
             if (!song.listers_flat  && song.listers_hover)  song.listers_flat   = song.listers_hover;
 
-            song._romajiLower     = (song.romaji        || "").toLowerCase();
-            song._englishLower    = (song.english       || "").toLowerCase();
-            song._songLower       = (song.song          || "").toLowerCase();
-            song._artistRawLower  = (song.artist_raw    || "").toLowerCase();
-            song._composerLower   = (song.composer      || "").toLowerCase();
-            song._arrangerLower   = (song.arranger      || "").toLowerCase();
-            song._typeLower       = (song.type          || "").toLowerCase();
-            song._vintageLower    = (song.vintage       || "").toLowerCase();
-            song._animeTypeLower  = (song.anime_type    || "").toLowerCase();
-            song._chantingLower   = (song.chanting      || "").toLowerCase();
-            song._vintageParsed   = parseVintageToFloat(song.vintage);
-            song._diffParsed      = song.difficulty === "Unrated"   ? -Infinity                     : parseFloat(song.difficulty);
-            song._guessersCount   = song.guessers_flat              ? song.guessers_flat    .length : 0;
-            song._listersCount    = song.listers_flat               ? song.listers_flat     .length : 0;
+            song._romajiLower       = (song.romaji              || "").toLowerCase();
+            song._englishLower      = (song.english             || "").toLowerCase();
+            song._songLower         = (song.song                || "").toLowerCase();
+            song._artistRawLower    = (song.artist_raw          || "").toLowerCase();
+            song._composerLower     = (song.composer            || "").toLowerCase();
+            song._arrangerLower     = (song.arranger            || "").toLowerCase();
+            song._typeLower         = (song.type                || "").toLowerCase();
+            song._vintageLower      = (song.vintage             || "").toLowerCase();
+            song._animeTypeLower    = (song.anime_type          || "").toLowerCase();
+            song._chantingLower     = (song.chanting            || "").toLowerCase();
+            song._roomPlayersLower  = (song.room_players        || []).map(p => p.toLowerCase());
+            song._livesTakenLower   = (song.lives_taken_flat    || []);
+            song._livesSavedLower   = (song.lives_saved_flat    || []);
+            song._diffParsed        = song.difficulty === "Unrated"   ? -Infinity                     : parseFloat(song.difficulty);
+            song._guessersCount     = song.guessers_flat              ? song.guessers_flat    .length : 0;
+            song._listersCount      = song.listers_flat               ? song.listers_flat     .length : 0;
+            song._vintageParsed     = parseVintageToFloat(song.vintage);
+            song._correctTeamsLower = (song.correct_teams_flat  || []).map(tid => {
+                const leader = window.dashboardData.json_teams.find(t => t._tid === tid || t.tid === tid);
+                return leader ? leader["Team Leader"].toLowerCase() : "";
+            });
 
             return song;
         });

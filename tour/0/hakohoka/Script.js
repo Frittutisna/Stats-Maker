@@ -67,6 +67,26 @@ const thickBorderColumns = new Set([
     "Chanting Guess Rate"
 ]);
 
+window.unifiedChartLimits = {xMin: 0, xMax: 8, yMin: 1980, yMax: 2026, dtickY: 5};
+
+if (typeof scatterData !== 'undefined' && scatterData) {
+    const allXValues = [...scatterData.map(d => d.over8)];
+    const allYValues = [...scatterData.map(d => d.vintage)];
+
+    if (typeof arrowData !== 'undefined' && arrowData) {
+        allXValues.push(...arrowData.map(d => d.x_start), ...arrowData.map(d => d.x_end));
+        allYValues.push(...arrowData.map(d => d.y_start), ...arrowData.map(d => d.y_end));
+    }
+
+    window.unifiedChartLimits = {
+        xMin    : Math.min(...allXValues) - 0.25,
+        xMax    : Math.max(...allXValues) + 0.25,
+        yMin    : Math.min(...allYValues) - 1,
+        yMax    : Math.max(...allYValues) + 1,
+        dtickY  : Math.max(2, Math.ceil((Math.max(...allYValues) - Math.min(...allYValues)) / 5))
+    };
+}
+
 function updateTimeSubtitle() {
     const subtitle = document.getElementById('lastUpdatedSubtitle');
     if (!subtitle) return;
@@ -994,7 +1014,6 @@ if (scatterData) {
                 y           : 0.5,
                 yanchor     : 'middle',
                 x           : 1,
-                xpad        : -20,
                 tickmode    : 'array',
                 tickvals    : [0, 50, 100],
                 ticktext    : ['0', '50', '100'],
@@ -1017,7 +1036,8 @@ if (scatterData) {
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
-            fixedrange  : false
+            fixedrange  : false,
+            range       : [window.unifiedChartLimits.xMin, window.unifiedChartLimits.xMax]
         },
         yaxis       : {
             title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
@@ -1025,11 +1045,12 @@ if (scatterData) {
             tickangle   : -90,
             showgrid    : true,
             tickformat  : 'd',
-            dtick       : Math.max(2, Math.ceil((Math.max(...scatterData.map(d => d.vintage)) - Math.min(...scatterData.map(d => d.vintage))) / 5)),
+            dtick       : window.unifiedChartLimits.dtickY,
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
-            fixedrange  : false
+            fixedrange  : false,
+            range       : [window.unifiedChartLimits.yMin, window.unifiedChartLimits.yMax]
         },
         margin      : {l: 75, r: 0, t: 25, b: 75},
         annotations : buildScatterAnnotations(scatterData, 'over8', 'vintage', 'gr')
@@ -1039,16 +1060,6 @@ if (scatterData) {
 let currentListChartMode = "ALL"; 
 
 if (document.getElementById('plotlyListChart') && arrowData) {
-    const allXValues = [...arrowData.map(d => d.x_start), ...arrowData.map(d => d.x_end)];
-    const allYValues = [...arrowData.map(d => d.y_start), ...arrowData.map(d => d.y_end)];
-
-    window.listChartGlobalLimits = {
-        xMin: Math.min(...allXValues) - 0.1,
-        xMax: Math.max(...allXValues) + 0.1,
-        yMin: Math.min(...allYValues) - 1,
-        yMax: Math.max(...allYValues) + 1
-    };
-
     window.listDataPool = {
         "ALL": arrowData.map(d => ({
             acronym     : d.acronym,
@@ -1094,7 +1105,7 @@ function renderListChart() {
         y               : activeScatterSource.map(d => d.y),
         text            : activeScatterSource.map(d => d.acronym),
         hovertemplate   : activeScatterSource.map(d => d.hoverText),
-        hoverlabel      : { align: 'left', font: { family: 'Segoe UI', size: 15 } },
+        hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}},
         mode            : 'markers',
         showlegend      : false,
         marker          : {
@@ -1110,11 +1121,10 @@ function renderListChart() {
                 y           : 0.5,
                 yanchor     : 'middle',
                 x           : 1,
-                xpad        : -20,
                 tickmode    : 'array',
                 tickvals    : [0, 70, 80, 90, 100],
                 ticktext    : ['0', '70', '80', '90', '100'],
-                tickfont    : { family: 'Segoe UI', size: 20, color: 'black', weight: 'bold' }
+                tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'}
             },
             line        : {color: 'black', width: 1},
             cmin        : 0,
@@ -1134,7 +1144,7 @@ function renderListChart() {
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false,
-            range       : [window.listChartGlobalLimits.xMin, window.listChartGlobalLimits.xMax]
+            range       : [window.unifiedChartLimits.xMin, window.unifiedChartLimits.xMax]
         },
         yaxis       : {
             title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
@@ -1142,12 +1152,12 @@ function renderListChart() {
             tickangle   : -90,
             showgrid    : true,
             tickformat  : 'd',
-            dtick       : Math.max(2, Math.ceil((window.listChartGlobalLimits.yMax - window.listChartGlobalLimits.yMin) / 5)),
+            dtick       : window.unifiedChartLimits.dtickY,
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false,
-            range       : [window.listChartGlobalLimits.yMin, window.listChartGlobalLimits.yMax]
+            range       : [window.unifiedChartLimits.yMin, window.unifiedChartLimits.yMax]
         },
         margin      : {l: 75, r: 0, t: 25, b: 75},
         annotations : buildScatterAnnotations(activeScatterSource, 'x', 'y', 'size')
@@ -1235,9 +1245,20 @@ const searchHeadersConfig = [
     {id: "listers",     name: "List",       visible: false}
 ];
 
+function debounce(func, wait) {
+    let timeout;
+
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
 function trimNames(input) {
-    let arr = Array.isArray(input) ? input : (input ? input.split(',').map(x => x.trim()) : []);
-    arr = arr.filter(Boolean);
+    if (!input) return '';
+
+    let arr = Array.isArray(input) ? input : input.split(',').map(x => x.trim());
+    arr     = arr.filter(Boolean);
 
     if (arr.length <= 3)    return arr.join(', ');
     else                    return `${arr.slice(0, 2).join(', ')}, and more`;
@@ -1260,10 +1281,12 @@ function parseVintageToFloat(vintStr) {
 }
 
 window.toggleSearchLanguage = function() {
-    const btn = document.getElementById("langToggleBtn");
-    currentSearchLang = currentSearchLang === "JP" ? "EN" : "JP";
-    btn.innerText = currentSearchLang;
-    triggerTableRefresh();
+    const btn           = document.getElementById("langToggleBtn");
+    currentSearchLang   = currentSearchLang === "JP" ? "EN" : "JP";
+    btn.innerText       = currentSearchLang;
+
+    sortSearchData      ();
+    triggerTableRefresh ();
 };
 
 window.toggleColumnSettingsMenu = function(event) {
@@ -1277,7 +1300,7 @@ document.addEventListener("click", () => {
     if (menu) menu.classList.add("hidden");
 });
 
-document.getElementById("columnSettingsDropdown").addEventListener("click", (e) => {e.stopPropagation();});
+if (document.getElementById("columnSettingsDropdown")) document.getElementById("columnSettingsDropdown").addEventListener("click", (e) => {e.stopPropagation();});
 
 function initColumnSettingsCheckboxes() {
     const container = document.getElementById("columnCheckboxContainer");
@@ -1325,50 +1348,36 @@ function initColumnSettingsCheckboxes() {
 function triggerTableRefresh() {
     const searchInput = document.getElementById('songSearchInput');
 
-    if (searchInput)    searchInput.dispatchEvent(new Event('input'));
-    else                renderSearchTable(globalSearchData);
+    if (searchInput && searchInput.value.trim())    searchInput.dispatchEvent(new Event('input-direct'));
+    else                                            renderSearchTable(globalSearchData);
 }
 
 function sortSearchData() {
-    const {columnName, ascending} = globalSortState;
+    const {columnName, ascending}   = globalSortState;
+    const isJp                      = currentSearchLang === "JP";
 
     globalSearchData.sort((a, b) => {
         let valA, valB;
+
         switch (columnName) {
-            case "Anime": valA = (currentSearchLang === "JP" ? a.romaji : a.english) || ""; valB = (currentSearchLang === "JP" ? b.romaji : b.english) || ""; break;
-
-            case "Song Type"    : valA = a.type         || ""; valB = b.type        || ""; break;
-            case "Anime Type"   : valA = a.anime_type   || ""; valB = b.anime_type  || ""; break;
-            case "Song"         : valA = a.song         || ""; valB = b.song        || ""; break;
-            case "Artist"       : valA = a.artist_raw   || ""; valB = b.artist_raw  || ""; break;
-            case "Composer"     : valA = a.composer     || ""; valB = b.composer    || ""; break;
-            case "Arranger"     : valA = a.arranger     || ""; valB = b.arranger    || ""; break;
-            case "Chanting"     : valA = a.chanting     || ""; valB = b.chanting    || ""; break;
-
-            case "Vintage": valA = parseVintageToFloat(a.vintage); valB = parseVintageToFloat(b.vintage); break;
-
-            case "Difficulty"   : valA = a.difficulty === "Unrated" ? -Infinity                 : parseFloat(a.difficulty);
-                                  valB = b.difficulty === "Unrated" ? -Infinity                 : parseFloat(b.difficulty); break;
-
-            case "Correct"      : valA = a.guessers_flat            ? a.guessers_flat.length    : 0;
-                                  valB = b.guessers_flat            ? b.guessers_flat.length    : 0; break;
-
-            case "List"         : valA = a.listers_flat             ? a.listers_flat.length     : 0;
-                                  valB = b.listers_flat             ? b.listers_flat.length     : 0; break;
-
+            case "Anime"        : valA = isJp ? a._romajiLower : a._englishLower;   valB = isJp ? b._romajiLower : b._englishLower; break;
+            case "Song Type"    : valA = a._typeLower;                              valB = b._typeLower;                            break;
+            case "Anime Type"   : valA = a._animeTypeLower;                         valB = b._animeTypeLower;                       break;
+            case "Song"         : valA = a._songLower;                              valB = b._songLower;                            break;
+            case "Artist"       : valA = a._artistRawLower;                         valB = b._artistRawLower;                       break;
+            case "Composer"     : valA = a._composerLower;                          valB = b._composerLower;                        break;
+            case "Arranger"     : valA = a._arrangerLower;                          valB = b._arrangerLower;                        break;
+            case "Chanting"     : valA = a._chantingLower;                          valB = b._chantingLower;                        break;
+            case "Vintage"      : valA = a._vintageParsed;                          valB = b._vintageParsed;                        break;
+            case "Difficulty"   : valA = a._diffParsed;                             valB = b._diffParsed;                           break;
+            case "Correct"      : valA = a._guessersCount;                          valB = b._guessersCount;                        break;
+            case "List"         : valA = a._listersCount;                           valB = b._listersCount;                         break;
             default: return 0;
         }
 
-        let comparison = 0;
-
-        if (typeof valA === "string" && typeof valB === "string") comparison = valA.localeCompare(valB, undefined, {sensitivity: 'base', numeric: true});
-
-        else {
-            if (valA < valB) comparison = -1;
-            if (valA > valB) comparison = 1;
-        }
-
-        return ascending ? comparison : -comparison;
+        if (valA < valB) return ascending ? -1 : 1;
+        if (valA > valB) return ascending ? 1 : -1;
+        return 0;
     });
 }
 
@@ -1379,15 +1388,11 @@ window.handleSearchSort = function(columnHeaderName) {
         globalSortState.columnName  = columnHeaderName;
         globalSortState.ascending   = true;
     }
-
-    sortSearchData      ();
-    triggerTableRefresh ();
+    sortSearchData();
+    triggerTableRefresh();
 };
 
-function matchNumericConstraint(targetVal, operator, criterionText) {
-    const numTarget = parseFloat(targetVal);
-    const numCrit   = parseFloat(criterionText);
-
+function matchNumericConstraint(numTarget, operator, numCrit) {
     if (isNaN(numTarget) || isNaN(numCrit))     return false;
     if (operator === ":" || operator === "=")   return Math.floor(numTarget) === Math.floor(numCrit);
 
@@ -1401,60 +1406,86 @@ function matchNumericConstraint(targetVal, operator, criterionText) {
 }
 
 function evaluateQuery(song, key, operator, value) {
-    const cleanValue = value.replace(/^"|"$/g, '').toLowerCase().trim();
-
     if (key === "anime" || key === "japanese" || key === "english") {
-        const titleTarget = (currentSearchLang === "JP" ? song.romaji : song.english).toLowerCase();
-        return titleTarget.includes(cleanValue);
+        const titleTarget = currentSearchLang === "JP" ? song._romajiLower : song._englishLower;
+        return titleTarget.includes(value);
     }
 
     switch (key) {
-        case "song"         : return song.song          .toLowerCase().includes(cleanValue);
-        case "artist"       : return song.artist_raw    .toLowerCase().includes(cleanValue);
-        case "composer"     : return song.composer      .toLowerCase().includes(cleanValue);
-        case "arranger"     : return song.arranger      .toLowerCase().includes(cleanValue);
-        case "animetype"    : return song.anime_type    .toLowerCase().includes(cleanValue);
-        case "chanting"     : return song.chanting      .toLowerCase().includes(cleanValue);
+        case "song"         : return song._songLower        .includes(value);
+        case "artist"       : return song._artistRawLower   .includes(value);
+        case "composer"     : return song._composerLower    .includes(value);
+        case "arranger"     : return song._arrangerLower    .includes(value);
+        case "animetype"    : return song._animeTypeLower   .includes(value);
+        case "chanting"     : return song._chantingLower    .includes(value);
+        case "songtype"     : return song._typeLower        .includes(value);
 
-        case "songtype": 
-            const typeLower = song.type.toLowerCase();
+        case "seen": {
+            const isInRoom = song._roomPlayersLower.some(p => p.includes(value));
+            return (operator === "!:" || operator === "!=") ? !isInRoom : isInRoom;
+        }
 
-            if (cleanValue === "op" || cleanValue === "opening")    return typeLower.includes("opening");
-            if (cleanValue === "ed" || cleanValue === "ending")     return typeLower.includes("ending");
-            if (cleanValue === "in" || cleanValue === "insert")     return typeLower.includes("insert");
+        case "lifetaken": {
+            const wasInRoom = song._roomPlayersLower    .some(p => p.includes(value));
+            const gotLife   = song._livesTakenLower     .some(p => p.includes(value));
+            if (operator === "!:" || operator === "!=") return wasInRoom && !gotLife;
+            return gotLife;
+        }
 
-            return typeLower.includes(cleanValue);
+        case "lifesaved": {
+            const wasInRoom = song._roomPlayersLower    .some(p => p.includes(value));
+            const savedLife = song._livesSavedLower     .some(p => p.includes(value));
+            if (operator === "!:" || operator === "!=") return wasInRoom && !savedLife;
+            return savedLife;
+        }
+
+        case "correctteam": {
+            // Find the team dictionary index matching the searched team leader's name
+            const teamIndex = window.dashboardData.json_teams.findIndex(t => t["Team Leader"].toLowerCase().includes(value));
+            if (teamIndex === -1) return false;
+            
+            // Extract the unique team ID matching your data format constraints
+            const targetTid = window.dashboardData.json_teams[teamIndex]._tid || window.dashboardData.json_teams[teamIndex].tid;
+
+            // FIX: Safely parse the complex nested player structure to isolate active string tokens
+            const teamRoster = window.dashboardData.json_players
+                .filter((p, pIdx) => window.dashboardData.json_eligibility[pIdx])
+                .map(p => {
+                    const nameStr = (p.Player && typeof p.Player === 'object') ? p.Player.count : (p.Player || "");
+                    return nameStr.replace(/[★▲▼]/g, '').trim().toLowerCase();
+                });
+
+            // Evaluate matches using the accurate team layout assignments
+            const teamGotItRight = (song.correct_teams_flat || []).includes(targetTid);
+
+            if (operator === "!:" || operator === "!=") return teamGotItRight === false;
+            return teamGotItRight;
+        }
     }
 
     if (key === "guessers" || key === "listers") {
-        const targetArray   = (key === "guessers") ? (song.guessers_flat || []) : (song.listers_flat || []);
-        const roomArray     = song.room_players || [];
+        const targetArray = (key === "guessers") ? (song.guessers_flat || []) : (song.listers_flat || []);
 
-        if (isNaN(cleanValue)) {
-            const hasMatch = targetArray.some(name => name.toLowerCase().includes(cleanValue));
+        if (isNaN(value)) {
+            const hasMatch = targetArray.some(name => name._cachedLower ? name._cachedLower.includes(value) : name.toLowerCase().includes(value));
 
             if (operator === "!:" || operator === "!=") {
-                const wasInRoom = roomArray.some(name => name.toLowerCase().includes(cleanValue));
+                const roomArray = song.room_players || [];
+                const wasInRoom = roomArray.some(name => name.toLowerCase().includes(value));
+
                 return wasInRoom && !hasMatch;
             }
 
             return hasMatch;
-        }
 
-        else {
-            let numTarget = targetArray.length;
-            return matchNumericConstraint(numTarget, operator, cleanValue);
-        }
+        } else return matchNumericConstraint(targetArray.length, operator, parseFloat(value));
     }
 
-    if (key === "difficulty") {
-        let target = song.difficulty === "Unrated" ? NaN : parseFloat(song.difficulty);
-        return matchNumericConstraint(target, operator, cleanValue);
-    }
+    if (key === "difficulty") return matchNumericConstraint(song._diffParsed, operator, parseFloat(value));
 
     if (key === "vintage") {
-        if (operator === ":" || operator === "=") return song.vintage.toLowerCase().includes(cleanValue);
-        return matchNumericConstraint(parseVintageToFloat(song.vintage), operator, parseVintageToFloat(cleanValue));
+        if (operator === ":" || operator === "=") return song._vintageLower.includes(value);
+        return matchNumericConstraint(song._vintageParsed, operator, parseVintageToFloat(value));
     }
 
     return false;
@@ -1479,120 +1510,161 @@ function renderSearchTable(filteredSongs) {
         return;
     }
 
-    let thead = "<thead><tr>" + activeCols.map(c => {
-        return `<th class="cursor-pointer select-none" style="white-space: nowrap;" onclick="handleSearchSort('${c.name}')">${c.name}${(globalSortState.columnName === c.name) ? (globalSortState.ascending ? " ▲" : " ▼") : " ▶"}</th>`;
-    }).join('') + "</tr></thead>";
+    let theadStr = "<tr>" + activeCols.map(c => {
+        const indicator = (globalSortState.columnName === c.name) ? (globalSortState.ascending ? " ▲" : " ▼") : " ▶";
+        return `<th class="cursor-pointer select-none" style="white-space: nowrap;" data-header-name="${c.name}">${c.name}${indicator}</th>`;
+    }).join('') + "</tr>";
+    
+    table.innerHTML = `<thead>${theadStr}</thead><tbody></tbody>`;
+    const tbody     = table.tBodies[0];
 
-    let tbody = "<tbody>";
+    table.querySelectorAll('thead th').forEach(th => {th.addEventListener('click', () => handleSearchSort(th.getAttribute('data-header-name')));});
+
+    const fragment  = document.createDocumentFragment();
+    const isJp      = currentSearchLang === "JP";
+
+    const compVisible = activeCols.some(c => c.id === "composer");
+    const arrVisible  = activeCols.some(c => c.id === "arranger");
 
     filteredSongs.forEach(song => {
-        tbody += `<tr>`;
+        const tr            = document.createElement('tr');
+        let skipComposer    = false;
+        let skipArranger    = false;
 
         activeCols.forEach(col => {
+            if (col.id === "composer" && skipComposer) return;
+            if (col.id === "arranger" && skipArranger) return;
+
+            const td = document.createElement('td');
+
             switch (col.id) {
-                case "anime":
-                    const displayedTitle = currentSearchLang === "JP" ? song.romaji : song.english;
-                    tbody += `<td class="text-left search-c2-text"><a href="${song.ann_url}" target="_blank" class="hover:underline">${displayedTitle}</a></td>`;
+                case "anime": {
+                    td.className = "text-left search-c2-text";
+                    const a         = document.createElement('a');
+                    a.href          = song.ann_url;
+                    a.target        = "_blank";
+                    a.className     = "hover:underline";
+                    a.textContent   = isJp ? song.romaji : song.english;
+
+                    td.appendChild(a);
                     break;
+                }
 
                 case "type":
-                    tbody += `<td class="text-center font-normal text-black" style="white-space: nowrap;">${song.type}</td>`;
+                    td.className        = "text-center font-normal text-black";
+                    td.style.whiteSpace = "nowrap";
+                    td.textContent      = song.type;
                     break;
 
                 case "chanting":
-                    tbody += `<td class="text-center font-normal text-black">${song.chanting}</td>`;
+                    td.className    = "text-center font-normal text-black";
+                    td.textContent  = song.chanting;
                     break;
 
                 case "anime_type":
-                    tbody += `<td class="text-center font-normal text-black">${song.anime_type}</td>`;
+                    td.className    = "text-center font-normal text-black";
+                    td.textContent  = song.anime_type;
                     break;
 
                 case "vintage":
-                    tbody += `<td class="text-center font-normal text-black" style="white-space: nowrap;">${song.vintage}</td>`;
+                    td.className        = "text-center font-normal text-black";
+                    td.style.whiteSpace = "nowrap";
+                    td.textContent      = song.vintage;
                     break;
 
                 case "difficulty":
-                    tbody += `<td class="text-center font-normal font-mono text-black">${song.difficulty}</td>`;
+                    td.className    = "text-center font-normal font-mono text-black";
+                    td.textContent  = song.difficulty;
                     break;
 
-                case "song":
-                    tbody += `<td class="text-left search-c2-text"><a href="${song.video_url}" target="_blank" class="hover:underline">${song.song}</a></td>`;
+                case "song": {
+                    td.className    = "text-left search-c2-text";
+                    const a         = document.createElement('a');
+                    a.href          = song.video_url;
+                    a.target        = "_blank";
+                    a.className     = "hover:underline";
+                    a.textContent   = song.song;
+
+                    td.appendChild(a);
                     break;
+                }
 
                 case "artist": {
-                    const compVisible   = activeCols.some(c => c.id === "composer");
-                    const arrVisible    = activeCols.some(c => c.id === "arranger");
-
-                    const matchComp     = compVisible   && (song.artist_raw === song.composer);
-                    const matchArr      = arrVisible    && (song.composer   === song.arranger);
+                    const matchComp = compVisible   && (song.artist_raw === song.composer);
+                    const matchArr  = arrVisible    && (song.composer   === song.arranger);
 
                     if (matchComp && matchArr) {
-                        tbody += `<td colspan="3" class="text-left text-black font-normal">${trimNames(song.artist_arr || [])}</td>`;
-                        song._skipComposer = true;
-                        song._skipArranger = true;
+                        td.colSpan      = 3;
+                        td.className    = "text-left text-black font-normal";
+                        td.textContent  = trimNames(song.artist_arr || []);
+                        skipComposer    = true;
+                        skipArranger    = true;
                     }
 
                     else if (matchComp) {
-                        tbody += `<td colspan="2" class="text-left text-black font-normal">${trimNames(song.artist_arr || [])}</td>`;
-                        song._skipComposer = true;
+                        td.colSpan      = 2;
+                        td.className    = "text-left text-black font-normal";
+                        td.textContent  = trimNames(song.artist_arr || []);
+                        skipComposer    = true;
                     }
 
                     else {
                         const isOverflown   = song.artist_arr && song.artist_arr.length > 3;
-                        const artAttr       = isOverflown ? ` class="cursor-help hover:bg-gray-100 text-left text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.artist_arr))}"` : ' class="text-left text-black font-normal"';
-                        tbody += `<td${artAttr}>${trimNames(song.artist_arr || [])}</td>`;
+                        td.className        = isOverflown ? "cursor-help hover:bg-gray-100 text-left text-black font-normal" : "text-left text-black font-normal";
+                        if (isOverflown) td.setAttribute("data-songs", encodeURIComponent(JSON.stringify(song.artist_arr)));
+                        td.textContent      = trimNames(song.artist_arr || []);
                     }
+
                     break;
                 }
 
                 case "composer": {
-                    if (song._skipComposer) {
-                        delete song._skipComposer;
-                        break;
-                    }
-
-                    const arrVisible    = activeCols.some(c => c.id === "arranger");
-                    const matchArr      = arrVisible && (song.composer === song.arranger);
+                    const matchArr = arrVisible && (song.composer === song.arranger);
 
                     if (matchArr) {
-                        tbody += `<td colspan="2" class="text-left font-normal text-black">${trimNames(song.composer)}</td>`;
-                        song._skipArranger = true;
+                        td.colSpan      = 2;
+                        td.className    = "text-left font-normal text-black";
+                        td.textContent  = trimNames(song.composer);
+                        skipArranger    = true;
                     }
-                    
-                    else tbody += `<td class="text-left font-normal text-black">${trimNames(song.composer)}</td>`;
+
+                    else {
+                        td.className    = "text-left font-normal text-black";
+                        td.textContent  = trimNames(song.composer);
+                    }
 
                     break;
                 }
 
-                case "arranger": {
-                    if (song._skipArranger) {
-                        delete song._skipArranger;
-                        break;
-                    }
-
-                    tbody += `<td class="text-left font-normal text-black">${trimNames(song.arranger)}</td>`;
+                case "arranger":
+                    td.className    = "text-left font-normal text-black";
+                    td.textContent  = trimNames(song.arranger);
                     break;
-                }
 
-                case "guessers":
+                case "guessers": {
                     const hasGuesses    = song.guessers_hover && song.guessers_hover.length > 0;
-                    const guessAttr     = hasGuesses ? ` class="cursor-help hover:bg-gray-100 text-center text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.guessers_hover))}"` : ' class="text-center text-black font-normal"';
-                    tbody += `<td${guessAttr}>${song.guessers_flat ? song.guessers_flat.length : 0}</td>`;
+                    td.className        = hasGuesses ? "cursor-help hover:bg-gray-100 text-center text-black font-normal" : "text-center text-black font-normal";
+                    if (hasGuesses) td.setAttribute("data-songs", encodeURIComponent(JSON.stringify(song.guessers_hover)));
+                    td.textContent      = song._guessersCount;
                     break;
+                }
 
-                case "listers":
-                    const hasLists = song.listers_hover && song.listers_hover.length > 0;
-                    const listAttr = hasLists ? ` class="cursor-help hover:bg-gray-100 text-center text-black font-normal" data-songs="${encodeURIComponent(JSON.stringify(song.listers_hover))}"` : ' class="text-center text-black font-normal"';
-                    tbody += `<td${listAttr}>${song.listers_flat ? song.listers_flat.length : 0}</td>`;
+                case "listers": {
+                    const hasLists  = song.listers_hover && song.listers_hover.length > 0;
+                    td.className    = hasLists ? "cursor-help hover:bg-gray-100 text-center text-black font-normal" : "text-center text-black font-normal";
+                    if (hasLists) td.setAttribute("data-songs", encodeURIComponent(JSON.stringify(song.listers_hover)));
+                    td.textContent  = song._listersCount;
                     break;
+                }
             }
+
+            tr.appendChild(td);
         });
 
-        tbody += `</tr>`;
+        fragment.appendChild(tr);
     });
 
-    tbody += "</tbody>";
-    table.innerHTML = thead + tbody;
+    tbody.appendChild(fragment);
     setupTooltipListeners();
 }
 
@@ -1604,6 +1676,28 @@ fetch('Search.json')
             if (!song.guessers_flat && song.guessers_hover) song.guessers_flat  = song.guessers_hover.map(g => g.split(' (')[0]);
             if (!song.listers_flat  && song.listers_hover)  song.listers_flat   = song.listers_hover;
 
+            song._romajiLower       = (song.romaji              || "").toLowerCase();
+            song._englishLower      = (song.english             || "").toLowerCase();
+            song._songLower         = (song.song                || "").toLowerCase();
+            song._artistRawLower    = (song.artist_raw          || "").toLowerCase();
+            song._composerLower     = (song.composer            || "").toLowerCase();
+            song._arrangerLower     = (song.arranger            || "").toLowerCase();
+            song._typeLower         = (song.type                || "").toLowerCase();
+            song._vintageLower      = (song.vintage             || "").toLowerCase();
+            song._animeTypeLower    = (song.anime_type          || "").toLowerCase();
+            song._chantingLower     = (song.chanting            || "").toLowerCase();
+            song._roomPlayersLower  = (song.room_players        || []).map(p => p.toLowerCase());
+            song._livesTakenLower   = (song.lives_taken_flat    || []);
+            song._livesSavedLower   = (song.lives_saved_flat    || []);
+            song._diffParsed        = song.difficulty === "Unrated"   ? -Infinity                     : parseFloat(song.difficulty);
+            song._guessersCount     = song.guessers_flat              ? song.guessers_flat    .length : 0;
+            song._listersCount      = song.listers_flat               ? song.listers_flat     .length : 0;
+            song._vintageParsed     = parseVintageToFloat(song.vintage);
+            song._correctTeamsLower = (song.correct_teams_flat  || []).map(tid => {
+                const leader = window.dashboardData.json_teams.find(t => t._tid === tid || t.tid === tid);
+                return leader ? leader["Team Leader"].toLowerCase() : "";
+            });
+
             return song;
         });
 
@@ -1613,69 +1707,123 @@ fetch('Search.json')
 
         const searchInput = document.getElementById('songSearchInput');
         if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const rawQuery = e.target.value.trim();
+
+            const processQuery = (e) => {
+                const rawQuery = searchInput.value.trim();
 
                 if (!rawQuery) {
                     renderSearchTable(globalSearchData);
                     return;
                 }
 
-                const tokenRegex    = /[^\s"]+|"([^"]*)"/g;
                 const tokens        = [];
+                const tokenRegex    = /\(|\)|or\b|and\b|[^\s"()]+|"[^"]*"/gi;
 
                 let match;
-                while ((match = tokenRegex.exec(rawQuery)) !== null) tokens.push(match[1] ? match[0] : match[0]);
+                while ((match = tokenRegex.exec(rawQuery)) !== null) tokens.push(match[0]);
 
-                const advancedQueries   = [];
-                const globalKeywords    = [];
-                const queryRegex        = /^([a-zA-Z_]+)(<=|>=|!=|!:|[:<>==])(.+)$/;
+                function parseToRPN(tokens) {
+                    const outputQueue   = [];
+                    const operatorStack = [];
+                    const precedence    = {'or': 1, 'and': 2};
+                    let expectOperator  = false;
 
-                tokens.forEach(token => {
-                    const parsedMatch = token.match(queryRegex);
+                    tokens.forEach(token => {
+                        const lowerToken = token.toLowerCase();
+
+                        if (expectOperator && lowerToken !== 'and' && lowerToken !== 'or' && lowerToken !== ')') {
+                            while (operatorStack.length && precedence[operatorStack[operatorStack.length - 1]] >= precedence['and']) outputQueue.push(operatorStack.pop());
+                            operatorStack.push('and');
+                        }
+
+                        if (lowerToken === 'and' || lowerToken === 'or') {
+                            while (operatorStack.length && precedence[operatorStack[operatorStack.length - 1]] >= precedence[lowerToken]) outputQueue.push(operatorStack.pop());
+                            operatorStack.push(lowerToken);
+                            expectOperator = false;
+                        }
+
+                        else if (token === '(') {
+                            operatorStack.push(token);
+                            expectOperator = false;
+                        }
+
+                        else if (token === ')') {
+                            while (operatorStack.length && operatorStack[operatorStack.length - 1] !== '(') outputQueue.push(operatorStack.pop());
+                            operatorStack.pop();
+                            expectOperator = true;
+                        }
+
+                        else {
+                            outputQueue.push(token);
+                            expectOperator = true;
+                        }
+                    });
+
+                    while (operatorStack.length) outputQueue.push(operatorStack.pop());
+                    return outputQueue;
+                }
+
+                function evaluateSingleToken(song, token) {
+                    const queryRegex    = /^([a-zA-Z_]+)(<=|>=|!=|!:|[:<>==])(.+)$/;
+                    const parsedMatch   = token.match(queryRegex);
 
                     if (parsedMatch) {
                         let queryKey = parsedMatch[1].toLowerCase();
-
                         if (queryKey === "correct") queryKey = "guessers";
-                        if (queryKey === "list"   ) queryKey = "listers";
+                        if (queryKey === "list")    queryKey = "listers";
 
-                        advancedQueries.push({
-                            key         : queryKey,
-                            operator    : parsedMatch[2],
-                            value       : parsedMatch[3]
-                        });
+                        return evaluateQuery(song, queryKey, parsedMatch[2], parsedMatch[3].replace(/^"|"$/g, '').toLowerCase().trim());
                     }
 
-                    else globalKeywords.push(token.toLowerCase());
-                });
+                    const wordClean = token.replace(/^"|"$/g, '').toLowerCase();
+
+                    return (
+                        song._romajiLower       .includes(wordClean) ||
+                        song._englishLower      .includes(wordClean) ||
+                        song._songLower         .includes(wordClean) ||
+                        song._artistRawLower    .includes(wordClean) ||
+                        song._composerLower     .includes(wordClean) ||
+                        song._arrangerLower     .includes(wordClean) ||
+                        song._typeLower         .includes(wordClean) ||
+                        song._vintageLower      .includes(wordClean) ||
+                        song._animeTypeLower    .includes(wordClean) ||
+                        song._chantingLower     .includes(wordClean) ||
+                        song.difficulty         .toLowerCase().includes(wordClean)
+                    );
+                }
+
+                const rpnTokens = parseToRPN(tokens);
 
                 const filtered = globalSearchData.filter(song => {
-                    for (let q of advancedQueries) if (!evaluateQuery(song, q.key, q.operator, q.value)) return false;
+                    if (rpnTokens.length === 0) return true;
+                    const stack = [];
 
-                    for (let word of globalKeywords) {
-                        const wordClean = word.replace(/^"|"$/g, '');
+                    for (let token of rpnTokens) {
+                        const lowerToken = typeof token === 'string' ? token.toLowerCase() : '';
 
-                        const matchKeyword = 
-                            song.romaji     .toLowerCase().includes(wordClean) ||
-                            song.english    .toLowerCase().includes(wordClean) ||
-                            song.song       .toLowerCase().includes(wordClean) ||
-                            song.artist_raw .toLowerCase().includes(wordClean) ||
-                            song.composer   .toLowerCase().includes(wordClean) ||
-                            song.arranger   .toLowerCase().includes(wordClean) ||
-                            song.type       .toLowerCase().includes(wordClean) ||
-                            song.vintage    .toLowerCase().includes(wordClean) ||
-                            song.difficulty .toLowerCase().includes(wordClean) ||
-                            song.anime_type .toLowerCase().includes(wordClean);
+                        if (lowerToken === 'and') {
+                            const b = stack.pop();
+                            const a = stack.pop();
+                            stack.push(a && b);
+                        }
 
-                        if (!matchKeyword) return false;
+                        else if (lowerToken === 'or') {
+                            const b = stack.pop();
+                            const a = stack.pop();
+                            stack.push(a || b);
+                        }
+
+                        else stack.push(evaluateSingleToken(song, token));
                     }
 
-                    return true;
+                    return stack[0];
                 });
 
                 renderSearchTable(filtered);
-            });
+            };
+
+            searchInput.addEventListener('input',           debounce(processQuery, 250));
+            searchInput.addEventListener('input-direct',    processQuery);
         }
     })
 
