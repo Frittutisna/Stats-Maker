@@ -180,7 +180,18 @@ td[data-songs].highlight-worst:hover::after {
 #playerColumnSettingsDropdown   input   [type="checkbox"],
 #columnSettingsDropdown         input   [type="checkbox"],
 #playerStandingsTable           tr      [onclick],
-#teamStatsTable                 td      [onclick],
-#tourStatsTable                 td      [onclick] {
+#teamStatsTable                 tr      [onclick],
+#tourStatsTable                 tr      [onclick] {
     cursor: pointer !important;
+}
+
+.w-max.max-w-full.overflow-x-auto,
+.table-center-wrapper {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.w-max.max-w-full.overflow-x-auto::-webkit-scrollbar,
+.table-center-wrapper::-webkit-scrollbar {
+    display: none;
 }

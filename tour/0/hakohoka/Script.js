@@ -640,6 +640,7 @@ function renderTourTable() {
         if (fractionMatch)                                  return ` onclick="searchTourFraction(${fractionMatch[1]})"`;
         if (key === "Most Popular Genre"    && displayVal)  return ` onclick="searchTourMetadata('genre',   '${displayVal}')"`;
         if (key === "Most Popular Tag"      && displayVal)  return ` onclick="searchTourMetadata('tag',     '${displayVal}')"`;
+        if (key === "Total 4-0s")                           return ` onclick="searchPlayerMetricFromTable('sweep:yes')"`;
 
         const mostFractionMatch = key.match(/^Most (\d)\/8s$/);
         if (mostFractionMatch) return ` onclick="sortPlayerColumnFromTour('${mostFractionMatch[1]}/8s', false)"`;
@@ -1938,6 +1939,12 @@ function evaluateQuery(song, key, operator, value) {
             if (operator === "!:" || operator === "!=") return isNone;
             return !isNone;
         }
+
+        case "sweep": {
+            const tids      = song.correct_teams_flat || [];
+            const isSweep   = tids.length === 4 && tids.every(id => id === tids[0]);
+            return (value === "yes" || value === "true") ? isSweep : !isSweep;
+        }
     }
 
     if (key === "guessers" || key === "listers") {
@@ -2375,7 +2382,7 @@ window.searchTourMetadata = function(type, val) {
         const cleanVal = val.replace(/\s*\(\d+\)\s*$/, '').trim();
         searchTabBtn.click();
         searchInput.value = "";
-        searchInput.value = `${type}:${cleanVal.toLowerCase()}`;
+        searchInput.value = `${type}:"${cleanVal.toLowerCase()}"`;
         searchInput.dispatchEvent(new Event('input-direct'));
     }
 };
