@@ -286,6 +286,7 @@ function initPlayerColumnSettings() {
         const allChecked        = activePlayerHeadersConfig.every(c => c.visible);
         const noneChecked       = activePlayerHeadersConfig.every(c => !c.visible);
         masterChk.checked       = allChecked;
+        masterChk.className     = "rounded accent-black";
         masterChk.indeterminate = !allChecked && !noneChecked;
     };
 
@@ -300,7 +301,7 @@ function initPlayerColumnSettings() {
         label.className = "flex items-center gap-2 cursor-pointer w-full text-left font-normal text-black";
         const chk       = document.createElement("input");
         chk.type        = "checkbox";
-        chk.className   = "player-col-toggle-checkbox rounded text-black focus:ring-black";
+        chk.className   = "player-col-toggle-checkbox rounded accent-black";
         chk.checked     = col.visible;
 
         chk.addEventListener("change", () => {
@@ -1643,7 +1644,7 @@ function initColumnSettingsCheckboxes() {
         
         const chk       = document.createElement("input");
         chk.type        = "checkbox";
-        chk.className   = "col-toggle-checkbox rounded text-black focus:ring-black";
+        chk.className   = "col-toggle-checkbox rounded accent-black";
         chk.checked     = col.visible;
         
         chk.addEventListener("change", () => {
