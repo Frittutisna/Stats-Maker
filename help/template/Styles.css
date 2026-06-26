@@ -162,15 +162,15 @@ td[data-songs].highlight-worst:hover::after {
     text-decoration: underline !important;
 }
 
+#playerColumnSettingsDropdown,
 #columnSettingsDropdown {
     position    : absolute;
     z-index     : 10;
 }
 
-#columnSettingsDropdown input[type="checkbox"] {
-    cursor: pointer;
-}
-
-#teamStatsTable td[onclick] {
+#playerColumnSettingsDropdown input[type="checkbox"],
+#columnSettingsDropdown input[type="checkbox"],
+#teamStatsTable td[onclick],
+#tourStatsTable td[onclick] {
     cursor: pointer !important;
 }

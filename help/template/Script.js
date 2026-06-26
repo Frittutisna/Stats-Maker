@@ -601,24 +601,41 @@ function renderTourTable() {
 
     let tbody = "<tbody>";
 
+    const getTourClickHandler = (metric, displayVal, encodedDetails) => {
+        const key           = metric.trim();
+        const fractionMatch = key.match(/^Total (\d)\/8s$/);
+
+        if (fractionMatch)                                  return ` onclick="searchTourFraction(${fractionMatch[1]})"`;
+        if (key === "Most Popular Genre"    && displayVal)  return ` onclick="searchTourMetadata('genre',   '${displayVal}')"`;
+        if (key === "Most Popular Tag"      && displayVal)  return ` onclick="searchTourMetadata('tag',     '${displayVal}')"`;
+
+        const mostFractionMatch = key.match(/^Most (\d)\/8s$/);
+        if (mostFractionMatch) return ` onclick="sortPlayerColumnFromTour('${mostFractionMatch[1]}/8s', false)"`;
+
+        if (key === "Highest GR Without 1/8s")                                                              return ` onclick="searchPlayerFilterFromTour    ('solos=0', 'Guess Rate', false)"`;
+        if (key === "Lowest GR Without 1/8s")                                                               return ` onclick="searchPlayerFilterFromTour    ('solos=0', 'Guess Rate', true)"`;
+        if (key === "Highest GR With 1/8s")                                                                 return ` onclick="searchPlayerFilterFromTour    ('solos>0', 'Guess Rate', false)"`;
+        if (key === "Lowest GR With 1/8s")                                                                  return ` onclick="searchPlayerFilterFromTour    ('solos>0', 'Guess Rate', true)"`;
+        if ((key === "Best Solo Rig Converter" || key === "Worst Solo Rig Converter") && encodedDetails)    return ` onclick="searchSoloRigConverter        (this)"`;
+
+        return "";
+    };
+
     for (let i = 0; i < half; i++) {
         tbody += "<tr>";
         const leftRow = leftSlice[i];
 
         if (leftRow) {
-            let rawCell     = leftRow.Value;
-            let displayVal  = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
-            let hasExp      = !!colExplanations[leftRow.Metric];
-            let metricClass = hasExp ? "border-col-group has-explanation" : "border-col-group";
-            let metricAttr  = `class='${metricClass}' data-metric="${leftRow.Metric}"`;
+            let rawCell         = leftRow.Value;
+            let displayVal      = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
+            let hasExp          = !!colExplanations[leftRow.Metric];
+            let metricClass     = hasExp ? "border-col-group has-explanation" : "border-col-group";
+            let metricAttr      = `class='${metricClass}' data-metric="${leftRow.Metric}"`;
+            let encodedDetails  = (rawCell !== null && typeof rawCell === 'object' && rawCell.details) ? encodeURIComponent(JSON.stringify(rawCell.details)) : "";
+            let clickHandler    = getTourClickHandler(leftRow.Metric, displayVal, encodedDetails);
 
-            if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
-                let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-                tbody += `<td ${metricAttr}><b>${leftRow.Metric}</b></td><td class="border-col-group" data-songs="${encodedDetails}">${displayVal}</td>`;
-            }
-
-            else tbody += `<td ${metricAttr}><b>${leftRow.Metric}</b></td><td class="border-col-group">${displayVal}</td>`;
-
+            if (encodedDetails && rawCell.details.length > 0)   tbody += `<td ${metricAttr}><b>${leftRow.Metric}</b></td><td class="border-col-group" data-songs="${encodedDetails}"${clickHandler}>${displayVal}</td>`;
+            else                                                tbody += `<td ${metricAttr}><b>${leftRow.Metric}</b></td><td class="border-col-group"${clickHandler}>${displayVal}</td>`;
         }
 
         else tbody += `<td class="border-col-group"></td><td class="border-col-group"></td>`;
@@ -626,18 +643,16 @@ function renderTourTable() {
         const rightRow = rightSlice[i];
 
         if (rightRow) {
-            let rawCell     = rightRow.Value;
-            let displayVal  = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
-            let hasExp      = !!colExplanations[rightRow.Metric];
-            let metricClass = hasExp ? "border-col-group has-explanation" : "border-col-group";
-            let metricAttr  = `class='${metricClass}' data-metric="${rightRow.Metric}"`;
+            let rawCell         = rightRow.Value;
+            let displayVal      = (rawCell !== null && typeof rawCell === 'object') ? rawCell.count : rawCell;
+            let hasExp          = !!colExplanations[rightRow.Metric];
+            let metricClass     = hasExp ? "border-col-group has-explanation" : "border-col-group";
+            let metricAttr      = `class='${metricClass}' data-metric="${rightRow.Metric}"`;
+            let encodedDetails  = (rawCell !== null && typeof rawCell === 'object' && rawCell.details) ? encodeURIComponent(JSON.stringify(rawCell.details)) : "";
+            let clickHandler    = getTourClickHandler(rightRow.Metric, displayVal, encodedDetails);
 
-            if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
-                let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-                tbody += `<td ${metricAttr}><b>${rightRow.Metric}</b></td><td data-songs="${encodedDetails}">${displayVal}</td>`;
-            }
-
-            else tbody += `<td ${metricAttr}><b>${rightRow.Metric}</b></td><td>${displayVal}</td>`;
+            if (encodedDetails && rawCell.details.length > 0)   tbody += `<td ${metricAttr}><b>${rightRow.Metric}</b></td><td data-songs="${encodedDetails}"${clickHandler}>${displayVal}</td>`;
+            else                                                tbody += `<td ${metricAttr}><b>${rightRow.Metric}</b></td><td${clickHandler}>${displayVal}</td>`;
         }
 
         else tbody += `<td class="border-col-group"></td><td></td>`;
@@ -2167,12 +2182,79 @@ fetch('Search.json')
 
     .catch(err => console.error("Error setting up lookup engine layout context mapping:", err));
 
+window.searchTourFraction = function(fractionNum) {
+    const searchTabBtn  = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('search-tab'));
+    const searchInput   = document.getElementById('songSearchInput');
+
+    if (searchTabBtn && searchInput) {
+        searchTabBtn.click();
+        searchInput.value = "";
+        searchInput.value = `correct:${fractionNum}`;
+        searchInput.dispatchEvent(new Event('input-direct'));
+    }
+};
+
+window.searchTourMetadata = function(type, val) {
+    const searchTabBtn  = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('search-tab'));
+    const searchInput   = document.getElementById('songSearchInput');
+
+    if (searchTabBtn && searchInput) {
+        const cleanVal = val.replace(/\s*\(\d+\)\s*$/, '').trim();
+        searchTabBtn.click();
+        searchInput.value = "";
+        searchInput.value = `${type}:${cleanVal.toLowerCase()}`;
+        searchInput.dispatchEvent(new Event('input-direct'));
+    }
+};
+
+window.sortPlayerColumnFromTour = function(colName, asc) {
+    const playerTabBtn      = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('player-tab'));
+    const playerSearchInput = document.getElementById('playerSearchInput');
+
+    if (playerTabBtn) {
+        playerTabBtn.click();
+        playerSearchInput.value = "";
+        globalPlayerSortState = {columnName: colName, ascending: asc};
+        sortAndRenderPlayers();
+    }
+};
+
+window.searchPlayerFilterFromTour = function(filterStr, colName, asc) {
+    const playerTabBtn      = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('player-tab'));
+    const playerSearchInput = document.getElementById('playerSearchInput');
+    
+    if (playerTabBtn && playerSearchInput) {
+        playerTabBtn.click();
+        playerSearchInput.value = "";
+        playerSearchInput.value = filterStr;
+        globalFilteredPlayers   = processPlayerFiltering(filterStr);
+        globalPlayerSortState   = {columnName: colName, ascending: asc};
+        sortAndRenderPlayers();
+    }
+};
+
+window.searchSoloRigConverter = function(el) {
+    const searchTabBtn  = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('search-tab'));
+    const searchInput   = document.getElementById('songSearchInput');
+    
+    if (searchTabBtn && searchInput) {
+        const displayVal    = el.textContent || el.innerText;
+        const listOwner     = displayVal.split(' (')[0].trim().toLowerCase();
+
+        searchTabBtn.click();
+        searchInput.value = "";
+        searchInput.value = `list:${listOwner} list:1`;
+        searchInput.dispatchEvent(new Event('input-direct'));
+    }
+};
+
 window.searchTeamSolos = function(teamLeader) {
     const searchTabBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('search-tab'));
     const searchInput = document.getElementById('songSearchInput');
     
     if (searchTabBtn && searchInput) {
         searchTabBtn.click();
+        searchInput.value = "";
         searchInput.value = `correctteam:${teamLeader.toLowerCase()} correct:1`;
         searchInput.dispatchEvent(new Event('input-direct'));
     }
