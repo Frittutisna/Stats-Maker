@@ -516,10 +516,11 @@ function sortAndRenderPlayers() {
         classes.push("cursor-pointer select-none");
 
         const isCurrentSort         = (globalPlayerSortState.columnName === h.name);
-        const directionIndicator    = isCurrentSort ? (globalPlayerSortState.ascending ? "▴" : "▾")   : "▸";
+        const directionIndicator    = isCurrentSort ? (globalPlayerSortState.ascending ? "▴" : "▾")     : "▸";
         const blackBgStyle          = isCurrentSort ? ' style="background-color: black; color: white;"' : '';
+        const lineBrokenName        = h.name.replace(/ /g, '<br>');
 
-        return `<th class="${classes.join(' ')}"${blackBgStyle} data-player-metric="${h.name}" data-metric="${h.name}">${h.name}${directionIndicator}</th>`;
+        return `<th class="${classes.join(' ')}"${blackBgStyle} data-player-metric="${h.name}" data-metric="${h.name}">${lineBrokenName}${directionIndicator}</th>`;
     }).join('') + "</tr></thead>";
 
     let tbody = "<tbody>";
@@ -1772,6 +1773,31 @@ window.toggleSearchLanguage = function() {
     triggerTableRefresh ();
 };
 
+window.togglePlayerGuideMenu = function(event) {
+    event.stopPropagation();
+    document.getElementById("playerGuideDropdown").classList.toggle("hidden");
+};
+
+window.toggleSongGuideMenu = function(event) {
+    event.stopPropagation();
+    document.getElementById("songGuideDropdown").classList.toggle("hidden");
+};
+
+document.addEventListener("click", () => {
+    const pMenu     = document.getElementById("playerColumnSettingsDropdown");
+    const sMenu     = document.getElementById("columnSettingsDropdown");
+    const pGuide    = document.getElementById("playerGuideDropdown");
+    const sGuide    = document.getElementById("songGuideDropdown");
+
+    if (pMenu)  pMenu   .classList.add("hidden");
+    if (sMenu)  sMenu   .classList.add("hidden");
+    if (pGuide) pGuide  .classList.add("hidden");
+    if (sGuide) sGuide  .classList.add("hidden");
+});
+
+if (document.getElementById("playerGuideDropdown")) document.getElementById("playerGuideDropdown")  .addEventListener("click", (e) => e.stopPropagation());
+if (document.getElementById("songGuideDropdown"))   document.getElementById("songGuideDropdown")    .addEventListener("click", (e) => e.stopPropagation());
+
 window.toggleColumnSettingsMenu = function(event) {
     event.stopPropagation();
     const menu = document.getElementById("columnSettingsDropdown");
@@ -2000,7 +2026,7 @@ function renderSearchTable(filteredSongs) {
 
     let theadStr = "<tr>" + activeCols.map(c => {
         const isCurrentSort = (globalSortState.columnName === c.name);
-        const indicator     = isCurrentSort ? (globalSortState.ascending ? "▴" : "▾") : "▸";
+        const indicator     = isCurrentSort ? (globalSortState.ascending ? "▴" : "▾")   : "▸";
         const activeStyles  = isCurrentSort ? 'background-color: black; color: white; ' : '';
 
         return `<th class="cursor-pointer select-none" style="${activeStyles}white-space: nowrap;" data-header-name="${c.name}">${c.name}${indicator}</th>`;
