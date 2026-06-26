@@ -17,57 +17,47 @@
         </div>
         <div>
             <div id="player-tab" class="tab-content active-content">
-                <div class="mx-auto w-full">
-                    <div class="w-full bg-gray-50 border px-2 py-1 mb-1">
-                        <p class="font-bold">Guide</p>
-                        <p class="mb-1 pt-1 border-t text-xs">
-                            Search using 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> or 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">columnname:value</code>. 
-                            You can replace 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> 
-                            with arithmetic operators 
-                            (<code class="bg-gray-200 px-1 rounded font-mono text-xs">=, !:, !=, &lt;, &gt;, &lt;=, &gt;=)</code><br>
-                            Combine query terms using explicit 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">and/or</code>
-                            keywords, group precedence with 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code>, 
-                            and wrap multi-word values in 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br>
-                            You can replace 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">uf</code> with 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">usefulness</code>, 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">guess rate</code> with 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">gr</code>, 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">1/8s</code> with 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">solos</code>, 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">2/8s</code> with 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">doubles</code>, and
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">7/8s</code> with 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">sevens</code><br>
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">elo&lt;90 or (opgr&gt;80 edguessrate&lt;30)</code> 
-                            returns players that either have an Elo below 90 or those who have OP and ED Guess Rates above 80% and below 30%
-                        </p>
-                    </div>
-                    <div class="w-full flex items-center justify-start gap-1 mb-1">
-                        <div class="w-full max-w-xl">
-                            <input type="text" id="playerSearchInput" placeholder="guessrate<40 or score>50" class="w-full h-[30px] px-2 border text-sm">
-                        </div>
-                        <div id="playerSearchCounter" class="w-[60px] h-[30px] font-bold bg-black text-white flex items-center justify-center text-sm select-none">
+                <div class="w-full flex justify-center mb-1">
+                    <div class="mx-auto w-full max-w-xl flex items-center justify-center gap-1">
+                        <input type="text" id="playerSearchInput" placeholder="guessrate<40 or score>50" class="w-full h-[30px] px-2 border text-sm">
+                        <div id="playerSearchCounter" class="w-[75px] h-[30px] font-bold bg-black text-white flex items-center justify-center text-sm select-none shrink-0">
                             0/0
                         </div>
-                        <div class="relative w-[30px] h-[30px]">
+                        <div class="relative w-[30px] h-[30px] shrink-0">
                             <button id="playerColumnSettingsBtn" class="w-[30px] h-[30px] bg-black text-white text-xl cursor-pointer flex items-center justify-center" onclick="togglePlayerColumnSettingsMenu(event)">⚙</button>
-                            <div id="playerColumnSettingsDropdown" class="bg-white border p-4 w-64 absolute left-0 top-[32px] hidden z-50 shadow-md">
+                            <div id="playerColumnSettingsDropdown" class="bg-white border p-4 w-64 absolute right-0 top-[32px] hidden z-50 shadow-md">
                                 <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
                                     <input type="checkbox" id="playerAllColumnsMasterCheckbox" class="rounded accent-black">All
                                 </label>
                                 <div id="playerColumnCheckboxContainer" class="flex flex-col gap-2 text-xs max-h-[350px] overflow-y-auto"></div>
                             </div>
                         </div>
+                        <div class="relative w-[30px] h-[30px] shrink-0">
+                            <button class="w-[30px] h-[30px] bg-black text-white font-bold cursor-pointer flex items-center justify-center" onclick="togglePlayerGuideMenu(event)">?</button>
+                            <div id="playerGuideDropdown" class="bg-white border p-4 w-[500px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black">
+                                <p class="font-bold border-b pb-1 mb-1">Guide</p>
+                                <p class="mb-1 pt-1 text-xs">
+                                    Search using <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> or <code class="bg-gray-200 px-1 rounded font-mono text-xs">columnname:value</code><br><br>
+                                    You can replace <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> with arithmetic operators (<code class="bg-gray-200 px-1 rounded font-mono text-xs">=, !:, !=, &lt;, &gt;, &lt;=, &gt;=)</code>,<br>
+                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">uf</code> with 
+                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">usefulness</code>, 
+                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">guess rate</code> with 
+                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">gr</code>, 
+                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">1/8s</code> with 
+                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">solos</code>, 
+                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">2/8s</code> with 
+                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">doubles</code>, and 
+                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">7/8s</code> with 
+                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">sevens</code><br><br>
+                                    Combine query terms using explicit <code class="bg-gray-200 px-1 rounded font-mono text-xs">and/or</code> keywords<br>
+                                    Group precedence with <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code><br>
+                                    Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
+                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">elo&lt;90 or (opgr&gt;80 edguessrate&lt;30)</code> returns players that either have an Elo below 90 or those who have OP and ED Guess Rates above 80% and below 30%
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="w-max max-w-full overflow-x-auto">
+                </div><div class="w-full overflow-x-auto block">
                     <table class="main-table" id="playerStandingsTable"></table>
                 </div>
             </div>
@@ -172,60 +162,55 @@
                 </div>
             </div>
             <div id="search-tab" class="tab-content">
-                <div class="mx-auto w-full">
-                    <div class="w-full bg-gray-50 border px-2 py-1 mb-1">
-                        <p class="font-bold">Guide</p>
-                        <p class="mb-1 pt-1 border-t text-xs">
-                            Search using 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> or 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">columnname:value</code>. 
-                            You can replace 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> 
-                            with arithmetic operators 
-                            (<code class="bg-gray-200 px-1 rounded font-mono text-xs">=, !:, !=, &lt;, &gt;, &lt;=, &gt;=)</code><br>
-                            Combine query terms using explicit 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">and/or</code>
-                            keywords, group precedence with 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code>, 
-                            and wrap multi-word values in 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br>
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">(artist="aoi koga" or artist:"tomori kusunoki") and difficulty>20</code> 
-                            returns songs by Aoi Koga or Tomori Kusunoki with difficulties above 20
-                        </p>
-                        <div class="grid grid-cols-2 gap-1 mt-1 pt-1 border-t text-xs">
-                            <div>
-                                <span class="block font-mono mb-1">anime, songtype, chanting, animetype, song, artist, composer, arranger, correct, list</span>
-                                <code class="bg-gray-200 px-1 rounded font-mono">anime:aikatsu artist:nanase</code> returns Nanase songs from Aikatsu<br>
-                                <code class="bg-gray-200 px-1 rounded font-mono">songtype:ed animetype:movie</code> returns movie ending songs<br>
-                                <code class="bg-gray-200 px-1 rounded font-mono">correct!=furlain</code> returns songs FurLain missed<br>
-                            </div>
-                            <div>
-                                <span class="block font-mono mb-1">vintage, difficulty, correct, list</span>
-                                <code class="bg-gray-200 px-1 rounded font-mono">vintage&lt;"Summer 2023"</code> returns songs from anime before Summer 2023<br>
-                                <code class="bg-gray-200 px-1 rounded font-mono">difficulty&lt;30 list&gt;4</code> returns songs with difficulty less than 30 listed by more than 4 people<br>
-                                <code class="bg-gray-200 px-1 rounded font-mono">correct:0</code> returns songs no one got right<br>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="w-full flex items-center justify-start gap-1 mb-1">
-                        <button id="langToggleBtn" class="w-[30px] h-[30px] bg-black text-white font-bold cursor-pointer" onclick="toggleSearchLanguage()">JP</button>
-                        <div class="w-full max-w-xl">
-                            <input type="text" id="songSearchInput" placeholder="anime:chobits songtype:ed" class="w-full h-[30px] px-2 border">
-                        </div>
-                        <div id="searchCounter" class="w-[75px] h-[30px] font-bold bg-black text-white flex items-center justify-center">
+                <div class="w-full flex justify-center mb-1">
+                    <div class="mx-auto w-full max-w-xl flex items-center justify-center gap-1">
+                        <button id="langToggleBtn" class="w-[30px] h-[30px] bg-black text-white font-bold cursor-pointer shrink-0" onclick="toggleSearchLanguage()">JP</button>
+                        <input type="text" id="songSearchInput" placeholder="anime:chobits songtype:ed" class="w-full h-[30px] px-2 border text-sm">
+                        <div id="searchCounter" class="w-[75px] h-[30px] font-bold bg-black text-white flex items-center justify-center shrink-0 text-sm">
                             0/0
                         </div>
-                        <div class="relative w-[30px] h-[30px]">
-                            <button id="columnSettingsBtn" class="w-[30px] h-[30px] bg-black text-white text-xl cursor-pointer" onclick="toggleColumnSettingsMenu(event)">⚙</button>
-                            <div id="columnSettingsDropdown" class="bg-white border p-4 w-60">
+                        <div class="relative w-[30px] h-[30px] shrink-0">
+                            <button id="columnSettingsBtn" class="w-[30px] h-[30px] bg-black text-white text-xl cursor-pointer flex items-center justify-center" onclick="toggleColumnSettingsMenu(event)">⚙</button>
+                            <div id="columnSettingsDropdown" class="bg-white border p-4 w-60 absolute right-0 top-[32px] hidden z-50 shadow-md">
                                 <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
                                     <input type="checkbox" id="allColumnsMasterCheckbox" class="rounded accent-black">All
                                 </label>
                                 <div id="columnCheckboxContainer" class="flex flex-col gap-2 text-sm"></div>
                             </div>
                         </div>
+                        <div class="relative w-[30px] h-[30px] shrink-0">
+                            <button class="w-[30px] h-[30px] bg-black text-white font-bold cursor-pointer flex items-center justify-center" onclick="toggleSongGuideMenu(event)">?</button>
+                            <div id="songGuideDropdown" class="bg-white border p-4 w-[650px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black">
+                                <p class="font-bold border-b pb-1 mb-1">Guide</p>
+                                <p class="mb-2 text-xs">
+                                    Search using <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> or <code class="bg-gray-200 px-1 rounded font-mono text-xs">columnname:value</code><br>
+                                    You can replace <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> with arithmetic operators (<code class="bg-gray-200 px-1 rounded font-mono text-xs">=, !:, !=, &lt;, &gt;, &lt;=, &gt;=)</code><br>
+                                    Combine query terms using explicit <code class="bg-gray-200 px-1 rounded font-mono text-xs">and/or</code> keywords<br>
+                                    Group precedence with <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code><br>
+                                    Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
+                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">(artist="aoi koga" or artist:"tomori kusunoki") and difficulty>20</code><br>
+                                    returns songs by Aoi Koga or Tomori Kusunoki with difficulties above 20
+                                </p>
+                                <div class="grid grid-cols-2 gap-2 pt-1 border-t text-xs">
+                                    <div>
+                                        <span class="block font-mono mb-1 font-bold text-gray-700">anime, songtype, chanting, animetype, song, artist, composer, arranger, correct, list</span>
+                                        <code class="bg-gray-200 px-1 rounded font-mono">anime:aikatsu artist:nanase</code> returns Nanase songs from Aikatsu<br>
+                                        <code class="bg-gray-200 px-1 rounded font-mono">songtype:ed animetype:movie</code> returns movie ending songs<br>
+                                        <code class="bg-gray-200 px-1 rounded font-mono">correct!=furlain</code> returns songs FurLain missed<br>
+                                    </div>
+                                    <div>
+                                        <span class="block font-mono mb-1 font-bold text-gray-700">vintage, difficulty, correct, list</span>
+                                        <code class="bg-gray-200 px-1 rounded font-mono">vintage&lt;"Summer 2023"</code> returns songs from anime before Summer 2023<br>
+                                        <code class="bg-gray-200 px-1 rounded font-mono">difficulty&lt;30 list&gt;4</code> returns songs with difficulty less than 30 listed by more than 4 people<br>
+                                        <code class="bg-gray-200 px-1 rounded font-mono">correct:0</code> returns songs no one got right<br>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="w-max max-w-full overflow-x-auto"><table class="main-table" id="searchSongsTable"></table></div>
+                </div>
+                <div class="w-full overflow-x-auto block">
+                    <table class="main-table" id="searchSongsTable"></table>
                 </div>
             </div>
         </div>

@@ -65,6 +65,7 @@ const thickBorderColumns = new Set([
     "Team Leader",
     "Tier",
     "Lives Saved",
+    "Median Vintage Hit",
     "Chanting Guess Rate"
 ]);
 
@@ -225,33 +226,35 @@ let globalFilteredPlayers   = [];
 let globalMetricHighlights  = {};
 
 const playerHeadersMasterConfig = [
-    {id: "player",          name: "Player",             ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "team",            name: "Team",               ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
-    {id: "tier",            name: "Tier",               ascMetric: true,    teamReq: true,  watchedReq: false,  def: false},
-    {id: "elo",             name: "Elo",                ascMetric: false,   teamReq: true,  watchedReq: false,  def: true},
-    {id: "guessrate",       name: "Guess Rate",         ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "uf",              name: "UF",                 ascMetric: false,   teamReq: true,  watchedReq: false,  def: true},
-    {id: "score",           name: "Score",              ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
-    {id: "18s",             name: "1/8s",               ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "28s",             name: "2/8s",               ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "78s",             name: "7/8s",               ascMetric: true,    teamReq: false, watchedReq: false,  def: true},
-    {id: "meanover8",       name: "Mean Over-8",        ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
-    {id: "livestaken",      name: "Lives Taken",        ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
-    {id: "livessaved",      name: "Lives Saved",        ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
-    {id: "opguessrate",     name: "OP Guess Rate",      ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "edguessrate",     name: "ED Guess Rate",      ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "inguessrate",     name: "IN Guess Rate",      ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "rigs",            name: "Rigs",               ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
-    {id: "rigrate",         name: "Rig Rate",           ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
-    {id: "solorigs",        name: "Solo Rigs",          ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
-    {id: "solorigrate",     name: "Solo Rig Rate",      ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
-    {id: "rigover8",        name: "Rig Over-8",         ascMetric: true,    teamReq: false, watchedReq: true,   def: false},
-    {id: "over8delta",      name: "Over-8 Delta",       ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
-    {id: "rigguessrate",    name: "Rig Guess Rate",     ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
-    {id: "offguessrate",    name: "Off Guess Rate",     ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
-    {id: "rigdelta",        name: "Rig Delta",          ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
-    {id: "mediantime",      name: "Median Time",        ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
-    {id: "chantguessrate",  name: "Chant Guess Rate",   ascMetric: false,   teamReq: false, watchedReq: false,  def: false}
+    {id: "player",              name: "Player",                 ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "team",                name: "Team",                   ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
+    {id: "tier",                name: "Tier",                   ascMetric: true,    teamReq: true,  watchedReq: false,  def: false},
+    {id: "elo",                 name: "Elo",                    ascMetric: false,   teamReq: true,  watchedReq: false,  def: true},
+    {id: "guessrate",           name: "Guess Rate",             ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "uf",                  name: "UF",                     ascMetric: false,   teamReq: true,  watchedReq: false,  def: true},
+    {id: "score",               name: "Score",                  ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
+    {id: "18s",                 name: "1/8s",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "28s",                 name: "2/8s",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "78s",                 name: "7/8s",                   ascMetric: true,    teamReq: false, watchedReq: false,  def: true},
+    {id: "meanover8",           name: "Mean Over-8",            ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
+    {id: "livestaken",          name: "Lives Taken",            ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
+    {id: "livessaved",          name: "Lives Saved",            ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
+    {id: "opguessrate",         name: "OP Guess Rate",          ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "edguessrate",         name: "ED Guess Rate",          ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "inguessrate",         name: "IN Guess Rate",          ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "rigs",                name: "Rigs",                   ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
+    {id: "rigrate",             name: "Rig Rate",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
+    {id: "solorigs",            name: "Solo Rigs",              ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
+    {id: "solorigrate",         name: "Solo Rig Rate",          ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
+    {id: "rigover8",            name: "Rig Over-8",             ascMetric: true,    teamReq: false, watchedReq: true,   def: false},
+    {id: "over8delta",          name: "Over-8 Delta",           ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
+    {id: "rigguessrate",        name: "Rig Guess Rate",         ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
+    {id: "offguessrate",        name: "Off Guess Rate",         ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
+    {id: "rigdelta",            name: "Rig Delta",              ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
+    {id: "meandifficultyhit",   name: "Mean Difficulty Hit",    ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
+    {id: "medianvintagehit",    name: "Median Vintage Hit",     ascMetric: false,   teamReq: false, watchedReq: false,  def: false},
+    {id: "mediantime",          name: "Median Time",            ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
+    {id: "chantguessrate",      name: "Chant Guess Rate",       ascMetric: false,   teamReq: false, watchedReq: false,  def: false}
 ];
 
 let activePlayerHeadersConfig = playerHeadersMasterConfig.filter(col => {
@@ -345,6 +348,8 @@ function evaluatePlayerConstraint(playerRow, key, operator, value) {
         "ingr"          : "inguessrate",
         "riggr"         : "rigguessrate",
         "offgr"         : "offguessrate",
+        "difficulty"    : "meandifficultyhit",
+        "vintage"       : "medianvintagehit",
         "chantgr"       : "chantguessrate"
     };
 
@@ -361,16 +366,21 @@ function evaluatePlayerConstraint(playerRow, key, operator, value) {
         return stringLower.includes(value.toLowerCase());
     }
 
-    const parsedTarget  = parseFloat(targetVal);
-    const parsedCrit    = parseFloat(value);
+    let parsedTarget = parseFloat(targetVal);
+    let parsedCrit   = parseFloat(value);
+    
+    if (key === "vintage" && isNaN(parsedCrit)) {
+        parsedTarget = parseVintageToFloat(String(targetVal));
+        parsedCrit   = parseVintageToFloat(value);
+    }
 
     if (isNaN(parsedTarget) || isNaN(parsedCrit))   return false;
-    if (operator === ":" || operator === "=")       return parsedTarget === parsedCrit;
+    if (operator === ":"    || operator === "=")    return parsedTarget === parsedCrit;
     if (operator === "<")                           return parsedTarget <   parsedCrit;
     if (operator === ">")                           return parsedTarget >   parsedCrit;
     if (operator === "<=")                          return parsedTarget <=  parsedCrit;
     if (operator === ">=")                          return parsedTarget >=  parsedCrit;
-    if (operator === "!=" || operator === "!:")     return parsedTarget !== parsedCrit;
+    if (operator === "!="   || operator === "!:")   return parsedTarget !== parsedCrit;
 
     return false;
 }
@@ -543,10 +553,16 @@ function sortAndRenderPlayers() {
                 if (h.name !== "Team" && h.name !== "Tier" && isWorst)  cellStyle += "highlight-worst ";
             }
 
-            let intCols             = ["Tier", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"];
-            let formattedVal        = (typeof displayVal === 'number' && !intCols.includes(h.name)) ? displayVal.toFixed(2) : displayVal;
-            let finalVal            = (h.name === "Player") ? `<b>${formattedVal}</b>` : formattedVal;
-            let clickHandler        = "";
+            let intCols = ["Tier", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"];
+            let formattedVal;
+
+            if      (h.name === "Median Vintage Hit")                               formattedVal = parseFloatToVintage(displayVal);
+            else if (typeof displayVal === 'number' && !intCols.includes(h.name))   formattedVal = displayVal.toFixed(2);
+            else                                                                    formattedVal = displayVal;
+
+            let finalVal        = (h.name === "Player") ? `<b>${formattedVal}</b>` : formattedVal;
+            let clickHandler    = "";
+
             const rawPlayerVal      = row["Player"];
             const currentPlayerName = String((rawPlayerVal !== null && typeof rawPlayerVal === 'object') ? rawPlayerVal.count : rawPlayerVal).toLowerCase();
 
@@ -1058,6 +1074,15 @@ function setupTooltipListeners() {
                 }
 
                 if (songs.some(s => s.startsWith("Minimum:"))) {
+                    const metricName = td.getAttribute('data-player-metric') || (activePlayerHeadersConfig[td.cellIndex] ? activePlayerHeadersConfig[td.cellIndex].name : "");
+                    
+                    if (metricName === "Median Vintage Hit") {
+                        displaySongs = displaySongs.map(line => {
+                            if (line.startsWith("Standard Deviation:")) return line.replace(/:\s*([0-9.]+)/g, (match, p1) => `: ${parseFloat(p1).toFixed(2)} years`);
+                            return line.replace(/:\s*([0-9.]+)/g, (match, p1) => {return `: ${parseFloatToVintage(parseFloat(p1))}`;});
+                        });
+                    }
+
                     tooltipNode.innerHTML = displaySongs.join('<br>');
                     positionTooltip(e);
                     return;
@@ -1739,7 +1764,6 @@ function debounce(func, wait) {
 function trimNames(input) {
     if (!input) return '';
 
-    // Change the array connector from '/' to '||' to keep internal slashes safe
     let flatString  = Array.isArray(input) ? input.join('||') : String(input);
     let normalized  = flatString.replace(/\s*(?:,|\b(?<!\d)\/(?!\d)\b|・|&|×|\bfeat\.)\s*/gi, '||');
     let arr         = normalized.split('||').map(x => x.trim()).filter(Boolean);
@@ -1752,16 +1776,30 @@ function parseVintageToFloat(vintStr) {
     const parts = vintStr.trim().split(/\s+/);    
     if (parts.length === 1 && !isNaN(parts[0])) return parseFloat(parts[0]);
 
-    const season        = parts[0].toLowerCase();
-    const year          = parseInt(parts[1]);
-    let seasonWeight    = 0.0;
+    const season    = parts[0].toLowerCase();
+    const year      = parseInt(parts[1]);
+    let weight      = 0.0;
 
-    if      (season === "winter")   seasonWeight = 0.1;
-    else if (season === "spring")   seasonWeight = 0.2;
-    else if (season === "summer")   seasonWeight = 0.3;
-    else if (season === "fall")     seasonWeight = 0.4;
+    if      (season === "winter")   weight = 0.00;
+    else if (season === "spring")   weight = 0.25;
+    else if (season === "summer")   weight = 0.50;
+    else if (season === "fall")     weight = 0.75;
 
-    return year + seasonWeight;
+    return year + weight;
+}
+
+function parseFloatToVintage(val) {
+    if (val === null || val === undefined || isNaN(val) || val === -Infinity) return "N/A";
+
+    const year      = Math.floor(val);
+    const remainder = Math.round((val - year) * 100) / 100;
+
+    if      (remainder < 0.25)  season = "Winter";
+    else if (remainder < 0.50)  season = "Spring";
+    else if (remainder < 0.75)  season = "Summer";
+    else                        season = "Fall";
+    
+    return `${season}&nbsp;${year}`;
 }
 
 window.toggleSearchLanguage = function() {

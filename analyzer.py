@@ -46,6 +46,8 @@ class TourAnalyzer:
         self.p_l_corr                   = defaultdict(list)
         self.p_m_erigs                  = defaultdict(int)
         self.p_l_solos                  = defaultdict(int)
+        self.p_hit_diff                 = defaultdict(list)
+        self.p_hit_vint                 = defaultdict(list)
         self.p_chan_c                   = defaultdict(int)
         self.p_chan_s                   = defaultdict(int)
         self.p_usefulness_sum           = defaultdict(float)
@@ -421,6 +423,26 @@ class TourAnalyzer:
 
                         if t_sw_v is not None and t_opp_v is not None and t_sw_v == t_opp_v : self.player_song_details[sw_v]["2/8s"].append(f"{song_line} (covered by {opp_player_v})")
                         else                                                                : self.player_song_details[sw_v]["2/8s"].append(f"{song_line} (blocked by {opp_player_v})")
+
+                    def extract_year_float(vint_str):
+                        if not vint_str: return 0.0
+                        vint_str = vint_str.strip()
+
+                        match = re.search(r'(\d{4})', vint_str)
+                        if not match: return 0.0
+
+                        year        = float(match.group(1))
+                        low_str     = vint_str.lower()
+
+                        if      "winter"    in low_str: return year + 0.00
+                        elif    "spring"    in low_str: return year + 0.25
+                        elif    "summer"    in low_str: return year + 0.50
+                        elif    "fall"      in low_str: return year + 0.75
+
+                        return year
+
+                    if safe_diff > 0    : self.p_hit_diff[sw_v].append(safe_diff)
+                    if yr is not None   : self.p_hit_vint[sw_v].append(extract_year_float(si.get("vintage")))
 
                 if apply_rev and len(final_members - correct) == 1:
                     missing_player_v = list(final_members - correct)[0]
@@ -934,6 +956,14 @@ class TourAnalyzer:
                     "Off Guess Rate"    : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
                     "Rig Delta"         : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
                 })
+
+            h_diffs = self.p_hit_diff.get(name, [])
+            h_vints = self.p_hit_vint.get(name, [])
+
+            row.update({
+                "Mean Difficulty Hit"   : np.mean   (h_diffs) if h_diffs else np.nan,
+                "Median Vintage Hit"    : np.median (h_vints) if h_vints else np.nan
+            })
 
             times       = self.p_answer_times.get(name, [])
             seen_chan   = self.p_chan_s[name]
@@ -1741,6 +1771,35 @@ class TourAnalyzer:
                         "Rig Delta"         : float (row_data["Rig Delta"]      * 100),
                     })
 
+                h_diffs = self.p_hit_diff.get(name, [])
+                h_vints = self.p_hit_vint.get(name, [])
+
+                if h_diffs:
+                    row["Mean Difficulty Hit"] = {
+                        "count"     : float(np.mean(h_diffs)),
+                        "details"   : [
+                            f"Minimum: {float(np.min(h_diffs)):.2f}",
+                            f"Median: {float(np.median(h_diffs)):.2f}",
+                            f"Maximum: {float(np.max(h_diffs)):.2f}",
+                            f"Standard Deviation: {float(np.std(h_diffs)):.2f}"
+                        ]
+                    }
+
+                else: row["Mean Difficulty Hit"] = np.nan
+
+                if h_vints:
+                    row["Median Vintage Hit"] = {
+                        "count"     : float(np.median(h_vints)),
+                        "details"   : [
+                            f"Minimum: {float(np.min(h_vints))}",
+                            f"Mean: {float(np.mean(h_vints)):.2f}",
+                            f"Maximum: {float(np.max(h_vints))}",
+                            f"Standard Deviation: {float(np.std(h_vints)):.2f}"
+                        ]
+                    }
+
+                else: row["Median Vintage Hit"] = np.nan
+
                 times = self.p_answer_times.get(name, [])
 
                 if times:
@@ -1802,15 +1861,15 @@ class TourAnalyzer:
                 if f_idx != -1 and f_idx < len(df_players) - 1: borders.append(int(f_idx))
 
         desc_cols = [
-            "Elo",              "Guess Rate",       "UF",               "Score",
-            "1/8s",             "2/8s",             "Lives Taken",      "Lives Saved",
-            "OP Guess Rate",    "ED Guess Rate",    "IN Guess Rate",
-            "Rigs",             "Rig Rate",         "Solo Rigs",        "Solo Rig Rate",
-            "Over-8 Delta",     "Rig Guess Rate",   "Off Guess Rate",
-            "Rig Delta",        "Chant Guess Rate"
+            "Elo",              "Guess Rate",           "UF",               "Score",
+            "1/8s",             "2/8s",                 "Lives Taken",      "Lives Saved",
+            "OP Guess Rate",    "ED Guess Rate",        "IN Guess Rate",
+            "Rigs",             "Rig Rate",             "Solo Rigs",        "Solo Rig Rate",
+            "Over-8 Delta",     "Rig Guess Rate",       "Off Guess Rate",
+            "Rig Delta",        "Median Vintage Hit",   "Chant Guess Rate"
         ]
 
-        asc_cols    = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
+        asc_cols    = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8", "Mean Difficulty Hit"]
         int_cols    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
         rate_cols   = ["Guess Rate", "OP Guess Rate", "ED Guess Rate", "IN Guess Rate", "Chant Guess Rate", "Rig Guess Rate", "Off Guess Rate"]
         stats_hl    = {}
@@ -1822,11 +1881,14 @@ class TourAnalyzer:
         mask_series = pd.Series(eligibility, index = df_players.index)
 
         for col in df_players.columns:
-            if col in ["Team", "Tier"]: continue
+            string_cols = ["Team", "Tier"]
+            dict_cols   = ["Mean Difficulty Hit", "Median Vintage Hit", "Median Time"]
+
+            if col in string_cols: continue
 
             if col in desc_cols or col in asc_cols:
-                if col in int_cols or col in rate_cols or col == "Median Time": num = df_players[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
-                else                                                          : num = df_players[col]
+                if col in int_cols or col in rate_cols or col in dict_cols  : num = df_players[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
+                else                                                        : num = df_players[col]
 
                 el_num = num[mask_series].dropna() if col in int_cols else num.dropna()
 
@@ -2429,16 +2491,16 @@ class TourAnalyzer:
             "UF",               "Score",
             "1/8s",             "2/8s",
             "Lives Taken",      "Lives Saved",
-            "OP Guess Rate",    "ED Guess Rate",    "IN Guess Rate",
+            "OP Guess Rate",    "ED Guess Rate",        "IN Guess Rate",
             "Rigs",             "Rig Rate",
             "Solo Rigs",        "Solo Rig Rate",
-            "Over-8 Delta",     "Rig Guess Rate",   "Off Guess Rate",
-            "Rig Delta",        "Chant Guess Rate",
-            "Mean Elo",         "Mean GR",          "Total 1/8s",
-            "Rig Synergy",      "Off Synergy",      "Shared Rigs"
+            "Over-8 Delta",     "Rig Guess Rate",       "Off Guess Rate",
+            "Rig Delta",        "Median Vintage Hit",   "Chant Guess Rate",
+            "Mean Elo",         "Mean GR",              "Total 1/8s",
+            "Rig Synergy",      "Off Synergy",          "Shared Rigs"
         ]
 
-        asc     = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8"]
+        asc     = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8", "Mean Difficulty Hit"]
         rest    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs"]
         stats   = {}
         elo_col = "Elo" if "Elo" in df.columns else "Mean Elo" if "Mean Elo" in df.columns else None
@@ -2524,7 +2586,7 @@ class TourAnalyzer:
 
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
-        col_borders = {"Player", "Guess Rate", "Score", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Metric", "Value", "Team Leader", "Mean Over-8"}
+        col_borders = {"Player", "Guess Rate", "Score", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Median Vintage Hit", "Metric", "Value", "Team Leader", "Mean Over-8"}
         th_cells    = []
 
         for c in df.columns:
@@ -2541,6 +2603,10 @@ class TourAnalyzer:
             for i, (cname, cell) in enumerate(row.items()):
                 style = [b_s] if b_s else []
                 if cname in col_borders: style.append("border-right: 3px solid black;")
+
+                if      cname == "Mean Difficulty Hit"  and pd.notnull(cell) and isinstance(cell, (int, float)) : cell_display = f"{float(cell):.2f}"
+                elif    cname == "Median Vintage Hit"   and pd.notnull(cell) and isinstance(cell, (int, float)) : cell_display = format_year(float(cell))
+                else                                                                                            : cell_display = cell
 
                 if cname in stats:
                     val_best_idx    = stats[cname]['best_idx']
@@ -2565,7 +2631,7 @@ class TourAnalyzer:
                         elif    is_min          : style.append(f"background-color: {COLOR_2}; color: white; font-weight: bold;")
 
                 s_attr  =   f' style="{" ".join(style)}"' if style else ""
-                cnt     =   f"<b>{cell}</b>" if cname in bold_columns else cell
+                cnt     =   f"<b>{cell}</b>" if cname in bold_columns else cell_display
                 html    +=  f"<td{s_attr}>{cnt}</td>"
 
             html += "</tr>"
