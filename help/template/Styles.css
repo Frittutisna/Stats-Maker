@@ -162,6 +162,11 @@ td[data-songs].highlight-worst:hover::after {
     text-decoration: underline !important;
 }
 
+#columnSettingsDropdown {
+    position    : absolute;
+    z-index     : 10;
+}
+
 #columnSettingsDropdown input[type="checkbox"] {
     cursor: pointer;
 }
