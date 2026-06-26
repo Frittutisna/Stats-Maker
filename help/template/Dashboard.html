@@ -119,21 +119,11 @@
                 <div class="mx-auto w-full">
                     <div class="w-full bg-gray-50 border p-5 mb-1">
                         <p class="font-bold">Guide</p>
-                        <p class="mb-1">
-                            Filter songs using <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> 
-                            or <code class="bg-gray-200 px-1 rounded font-mono text-xs">columnName:value</code><br> 
-                            You can also swap the 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> 
-                            for arithmetic operators (
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">=</code>, 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">!:</code>, 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">!=</code>, 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">&lt;</code>, 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">&gt;</code>, 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">&lt;=</code>, 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">&gt;=</code>)<br>
-                            Wrap multi-word values in 
-                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code>
+                        <p class="mb-1 pt-1 border-t text-xs">
+                            Combine query terms using explicit <code class="bg-gray-200 px-1 rounded font-mono text-xs">and</code>, 
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">or</code> keywords and group precedence with  
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code>.<br>
+                            <code class="bg-gray-200 px-1 rounded font-mono text-xs">(artist=nanase or artist=waka) and difficulty>20</code> returns songs by Nanase or Waka with difficulties above 20.
                         </p>
                         <div class="grid grid-cols-2 gap-1 mt-1 pt-1 border-t text-xs">
                             <div>

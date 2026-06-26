@@ -1631,57 +1631,106 @@ fetch('Search.json')
                     return;
                 }
 
-                const tokenRegex    = /[^\s"]+|"([^"]*)"/g;
                 const tokens        = [];
+                const tokenRegex    = /\(|\)|or\b|and\b|[^\s"()]+|"[^"]*"/gi;
 
                 let match;
-                while ((match = tokenRegex.exec(rawQuery)) !== null) tokens.push(match[1] ? match[0] : match[0]);
+                while ((match = tokenRegex.exec(rawQuery)) !== null) tokens.push(match[0]);
 
-                const advancedQueries   = [];
-                const globalKeywords    = [];
-                const queryRegex        = /^([a-zA-Z_]+)(<=|>=|!=|!:|[:<>==])(.+)$/;
+                function parseToRPN(tokens) {
+                    const outputQueue   = [];
+                    const operatorStack = [];
+                    const precedence    = {'or': 1, 'and': 2};
+                    let expectOperator  = false;
 
-                tokens.forEach(token => {
-                    const parsedMatch = token.match(queryRegex);
+                    tokens.forEach(token => {
+                        const lowerToken = token.toLowerCase();
+
+                        if (expectOperator && lowerToken !== 'and' && lowerToken !== 'or' && lowerToken !== ')') {
+                            while (operatorStack.length && precedence[operatorStack[operatorStack.length - 1]] >= precedence['and']) outputQueue.push(operatorStack.pop());
+                            operatorStack.push('and');
+                        }
+
+                        if (lowerToken === 'and' || lowerToken === 'or') {
+                            while (operatorStack.length && precedence[operatorStack[operatorStack.length - 1]] >= precedence[lowerToken]) outputQueue.push(operatorStack.pop());
+                            operatorStack.push(lowerToken);
+                            expectOperator = false;
+                        }
+
+                        else if (token === '(') {
+                            operatorStack.push(token);
+                            expectOperator = false;
+                        }
+
+                        else if (token === ')') {
+                            while (operatorStack.length && operatorStack[operatorStack.length - 1] !== '(') outputQueue.push(operatorStack.pop());
+                            operatorStack.pop();
+                            expectOperator = true;
+                        }
+
+                        else {
+                            outputQueue.push(token);
+                            expectOperator = true;
+                        }
+                    });
+
+                    while (operatorStack.length) outputQueue.push(operatorStack.pop());
+                    return outputQueue;
+                }
+
+                function evaluateSingleToken(song, token) {
+                    const queryRegex    = /^([a-zA-Z_]+)(<=|>=|!=|!:|[:<>==])(.+)$/;
+                    const parsedMatch   = token.match(queryRegex);
 
                     if (parsedMatch) {
                         let queryKey = parsedMatch[1].toLowerCase();
-
                         if (queryKey === "correct") queryKey = "guessers";
-                        if (queryKey === "list"   ) queryKey = "listers";
+                        if (queryKey === "list")    queryKey = "listers";
 
-                        advancedQueries.push({
-                            key         : queryKey,
-                            operator    : parsedMatch[2],
-                            value       : parsedMatch[3]
-                        });
+                        return evaluateQuery(song, queryKey, parsedMatch[2], parsedMatch[3]);
                     }
 
-                    else globalKeywords.push(token.toLowerCase());
-                });
+                    const wordClean = token.replace(/^"|"$/g, '').toLowerCase();
+
+                    return (
+                        song.romaji     .toLowerCase().includes(wordClean) ||
+                        song.english    .toLowerCase().includes(wordClean) ||
+                        song.song       .toLowerCase().includes(wordClean) ||
+                        song.artist_raw .toLowerCase().includes(wordClean) ||
+                        song.composer   .toLowerCase().includes(wordClean) ||
+                        song.arranger   .toLowerCase().includes(wordClean) ||
+                        song.type       .toLowerCase().includes(wordClean) ||
+                        song.vintage    .toLowerCase().includes(wordClean) ||
+                        song.difficulty .toLowerCase().includes(wordClean) ||
+                        song.anime_type .toLowerCase().includes(wordClean)
+                    );
+                }
+
+                const rpnTokens = parseToRPN(tokens);
 
                 const filtered = globalSearchData.filter(song => {
-                    for (let q of advancedQueries) if (!evaluateQuery(song, q.key, q.operator, q.value)) return false;
+                    if (rpnTokens.length === 0) return true;
+                    const stack = [];
 
-                    for (let word of globalKeywords) {
-                        const wordClean = word.replace(/^"|"$/g, '');
+                    for (let token of rpnTokens) {
+                        const lowerToken = typeof token === 'string' ? token.toLowerCase() : '';
 
-                        const matchKeyword = 
-                            song.romaji     .toLowerCase().includes(wordClean) ||
-                            song.english    .toLowerCase().includes(wordClean) ||
-                            song.song       .toLowerCase().includes(wordClean) ||
-                            song.artist_raw .toLowerCase().includes(wordClean) ||
-                            song.composer   .toLowerCase().includes(wordClean) ||
-                            song.arranger   .toLowerCase().includes(wordClean) ||
-                            song.type       .toLowerCase().includes(wordClean) ||
-                            song.vintage    .toLowerCase().includes(wordClean) ||
-                            song.difficulty .toLowerCase().includes(wordClean) ||
-                            song.anime_type .toLowerCase().includes(wordClean);
+                        if (lowerToken === 'and') {
+                            const b = stack.pop();
+                            const a = stack.pop();
+                            stack.push(a && b);
+                        }
 
-                        if (!matchKeyword) return false;
+                        else if (lowerToken === 'or') {
+                            const b = stack.pop();
+                            const a = stack.pop();
+                            stack.push(a || b);
+                        }
+
+                        else stack.push(evaluateSingleToken(song, token));
                     }
 
-                    return true;
+                    return stack[0];
                 });
 
                 renderSearchTable(filtered);
