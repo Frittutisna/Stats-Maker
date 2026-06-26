@@ -945,6 +945,27 @@ function renderTierCharts() {
         layout.height       = 35 * (totalPlayers + totalSpacers);
 
         Plotly.newPlot(divIds[mIdx], [trace], layout, {responsive: true, displayModeBar: false});
+        const chartDiv = document.getElementById(divIds[mIdx]);
+
+        if (chartDiv) {
+            chartDiv.on('plotly_click', function(data) {
+                if (!data.points || data.points.length === 0) return;
+
+                const playerName = String(data.points[0].y).trim();
+                if (!playerName) return;
+
+                const pLower    = playerName.toLowerCase();
+                let query       = "";
+
+                if      (metric.key === "Guess Rate")          query = `seen:${pLower}`;
+                else if (metric.key === "Lives Taken")         query = `lifetaken:${pLower}`;
+                else if (metric.key === "Lives Saved")         query = `lifesaved:${pLower}`;
+                else if (metric.key === "Contribution Rate")   query = `lifetaken:${pLower} or lifesaved:${pLower}`;
+                else if (metric.key === "Chanting Guess Rate") query = `seen:${pLower} chanting:yes`;
+
+                if (query) window.searchPlayerMetricFromTable(query);
+            });
+        }
 
         if (colExplanations[metric.key]) {setTimeout(() => {
             const titleEl = document.querySelector(`#${divIds[mIdx]} .g-title`);
@@ -1286,6 +1307,65 @@ Plotly.newPlot('plotlySongChart', [{
     margin      : {l: 75, r: 0, t: 25, b: 75}
 }, {responsive: true, displayModeBar: false});
 
+const songChartDiv = document.getElementById('plotlySongChart');
+
+if (songChartDiv) {
+    songChartDiv.on('plotly_click', function(data) {
+        if (!data.points || data.points.length === 0) return;
+
+        const pt        = data.points[0];
+        const j         = pt.x;
+        const i         = pt.y;
+        const key       = `${j}-${i}`;
+        let queryParts  = [];
+
+        if (!(key in matrixBins)) return;
+
+        if (numY === 8) {
+            if      (i === 0) queryParts.push("vintage<1995");
+            else if (i === 7) queryParts.push("vintage>2025");
+            else {
+                let startYr = 1995 + (i - 1) * 5;
+                let endYr   = startYr + 5;
+                queryParts.push(`vintage>${startYr}`, `vintage<${endYr}`);
+            }
+        }
+
+        else {
+            if      (i === 0) queryParts.push("vintage<1990");
+            else if (i === 8) queryParts.push("vintage>2025");
+            else {
+                let startYr = 1990 + (i - 1) * 5;
+                let endYr   = startYr + 5;
+                queryParts.push(`vintage>${startYr}`, `vintage<${endYr}`);
+            }
+        }
+
+        if (numX === 8) {
+            if      (j === 0) queryParts.push("difficulty<5");
+            else if (j === 7) queryParts.push("difficulty>35");
+            else {
+                let startDf = j * 5;
+                let endDf   = startDf + 5;
+                queryParts.push(`difficulty>${startDf}`, `difficulty<${endDf}`);
+            }
+
+        }
+
+        else {
+            if      (j === 0) queryParts.push("difficulty<5");
+            else if (j === 8) queryParts.push("difficulty>40");
+            else {
+                let startDf = j * 5;
+                let endDf   = startDf + 5;
+                queryParts.push(`difficulty>${startDf}`, `difficulty<${endDf}`);
+            }
+        }
+
+        if (queryParts.length > 0) {window.searchPlayerMetricFromTable(queryParts.join(" "));}
+    });
+}
+
 function hexToRgba(hex, opacity = 0.95) {
     let c = hex.replace('#', '');
     if (c.length === 3) c = c.split('').map(x => x + x).join('');
@@ -1421,6 +1501,20 @@ if (scatterData) {
     }, {responsive: true, displayModeBar: false});
 }
 
+const guessChartDiv = document.getElementById('plotlyGuessChart');
+
+if (guessChartDiv) {
+    guessChartDiv.on('plotly_click', function(data) {
+        if (!data.points || data.points.length === 0) return;
+        const pointData = data.points[0];
+
+        if (pointData.customdata && pointData.customdata[0]) {
+            const playerName = String(pointData.customdata[0]).trim().toLowerCase();
+            window.searchPlayerMetricFromTable(`correct:${playerName}`);
+        }
+    });
+}
+
 let currentListChartMode = "ALL"; 
 
 if (document.getElementById('plotlyListChart') && arrowData) {
@@ -1526,6 +1620,24 @@ function renderListChart() {
         margin      : {l: 75, r: 0, t: 25, b: 75},
         annotations : buildScatterAnnotations(activeScatterSource, 'x', 'y', 'size')
     }, {responsive: true, displayModeBar: false});
+
+    const listChartDiv = document.getElementById('plotlyListChart');
+
+    if (listChartDiv) {
+        listChartDiv.on('plotly_click', function(data) {
+            if (!data.points || data.points.length === 0) return;
+
+            const ptIndex           = data.points[0].pointIndex;
+            const activeDataSource  = window.listDataPool[currentListChartMode];
+
+            if (activeDataSource && activeDataSource[ptIndex]) {
+                const playerName = String(activeDataSource[ptIndex].name).trim().toLowerCase();
+
+                if (currentListChartMode === "HIT") window.searchPlayerMetricFromTable(`list:${playerName} correct:${playerName}`);
+                else                                window.searchPlayerMetricFromTable(`list:${playerName}`);
+            }
+        });
+    }
 }
 
 if (watched) {
