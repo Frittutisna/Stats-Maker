@@ -154,13 +154,13 @@ window.toggleGlobalGear = function(event) {
     const activeTab = document.querySelector('.tab-content.active-content').id;
     
     if (activeTab === 'player-tab') {
-        document.getElementById("playerColumnSettingsDropdown") .classList.toggle("hidden");
-        document.getElementById("columnSettingsDropdown")       .classList.add("hidden");
+        document.getElementById("playerColumnSettingsDropdown") .classList.toggle   ("hidden");
+        document.getElementById("columnSettingsDropdown")       .classList.add      ("hidden");
     }
 
     else if (activeTab === 'search-tab') {
-        document.getElementById("columnSettingsDropdown")       .classList.toggle("hidden");
-        document.getElementById("playerColumnSettingsDropdown") .classList.add("hidden");
+        document.getElementById("columnSettingsDropdown")       .classList.toggle   ("hidden");
+        document.getElementById("playerColumnSettingsDropdown") .classList.add      ("hidden");
     }
 };
 
@@ -169,38 +169,43 @@ window.toggleGlobalHelp = function(event) {
     const activeTab = document.querySelector('.tab-content.active-content').id;
 
     if (activeTab === 'player-tab') {
-        document.getElementById("playerGuideDropdown")  .classList.toggle("hidden");
-        document.getElementById("tierGuideDropdown")    .classList.add("hidden");
-        document.getElementById("guessGuideDropdown")   .classList.add("hidden");
-        document.getElementById("songGuideDropdown")    .classList.add("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.toggle   ("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.add      ("hidden");
+        document.getElementById("songGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("searchGuideDropdown")  .classList.add      ("hidden");
     }
 
     else if (activeTab === 'tier-tab') {
-        document.getElementById("tierGuideDropdown")    .classList.toggle("hidden");
-        document.getElementById("playerGuideDropdown")  .classList.add("hidden");
-        document.getElementById("guessGuideDropdown")   .classList.add("hidden");
-        document.getElementById("songGuideDropdown")    .classList.add("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.toggle   ("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.add      ("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.add      ("hidden");
+        document.getElementById("songGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("searchGuideDropdown")  .classList.add      ("hidden");
     }
 
     else if (activeTab === 'guess-tab') {
-        document.getElementById("guessGuideDropdown")   .classList.toggle("hidden");
-        document.getElementById("playerGuideDropdown")  .classList.add("hidden");
-        document.getElementById("tierGuideDropdown")    .classList.add("hidden");
-        document.getElementById("songGuideDropdown")    .classList.add("hidden");
-    }
-
-    else if (activeTab === 'search-tab') {
-        document.getElementById("songGuideDropdown")    .classList.add("hidden");
-        document.getElementById("playerGuideDropdown")  .classList.add("hidden");
-        document.getElementById("tierGuideDropdown")    .classList.add("hidden");
-        document.getElementById("guessGuideDropdown")   .classList.add("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.toggle   ("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.add      ("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("songGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("searchGuideDropdown")  .classList.add      ("hidden");
     }
     
     else if (activeTab === 'song-tab') {
-        document.getElementById("songGuideDropdown")    .classList.toggle("hidden");
-        document.getElementById("playerGuideDropdown")  .classList.add("hidden");
-        document.getElementById("tierGuideDropdown")    .classList.add("hidden");
-        document.getElementById("guessGuideDropdown")   .classList.add("hidden");
+        document.getElementById("songGuideDropdown")    .classList.toggle   ("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.add      ("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.add      ("hidden");
+        document.getElementById("searchGuideDropdown")  .classList.add      ("hidden");
+    }
+
+    else if (activeTab === 'search-tab') {
+        document.getElementById("searchGuideDropdown")  .classList.toggle   ("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.add      ("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("songGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.add      ("hidden");
     }
 };
 
@@ -212,14 +217,22 @@ const stopProp = (e) => e.stopPropagation();
     'columnSettingsDropdown',
     'playerGuideDropdown',
     'tierGuideDropdown',
+    'songGuideDropdown',
     'guessGuideDropdown',
-    'songGuideDropdown'
+    'searchGuideDropdown'
 ].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("click", stopProp);
 });
 
-['playerColumnSettingsDropdown', 'columnSettingsDropdown', 'playerGuideDropdown', 'tierGuideDropdown', 'songGuideDropdown'].forEach(id => {
+[
+    'playerColumnSettingsDropdown',
+    'columnSettingsDropdown',
+    'playerGuideDropdown',
+    'tierGuideDropdown',
+    'songGuideDropdown',
+    'searchGuideDropdown'
+].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("click", stopProp);
 });
@@ -2575,6 +2588,38 @@ function updateGuessHelpDropdown() {
     `;
 }
 
+function updateSearchHelpDropdown() {
+    const dropdown = document.getElementById("searchGuideDropdown");
+    if (!dropdown) return;
+
+    dropdown.innerHTML = `
+        <p class="font-bold border-b pb-1 mb-1">Guide</p>
+        <p class="mb-2 text-xs">
+            Search using <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> or <code class="bg-gray-200 px-1 rounded font-mono text-xs">columnname:value</code><br>
+            You can replace <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> with arithmetic operators (<code class="bg-gray-200 px-1 rounded font-mono text-xs">=, !:, !=, &lt;, &gt;, &lt;=, &gt;=)</code><br>
+            Combine query terms using explicit <code class="bg-gray-200 px-1 rounded font-mono text-xs">and/or</code> keywords<br>
+            Group precedence with <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code><br>
+            Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">(artist="aoi koga" or artist:"tomori kusunoki") and difficulty>20</code><br>
+            returns songs by Aoi Koga or Tomori Kusunoki with difficulties above 20
+        </p>
+        <div class="grid grid-cols-2 gap-2 pt-1 border-t text-xs">
+            <div>
+                <span class="block font-mono mb-1 font-bold text-gray-700">anime, songtype, chanting, animetype, song, artist, composer, arranger, correct, list</span>
+                <code class="bg-gray-200 px-1 rounded font-mono">anime:aikatsu artist:nanase</code> returns Nanase songs from Aikatsu<br>
+                <code class="bg-gray-200 px-1 rounded font-mono">songtype:ed animetype:movie</code> returns movie ending songs<br>
+                <code class="bg-gray-200 px-1 rounded font-mono">correct!=furlain</code> returns songs FurLain missed<br>
+            </div>
+            <div>
+                <span class="block font-mono mb-1 font-bold text-gray-700">vintage, difficulty, correct, list</span>
+                <code class="bg-gray-200 px-1 rounded font-mono">vintage&lt;"Summer 2023"</code> returns songs from anime before Summer 2023<br>
+                <code class="bg-gray-200 px-1 rounded font-mono">difficulty&lt;30 list&gt;4</code> returns songs with difficulty less than 30 listed by more than 4 people<br>
+                <code class="bg-gray-200 px-1 rounded font-mono">correct:0</code> returns songs no one got right<br>
+            </div>
+        </div>
+    `;
+}
+
 window.cycleGuessListViewMode = function() {
     const btn           = document.getElementById("guessListToggleBtn");
     const guessChart    = document.getElementById("guessChartContainer");
@@ -3338,6 +3383,7 @@ fetch('Search.json')
         renderTierCharts                ();
         updateSongHelpDropdown          ();
         updateGuessHelpDropdown         ();
+        updateSearchHelpDropdown        ();
 
         const searchInput = document.getElementById('songSearchInput');
         if (searchInput) {
