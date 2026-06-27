@@ -137,13 +137,13 @@ function switchDashboardTab(evt, tabId) {
     const helpWrapper = document.getElementById('globalHelpWrapper');
 
     if (gearWrapper) {
-        if (['player-tab', 'search-tab'].includes(tabId)) gearWrapper.classList.remove('invisible');
-        else gearWrapper.classList.add('invisible');
+        if (['player-tab', 'search-tab'].includes(tabId))   gearWrapper.classList.remove('invisible');
+        else                                                gearWrapper.classList.add('invisible');
     }
 
     if (helpWrapper) {
-        if (['player-tab', 'tier-tab', 'guess-tab', 'search-tab'].includes(tabId)) helpWrapper.classList.remove('invisible');
-        else helpWrapper.classList.add('invisible');
+        if (['player-tab', 'tier-tab', 'guess-tab', 'search-tab', 'song-tab'].includes(tabId))  helpWrapper.classList.remove('invisible');
+        else                                                                                    helpWrapper.classList.add('invisible');
     }
 
     document.querySelectorAll('#globalGearWrapper > div, #globalHelpWrapper > div').forEach(el => {if (el.id.includes('Dropdown')) el.classList.add('hidden');});
@@ -190,6 +190,13 @@ window.toggleGlobalHelp = function(event) {
     }
 
     else if (activeTab === 'search-tab') {
+        document.getElementById("songGuideDropdown")    .classList.add("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.add("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.add("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.add("hidden");
+    }
+    
+    else if (activeTab === 'song-tab') {
         document.getElementById("songGuideDropdown")    .classList.toggle("hidden");
         document.getElementById("playerGuideDropdown")  .classList.add("hidden");
         document.getElementById("tierGuideDropdown")    .classList.add("hidden");
@@ -2182,7 +2189,7 @@ Plotly.newPlot('plotlySongChart', [{
         fixedrange      : true
     },
     annotations : annotations,
-    margin      : {l: 75, r: 0, t: 25, b: 75}
+    margin      : {l: 75, r: 0, t: 0, b: 75}
 }, {responsive: true, displayModeBar: false});
 
 const songChartDiv = document.getElementById('plotlySongChart');
@@ -2504,7 +2511,22 @@ if (document.getElementById('plotlyListChart') && arrowData) {
     renderListChart();
 }
 
-/* --- UPDATED FUNCTION --- */
+function updateSongHelpDropdown() {
+    const dropdown = document.getElementById("songGuideDropdown");
+    if (!dropdown) return;
+
+    dropdown.innerHTML = `
+        <p class="font-bold pb-1 mb-1 text-sm text-black">Example</p>
+        <hr class="border-black mb-2">
+        <p class="text-xs font-normal">
+            <b>Difficulty:</b> 25-30<br>
+            <b>Vintage:</b> 2015-2020<br>
+            <b>Over-8:</b> <b><span style="color: #3232c8;">6.26</span></b><br>
+            This means that, on average, <b><span style="color: #3232c8;">6.26/8</span></b> people guessed songs from <b>2015-2020</b> with a difficulty of <b>25-30</b> correctly
+        </p>
+    `;
+}
+
 function updateGuessHelpDropdown() {
     const dropdown = document.getElementById("guessGuideDropdown");
     if (!dropdown) return;
@@ -3314,6 +3336,7 @@ fetch('Search.json')
         sortSearchData                  ();
         renderSearchTable               (globalSearchData);
         renderTierCharts                ();
+        updateSongHelpDropdown          ();
         updateGuessHelpDropdown         ();
 
         const searchInput = document.getElementById('songSearchInput');
