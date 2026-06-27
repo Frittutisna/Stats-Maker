@@ -228,7 +228,7 @@ class TourAnalyzer:
         if "Eru" in init_label and self.use_teams: default_th = ""
 
         else:
-            if      init_label == "Watched 2+8"                 : default_th = "25, 20, 15, 10, 5"
+            if      init_label == "Watched 2+8s"                : default_th = "25, 20, 15, 10, 5"
             elif    init_label in ["Watched",   "QuagWatched"]  : default_th = "28, 18, 12, 6"
             elif    init_label in ["Usual",     "Quagsual"]     : default_th = "28, 19, 8"
             else                                                : default_th = "28, 19, 8"
@@ -1839,7 +1839,7 @@ class TourAnalyzer:
 
         if "GR" in df_players.columns and "Eru" not in self.tour_label:
             if self.val_str == "default":
-                if      self.tour_label == "Watched 2+8"                : th_val = "25, 20, 15, 10, 5"
+                if      self.tour_label == "Watched 2+8s"               : th_val = "25, 20, 15, 10, 5"
                 elif    self.tour_label in ["Watched", "QuagWatched"]   : th_val = "28, 18, 12, 6"
                 elif    self.tour_label in ["Usual", "Quagsual"]        : th_val = "28, 19, 8"
                 elif    watched                                         : th_val = "28, 18, 12, 6"
@@ -2565,7 +2565,7 @@ class TourAnalyzer:
 
             else:
                 if val_str == "default":
-                    if      self.tour_label == "Watched 2+8"                : th_val = "25, 20, 15, 10, 5"
+                    if      self.tour_label == "Watched 2+8s"               : th_val = "25, 20, 15, 10, 5"
                     elif    self.tour_label in ["Watched", "QuagWatched"]   : th_val = "28, 18, 12, 6"
                     elif    self.tour_label in ["Usual", "Quagsual"]        : th_val = "28, 19, 8"
                     elif    "Rigs"          in df.columns                   : th_val = "28, 18, 12, 6"

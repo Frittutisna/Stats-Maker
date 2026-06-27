@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from help.config    import DIR_TOURS, DIR_JSONS, FILE_CODES
+from help.config    import DIR_TOURS, DIR_JSONS
 from pathlib        import Path
 from tkinter        import ttk
 
@@ -126,15 +126,9 @@ class TourSelectionDialog(UnifiedDialog):
         for tid in tour_ids:
             t_path          = script_dir / DIR_TOURS / str(tid)
             json_dir        = t_path / DIR_JSONS
-            codes_file      = t_path / FILE_CODES
             is_recommended  = False
 
-            if codes_file.exists() and json_dir.exists():
-                codes_size = codes_file.stat().st_size
-                json_count = len(list(json_dir.glob("*.json")))
-
-                if codes_size > 0 and json_count > 1: is_recommended = True
-
+            if json_dir.exists() and len(list(json_dir.glob("*.json"))) > 1: is_recommended = True
             states[tid] = is_recommended
 
         for tid in tour_ids:
@@ -144,25 +138,42 @@ class TourSelectionDialog(UnifiedDialog):
             item_frame      = ttk.Frame(self.container)
 
             item_frame.pack(anchor = "w")
-            initial_bg = self.fill_color if is_active else "white"
+            
+            if is_active:
+                initial_bg = self.fill_color
+                lbl_state  = "normal"
+
+            else:
+                initial_bg = "gray75"
+                lbl_state  = "disabled"
 
             box = tk.Canvas(item_frame, width = 10, height = 10, bg = initial_bg, highlightthickness = 1, highlightbackground = "black")
             box.pack(side = tk.LEFT, padx = (0, 4))
 
-            lbl = ttk.Label(item_frame, text = f"Tour {tid}", font = ("Segoe UI", 10))
+            lbl = ttk.Label(item_frame, text = f"Tour {tid}", font = ("Segoe UI", 10), state = lbl_state)
             lbl.pack(side = tk.LEFT)
 
-            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, t = tid, b = box: self.toggle_custom(t, b))
+            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, t = tid, b = box, l = lbl, a = is_active: self.toggle_custom(t, b, l, a))
 
         self.protocol       ("WM_DELETE_WINDOW", lambda: [setattr(self, 'selected_tours', []), self.destroy()])
         self.grab_set       ()
         self.wait_window    ()
 
-    def toggle_custom(self, tid, box):
+    def toggle_custom(self, tid, box, lbl, is_recommended_tour):
         new_val = not self.vars[tid].get()
         self.vars[tid].set(new_val)
-        color = self.fill_color if new_val else "white"
-        box.configure(bg = color)
+        
+        if new_val:
+            box.configure(bg    = self.fill_color)
+            lbl.configure(state = "normal")
+        else:
+            if is_recommended_tour:
+                box.configure(bg    = "white")
+                lbl.configure(state = "normal")
+
+            else:
+                box.configure(bg    = "gray75")
+                lbl.configure(state = "disabled")
 
     def on_confirm(self):
         self.selected_tours = [tid for tid, var in self.vars.items() if var.get()]
@@ -175,17 +186,22 @@ class TourMetadataDialog(UnifiedDialog):
         self.fill_color = "#000000"
         ttk.Label(self.container, text = "What tour is this?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
-        self.lbl_var    = tk.StringVar(value = init_label if init_label in ["Watched", "Usual"] else "Others")
-        self.lbl_boxes  = {}
+        if      "Watched"   in init_label or init_label in ["Brute-force", "Masquerade", "Other Random", "Other Watched"]   : starting_lbl = init_label
+        elif    "Random"    in init_label                                                                                   : starting_lbl = init_label
+        elif    init_label == "Usual"                                                                                       : starting_lbl = "Usual"
+        else                                                                                                                : starting_lbl = "Others"
 
-        for opt in ["Watched", "Usual", "Others"]:
+        self.lbl_var = tk.StringVar(value=starting_lbl if starting_lbl in ["Watched", "Usual"] else "Others")
+        self.lbl_boxes = {}
+
+        for opt in ["Random", "Watched", "Others"]:
             f_opt = ttk.Frame(self.container)
-            f_opt.pack(anchor = "w")
+            f_opt.pack(anchor = "w", pady = 1)
 
             is_sel      = (self.lbl_var.get() == opt)
             bg_color    = self.fill_color if is_sel else "white"
-            box         = tk.Canvas(f_opt, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
 
+            box = tk.Canvas(f_opt, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
             box.pack(side = tk.LEFT, padx = (0, 4))
             self.lbl_boxes[opt] = box
 
@@ -194,8 +210,8 @@ class TourMetadataDialog(UnifiedDialog):
                 lbl.pack(side = tk.LEFT)
 
                 self.lbl_entry = ttk.Entry(f_opt, width = 20)
-                self.lbl_entry.insert(0, init_label)
-                self.lbl_entry.pack(side = tk.LEFT, padx = (4, 0))
+                if self.lbl_var.get() == "Others": self.lbl_entry.insert(0, init_label)
+                self.lbl_entry.pack(side=tk.LEFT, padx=(4, 0))
 
                 for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_lbl_opt(o))
 
@@ -204,6 +220,36 @@ class TourMetadataDialog(UnifiedDialog):
                 lbl.pack(side = tk.LEFT)
 
                 for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_lbl_opt(o))
+
+        self.sub_lbl_container = ttk.Frame(self.container)
+        self.sub_lbl_container.pack(fill = tk.BOTH)
+
+        columns_layout = [
+            ["Watched OP",      "Watched ED",       "Watched IN",   "Watched IN -Chanting", "Watched 2+8s",     "Watched 5s", "Watched -2009"],
+            ["Random OP",       "Random ED",        "Random IN",    "Random OPED",          "Random Chanting"],
+            ["Other Random",    "Other Watched",    "Brute-force",  "Masquerade"]
+        ]
+
+        self.sub_lbl_widgets = {}
+
+        for col_idx, items in enumerate(columns_layout):
+            for row_idx, name in enumerate(items):
+                item_frame = ttk.Frame(self.sub_lbl_container)
+                item_frame.grid(row = row_idx, column = col_idx, padx = 4, sticky = "w")
+
+                is_active = (init_label == name)
+                if is_active: self.lbl_var.set(name)
+
+                bg_color    = self.fill_color if is_active else "white"
+                box         = tk.Canvas(item_frame, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
+                box.pack(side = tk.LEFT, padx = (0, 4))
+
+                self.lbl_boxes[name]    = box
+                lbl                     = ttk.Label(item_frame, text = name, font = ("Segoe UI", 10))
+                lbl.pack(side = tk.LEFT)
+                
+                self.sub_lbl_widgets[name] = lbl
+                for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n=name: self._select_lbl_opt(n))
 
         self._update_lbl_state()
         ttk.Label(self.container, text = "What are the comma-separated guess rate threshold values?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
@@ -387,8 +433,23 @@ class TourMetadataDialog(UnifiedDialog):
         self._update_np_state()
 
     def _update_lbl_state(self):
-        if self.lbl_var.get() == "Others"   : self.lbl_entry.configure(state = "normal")
+        current_selection   = self.lbl_var.get()
+        is_others_active    = (current_selection == "Others" or current_selection in getattr(self, 'sub_lbl_widgets', {}))
+        state               = "normal" if is_others_active else "disabled"
+
+        if current_selection == "Others"    : self.lbl_entry.configure(state = "normal")
         else                                : self.lbl_entry.configure(state = "disabled")
+
+        for name, lbl in getattr(self, 'sub_lbl_widgets', {}).items():
+            box = self.lbl_boxes.get(name)
+
+            if state == "disabled":
+                lbl.configure(state = "disabled")
+                if box: box.configure(bg = "gray75")
+
+            else:
+                lbl.configure(state = "normal")
+                if box: box.configure(bg = self.fill_color if current_selection == name else "white")
 
     def _update_th_state(self):
         if self.th_var.get() == "custom"    : self.th_entry.configure(state = "normal")
@@ -419,8 +480,9 @@ class TourMetadataDialog(UnifiedDialog):
         try                 : base_exp = int(self.spin.get())
         except ValueError   : base_exp = 1
 
-        tour_label      = self.lbl_entry    .get() if self.lbl_var  .get() == "Others" else self.lbl_var.get()
-        th_str          = self.th_entry     .get() if self.th_var   .get() == "custom" else "default"
+        tour_label  = self.lbl_entry    .get() if self.lbl_var  .get() == "Others" else self.lbl_var.get()
+        th_str      = self.th_entry     .get() if self.th_var   .get() == "custom" else "default"
+
         selected_new    = [name for name, var in self.player_vars.items() if var.get()] if self.np_var.get() == "Yes" else []
         sub_results     = {sub_name: var.get() for sub_name, var in self.sub_vars.items()}
         self.result     = {"tour_label": tour_label, "th_str": th_str, "base_exp": base_exp, "selected_new": selected_new, "sub_results": sub_results}
