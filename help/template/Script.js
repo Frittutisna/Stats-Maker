@@ -2504,31 +2504,67 @@ if (document.getElementById('plotlyListChart') && arrowData) {
     renderListChart();
 }
 
+/* --- UPDATED FUNCTION --- */
+function updateGuessHelpDropdown() {
+    const dropdown = document.getElementById("guessGuideDropdown");
+    if (!dropdown) return;
+
+    let guideText = `
+        <b class="bg-black text-white px-1 rounded">ALL/RIG/HIT</b><br>Cycles between different bubble charts:<br>
+        • <b>ALL:</b> All songs guessed correctly<br>
+        • <b>RIG:</b> All songs from this player's list<br>
+        • <b>HIT:</b> All songs from this player's list that they guessed correctly<br><br>
+        <b class="bg-black text-white px-1 rounded">FOCUS</b><br>Focuses on the chart shown instead of using the shared axis bounds
+    `;
+    
+    let exampleText = "";
+
+    if (currentGuessListViewMode === "ALL") exampleText = `
+        A <b>small, <span style="color: #3232c8;">blue</span></b> circle in the <b>bottom-left</b> means that, on average, this player:<br>
+        • Has low Guess Rate (<b>small</b>), yet<br>
+        • Is over-performing their Elo (<b><span style="color: #3232c8;">blue</span></b>),<br>
+        • Usually hits harder (<b>left</b>) songs, and<br>
+        • Prefers the older (<b>bottom</b>) ones
+    `;
+
+    else if (currentGuessListViewMode === "RIG") exampleText = `
+        A <b>big, <span style="color: #c83232;">red</span></b> circle in the <b>top-right</b> means that, on average, this player's list:<br>
+        • Usually has newer (<b>top</b>) songs,<br>
+        • Appears a lot (<b>big</b>),<br>
+        • Is difficult for the player (<b><span style="color: #c83232;">red</span></b>), yet<br>
+        • Easy for others (<b>right</b>)
+    `;
+
+    else if (currentGuessListViewMode === "HIT") exampleText = `
+        A <b>big, <span style="color: #c83232;">red</span></b> circle in the <b>top-right</b> means that, on average, this player:<br>
+        • Focuses heavily on newer (<b>top</b>) songs from their list,<br>
+        • Said list appears a lot (<b>big</b>),<br>
+        • Is difficult (<b><span style="color: #c83232;">red</span></b>) for them to get right, yet<br>
+        • Easy for others (<b>right</b>)
+    `;
+
+    dropdown.innerHTML = `
+        <p class="font-bold pb-1 mb-1">Guide</p>
+        <hr class="border-black mb-2">
+        <p class="mb-2 text-xs">${guideText}</p>
+        <p class="font-bold pb-1 mb-1 mt-3">Example</p>
+        <hr class="border-black mb-2">
+        <p class="text-xs font-normal">${exampleText}</p>
+    `;
+}
+
 window.cycleGuessListViewMode = function() {
     const btn           = document.getElementById("guessListToggleBtn");
-    const guessCtx      = document.getElementById("guessViewSubContext");
-    const listCtx       = document.getElementById("listViewSubContext");
     const guessChart    = document.getElementById("guessChartContainer");
     const listChart     = document.getElementById("listChartContainer");
-    const xAxisDesc     = document.getElementById("listXAxisDescription");
-    const yAxisDesc     = document.getElementById("listYAxisDescription");
-    const sizeDesc      = document.getElementById("listSizeDescription");
-    const colorDesc     = document.getElementById("listColorDescription");
 
     if (currentGuessListViewMode === "ALL") {
         currentGuessListViewMode    = "RIG";
         btn.innerText               = "RIG";
         currentListChartMode        = "ALL";
 
-        if (guessCtx)   guessCtx    .classList.add      ("hidden");
         if (guessChart) guessChart  .classList.add      ("hidden");
-        if (listCtx)    listCtx     .classList.remove   ("hidden");
         if (listChart)  listChart   .classList.remove   ("hidden");
-
-        if (xAxisDesc)  xAxisDesc   .innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs from this player's list";
-        if (yAxisDesc)  yAxisDesc   .innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs from this player's list";
-        if (sizeDesc)   sizeDesc    .innerHTML  = "<b>Size (Rig Rate)</b>";
-        if (colorDesc)  colorDesc   .innerHTML = "<b>Color (Rig Guess Rate)</b>";
 
         renderListChart();
     }
@@ -2538,11 +2574,6 @@ window.cycleGuessListViewMode = function() {
         btn.innerText               = "HIT";
         currentListChartMode        = "HIT";
 
-        if (xAxisDesc) xAxisDesc    .innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
-        if (yAxisDesc) yAxisDesc    .innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs that this player guessed correctly from their own list";
-        if (sizeDesc)  sizeDesc     .innerHTML  = "<b>Size (Rig Rate)</b>";
-        if (colorDesc) colorDesc    .innerHTML = "<b>Color (Rig Guess Rate)</b>";
-
         renderListChart();
     }
 
@@ -2550,30 +2581,30 @@ window.cycleGuessListViewMode = function() {
         currentGuessListViewMode    = "ALL";
         btn.innerText               = "ALL";
 
-        if (guessCtx)   guessCtx    .classList.remove   ("hidden");
         if (guessChart) guessChart  .classList.remove   ("hidden");
-        if (listCtx)    listCtx     .classList.add      ("hidden");
         if (listChart)  listChart   .classList.add      ("hidden");
 
         window.dispatchEvent(new Event('resize'));
         if (isGraphFocused) updateGuessChartAxesFocus();
     }
+
+    updateGuessHelpDropdown();
 };
 
 window.toggleGraphFocus = function() {
-    const btn = document.getElementById("focusToggleBtn");
-    isGraphFocused = !isGraphFocused;
+    const btn       = document.getElementById("focusToggleBtn");
+    isGraphFocused  = !isGraphFocused;
 
     if (isGraphFocused) {
-        btn.style.backgroundColor = "#ffffff";
-        btn.style.color = "#000000";
-        btn.style.border = "1px solid black";
+        btn.style.backgroundColor   = "#ffffff";
+        btn.style.color             = "#000000";
+        btn.style.border            = "1px solid black";
     }
 
     else {
-        btn.style.backgroundColor = "#000000";
-        btn.style.color = "#ffffff";
-        btn.style.border = "none";
+        btn.style.backgroundColor   = "#000000";
+        btn.style.color             = "#ffffff";
+        btn.style.border            = "none";
     }
 
     if (currentGuessListViewMode === "ALL") updateGuessChartAxesFocus   ();
@@ -2717,88 +2748,6 @@ if (document.getElementById('plotlyListChart') && arrowData) {
     };
 
     renderListChart();
-}
-
-window.cycleGuessListViewMode = function() {
-    const btn           = document.getElementById("guessListToggleBtn");
-    const guessCtx      = document.getElementById("guessViewSubContext");
-    const listCtx       = document.getElementById("listViewSubContext");
-    const guessChart    = document.getElementById("guessChartContainer");
-    const listChart     = document.getElementById("listChartContainer");
-    const xAxisDesc     = document.getElementById("listXAxisDescription");
-    const yAxisDesc     = document.getElementById("listYAxisDescription");
-
-    if (currentGuessListViewMode === "ALL") {
-        currentGuessListViewMode    = "RIG";
-        btn.innerText               = "RIG";
-        currentListChartMode        = "ALL";
-
-        if (guessCtx) guessCtx      .classList.add      ("hidden");
-        if (guessChart) guessChart  .classList.add      ("hidden");
-        if (listCtx) listCtx        .classList.remove   ("hidden");
-        if (listChart) listChart    .classList.remove   ("hidden");
-
-        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs from this player's list";
-        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs from this player's list";
-
-        renderListChart();
-    }
-
-    else if (currentGuessListViewMode === "RIG") {
-        currentGuessListViewMode    = "HIT";
-        btn.innerText               = "HIT";
-        currentListChartMode        = "HIT";
-
-        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
-        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs that this player guessed correctly from their own list";
-
-        renderListChart();
-    }
-
-    else {
-        currentGuessListViewMode    = "ALL";
-        btn.innerText               = "ALL";
-
-        if (guessCtx)   guessCtx    .classList.remove   ("hidden");
-        if (guessChart) guessChart  .classList.remove   ("hidden");
-        if (listCtx)    listCtx     .classList.add      ("hidden");
-        if (listChart)  listChart   .classList.add      ("hidden");
-
-        window.dispatchEvent(new Event('resize'));
-        if (isGraphFocused)  updateGuessChartAxesFocus();
-    }
-};
-
-window.toggleGraphFocus = function() {
-    const btn = document.getElementById("focusToggleBtn");
-    isGraphFocused = !isGraphFocused;
-
-    if (isGraphFocused) {
-        btn.style.backgroundColor   = "#ffffff";
-        btn.style.color             = "#000000";
-        btn.style.border            = "1px solid black";
-    }
-
-    else {
-        btn.style.backgroundColor   = "#000000";
-        btn.style.color             = "#ffffff";
-        btn.style.border            = "none";
-    }
-
-    if (currentGuessListViewMode === "ALL") updateGuessChartAxesFocus   ();
-    else                                    renderListChart             ();
-};
-
-function updateGuessChartAxesFocus() {
-    const targetChart = document.getElementById('plotlyGuessChart');
-    if (!targetChart || !scatterData) return;
-    const bounds = isGraphFocused ? getLocalizedChartBounds(scatterData, 'over8', 'vintage') : window.unifiedChartLimits;
-
-    Plotly.relayout(targetChart, {
-        'xaxis.range': [bounds.xMin, bounds.xMax],
-        'yaxis.range': [bounds.yMin, bounds.yMax],
-        'yaxis.dtick': bounds.dtickY
-    });
 }
 
 let globalSortState     = {columnName: "Anime", ascending: true};
@@ -3365,6 +3314,7 @@ fetch('Search.json')
         sortSearchData                  ();
         renderSearchTable               (globalSearchData);
         renderTierCharts                ();
+        updateGuessHelpDropdown         ();
 
         const searchInput = document.getElementById('songSearchInput');
         if (searchInput) {
