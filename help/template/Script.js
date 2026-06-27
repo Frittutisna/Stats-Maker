@@ -2429,7 +2429,32 @@ if (guessChartDiv) {
     });
 }
 
-let currentListChartMode = "ALL"; 
+let currentListChartMode        = "ALL"; 
+let currentGuessListViewMode    = "ALL";
+let isGraphFocused              = false;
+
+if (watched) {
+    const glBtn = document.getElementById("guessListToggleBtn");
+    const fcBtn = document.getElementById("focusToggleBtn");
+
+    if (glBtn) glBtn.classList.remove("hidden");
+    if (fcBtn) fcBtn.classList.remove("hidden");
+}
+
+function getLocalizedChartBounds(dataArray, xKey, yKey) {
+    if (!dataArray || dataArray.length === 0) return window.unifiedChartLimits;
+
+    const xValues = dataArray.map(d => d[xKey]);
+    const yValues = dataArray.map(d => d[yKey]);
+
+    const xMin = Math.min(...xValues) - 0.25;
+    const xMax = Math.max(...xValues) + 0.25;
+    const yMin = Math.min(...yValues) - 1;
+    const yMax = Math.max(...yValues) + 1;
+
+    const dtickY = Math.max(2, Math.ceil((Math.max(...yValues) - Math.min(...yValues)) / 5));
+    return {xMin, xMax, yMin, yMax, dtickY};
+}
 
 if (document.getElementById('plotlyListChart') && arrowData) {
     window.listDataPool = {
@@ -2457,7 +2482,91 @@ if (document.getElementById('plotlyListChart') && arrowData) {
     renderListChart();
 }
 
+window.cycleGuessListViewMode = function() {
+    const btn           = document.getElementById("guessListToggleBtn");
+    const guessCtx      = document.getElementById("guessViewSubContext");
+    const listCtx       = document.getElementById("listViewSubContext");
+    const guessChart    = document.getElementById("guessChartContainer");
+    const listChart     = document.getElementById("listChartContainer");
+    const xAxisDesc     = document.getElementById("listXAxisDescription");
+    const yAxisDesc     = document.getElementById("listYAxisDescription");
+
+    if (currentGuessListViewMode === "ALL") {
+        currentGuessListViewMode    = "RIG";
+        btn.innerText               = "RIG";
+        currentListChartMode        = "ALL";
+
+        if (guessCtx)   guessCtx    .classList.add      ("hidden");
+        if (guessChart) guessChart  .classList.add      ("hidden");
+        if (listCtx)    listCtx     .classList.remove   ("hidden");
+        if (listChart)  listChart   .classList.remove   ("hidden");
+
+        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs from this player's list";
+        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs from this player's list";
+
+        renderListChart();
+    }
+
+    else if (currentGuessListViewMode === "RIG") {
+        currentGuessListViewMode    = "HIT";
+        btn.innerText               = "HIT";
+        currentListChartMode        = "HIT";
+
+        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
+        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs that this player guessed correctly from their own list";
+
+        renderListChart();
+    }
+
+    else {
+        currentGuessListViewMode    = "ALL";
+        btn.innerText               = "ALL";
+
+        if (guessCtx)   guessCtx    .classList.remove   ("hidden");
+        if (guessChart) guessChart  .classList.remove   ("hidden");
+        if (listCtx)    listCtx     .classList.add      ("hidden");
+        if (listChart)  listChart   .classList.add      ("hidden");
+
+        window.dispatchEvent(new Event('resize'));
+        if (isGraphFocused) updateGuessChartAxesFocus();
+    }
+};
+
+window.toggleGraphFocus = function() {
+    const btn = document.getElementById("focusToggleBtn");
+    isGraphFocused = !isGraphFocused;
+
+    if (isGraphFocused) {
+        btn.style.backgroundColor = "#ffffff";
+        btn.style.color = "#000000";
+        btn.style.border = "1px solid black";
+    }
+
+    else {
+        btn.style.backgroundColor = "#000000";
+        btn.style.color = "#ffffff";
+        btn.style.border = "none";
+    }
+
+    if (currentGuessListViewMode === "ALL") updateGuessChartAxesFocus   ();
+    else                                    renderListChart             ();
+};
+
+function updateGuessChartAxesFocus() {
+    const targetChart = document.getElementById('plotlyGuessChart');
+    if (!targetChart || !scatterData) return;
+    const bounds = isGraphFocused ? getLocalizedChartBounds(scatterData, 'over8', 'vintage') : window.unifiedChartLimits;
+
+    Plotly.relayout(targetChart, {
+        'xaxis.range': [bounds.xMin, bounds.xMax],
+        'yaxis.range': [bounds.yMin, bounds.yMax],
+        'yaxis.dtick': bounds.dtickY
+    });
+}
+
 function renderListChart() {
+    if (!window.listDataPool || !window.listDataPool[currentListChartMode]) return;
+
     const activeScatterSource   = window.listDataPool[currentListChartMode];
     const listHull              = get75PercentileHull(activeScatterSource, 'x', 'y');
     let listTraces              = [];
@@ -2504,6 +2613,8 @@ function renderListChart() {
         }
     });
 
+    const currentBounds = isGraphFocused ? getLocalizedChartBounds(activeScatterSource, 'x', 'y') : window.unifiedChartLimits;
+
     Plotly.newPlot('plotlyListChart', listTraces, {
         font        : {family: 'Segoe UI'},
         xaxis       : {
@@ -2516,7 +2627,7 @@ function renderListChart() {
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false,
-            range       : [window.unifiedChartLimits.xMin, window.unifiedChartLimits.xMax]
+            range       : [currentBounds.xMin, currentBounds.xMax]
         },
         yaxis       : {
             title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
@@ -2524,12 +2635,12 @@ function renderListChart() {
             tickangle   : -90,
             showgrid    : true,
             tickformat  : 'd',
-            dtick       : window.unifiedChartLimits.dtickY,
+            dtick       : currentBounds.dtickY,
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false,
-            range       : [window.unifiedChartLimits.yMin, window.unifiedChartLimits.yMax]
+            range       : [currentBounds.yMin, currentBounds.yMax]
         },
         margin      : {l: 75, r: 0, t: 25, b: 75},
         annotations : buildScatterAnnotations(activeScatterSource, 'x', 'y', 'size')
@@ -2554,70 +2665,116 @@ function renderListChart() {
     }
 }
 
-if (watched) {
-    const glBtn = document.getElementById("guessListToggleBtn");
-    if (glBtn) glBtn.classList.remove("hidden");
+if (document.getElementById('plotlyListChart') && arrowData) {
+    window.listDataPool = {
+        "ALL": arrowData.map(d => ({
+            acronym     : d.acronym,
+            name        : d.name,
+            x           : d.x_start,
+            y           : d.y_start,
+            size        : d.rig_rate,
+            color       : d.grid_grs || d.rig_gr, 
+            hoverText   : `<b>${d.name}</b><br>Rig Over-8: ${d.x_start.toFixed(2)}<br>Rig Vintage: ${d.seasonal_vintage_start}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig GR: ${d.rig_gr.toFixed(2)}<extra></extra>`
+        })),
+
+        "HIT": arrowData.map(d => ({
+            acronym     : d.acronym,
+            name        : d.name,
+            x           : d.x_end, 
+            y           : d.y_end,
+            size        : d.rig_rate, 
+            color       : d.grid_grs || d.rig_gr, 
+            hoverText   : `<b>${d.name}</b><br>Hit Rig Over-8: ${d.x_end.toFixed(2)}<br>Hit Rig Vintage: ${d.seasonal_vintage || d.seasonal_vintage_end}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig GR: ${d.rig_gr.toFixed(2)}<extra></extra>`
+        }))
+    };
+
+    renderListChart();
 }
 
-let currentGuessListViewMode = "GUESS";
-
-window.toggleGuessListViewMode = function() {
+window.cycleGuessListViewMode = function() {
     const btn           = document.getElementById("guessListToggleBtn");
     const guessCtx      = document.getElementById("guessViewSubContext");
     const listCtx       = document.getElementById("listViewSubContext");
     const guessChart    = document.getElementById("guessChartContainer");
     const listChart     = document.getElementById("listChartContainer");
-    const listSubToggle = document.getElementById("listModeToggleContainer");
+    const xAxisDesc     = document.getElementById("listXAxisDescription");
+    const yAxisDesc     = document.getElementById("listYAxisDescription");
 
-    if (currentGuessListViewMode === "GUESS") {
-        currentGuessListViewMode    = "LIST";
-        btn.innerText               = "LIST";
+    if (currentGuessListViewMode === "ALL") {
+        currentGuessListViewMode    = "RIG";
+        btn.innerText               = "RIG";
+        currentListChartMode        = "ALL";
 
-        if (guessCtx)       guessCtx        .classList.add      ("hidden");
-        if (guessChart)     guessChart      .classList.add      ("hidden");
-        if (listCtx)        listCtx         .classList.remove   ("hidden");
-        if (listChart)      listChart       .classList.remove   ("hidden");
-        if (listSubToggle)  listSubToggle   .classList.remove   ("hidden");
+        if (guessCtx) guessCtx      .classList.add      ("hidden");
+        if (guessChart) guessChart  .classList.add      ("hidden");
+        if (listCtx) listCtx        .classList.remove   ("hidden");
+        if (listChart) listChart    .classList.remove   ("hidden");
+
+        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs from this player's list";
+        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs from this player's list";
+
+        renderListChart();
+    }
+
+    else if (currentGuessListViewMode === "RIG") {
+        currentGuessListViewMode    = "HIT";
+        btn.innerText               = "HIT";
+        currentListChartMode        = "HIT";
+
+        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
+        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs that this player guessed correctly from their own list";
 
         renderListChart();
     }
 
     else {
-        currentGuessListViewMode    = "GUESS";
-        btn.innerText               = "GUESS";
+        currentGuessListViewMode    = "ALL";
+        btn.innerText               = "ALL";
 
-        if (guessCtx)       guessCtx        .classList.remove   ("hidden");
-        if (guessChart)     guessChart      .classList.remove   ("hidden");
-        if (listCtx)        listCtx         .classList.add      ("hidden");
-        if (listChart)      listChart       .classList.add      ("hidden");
-        if (listSubToggle)  listSubToggle   .classList.add      ("hidden");
+        if (guessCtx)   guessCtx    .classList.remove   ("hidden");
+        if (guessChart) guessChart  .classList.remove   ("hidden");
+        if (listCtx)    listCtx     .classList.add      ("hidden");
+        if (listChart)  listChart   .classList.add      ("hidden");
 
         window.dispatchEvent(new Event('resize'));
+        if (isGraphFocused)  updateGuessChartAxesFocus();
     }
 };
 
-window.toggleListChartMode = function() {
-    const btn               = document.getElementById("listModeToggleBtn");
-    currentListChartMode    = currentListChartMode === "ALL" ? "HIT" : "ALL";
-    btn.innerText           = currentListChartMode;
-    const xAxisDesc         = document.getElementById("listXAxisDescription");
-    const yAxisDesc         = document.getElementById("listYAxisDescription");
+window.toggleGraphFocus = function() {
+    const btn = document.getElementById("focusToggleBtn");
+    isGraphFocused = !isGraphFocused;
 
-    if (currentListChartMode === "HIT") {
-        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
-        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs that this player guessed correctly from their own list";
+    if (isGraphFocused) {
+        btn.style.backgroundColor   = "#ffffff";
+        btn.style.color             = "#000000";
+        btn.style.border            = "1px solid black";
     }
 
     else {
-        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs from this player's list";
-        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs from this player's list";
+        btn.style.backgroundColor   = "#000000";
+        btn.style.color             = "#ffffff";
+        btn.style.border            = "none";
     }
 
-    renderListChart();
+    if (currentGuessListViewMode === "ALL") updateGuessChartAxesFocus   ();
+    else                                    renderListChart             ();
 };
 
+function updateGuessChartAxesFocus() {
+    const targetChart = document.getElementById('plotlyGuessChart');
+    if (!targetChart || !scatterData) return;
+    const bounds = isGraphFocused ? getLocalizedChartBounds(scatterData, 'over8', 'vintage') : window.unifiedChartLimits;
+
+    Plotly.relayout(targetChart, {
+        'xaxis.range': [bounds.xMin, bounds.xMax],
+        'yaxis.range': [bounds.yMin, bounds.yMax],
+        'yaxis.dtick': bounds.dtickY
+    });
+}
+
 let globalSortState     = {columnName: "Anime", ascending: true};
-let currentSearchLang   = "JP"; 
+let currentSearchLang   = "JP";
 
 const searchHeadersConfig = [
     {id: "anime",       name: "Anime",      visible: true},

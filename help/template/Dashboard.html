@@ -176,14 +176,11 @@
                                 <p id="listYAxisDescription"><b>Y-Axis (Vintage):</b> Median vintage across songs from this player's list</p>
                                 <p><b>Size (Rig Rate)</b></p>
                                 <p><b>Color (Rig Guess Rate)</b></p>
-                                <p></p>
                             </div>
                         </div>
                         <div class="flex flex-col items-end gap-1">
-                            <button id="guessListToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold cursor-pointer hidden" onclick="toggleGuessListViewMode()">GUESS</button>
-                            <div id="listModeToggleContainer" class="hidden">
-                                <button id="listModeToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold cursor-pointer" onclick="toggleListChartMode()">ALL</button>
-                            </div>
+                            <button id="guessListToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold cursor-pointer hidden" onclick="cycleGuessListViewMode()">ALL</button>
+                            <button id="focusToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold cursor-pointer hidden" onclick="toggleGraphFocus()">FOCUS</button>
                         </div>
                     </div>
                     <div>
