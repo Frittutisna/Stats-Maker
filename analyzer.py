@@ -1,4 +1,4 @@
-import hashlib, json, logging, math, matplotlib, os, re, shutil, sys, time
+import datetime, hashlib, json, logging, math, matplotlib, os, re, shutil, subprocess, sys, time
 
 logging     .getLogger  ("adjustText").setLevel(logging.ERROR)
 matplotlib  .use        ('Agg')
@@ -236,27 +236,52 @@ class TourAnalyzer:
         meta_dialog = TourMetadataDialog(None, self.tour_id, init_label, default_th, baseline_initial, list(all_known), self.elo_map, sub_candidates_raw, original_players_display, self.tour_dir)
         if meta_dialog.result is None: sys.exit(0)
 
-        meta_res        = meta_dialog.result
-        self.tour_label = meta_res["tour_label"]
+        meta_res            = meta_dialog.result
+        self.tour_label     = meta_res["tour_label"]
+        dry_mode_mapping    = {
+            "Random"                : "1",
+            "Watched"               : "2",
+            "Watched OP"            : "3",
+            "Watched ED"            : "4",
+            "Watched IN"            : "5",
+            "Watched IN -Chanting"  : "6",
+            "Watched 2+8s"          : "7",
+            "Watched 5s"            : "8",
+            "Watched -2009"         : "9",
+            "Random OP"             : "10",
+            "Random ED"             : "11",
+            "Random IN"             : "12",
+            "Random OPED"           : "13",
+            "Random Chanting"       : "14",
+            "Other Random"          : "15",
+            "Other Watched"         : "16",
+            "Brute-force"           : "17",
+            "Masquerade"            : "18"
+        }
 
         if "sub_results" in meta_res:
             for sub_player, replaced_player in meta_res["sub_results"].items():
-                s_low = sub_player.lower()
+                s_low                       = sub_player.lower()
                 chosen_team_id, chosen_tier = self.assignments[replaced_player.lower()]
-                self.assignments[s_low] = (chosen_team_id, chosen_tier)
+                self.assignments[s_low]     = (chosen_team_id, chosen_tier)
+
                 self.rosters[chosen_team_id].add(sub_player)
+
                 self.subbed_players_set.add(s_low)
                 self.subbed_players_set.add(replaced_player.lower())
+
                 self.sub_relations[replaced_player.casefold()].append(sub_player)
                 self.sub_relations[s_low] = [replaced_player]
 
         if not self.tour_label: self.tour_label = init_label
 
-        self.val_str        = meta_res["th_str"]
-        self.base_exp       = meta_res["base_exp"]
-        self.new_players    = meta_res["selected_new"]
+        self.val_str            = meta_res["th_str"]
+        self.base_exp           = meta_res["base_exp"]
+        self.new_players        = meta_res["selected_new"]
+        self.dry_choice         = meta_res.get("dry_choice", "No")
+        self.exp_map            = {name: self.base_exp for name in all_known}
+        self.dry_mapped_index   = dry_mode_mapping.get(self.tour_label, "15")
 
-        self.exp_map = {name: self.base_exp for name in all_known}
         return True
 
     def process_and_generate(self):
@@ -736,6 +761,86 @@ class TourAnalyzer:
                 except Exception    : pass
 
         print(f"Push to GitHub to update the online Dashboard: https://frittutisna.github.io/Stats-Maker/tour/{self.tour_id}/hakohoka/Dashboard.html?update=1")
+
+        if self.dry_choice != "No":            
+            public_repo_dir     = self.script_dir   / "dry"
+            target_jsons_dir    = public_repo_dir   / "jsons"
+            target_codes_file   = public_repo_dir   / "codes.txt"
+            source_jsons_dir    = self.tour_dir     / "json"
+            source_codes_file   = self.tour_dir     / "code.txt"
+            script_name         = "local.py" if "don't push" in self.dry_choice else "public.py"
+            target_script       = public_repo_dir   / script_name
+
+            print(f"[?] Processing Tour {self.tour_id} using Dry's script")
+
+            for file in public_repo_dir     .glob("*.png")  : file.unlink()
+            for file in target_jsons_dir    .glob("*.json") : file.unlink()
+            
+            if source_jsons_dir.exists():
+                for file in source_jsons_dir.glob("*.json"): shutil.copy(file, target_jsons_dir / file.name)
+
+            print("[✓] Copied JSONs to Dry's workspace")
+
+            if source_codes_file.exists():
+                shutil.copy(source_codes_file, target_codes_file)
+                print("[✓] Copied code.txt to Dry's workspace")
+
+            print(f"[?] Running Dry's script")
+
+            try:
+                subprocess.run(
+                    [sys.executable, str(target_script)], 
+                    cwd     = str(public_repo_dir), 
+                    input   = f"{self.dry_mapped_index}\n\n", 
+                    text    = True,
+                    check   = True
+                )
+
+                print(f"[✓] Ran Dry's script successfully")
+
+                output_dir = self.tour_dir / "dry"
+                output_dir.mkdir(parents = True, exist_ok = True)
+
+                files_to_copy = {
+                    "Stats.png"                         : "1-Player.png",
+                    "Stats2.png"                        : "2-Type.png",
+                    "Stats3 - Watched Exclusive.png"    : "3-List.png",
+                    "Stats4.png"                        : "4-Extra.png",
+                    "Stats Songs.png"                   : "5-Song.png"
+                }
+
+                print("[?] Copying Dry's PNGs back")
+
+                for src_name, dest_name in files_to_copy.items():
+                    src_file    = public_repo_dir   / src_name
+                    dest_file   = output_dir        / dest_name
+
+                    if src_file.exists():
+                        shutil.copy(src_file, dest_file)
+                        print(f"[✓] Copied {src_name} as {dest_name}")
+
+                    else: print(f"[X] {src_name} not found in Dry's workspace")
+
+                if self.dry_choice == "Yes, and push it to the database":
+                    timestamp           = datetime.datetime.now().strftime("%y%m%d%H%M")
+                    archive_dir         = self.script_dir   / "archive"     / timestamp
+                    hakohoka_dir        = self.tour_dir     / "hakohoka"
+                    files_to_archive    = ["Dashboard.html", "Script.js", "Styles.css", "Data.json", "Search.json"]
+
+                    print(f"[?] Copying website components to archive/{timestamp}")
+                    archive_dir.mkdir(parents = True, exist_ok = True)
+
+                    for file_name in files_to_archive:
+                        src_file = hakohoka_dir / file_name
+                        if src_file.exists():
+                            shutil.copy(src_file, archive_dir / file_name)
+                            print(f"[✓] Copied {file_name}")
+
+                        else: print(f"[X] {file_name} not found in hakohoka for archiving")
+                            
+                    print(f"Push to GitHub to update the archived Dashboard: https://frittutisna.github.io/Stats-Maker/archive/{timestamp}/Dashboard.html?update=1")
+                
+            except subprocess.CalledProcessError as e: (f"[X] Subsumed Dry workflow script execution failed: {e}")
 
     def _scan_players(self, paths):
         players = set           ()

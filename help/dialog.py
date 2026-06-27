@@ -252,6 +252,29 @@ class TourMetadataDialog(UnifiedDialog):
                 for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n=name: self._select_lbl_opt(n))
 
         self._update_lbl_state()
+
+        ttk.Label(self.container, text = "Do you want to use Dry's script as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+
+        self.dry_var    = tk.StringVar(value = "No")
+        self.dry_boxes  = {}
+        dry_options     = ["No", "Yes, but don't push it to the database", "Yes, and push it to the database"]
+
+        for opt in dry_options:
+            f_dry = ttk.Frame(self.container)
+            f_dry.pack(anchor = "w", pady = 1)
+
+            is_sel      = (self.dry_var.get() == opt)
+            bg_color    = self.fill_color if is_sel else "white"
+
+            box = tk.Canvas(f_dry, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
+            box.pack(side = tk.LEFT, padx = (0, 4))
+            self.dry_boxes[opt] = box
+
+            lbl = ttk.Label(f_dry, text = opt, font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+            
+            for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_dry_opt(o))
+
         ttk.Label(self.container, text = "What are the comma-separated guess rate threshold values?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         self.th_var     = tk.StringVar(value = "default")
@@ -422,6 +445,10 @@ class TourMetadataDialog(UnifiedDialog):
         for k, box in self.lbl_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
         self._update_lbl_state()
 
+    def _select_dry_opt(self, opt):
+        self.dry_var.set(opt)
+        for k, box in self.dry_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
+
     def _select_th_opt(self, opt):
         self.th_var.set(opt)
         for k, box in self.th_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
@@ -480,12 +507,12 @@ class TourMetadataDialog(UnifiedDialog):
         try                 : base_exp = int(self.spin.get())
         except ValueError   : base_exp = 1
 
-        tour_label  = self.lbl_entry    .get() if self.lbl_var  .get() == "Others" else self.lbl_var.get()
-        th_str      = self.th_entry     .get() if self.th_var   .get() == "custom" else "default"
-
+        tour_label      = self.lbl_entry    .get() if self.lbl_var  .get() == "Others" else self.lbl_var.get()
+        th_str          = self.th_entry     .get() if self.th_var   .get() == "custom" else "default"
         selected_new    = [name for name, var in self.player_vars.items() if var.get()] if self.np_var.get() == "Yes" else []
         sub_results     = {sub_name: var.get() for sub_name, var in self.sub_vars.items()}
-        self.result     = {"tour_label": tour_label, "th_str": th_str, "base_exp": base_exp, "selected_new": selected_new, "sub_results": sub_results}
+        dry_choice      = self.dry_var      .get()
+        self.result     = {"tour_label": tour_label, "th_str": th_str, "base_exp": base_exp, "selected_new": selected_new, "sub_results": sub_results, "dry_choice": dry_choice}
 
         if self.tour_dir and sub_results:
             existing_lines = []
