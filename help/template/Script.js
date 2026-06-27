@@ -45,16 +45,16 @@ document.head.appendChild(dynamicStyles);
 
 const tabContainer  = document.getElementById('tabContainer');
 const tourTabBtn    = document.getElementById('tourTabBtn');
-const gearAnchor    = document.getElementById('globalGearWrapper');
+const helpAnchor    = document.getElementById('globalHelpWrapper');
 
 if (use_teams)  tourTabBtn.innerText = "Tour/Team";
 else            tourTabBtn.innerText = "Tour";
 
-if (use_teams)  gearAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
-                gearAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
-if (watched)    gearAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess/List</button>`);
-else            gearAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
-                gearAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
+if (use_teams)  helpAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
+                helpAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
+if (watched)    helpAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess/List</button>`);
+else            helpAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
+                helpAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
 
 const thickBorderColumns = new Set([
     "Player",

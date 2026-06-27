@@ -15,22 +15,6 @@
             <button id="langToggleBtn" class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleSearchLanguage()">JP</button>
             <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
             <button id="tourTabBtn" class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
-            
-            <div id="globalGearWrapper" class="relative">
-                <button class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleGlobalGear(event)">⚙</button>
-                <div id="playerColumnSettingsDropdown" class="bg-white border p-4 w-64 absolute right-0 top-[32px] hidden z-50 shadow-md">
-                    <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
-                        <input type="checkbox" id="playerAllColumnsMasterCheckbox" class="rounded accent-black">All
-                    </label>
-                    <div id="playerColumnCheckboxContainer" class="flex flex-col gap-2 text-xs max-h-[350px] overflow-y-auto"></div>
-                </div>
-                <div id="columnSettingsDropdown" class="bg-white border p-4 w-60 absolute right-0 top-[32px] hidden z-50 shadow-md">
-                    <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
-                        <input type="checkbox" id="allColumnsMasterCheckbox" class="rounded accent-black">All
-                    </label>
-                    <div id="columnCheckboxContainer" class="flex flex-col gap-2 text-sm"></div>
-                </div>
-            </div>
             <div id="globalHelpWrapper" class="relative">
                 <button class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleGlobalHelp(event)">?</button>
                 <div id="playerGuideDropdown" class="bg-white border p-4 w-[500px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black">
@@ -65,6 +49,21 @@
                 </div>
                 <div id="guessGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
                 <div id="songGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
+            </div>
+            <div id="globalGearWrapper" class="relative">
+                <button class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleGlobalGear(event)">⚙</button>
+                <div id="playerColumnSettingsDropdown" class="bg-white border p-4 w-64 absolute right-0 top-[32px] hidden z-50 shadow-md">
+                    <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
+                        <input type="checkbox" id="playerAllColumnsMasterCheckbox" class="rounded accent-black">All
+                    </label>
+                    <div id="playerColumnCheckboxContainer" class="flex flex-col gap-2 text-xs max-h-[350px] overflow-y-auto"></div>
+                </div>
+                <div id="columnSettingsDropdown" class="bg-white border p-4 w-60 absolute right-0 top-[32px] hidden z-50 shadow-md">
+                    <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
+                        <input type="checkbox" id="allColumnsMasterCheckbox" class="rounded accent-black">All
+                    </label>
+                    <div id="columnCheckboxContainer" class="flex flex-col gap-2 text-sm"></div>
+                </div>
             </div>
         </div>
         <div>
