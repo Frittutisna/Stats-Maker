@@ -1284,7 +1284,14 @@ function renderTierCharts() {
         c1Data.rawItems.forEach(p => {
             if (!p) {for (let i = 0; i < 8; i++) x8TraceHovers[i].push(""); return;}
             let s = compilePlayerStatsFromSearch(getPlayerStringName(p.Player));
-            for (let i = 0; i < 8; i++) x8TraceHovers[i].push(formatSampleTextList(s.x8Lists[i]));
+
+            for (let i = 0; i < 8; i++) {
+                let sampleList      = formatSampleTextList(s.x8Lists[i]);
+                let fractionHeader  = `<b>${i + 1}/8</b>`;
+                let combinedTooltip = sampleList ? `${fractionHeader}<br>${sampleList}` : fractionHeader;
+
+                x8TraceHovers[i].push(combinedTooltip);
+            }
         });
 
         for (let i = 0; i < 8; i++) {
