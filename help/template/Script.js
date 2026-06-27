@@ -45,15 +45,16 @@ document.head.appendChild(dynamicStyles);
 
 const tabContainer  = document.getElementById('tabContainer');
 const tourTabBtn    = document.getElementById('tourTabBtn');
+const gearAnchor    = document.getElementById('globalGearWrapper');
 
 if (use_teams)  tourTabBtn.innerText = "Tour/Team";
 else            tourTabBtn.innerText = "Tour";
 
-if (use_teams)  tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
-                tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
-if (watched)    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess/List</button>`);
-else            tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
-                tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
+if (use_teams)  gearAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
+                gearAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
+if (watched)    gearAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess/List</button>`);
+else            gearAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
+                gearAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
 
 const thickBorderColumns = new Set([
     "Player",
@@ -129,9 +130,70 @@ function switchDashboardTab(evt, tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active-tab'));
     document.getElementById(tabId).classList.add('active-content');
-    evt.currentTarget.classList.add('active-tab');
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active-tab');
     window.dispatchEvent(new Event('resize'));
+
+    const gearWrapper = document.getElementById('globalGearWrapper');
+    const helpWrapper = document.getElementById('globalHelpWrapper');
+
+    if (gearWrapper) {
+        if (['player-tab', 'search-tab'].includes(tabId)) gearWrapper.classList.remove('invisible');
+        else gearWrapper.classList.add('invisible');
+    }
+
+    if (helpWrapper) {
+        if (['player-tab', 'tier-tab', 'search-tab'].includes(tabId)) helpWrapper.classList.remove('invisible');
+        else helpWrapper.classList.add('invisible');
+    }
+
+    document.querySelectorAll('#globalGearWrapper > div, #globalHelpWrapper > div').forEach(el => {if (el.id.includes('Dropdown')) el.classList.add('hidden');});
 }
+
+window.toggleGlobalGear = function(event) {
+    event.stopPropagation();
+    const activeTab = document.querySelector('.tab-content.active-content').id;
+    
+    if (activeTab === 'player-tab') {
+        document.getElementById("playerColumnSettingsDropdown") .classList.toggle("hidden");
+        document.getElementById("columnSettingsDropdown")       .classList.add("hidden");
+    }
+
+    else if (activeTab === 'search-tab') {
+        document.getElementById("columnSettingsDropdown")       .classList.toggle("hidden");
+        document.getElementById("playerColumnSettingsDropdown") .classList.add("hidden");
+    }
+};
+
+window.toggleGlobalHelp = function(event) {
+    event.stopPropagation();
+    const activeTab = document.querySelector('.tab-content.active-content').id;
+
+    if (activeTab === 'player-tab') {
+        document.getElementById("playerGuideDropdown")  .classList.toggle("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.add("hidden");
+        document.getElementById("songGuideDropdown")    .classList.add("hidden");
+    }
+
+    else if (activeTab === 'tier-tab') {
+        document.getElementById("tierGuideDropdown")    .classList.toggle("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.add("hidden");
+        document.getElementById("songGuideDropdown")    .classList.add("hidden");
+    }
+
+    else if (activeTab === 'search-tab') {
+        document.getElementById("songGuideDropdown")    .classList.toggle("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.add("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.add("hidden");
+    }
+};
+
+document.addEventListener("click", () => {document.querySelectorAll('#globalGearWrapper > div, #globalHelpWrapper > div').forEach(el => {if (el.id.includes('Dropdown')) el.classList.add('hidden');});});
+const stopProp = (e) => e.stopPropagation();
+
+['playerColumnSettingsDropdown', 'columnSettingsDropdown', 'playerGuideDropdown', 'tierGuideDropdown', 'songGuideDropdown'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("click", stopProp);
+});
 
 function getCrossProduct(o, a, b, xKey, yKey) {return (a[xKey] - o[xKey]) * (b[yKey] - o[yKey]) - (a[yKey] - o[yKey]) * (b[xKey] - o[xKey]);}
 
@@ -249,18 +311,6 @@ let activePlayerHeadersConfig = playerHeadersMasterConfig.filter(col => {
 });
 
 activePlayerHeadersConfig.forEach(col => {col.visible = col.def;});
-
-window.togglePlayerColumnSettingsMenu = function(event) {
-    event.stopPropagation();
-    document.getElementById("playerColumnSettingsDropdown").classList.toggle("hidden");
-};
-
-document.addEventListener("click", () => {
-    const pMenu = document.getElementById("playerColumnSettingsDropdown");
-    if (pMenu) pMenu.classList.add("hidden");
-});
-
-if (document.getElementById("playerColumnSettingsDropdown")) document.getElementById("playerColumnSettingsDropdown").addEventListener("click", (e) => e.stopPropagation());
 
 function initPlayerColumnSettings() {
     const container = document.getElementById("playerColumnCheckboxContainer");
@@ -2703,44 +2753,6 @@ window.toggleSearchLanguage = function() {
     triggerTableRefresh ();
     renderTierCharts    ();
 };
-
-window.togglePlayerGuideMenu = function(event) {
-    event.stopPropagation();
-    document.getElementById("playerGuideDropdown").classList.toggle("hidden");
-};
-
-window.toggleSongGuideMenu = function(event) {
-    event.stopPropagation();
-    document.getElementById("songGuideDropdown").classList.toggle("hidden");
-};
-
-document.addEventListener("click", () => {
-    const pMenu     = document.getElementById("playerColumnSettingsDropdown");
-    const sMenu     = document.getElementById("columnSettingsDropdown");
-    const pGuide    = document.getElementById("playerGuideDropdown");
-    const sGuide    = document.getElementById("songGuideDropdown");
-
-    if (pMenu)  pMenu   .classList.add("hidden");
-    if (sMenu)  sMenu   .classList.add("hidden");
-    if (pGuide) pGuide  .classList.add("hidden");
-    if (sGuide) sGuide  .classList.add("hidden");
-});
-
-if (document.getElementById("playerGuideDropdown")) document.getElementById("playerGuideDropdown")  .addEventListener("click", (e) => e.stopPropagation());
-if (document.getElementById("songGuideDropdown"))   document.getElementById("songGuideDropdown")    .addEventListener("click", (e) => e.stopPropagation());
-
-window.toggleColumnSettingsMenu = function(event) {
-    event.stopPropagation();
-    const menu = document.getElementById("columnSettingsDropdown");
-    menu.classList.toggle("hidden");
-};
-
-document.addEventListener("click", () => {
-    const menu = document.getElementById("columnSettingsDropdown");
-    if (menu) menu.classList.add("hidden");
-});
-
-if (document.getElementById("columnSettingsDropdown")) document.getElementById("columnSettingsDropdown").addEventListener("click", (e) => {e.stopPropagation();});
 
 function initColumnSettingsCheckboxes() {
     const container = document.getElementById("columnCheckboxContainer");
