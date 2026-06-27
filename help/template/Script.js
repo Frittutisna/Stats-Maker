@@ -970,48 +970,23 @@ function renderTierCharts() {
         };
     };
 
-    const formatSampleTextList = (list, limit = 10) => {
-        let totalCount          = list.length;
-        let randomizedSample    = [...list].sort(() => Math.random() - 0.5).slice(0, limit);
+    const formatSampleTextList = (list) => {
+        return [...list]
+            .sort((a, b) => {
+                const cleanA = (a.startsWith('✓') || a.startsWith('✗') || a.startsWith('• ')) ? a.replace(/^[✓✗•]\s*/, '') : a;
+                const cleanB = (b.startsWith('✓') || b.startsWith('✗') || b.startsWith('• ')) ? b.replace(/^[✓✗•]\s*/, '') : b;
 
-        randomizedSample.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-        if (totalCount > limit) randomizedSample.push(`and ${totalCount - limit} more`);
-        return randomizedSample.join('<br>');
+                return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
+            })
+
+            .join('<br>');
     };
 
-    const formatFractionalSample = (fractionStr, songsList, limit = 10) => {
-        const ticks         = songsList.filter(s => s.startsWith('✓'));
-        const crosses       = songsList.filter(s => s.startsWith('✗'));
-        const totalValid    = ticks.length + crosses.length;
+    const formatFractionalSample = (fractionStr, songsList) => {
+        const ticks         = songsList.filter(s => s.startsWith('✓')).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        const crosses       = songsList.filter(s => s.startsWith('✗')).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
-        let tickTarget = 5;
-
-        if (totalValid > 0) {
-            tickTarget = Math.round((ticks.length / totalValid) * limit);
-            if (ticks.length > 0 && crosses.length > 0) tickTarget = Math.max(1, Math.min(limit - 1, tickTarget));
-        }
-
-        let crossTarget = limit - tickTarget;
-
-        if (ticks.length < tickTarget) {
-            tickTarget = ticks.length;
-            crossTarget = Math.min(crosses.length, limit - tickTarget);
-        }
-
-        else if (crosses.length < crossTarget) {
-            crossTarget = crosses.length;
-            tickTarget = Math.min(ticks.length, limit - crossTarget);
-        }
-
-        const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
-        const sampledCrosses    = crosses   .sort(() => Math.random() - 0.5).slice(0, crossTarget);
-
-        sampledTicks    .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-        sampledCrosses  .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-
-        const outputSample = [...sampledTicks, ...sampledCrosses];
-
-        if (totalValid > limit) outputSample.push(`and ${totalValid - limit} more`);
+        const outputSample = [...ticks, ...crosses];
         return `<b>${fractionStr}</b><br>` + outputSample.join('<br>');
     };
 
@@ -1360,6 +1335,7 @@ function renderTierCharts() {
     };
 
     layoutC1.height = 35 * c1Data.yLabels.length;
+    c1Traces.forEach(t => t.hoverinfo = 'none');
     Plotly.newPlot('tierChart_MainMetrics', c1Traces, layoutC1, {responsive: true, displayModeBar: false});
     let newChart1Div = document.getElementById('tierChart_MainMetrics');
 
@@ -1376,7 +1352,8 @@ function renderTierCharts() {
         });
         
         newChart1Div.on('plotly_click', function(data) {
-            if (!data.points || data.points.length === 0) return;
+            if (data.event      && data.event.button    !== 0) return;
+            if (!data.points    || data.points.length   === 0) return;
 
             const pt            = data.points[0];
             const pNameClean    = String(pt.y).trim().toLowerCase();
@@ -1404,6 +1381,50 @@ function renderTierCharts() {
             }
 
             if (query) window.searchPlayerMetricFromTable(query);
+        });
+
+        newChart1Div.addEventListener('contextmenu', e => e.preventDefault());
+
+        newChart1Div.on('plotly_hover', function(data) {
+            if (!data.points || data.points.length === 0) return;
+
+            const pt            = data.points[0];
+            const tooltipNode   = document.getElementById('customJsTooltip');
+
+            if (tooltipNode && pt.hovertext) {
+                let traceColor = 'black';
+                if (pt.fullData && pt.fullData.marker) {
+                    traceColor = pt.fullData.marker.color;
+                    if (Array.isArray(traceColor)) {
+                        traceColor = traceColor[pt.pointIndex] || 'black';
+                    }
+                }
+
+                const isWhite = traceColor === 'white' || traceColor === '#ffffff' || traceColor === '#fff' || traceColor === 'rgb(255,255,255)' || traceColor === 'rgb(255, 255, 255)';
+
+                tooltipNode.style.display           = 'block';
+                tooltipNode.style.maxHeight         = '300px';
+                tooltipNode.style.overflowY         = 'auto';
+                tooltipNode.style.backgroundColor   = traceColor;
+                tooltipNode.style.color             = isWhite ? 'black' : 'white';
+                tooltipNode.style.border            = isWhite ? '1px solid black' : 'none';
+                tooltipNode.innerHTML               = pt.hovertext;
+                tooltipNode.style.left              = (data.event.pageX + 15) + 'px';
+                tooltipNode.style.top               = (data.event.pageY + 15) + 'px';
+            }
+        });
+
+        newChart1Div.on('plotly_unhover', function() {
+            const tooltipNode = document.getElementById('customJsTooltip');
+
+            if (tooltipNode && !tooltipNode.classList.contains('is-hovered')) {
+                tooltipNode.style.display           = 'none';
+                tooltipNode.style.backgroundColor   = 'black';
+                tooltipNode.style.color             = 'white';
+                tooltipNode.style.maxHeight         = '';
+                tooltipNode.style.overflowY         = '';
+                tooltipNode.style.border            = 'none';
+            }
         });
     }
 
@@ -1530,6 +1551,7 @@ function renderTierCharts() {
     };
 
     layoutC2.height = 35 * c2Data.yLabels.length;
+    c2Traces.forEach(t => t.hoverinfo = 'none');
     Plotly.newPlot('tierChart_LivesMetrics', c2Traces, layoutC2, {responsive: true, displayModeBar: false});
     let newChart2Div = document.getElementById('tierChart_LivesMetrics');
 
@@ -1546,7 +1568,8 @@ function renderTierCharts() {
         });
 
         newChart2Div.on('plotly_click', function(data) {
-            if (!data.points || data.points.length === 0) return;
+            if (data.event      && data.event.button    !== 0) return;
+            if (!data.points    || data.points.length   === 0) return;
 
             const pt            = data.points[0];
             const pNameClean    = String(pt.y).trim().toLowerCase();
@@ -1563,6 +1586,49 @@ function renderTierCharts() {
             }
 
             if (query) window.searchPlayerMetricFromTable(query);
+        });
+
+        newChart2Div.addEventListener('contextmenu', e => e.preventDefault());
+
+        newChart2Div.on('plotly_hover', function(data) {
+            if (!data.points || data.points.length === 0) return;
+
+            const pt            = data.points[0];
+            const tooltipNode   = document.getElementById('customJsTooltip');
+            
+            if (tooltipNode && pt.hovertext) {
+                let traceColor = 'black';
+
+                if (pt.fullData && pt.fullData.marker) {
+                    traceColor = pt.fullData.marker.color;
+                    if (Array.isArray(traceColor)) traceColor = traceColor[pt.pointIndex] || 'black';
+                }
+
+                const isWhite = traceColor === 'white' || traceColor === '#ffffff' || traceColor === '#fff' || traceColor === 'rgb(255,255,255)' || traceColor === 'rgb(255, 255, 255)';
+
+                tooltipNode.style.display           = 'block';
+                tooltipNode.style.maxHeight         = '300px';
+                tooltipNode.style.overflowY         = 'auto';
+                tooltipNode.style.backgroundColor   = traceColor;
+                tooltipNode.style.color             = isWhite ? 'black' : 'white';
+                tooltipNode.style.border            = isWhite ? '1px solid black' : 'none';
+                tooltipNode.innerHTML               = pt.hovertext;
+                tooltipNode.style.left              = (data.event.pageX + 15) + 'px';
+                tooltipNode.style.top               = (data.event.pageY + 15) + 'px';
+            }
+        });
+
+        newChart2Div.on('plotly_unhover', function() {
+            const tooltipNode = document.getElementById('customJsTooltip');
+
+            if (tooltipNode && !tooltipNode.classList.contains('is-hovered')) {
+                tooltipNode.style.display           = 'none';
+                tooltipNode.style.backgroundColor   = 'black';
+                tooltipNode.style.color             = 'white';
+                tooltipNode.style.maxHeight         = '';
+                tooltipNode.style.overflowY         = '';
+                tooltipNode.style.border            = 'none';
+            }
         });
     }
 
@@ -1614,7 +1680,7 @@ function renderTierCharts() {
         type                : 'bar',
         orientation         : 'h',
         hovertext           : c3Data.customHovers   .slice().reverse(),
-        hoverinfo           : 'text',
+        hoverinfo           : 'none',
         text                : c3Data.singleXVals    .slice().reverse().map(v => v === null ? "" : v.toFixed(2) + " "),
         textposition        : 'inside', 
         insidetextanchor    : 'end',
@@ -1644,6 +1710,43 @@ function renderTierCharts() {
 
     layoutC3.height = 35 * c3Data.yLabels.length;
     Plotly.newPlot('tierChart_TimeMetrics', c3Traces, layoutC3, {responsive: true, displayModeBar: false});
+    let newChart3Div = document.getElementById('tierChart_TimeMetrics');
+
+    if (newChart3Div) {
+        newChart3Div.addEventListener('contextmenu', e => e.preventDefault());
+
+        newChart3Div.on('plotly_hover', function(data) {
+            if (!data.points || data.points.length === 0) return;
+
+            const pt            = data.points[0];
+            const tooltipNode   = document.getElementById('customJsTooltip');
+
+            if (tooltipNode && pt.hovertext) {
+                tooltipNode.style.display           = 'block';
+                tooltipNode.style.maxHeight         = '300px';
+                tooltipNode.style.overflowY         = 'auto';
+                tooltipNode.style.backgroundColor   = 'white';
+                tooltipNode.style.color             = 'black';
+                tooltipNode.style.border            = '1px solid black';
+                tooltipNode.innerHTML               = pt.hovertext;
+                tooltipNode.style.left              = (data.event.pageX + 15) + 'px';
+                tooltipNode.style.top               = (data.event.pageY + 15) + 'px';
+            }
+        });
+
+        newChart3Div.on('plotly_unhover', function() {
+            const tooltipNode = document.getElementById('customJsTooltip');
+
+            if (tooltipNode && !tooltipNode.classList.contains('is-hovered')) {
+                tooltipNode.style.display           = 'none';
+                tooltipNode.style.backgroundColor   = 'black';
+                tooltipNode.style.color             = 'white';
+                tooltipNode.style.maxHeight         = '';
+                tooltipNode.style.overflowY         = '';
+                tooltipNode.style.border            = 'none';
+            }
+        });
+    }
 }
 
 function setupTooltipListeners() {
@@ -1714,6 +1817,22 @@ function setupTooltipListeners() {
             tooltipNode.classList.remove('is-hovered');
             requestHideTooltip();
         });
+
+        window.addEventListener('wheel', (e) => {
+            if (tooltipNode.style.display === 'block') {
+                const rect = tooltipNode.getBoundingClientRect();
+
+                const isOverTooltip = (
+                    e.clientX >= rect.left && e.clientX <= rect.right &&
+                    e.clientY >= rect.top && e.clientY <= rect.bottom
+                );
+                
+                if (tooltipNode.scrollHeight > tooltipNode.clientHeight) {
+                    e.preventDefault();
+                    tooltipNode.scrollTop += e.deltaY;
+                }
+            }
+        }, {passive: false});
     }
 
     document.querySelectorAll('table th[data-metric], table td[data-metric]').forEach(th => {
@@ -1877,22 +1996,19 @@ for (let i = 0; i < numY; i++) {
             let val = matrixBins[key].over8Sum / matrixBins[key].count;
             rowZ.push(val);
 
-            let bin_songs       = matrixSongs[key] ? [...matrixSongs[key]] : [];
-            let song_hover_str  = "";
+            let bin_songs = matrixSongs[key] ? [...matrixSongs[key]] : [];
 
-            if (bin_songs.length > 10) {
-                const remainingCount = bin_songs.length - 10;
-                bin_songs = bin_songs.sort(() => Math.random() - 0.5).slice(0, 10);
-                bin_songs = formatAndSortSongsList(bin_songs, false);
-                song_hover_str = "<br>• " + bin_songs.join("<br>• ") + "<br>and " + remainingCount + " more";
-            }
+            bin_songs = bin_songs
+                .sort((a, b) => {
+                    const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
+                    const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
 
-            else if (bin_songs.length > 0) {
-                bin_songs = formatAndSortSongsList(bin_songs, false);
-                song_hover_str = "<br>• " + bin_songs.join("<br>• ");
-            }
+                    return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
+                })
 
-            rowText.push(`<b>${diffStr}<br>${vintageStr}<br>Over-8: ${val.toFixed(2)}</b>${song_hover_str}`);
+                .map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : `• ${s}`);
+
+            rowText.push(`<b>${diffStr}<br>${vintageStr}<br>Over-8: ${val.toFixed(2)}</b>`);
 
             annotations.push({
                 x               : j,
@@ -1956,8 +2072,7 @@ Plotly.newPlot('plotlySongChart', [{
     x               : Array.from({length: numX}, (_, i) => i),
     y               : Array.from({length: numY}, (_, i) => i),
     text            : textLabels,
-    hovertemplate   : '<span style="text-align: left; display: block;">%{text}</span><extra></extra>',
-    hoverlabel      : {align: 'left', bgcolor: bgColors, font: {family: 'Segoe UI', size: 15}},
+    hoverinfo       : 'none',
     type            : 'heatmap',
     colorscale      : [[0, c0], [0.375, c1], [0.625, c2], [1, c2]],
     zmin            : 0,
@@ -2014,8 +2129,77 @@ Plotly.newPlot('plotlySongChart', [{
 const songChartDiv = document.getElementById('plotlySongChart');
 
 if (songChartDiv) {
-    songChartDiv.on('plotly_click', function(data) {
+    songChartDiv.addEventListener('contextmenu', e => e.preventDefault());
+
+    songChartDiv.addEventListener('wheel', function(e) {
+        const tooltipNode = document.getElementById('customJsTooltip');
+
+        if (tooltipNode && tooltipNode.style.display === 'block') {
+            if (tooltipNode.scrollHeight > tooltipNode.clientHeight) {
+                e.preventDefault();
+                tooltipNode.scrollTop += e.deltaY;
+            }
+        }
+    }, {passive: false});
+
+    songChartDiv.on('plotly_hover', function(data) {
         if (!data.points || data.points.length === 0) return;
+
+        const pt    = data.points[0];
+        const j     = pt.x;
+        const i     = pt.y;
+        const key   = `${j}-${i}`;
+
+        if (matrixSongs && matrixSongs[key]) {
+            const tooltipNode = document.getElementById('customJsTooltip');
+            if (!tooltipNode) return;
+
+            let bin_songs = [...matrixSongs[key]];
+
+            bin_songs = bin_songs
+                .sort((a, b) => {
+                    const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
+                    const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
+
+                    return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
+                })
+
+                .map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : `• ${s}`);
+
+            const baseInfo          = textLabels[i][j]  || "";
+            const currentCellColor  = bgColors[i][j]    || 'black';
+            
+            const isWhite = currentCellColor === 'white' || currentCellColor === '#ffffff' || currentCellColor === 'rgb(255,255,255)' || currentCellColor === 'rgb(255, 255, 255)';
+
+            tooltipNode.style.display           = 'block';
+            tooltipNode.style.maxHeight         = '300px';
+            tooltipNode.style.overflowY         = 'auto';
+            tooltipNode.style.backgroundColor   = currentCellColor;
+            tooltipNode.style.color             = isWhite ? 'black' : 'white';
+            tooltipNode.style.border            = isWhite ? '1px solid black' : 'none';
+            tooltipNode.innerHTML               = `${baseInfo}<br>${bin_songs.join('<br>')}`;
+            const event                         = data.event;
+            tooltipNode.style.left              = (event.pageX + 15) + 'px';
+            tooltipNode.style.top               = (event.pageY + 15) + 'px';
+        }
+    });
+
+    songChartDiv.on('plotly_unhover', function() {
+        const tooltipNode = document.getElementById('customJsTooltip');
+
+        if (tooltipNode && !tooltipNode.classList.contains('is-hovered')) {
+            tooltipNode.style.display           = 'none';
+            tooltipNode.style.backgroundColor   = 'black';
+            tooltipNode.style.color             = 'white';
+            tooltipNode.style.maxHeight         = '';
+            tooltipNode.style.overflowY         = '';
+            tooltipNode.style.border            = 'none';
+        }
+    });
+
+    songChartDiv.on('plotly_click', function(data) {
+        if (data.event      && data.event.button    !== 0) return;
+        if (!data.points    || data.points.length   === 0) return;
 
         const pt        = data.points[0];
         const j         = pt.x;
@@ -2053,7 +2237,6 @@ if (songChartDiv) {
                 let endDf   = startDf + 5;
                 queryParts.push(`difficulty>${startDf}`, `difficulty<${endDf}`);
             }
-
         }
 
         else {
