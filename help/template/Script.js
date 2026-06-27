@@ -1865,6 +1865,7 @@ function setupTooltipListeners() {
                 else                                                {tooltipNode.style.backgroundColor = 'black';   tooltipNode.style.color = 'white';}
 
                 let displaySongs        = [...songs];
+                displaySongs            = window.translateHoverText(displaySongs);
                 const isPlayerSubHover  = td.parentNode.firstElementChild === td;
 
                 if (songs.length === 1 && !songs[0].startsWith('✓') && !songs[0].startsWith('✗') && songs[0].includes('/')) {
@@ -2154,7 +2155,8 @@ if (songChartDiv) {
             const tooltipNode = document.getElementById('customJsTooltip');
             if (!tooltipNode) return;
 
-            let bin_songs = [...matrixSongs[key]];
+            let bin_songs   = [...matrixSongs[key]];
+            bin_songs       = window.translateHoverText(bin_songs);
 
             bin_songs = bin_songs
                 .sort((a, b) => {
@@ -2659,6 +2661,39 @@ function parseFloatToVintage(val) {
     return `${season}&nbsp;${year}`;
 }
 
+window.translateHoverText = function(textArray) {
+    if (!globalSearchData || globalSearchData.length === 0) return textArray;
+
+    return textArray.map(line => {
+        if (typeof line !== 'string') return line;
+        let translatedLine = line;
+
+        for (let i = 0; i < globalSearchData.length; i++) {
+            const s     = globalSearchData[i];
+            const jp    = s.romaji  || "";
+            const en    = s.english || "";
+
+            if (!jp || !en || jp === en) continue;
+
+            if (currentSearchLang === "EN") {
+                if (translatedLine.includes(jp + " (OP") || translatedLine.includes(jp + " (ED") || translatedLine.includes(jp + " (IN")) {
+                    translatedLine = translatedLine.replace(jp + " (", en + " (");
+                    break;
+                }
+            }
+
+            else {
+                if (translatedLine.includes(en + " (OP") || translatedLine.includes(en + " (ED") || translatedLine.includes(en + " (IN")) {
+                    translatedLine = translatedLine.replace(en + " (", jp + " (");
+                    break;
+                }
+            }
+        }
+
+        return translatedLine;
+    });
+};
+
 window.toggleSearchLanguage = function() {
     const btn           = document.getElementById("langToggleBtn");
     currentSearchLang   = currentSearchLang === "JP" ? "EN" : "JP";
@@ -2666,6 +2701,7 @@ window.toggleSearchLanguage = function() {
 
     sortSearchData      ();
     triggerTableRefresh ();
+    renderTierCharts    ();
 };
 
 window.togglePlayerGuideMenu = function(event) {

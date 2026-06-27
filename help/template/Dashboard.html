@@ -12,6 +12,7 @@
         <h2 id="dashboardTitle" class="text-4xl text-center font-bold">Tour Dashboard</h2>
         <p id="lastUpdatedSubtitle" class="text-xl text-center font-bold mb-1">Last updated: Some time ago</p>
         <div id="tabContainer" class="border-b flex justify-center mb-1">
+            <button id="langToggleBtn" class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleSearchLanguage()">JP</button>
             <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
             <button id="tourTabBtn" class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
         </div>
@@ -185,7 +186,6 @@
             <div id="search-tab" class="tab-content">
                 <div class="w-full flex justify-center mb-1">
                     <div class="mx-auto w-full max-w-xl flex items-center justify-center gap-1">
-                        <button id="langToggleBtn" class="w-[30px] h-[30px] bg-black text-white font-bold cursor-pointer shrink-0" onclick="toggleSearchLanguage()">JP</button>
                         <input type="text" id="songSearchInput" placeholder="anime:chobits songtype:ed" class="w-full h-[30px] px-2 border text-sm">
                         <div id="searchCounter" class="w-[75px] h-[30px] font-bold bg-black text-white flex items-center justify-center shrink-0 text-sm">
                             0/0
