@@ -199,33 +199,10 @@ const formatAndSortSongsList = (list, prefixBullets = true) => {
 };
 
 const sampleLargeSongList = (displaySongs) => {
-    const ticks     = displaySongs.filter(s => s.startsWith('✓'));
-    const crosses   = displaySongs.filter(s => s.startsWith('✗'));
-    const valid     = ticks.length + crosses.length;
+    const ticks     = displaySongs.filter(s => s.startsWith('✓')).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+    const crosses   = displaySongs.filter(s => s.startsWith('✗')).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
-    let tickTarget = 5;
-
-    if (valid > 0) {
-        tickTarget  = Math.round((ticks.length / valid) * 10);
-        if (ticks.length > 0 && crosses.length > 0) tickTarget = Math.max(1, Math.min(9, tickTarget));
-    }
-
-    let crossTarget = 10 - tickTarget;
-
-    if (ticks.length < tickTarget) {
-        tickTarget  = ticks.length;
-        crossTarget = Math.min(crosses.length, 10 - tickTarget);
-    }
-
-    else if (crosses.length < crossTarget) {
-        crossTarget = crosses.length;
-        tickTarget  = Math.min(ticks.length, 10 - crossTarget);
-    }
-
-    const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
-    const sampledCrosses    = crosses   .sort(() => Math.random() - 0.5).slice(0, crossTarget);
-
-    return [...formatAndSortSongsList(sampledTicks), ...formatAndSortSongsList(sampledCrosses)];
+    return [...ticks, ...crosses];
 };
 
 let globalPlayerSortState   = {columnName: "GR", ascending: false};
@@ -1671,10 +1648,14 @@ function renderTierCharts() {
 
 function setupTooltipListeners() {
     const tooltipNode = document.getElementById('customJsTooltip');
+    let hideTimeout = null;
 
     function positionTooltip(e) {
+        if (tooltipNode.classList.contains('is-hovered')) return;
+
         tooltipNode.style.display = 'block';
-        const tooltipWidth = tooltipNode.offsetWidth; const tooltipHeight = tooltipNode.offsetHeight;
+        const tooltipWidth = tooltipNode.offsetWidth; 
+        const tooltipHeight = tooltipNode.offsetHeight;
 
         let xPos = e.pageX + 15;
         let yPos = e.pageY + 15;
@@ -1689,6 +1670,52 @@ function setupTooltipListeners() {
         tooltipNode.style.top = yPos + 'px';
     }
 
+    function clearHideTimeout() {
+        if (hideTimeout) {
+            clearTimeout(hideTimeout);
+            hideTimeout = null;
+        }
+    }
+
+    function requestHideTooltip() {
+        clearHideTimeout();
+
+        hideTimeout = setTimeout(() => {
+            if (!tooltipNode.classList.contains('is-hovered')) {
+                tooltipNode.style.display           = 'none';
+                tooltipNode.style.backgroundColor   = 'black';
+                tooltipNode.style.color             = 'white';
+                tooltipNode.style.maxHeight         = '';
+                tooltipNode.style.overflowY         = '';
+            }
+        }, 100);
+    }
+
+    function handleCellWheelScroll(e) {
+        if (tooltipNode && tooltipNode.style.display === 'block') {
+            const hasScrollbar = tooltipNode.scrollHeight > tooltipNode.clientHeight;
+
+            if (hasScrollbar) {
+                e.preventDefault();
+                tooltipNode.scrollTop += e.deltaY;
+            }
+        }
+    }
+
+    if (tooltipNode && !tooltipNode._bound) {
+        tooltipNode._bound = true;
+
+        tooltipNode.addEventListener('mouseenter', () => {
+            clearHideTimeout();
+            tooltipNode.classList.add('is-hovered');
+        });
+
+        tooltipNode.addEventListener('mouseleave', () => {
+            tooltipNode.classList.remove('is-hovered');
+            requestHideTooltip();
+        });
+    }
+
     document.querySelectorAll('table th[data-metric], table td[data-metric]').forEach(th => {
         const metricKey = th.getAttribute('data-metric');
         if (!colExplanations[metricKey]) return;
@@ -1697,8 +1724,8 @@ function setupTooltipListeners() {
         th.removeEventListener('mousemove',     positionTooltip);
         th.removeEventListener('mouseleave',    th._handlerLeave);
 
-        th._handlerEnter = (e)  => {tooltipNode.innerHTML       = colExplanations[metricKey]; positionTooltip(e);};
-        th._handlerLeave = ()   => {tooltipNode.style.display   = 'none'; };
+        th._handlerEnter = (e)  => { clearHideTimeout(); tooltipNode.innerHTML = colExplanations[metricKey]; positionTooltip(e); };
+        th._handlerLeave = ()   => { requestHideTooltip(); };
 
         th.addEventListener('mouseenter', th._handlerEnter);
         th.addEventListener('mousemove',  positionTooltip);
@@ -1706,8 +1733,11 @@ function setupTooltipListeners() {
     });
 
     document.querySelectorAll('td[data-songs]').forEach(td => {
+        td.removeEventListener('wheel', handleCellWheelScroll);
+
         td.addEventListener('mouseenter', (e) => {
             try {
+                clearHideTimeout();
                 const songs = JSON.parse(decodeURIComponent(td.getAttribute('data-songs')));
                 if (!songs || songs.length === 0) return;
 
@@ -1748,16 +1778,13 @@ function setupTooltipListeners() {
                     displaySongs.shift();
                 }
 
-                if (containsRegex && songs.length > 10) displaySongs = sampleLargeSongList(displaySongs).map(s => (s.startsWith('✓') || s.startsWith('✗') || !isPlayerSubHover) ? s : `• ${s}`);
+                if (containsRegex)  displaySongs = sampleLargeSongList(displaySongs).map(s => (s.startsWith('✓') || s.startsWith('✗') || !isPlayerSubHover) ? s : `• ${s}`);
+                else                displaySongs = formatAndSortSongsList(displaySongs, !isPlayerSubHover);
 
-                else {
-                    if (displaySongs.length > 10) displaySongs = displaySongs.sort(() => Math.random() - 0.5).slice(0, 10);
-                    displaySongs = formatAndSortSongsList(displaySongs, !isPlayerSubHover);
-                }
+                tooltipNode.style.maxHeight = '300px';
+                tooltipNode.style.overflowY = 'auto';
+                tooltipNode.innerHTML       = containsRegex ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>');
 
-                const totalSongsCount = containsRegex ? (songs.length - 1) : songs.length;
-                if (totalSongsCount > 10) displaySongs.push(`and ${totalSongsCount - 10} more`);
-                tooltipNode.innerHTML = containsRegex ? `${fractionHeader}<br>${displaySongs.join('<br>')}` : displaySongs.join('<br>');
                 positionTooltip(e);
             }
 
@@ -1765,11 +1792,8 @@ function setupTooltipListeners() {
         });
 
         td.addEventListener('mousemove',    positionTooltip);
-        td.addEventListener('mouseleave',   () => {
-            tooltipNode.style.display           = 'none';
-            tooltipNode.style.backgroundColor   = 'black';
-            tooltipNode.style.color             = 'white';
-        });
+        td.addEventListener('mouseleave',   requestHideTooltip);
+        td.addEventListener('wheel',        handleCellWheelScroll, {passive: false});
     });
 }
 
