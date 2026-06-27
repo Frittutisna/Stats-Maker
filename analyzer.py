@@ -951,10 +951,10 @@ class TourAnalyzer:
                     "Solo Rigs"         : self.p_l_solos[name],
                     "Solo Rig Rate"     : self.p_l_solos[name]          / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
                     "Rig Over-8"        : rig_over8,
-                    "Over-8 Delta"      : rig_over8 - avg_over8,
+                    "Over-8 Δ"          : rig_over8 - avg_over8,
                     "Rig Guess Rate"    : self.p_rigs_h[name]           / self.p_rigs[name]         if self.p_rigs[name]            else np.nan,
                     "Off Guess Rate"    : (cor - self.p_rigs_h[name])   / (tot - self.p_rigs[name]) if (tot - self.p_rigs[name])    else np.nan,
-                    "Rig Delta"         : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
+                    "Rig Δ"             : (cor - self.p_rigs[name])     / cor                       if cor                          else np.nan,
                 })
 
             h_diffs = self.p_hit_diff.get(name, [])
@@ -996,7 +996,7 @@ class TourAnalyzer:
         avg_rank    = np.mean(valid_elos) if valid_elos else 1.0
         df, mask    = self._compute_player_rows(elo_map, apps, exp_map, base_exp, new_players, watched, active, t_labels, avg_rank)
         df_png      = df.copy()
-        pcts        = ["Guess Rate"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Delta", "Rig Guess Rate", "Off Guess Rate"] if watched else []) + ["Chant Guess Rate"]
+        pcts        = ["Guess Rate"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Δ", "Rig Guess Rate", "Off Guess Rate"] if watched else []) + ["Chant Guess Rate"]
 
         if "Elo"            in df_png.columns: df_png["Elo"]            = pd.to_numeric(df_png["Elo"],          errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "UF"             in df_png.columns: df_png["UF"]             = pd.to_numeric(df_png["UF"],           errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -1004,7 +1004,7 @@ class TourAnalyzer:
         if "Median Time"    in df_png.columns: df_png["Median Time"]    = pd.to_numeric(df_png["Median Time"],  errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Mean Over-8"    in df_png.columns: df_png["Mean Over-8"]    = pd.to_numeric(df_png["Mean Over-8"],  errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         if "Rig Over-8"     in df_png.columns: df_png["Rig Over-8"]     = pd.to_numeric(df_png["Rig Over-8"],   errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
-        if "Over-8 Delta"   in df_png.columns: df_png["Over-8 Delta"]   = pd.to_numeric(df_png["Over-8 Delta"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if "Over-8 Δ"       in df_png.columns: df_png["Over-8 Δ"]       = pd.to_numeric(df_png["Over-8 Δ"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
         for c in pcts: df_png[c] = pd.to_numeric(df_png[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
         self._export_png(df_png, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask, val_str)
@@ -1761,14 +1761,14 @@ class TourAnalyzer:
 
                     row.update({
                         "Rigs"              : int   (row_data["Rigs"]),
-                        "Rig Rate"          : float (row_data["Rig Rate"]       * 100),
+                        "Rig Rate"          : float (row_data["Rig Rate"]                   * 100),
                         "Solo Rigs"         : int   (row_data["Solo Rigs"]),
-                        "Solo Rig Rate"     : float (row_data["Solo Rig Rate"]  * 100),
-                        "Rig Over-8"        : float (row_data["Rig Over-8"])            if pd.notnull(row_data["Rig Over-8"])   else np.nan,
-                        "Over-8 Delta"      : float (row_data["Over-8 Delta"])          if pd.notnull(row_data["Over-8 Delta"]) else np.nan,
-                        "Rig Guess Rate"    : {"count": float(row_data["Rig Guess Rate"] * 100), "details": [f"{succ_rig}/{tot_rig}"] + self.player_song_details[name]["Rigs"]} if pd.notnull(row_data["Rig Guess Rate"]) else np.nan,
-                        "Off Guess Rate"    : {"count": float(row_data["Off Guess Rate"] * 100), "details": [f"{succ_off}/{tot_off}"] + off_details}                            if pd.notnull(row_data["Off Guess Rate"]) else np.nan,
-                        "Rig Delta"         : float (row_data["Rig Delta"]      * 100),
+                        "Solo Rig Rate"     : float (row_data["Solo Rig Rate"]              * 100),
+                        "Rig Over-8"        : float (row_data["Rig Over-8"])                                                                                                        if pd.notnull(row_data["Rig Over-8"])   else np.nan,
+                        "Over-8 Δ"          : float (row_data["Over-8 Δ"])                                                                                                          if pd.notnull(row_data["Over-8 Δ"])         else np.nan,
+                        "Rig Guess Rate"    : {"count": float(row_data["Rig Guess Rate"]    * 100), "details": [f"{succ_rig}/{tot_rig}"] + self.player_song_details[name]["Rigs"]}  if pd.notnull(row_data["Rig Guess Rate"])   else np.nan,
+                        "Off Guess Rate"    : {"count": float(row_data["Off Guess Rate"]    * 100), "details": [f"{succ_off}/{tot_off}"] + off_details}                             if pd.notnull(row_data["Off Guess Rate"])   else np.nan,
+                        "Rig Δ"             : float (row_data["Rig Δ"]                      * 100),
                     })
 
                 h_diffs = self.p_hit_diff.get(name, [])
@@ -1865,8 +1865,8 @@ class TourAnalyzer:
             "1/8s",             "2/8s",                 "Lives Taken",      "Lives Saved",
             "OP Guess Rate",    "ED Guess Rate",        "IN Guess Rate",
             "Rigs",             "Rig Rate",             "Solo Rigs",        "Solo Rig Rate",
-            "Over-8 Delta",     "Rig Guess Rate",       "Off Guess Rate",
-            "Rig Delta",        "Median Vintage Hit",   "Chant Guess Rate"
+            "Over-8 Δ",         "Rig Guess Rate",       "Off Guess Rate",
+            "Rig Δ",            "Median Vintage Hit",   "Chant Guess Rate"
         ]
 
         asc_cols    = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8", "Mean Difficulty Hit"]
@@ -2246,8 +2246,8 @@ class TourAnalyzer:
             "Lives Saved"               : "Count of blocks achieved against the opposing team<br>Lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
             "Solo Rigs"                 : "Count of songs exclusively from this player's list",
             "Rig Over-8"                : "Average of correct guessers across songs from this player's list",
-            "Over-8 Delta"              : "Rig Over-8 - Mean Over-8<br>Calculates the difficulty gap between this player's list and correct guesses",
-            "Rig Delta"                 : "100 * (Correct - Rig) / Correct<br>Calculates this player's performance against their own list",
+            "Over-8 Δ"                  : "Rig Over-8 - Mean Over-8<br>Calculates the difficulty gap between this player's list and correct guesses",
+            "Rig Δ"                     : "100 * (Correct - Rig) / Correct<br>Calculates this player's performance against their own list",
             "Median Time"               : "Median guess time across songs this player guessed correctly",
             "Total 4-0s"                : "Count of songs where all players from one team guessed correctly and all players from the other team missed",
             "Rig Synergy"               : "Average team guess rate across songs from its own members' lists",
@@ -2494,8 +2494,8 @@ class TourAnalyzer:
             "OP Guess Rate",    "ED Guess Rate",        "IN Guess Rate",
             "Rigs",             "Rig Rate",
             "Solo Rigs",        "Solo Rig Rate",
-            "Over-8 Delta",     "Rig Guess Rate",       "Off Guess Rate",
-            "Rig Delta",        "Median Vintage Hit",   "Chant Guess Rate",
+            "Over-8 Δ",         "Rig Guess Rate",       "Off Guess Rate",
+            "Rig Δ",            "Median Vintage Hit",   "Chant Guess Rate",
             "Mean Elo",         "Mean GR",              "Total 1/8s",
             "Rig Synergy",      "Off Synergy",          "Shared Rigs"
         ]
@@ -2586,7 +2586,7 @@ class TourAnalyzer:
 
                 if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
 
-        col_borders = {"Player", "Guess Rate", "Score", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Delta", "Rig Delta", "Median Vintage Hit", "Metric", "Value", "Team Leader", "Mean Over-8"}
+        col_borders = {"Player", "Guess Rate", "Score", "Mean Over-8", "Lives Saved", "IN Guess Rate", "Rig Rate", "Solo Rig Rate", "Over-8 Δ", "Rig Δ", "Median Vintage Hit", "Metric", "Value", "Team Leader", "Mean Over-8"}
         th_cells    = []
 
         for c in df.columns:

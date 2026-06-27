@@ -19,13 +19,12 @@ const {
     generated_timestamp : generatedTime
 } = window.dashboardData;
 
-let currentTierChartMode = "TIER";
-let globalSearchData     = []; // Safe global allocation context before any function evaluates
-
-let globalChartMode = "RATE"; // Shared state tracking variable for unified COUNT/RATE mode selectors
-let c1Sub  = "BASE"; // BASE, X/8, RIG, HIT, OFF, CHANT
-let c2Sub  = "BOTH"; // TAKEN, SAVED, BOTH
-let c3Mode = "MED";  // MIN, MEAN, MED, MAX, STDEV
+let currentTierChartMode    = "TIER";
+let globalSearchData        = [];
+let globalChartMode         = "RATE";
+let c1Sub                   = "BASE";
+let c2Sub                   = "BOTH";
+let c3Mode                  = "MED";
 
 document.getElementById('dashboardTitle').innerText = prefix;
 
@@ -50,7 +49,7 @@ const tourTabBtn    = document.getElementById('tourTabBtn');
 if (use_teams)  tourTabBtn.innerText = "Tour/Team";
 else            tourTabBtn.innerText = "Tour";
 
-if (use_teams)  tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier ⚠︎</button>`);
+if (use_teams)  tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
                 tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
 if (watched)    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess/List</button>`);
 else            tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
@@ -66,8 +65,8 @@ const thickBorderColumns = new Set([
     "IN Guess Rate",
     "Rig Rate",
     "Solo Rig Rate",
-    "Over-8 Delta",
-    "Rig Delta",
+    "Over-8 Δ",
+    "Rig Δ",
     "Metric",
     "Value",
     "Team Leader",
@@ -255,10 +254,10 @@ const playerHeadersMasterConfig = [
     {id: "solorigs",            name: "Solo Rigs",              ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
     {id: "solorigrate",         name: "Solo Rig Rate",          ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
     {id: "rigover8",            name: "Rig Over-8",             ascMetric: true,    teamReq: false, watchedReq: true,   def: false},
-    {id: "over8delta",          name: "Over-8 Delta",           ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
+    {id: "over8delta",          name: "Over-8 Δ",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
     {id: "rigguessrate",        name: "Rig Guess Rate",         ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
     {id: "offguessrate",        name: "Off Guess Rate",         ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
-    {id: "rigdelta",            name: "Rig Delta",              ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
+    {id: "rigdelta",            name: "Rig Δ",                  ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
     {id: "meandifficultyhit",   name: "Mean Difficulty Hit",    ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
     {id: "medianvintagehit",    name: "Median Vintage Hit",     ascMetric: false,   teamReq: false, watchedReq: false,  def: false},
     {id: "mediantime",          name: "Median Time",            ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
@@ -791,377 +790,820 @@ window.toggleTierChartMode = function() {
 
 window.toggleGlobalChartMode = function() {
     globalChartMode = globalChartMode === "RATE" ? "COUNT" : "RATE";
+
+    if (globalChartMode === "COUNT" && (c1Sub === "HIT" || c1Sub === "OFF")) {
+        c1Sub           = "BASE";
+        const subBtn    = document.getElementById("c1_sub_btn");
+
+        if (subBtn) subBtn.innerText = "BASE";
+    }
+
     document.getElementById("global_mode_btn").innerText = globalChartMode;
     renderTierCharts();
 };
 
 window.toggleC1Sub = function() {
-    const subs = ["BASE", "X/8", "RIG", "HIT", "OFF", "CHANT"];
-    let idx = subs.indexOf(c1Sub);
-    c1Sub = subs[(idx + 1) % subs.length];
+    const subs                                      = globalChartMode === "COUNT" ? ["BASE", "OVER-8", "RIG", "CHANT"] : ["BASE", "OVER-8", "RIG", "HIT", "OFF", "CHANT"];
+    let idx                                         = subs.indexOf(c1Sub);
+    if (idx === -1) idx                             = 0; 
+    c1Sub                                           = subs[(idx + 1) % subs.length];
     document.getElementById("c1_sub_btn").innerText = c1Sub;
     renderTierCharts();
 };
 
-window.toggleC2Sub = function() {
-    const subs = ["TAKEN", "SAVED", "BOTH"];
-    let idx = subs.indexOf(c2Sub);
-    c2Sub = subs[(idx + 1) % subs.length];
-    document.getElementById("c2_sub_btn").innerText = c2Sub;
-    renderTierCharts();
-};
+window.toggleC2Sub = function() {};
 
 window.toggleC3Mode = function() {
-    const modes = ["MIN", "MEAN", "MED", "MAX", "STDEV"];
-    let idx = modes.indexOf(c3Mode);
-    c3Mode = modes[(idx + 1) % modes.length];
-    document.getElementById("c3_mode_btn").innerText = c3Mode;
+    const modes                                         = ["MIN", "MEAN", "MED", "MAX", "STDEV"];
+    let idx                                             = modes.indexOf(c3Mode);
+    c3Mode                                              = modes[(idx + 1) % modes.length];
+    document.getElementById("c3_mode_btn").innerText    = c3Mode;
     renderTierCharts();
 };
 
 function generateLinearColors(startHex, endHex, steps) {
     const parse = (hex) => [parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16)];
-    const cA = parse(startHex), cB = parse(endHex);
+    const cA    = parse(startHex), cB = parse(endHex);
     if (steps <= 1) return [startHex];
-    const arr = [];
-    for(let i=0; i<steps; i++) {
+    const arr   = [];
+
+    for (let i = 0; i < steps; i++) {
         const t = i / (steps - 1);
         const r = Math.round(cA[0] + t * (cB[0] - cA[0]));
         const g = Math.round(cA[1] + t * (cB[1] - cA[1]));
         const b = Math.round(cA[2] + t * (cB[2] - cA[2]));
         arr.push(`rgb(${r},${g},${b})`);
     }
+
     return arr;
 }
 
-// Inverted X/8 linear scale palette mapping where 1/8 starts as blue and scales down to 8/8 red
-const c8Colors = generateLinearColors("#3232C8", "#C83232", 8);
+const c8Colors = generateLinearColors(c2, c0, 8);
 
 function renderTierCharts() {
     if ((!document.getElementById('tierChart_MainMetrics') && !document.getElementById('tierChart_MainMetricsMain')) || !tierStats) return;
-    
-    // Safety guard: Exit cleanly if async data payload is still pending download allocation
-    if (!globalSearchData || globalSearchData.length === 0) return;
+    if (!globalSearchData || globalSearchData.length === 0)                                                                         return;
 
-    let gapCounter = 0;
-    const hasChanting = globalSearchData.some(s => s.chanting && s.chanting.toLowerCase() === "yes");
+    let gapCounter      = 0;
+    const hasChanting   = globalSearchData.some(s => s.chanting && s.chanting.toLowerCase() === "yes");
 
     const getPlayerStringName = (pField) => {
         if (!pField) return "";
         return typeof pField === 'object' ? String(pField.count || "") : String(pField);
     };
 
-    // Global Source-of-Truth Analytical Engine for Chart 1 & 2
+    const truncateString = (str, maxLen = 40) => {
+        if (!str) return "";
+        if (str.length <= maxLen) return str;
+        let cutStr = str.slice(0, maxLen);
+        const lastSpace = cutStr.lastIndexOf(" ");
+        if (lastSpace > 0) cutStr = cutStr.slice(0, lastSpace);
+        return cutStr + " ...";
+    };
+
     const compilePlayerStatsFromSearch = (playerName) => {
         const pClean = playerName.replace(/[★▲▼]/g, "").trim().toLowerCase();
-        
-        let totalSeen = 0;
-        let totalCorrect = 0;
-        let x8Counts = Array(8).fill(0);
-        let totalRigs = 0;
-        let rigHits = 0;
-        let offListHits = 0;
-        let totalChantSeen = 0;
-        let totalChantCorrect = 0;
-        let livesTaken = 0;
-        let livesSaved = 0;
+
+        let totalSeen           = 0;
+        let totalCorrect        = 0;
+        let x8Counts            = Array(8).fill(0);
+        let totalRigs           = 0;
+        let rigHits             = 0;
+        let offListHits         = 0;
+        let totalChantSeen      = 0;
+        let totalChantCorrect   = 0;
+        let livesTaken          = 0;
+        let livesSaved          = 0;
+
+        let allSeenSongs        = [];
+        let correctsList        = [];
+        let rigsList            = [];
+        let rigHitsList         = [];
+        let offListHitsList     = [];
+        let chantSeenList       = [];
+        let chantCorrectsList   = [];
+        let livesTakenList      = [];
+        let livesSavedList      = [];
+        let otherCorrectsList   = [];
+        let x8Lists             = Array.from({length: 8}, () => []);
 
         globalSearchData.forEach(song => {
-            const roomPlayers = (song.room_players || []).map(p => p.toLowerCase());
-            const guessers = (song.guessers_flat || []).map(p => p.toLowerCase());
-            const listers = (song.listers_flat || []).map(p => p.toLowerCase());
-            const taken = (song.lives_taken_flat || []).map(p => p.toLowerCase());
-            const saved = (song.lives_saved_flat || []).map(p => p.toLowerCase());
+            const roomPlayers   = (song.room_players        || []).map(p => p.toLowerCase());
+            const guessers      = (song.guessers_flat       || []).map(p => p.toLowerCase());
+            const listers       = (song.listers_flat        || []).map(p => p.toLowerCase());
+            const taken         = (song.lives_taken_flat    || []).map(p => p.toLowerCase());
+            const saved         = (song.lives_saved_flat    || []).map(p => p.toLowerCase());
 
             const isPresent = roomPlayers.includes(pClean);
             if (!isPresent) return;
 
             totalSeen++;
-            const isCorrect = guessers.includes(pClean);
-            const isLister = listers.includes(pClean);
-            const isChant = song.chanting && song.chanting.toLowerCase() === "yes";
 
-            if (isChant) totalChantSeen++;
+            const isCorrect = guessers.includes(pClean);
+            const isLister  = listers.includes(pClean);
+            const isChant   = song.chanting && song.chanting.toLowerCase() === "yes";
+            let typeMarker  = "";
+            const rawType   = (song.type || "").toLowerCase();
+
+            if      (rawType.includes("opening"))   typeMarker = "OP" + (song.type.match(/\d+/) || ["1"])[0];
+            else if (rawType.includes("ending"))    typeMarker = "ED" + (song.type.match(/\d+/) || ["1"])[0];
+            else                                    typeMarker = "IN";
+
+            const animeTitle        = currentSearchLang === "JP" ? (song.romaji || song.english || "") : (song.english || song.romaji || "");
+            const songName          = song.song || "";
+            const artistName        = Array.isArray(song.artist_arr) ? song.artist_arr.join(', ') : String(song.artist_arr || '');
+            const styledSongMeta    = `${truncateString(animeTitle)} (${typeMarker}): ${truncateString(songName)} by ${truncateString(artistName)}`;
+            const prefixLabel       = isCorrect ? `✓ ${styledSongMeta}` : `✗ ${styledSongMeta}`;
+            const bulletLabel       = `• ${styledSongMeta}`;
+
+            allSeenSongs.push(prefixLabel);
+
+            if (isChant) {
+                totalChantSeen++;
+                chantSeenList.push(prefixLabel);
+            }
 
             if (isCorrect) {
                 totalCorrect++;
-                if (isChant) totalChantCorrect++;
-                
+                correctsList.push(bulletLabel);
+
+                if (isChant) {
+                    totalChantCorrect++;
+                    chantCorrectsList.push(bulletLabel);
+                }
+
                 let numCorrect = guessers.length;
+
                 if (numCorrect >= 1 && numCorrect <= 8) {
                     x8Counts[numCorrect - 1]++;
+                    x8Lists[numCorrect - 1].push(bulletLabel);
                 }
+
                 if (!isLister) {
                     offListHits++;
+                    offListHitsList.push(bulletLabel);
                 }
             }
 
             if (isLister) {
                 totalRigs++;
-                if (isCorrect) rigHits++;
+                rigsList.push(bulletLabel);
+
+                if (isCorrect) {
+                    rigHits++;
+                    rigHitsList.push(bulletLabel);
+                }
             }
 
-            if (taken.includes(pClean)) livesTaken++;
-            if (saved.includes(pClean)) livesSaved++;
+            if (taken.includes(pClean)) {
+                livesTaken++;
+                livesTakenList.push(bulletLabel);
+            }
+
+            if (saved.includes(pClean)) {
+                livesSaved++;
+                livesSavedList.push(bulletLabel);
+            }
+
+            if (isCorrect && !taken.includes(pClean) && !saved.includes(pClean)) otherCorrectsList.push(bulletLabel);
         });
 
         return {
-            totalSeen, totalCorrect, x8Counts, totalRigs, rigHits, offListHits, totalChantSeen, totalChantCorrect, livesTaken, livesSaved
+            totalSeen,
+            totalCorrect,
+            x8Counts,
+            totalRigs,
+            rigHits,
+            offListHits,
+            totalChantSeen,
+            totalChantCorrect,
+            livesTaken,
+            livesSaved,
+            allSeenSongs,
+            correctsList,
+            rigsList,
+            rigHitsList,
+            offListHitsList,
+            chantSeenList,
+            chantCorrectsList,
+            livesTakenList,
+            livesSavedList,
+            otherCorrectsList,
+            x8Lists
         };
     };
 
+    const formatSampleTextList = (list, limit = 10) => {
+        let totalCount          = list.length;
+        let randomizedSample    = [...list].sort(() => Math.random() - 0.5).slice(0, limit);
+
+        randomizedSample.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        if (totalCount > limit) randomizedSample.push(`and ${totalCount - limit} more`);
+        return randomizedSample.join('<br>');
+    };
+
+    const formatFractionalSample = (fractionStr, songsList, limit = 10) => {
+        const ticks         = songsList.filter(s => s.startsWith('✓'));
+        const crosses       = songsList.filter(s => s.startsWith('✗'));
+        const totalValid    = ticks.length + crosses.length;
+
+        let tickTarget = 5;
+
+        if (totalValid > 0) {
+            tickTarget = Math.round((ticks.length / totalValid) * limit);
+            if (ticks.length > 0 && crosses.length > 0) tickTarget = Math.max(1, Math.min(limit - 1, tickTarget));
+        }
+
+        let crossTarget = limit - tickTarget;
+
+        if (ticks.length < tickTarget) {
+            tickTarget = ticks.length;
+            crossTarget = Math.min(crosses.length, limit - tickTarget);
+        }
+
+        else if (crosses.length < crossTarget) {
+            crossTarget = crosses.length;
+            tickTarget = Math.min(ticks.length, limit - crossTarget);
+        }
+
+        const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
+        const sampledCrosses    = crosses   .sort(() => Math.random() - 0.5).slice(0, crossTarget);
+
+        sampledTicks    .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        sampledCrosses  .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+
+        const outputSample = [...sampledTicks, ...sampledCrosses];
+
+        if (totalValid > limit) outputSample.push(`and ${totalValid - limit} more`);
+        return `<b>${fractionStr}</b><br>` + outputSample.join('<br>');
+    };
+
+    let absoluteMaxCorrectsC1 = 0;
+    let absoluteMaxCorrectsC2 = 0;
+    
+    ["1", "2", "3", "4"].forEach((tr) => {
+        if (!tierStats[tr]) return;
+        tierStats[tr].forEach(p => {
+            let pNameStr    = getPlayerStringName(p.Player);
+            const stats     = compilePlayerStatsFromSearch(pNameStr);
+
+            if (!pNameStr)                                  return;
+            if (stats.totalCorrect > absoluteMaxCorrectsC1) absoluteMaxCorrectsC1 = stats.totalCorrect;
+            if (stats.totalCorrect > absoluteMaxCorrectsC2) absoluteMaxCorrectsC2 = stats.totalCorrect;
+        });
+    });
+
+    if (absoluteMaxCorrectsC1 === 0) absoluteMaxCorrectsC1 = 10;
+    if (absoluteMaxCorrectsC2 === 0) absoluteMaxCorrectsC2 = 10;
+
     const getC1ValueAndHover = (p, mode, sub) => {
-        let val = 0; let hover = ""; let traceData = null;
-        let pNameStr = getPlayerStringName(p.Player);
-        const stats = compilePlayerStatsFromSearch(pNameStr);
+        let val         = 0;
+        let hover       = "";
+        let traceData   = null;
+        let pNameStr    = getPlayerStringName(p.Player);
+        const stats     = compilePlayerStatsFromSearch(pNameStr);
 
         if (sub === "BASE") {
             if (mode === "RATE") {
-                val = stats.totalSeen > 0 ? (stats.totalCorrect / stats.totalSeen) * 100 : 0;
-            } else {
-                val = stats.totalCorrect;
+                val     = stats.totalSeen > 0 ? (stats.totalCorrect / stats.totalSeen) * 100 : 0;
+                hover   = formatFractionalSample(`${stats.totalCorrect}/${stats.totalSeen}`, stats.allSeenSongs);
             }
-            hover = `Seen: ${stats.totalSeen}<br>Correct: ${stats.totalCorrect}`;
-        } else if (sub === "X/8") {
+
+            else {
+                val                 = [stats.rigHits, stats.offListHits];
+                traceData           = val;
+                let rigsSection     = `<b>Rigs Hit Context:</b><br>${formatSampleTextList(stats.rigHitsList)}`;
+                let offRigsSection  = `<b>Off Rigs Hit Context:</b><br>${formatSampleTextList(stats.offListHitsList)}`;
+                hover               = `${rigsSection}<br><br>${offRigsSection}`;
+            }
+
+        }
+
+        else if (sub === "OVER-8") {
             if (mode === "RATE") {
-                let totalC = stats.x8Counts.reduce((a,b)=>a+b, 0) || 1;
-                val = stats.x8Counts.map(c => (c / totalC) * 100);
-            } else {
-                val = stats.x8Counts;
+                let totalC  = stats.x8Counts.reduce ((a, b) => a + b, 0) || 1;
+                val         = stats.x8Counts.map    (c      => (c / totalC) * 100);
             }
-            traceData = val;
-            hover = stats.x8Counts.map((c, i) => `${i+1}/8s: ${c}`).join("<br>");
-        } else if (sub === "RIG") {
+            
+            else val = stats.x8Counts;
+
+            traceData   = val;
+            hover       = "";
+
+        }
+
+        else if (sub === "RIG") {
             if (!watched) return {val: 0, hover: "N/A (Watched Only)"};
-            val = mode === "RATE" ? (stats.totalSeen > 0 ? (stats.totalRigs / stats.totalSeen) * 100 : 0) : stats.totalRigs;
-            hover = `Total Rigs: ${stats.totalRigs}`;
-        } else if (sub === "HIT") {
+
+            val     = mode === "RATE" ? (stats.totalSeen > 0 ? (stats.totalRigs / stats.totalSeen) * 100 : 0) : stats.totalRigs;
+            hover   = formatSampleTextList(stats.rigsList);
+        }
+
+        else if (sub === "HIT") {
             if (!watched) return {val: 0, hover: "N/A (Watched Only)"};
-            val = mode === "RATE" ? (stats.totalRigs > 0 ? (stats.rigHits / stats.totalRigs) * 100 : 0) : stats.rigHits;
-            hover = `Rig Hits: ${stats.rigHits}/${stats.totalRigs}`;
-        } else if (sub === "OFF") {
+
+            val     = mode === "RATE" ? (stats.totalRigs > 0 ? (stats.rigHits / stats.totalRigs) * 100 : 0) : stats.rigHits;
+            hover   = formatFractionalSample(`${stats.rigHits}/${stats.totalRigs}`, stats.rigsList.map(s => stats.rigHitsList.includes(s) ? `✓ ${s.slice(2)}` : `✗ ${s.slice(2)}`));
+        }
+
+        else if (sub === "OFF") {
             if (!watched) return {val: 0, hover: "N/A (Watched Only)"};
-            let totalOffSongs = stats.totalSeen - stats.totalRigs;
-            val = mode === "RATE" ? (totalOffSongs > 0 ? (stats.offListHits / totalOffSongs) * 100 : 0) : stats.offListHits;
-            hover = `Off-List Hits: ${stats.offListHits}/${totalOffSongs}`;
-        } else if (sub === "CHANT") {
+
+            let totalOffSongs       = stats.totalSeen - stats.totalRigs;
+            val                     = mode === "RATE" ? (totalOffSongs > 0 ? (stats.offListHits / totalOffSongs) * 100 : 0) : stats.offListHits;
+            let offListSeenSongs    = stats.allSeenSongs.filter(s => !stats.rigsList.map(r => r.slice(2)).includes(s.slice(2)));
+            hover                   = formatFractionalSample(`${stats.offListHits}/${totalOffSongs}`, offListSeenSongs);
+        }
+
+        else if (sub === "CHANT") {
             if (!hasChanting) return {val: 0, hover: "No Chant Songs Exist"};
             val = mode === "RATE" ? (stats.totalChantSeen > 0 ? (stats.totalChantCorrect / stats.totalChantSeen) * 100 : 0) : stats.totalChantCorrect;
-            hover = `Chant Guesses: ${stats.totalChantCorrect}/${stats.totalChantSeen}`;
+            if (mode === "RATE") {
+                hover = formatFractionalSample(`${stats.totalChantCorrect}/${stats.totalChantSeen}`, stats.chantSeenList);
+            } else {
+                hover = formatSampleTextList(stats.chantCorrectsList);
+            }
         }
-        return {val, hover, traceData};
+        return {val, hover, traceData, statsContext: stats};
     };
 
-    const getC2ValueAndHover = (p, mode, sub) => {
-        let val = 0; let hover = ""; let traceData = null;
-        let pNameStr = getPlayerStringName(p.Player);
-        const stats = compilePlayerStatsFromSearch(pNameStr);
-        
-        let tk = stats.livesTaken;
-        let sv = stats.livesSaved;
-        let correctCount = stats.totalCorrect;
+    const getC2ValueAndHover = (p, mode) => {
+        let val             = 0;
+        let hover           = "";
+        let traceData       = null;
+        let pNameStr        = getPlayerStringName(p.Player);
+        const stats         = compilePlayerStatsFromSearch(pNameStr);
+        let tk              = stats.livesTaken;
+        let sv              = stats.livesSaved;
+        let correctCount    = stats.totalCorrect;
         let fallbackCorrect = correctCount === 0 ? 1 : correctCount;
 
-        if (sub === "TAKEN") {
-            val = mode === "RATE" ? (tk / fallbackCorrect) * 100 : tk;
-            hover = `Lives Taken: ${tk}`;
-        } else if (sub === "SAVED") {
-            val = mode === "RATE" ? (sv / fallbackCorrect) * 100 : sv;
-            hover = `Lives Saved: ${sv}`;
-        } else if (sub === "BOTH") {
-            if (mode === "COUNT") {
-                val = [sv, tk]; 
-                hover = `Lives Saved: ${sv}<br>Lives Taken: ${tk}`;
-            } else {
-                val = [(sv / fallbackCorrect) * 100, (Math.max(0, correctCount - (tk + sv)) / fallbackCorrect) * 100, (tk / fallbackCorrect) * 100];
-                hover = `Lives Saved: ${sv}<br>Other Correct: ${Math.max(0, correctCount - (tk + sv))}<br>Lives Taken: ${tk}`;
-            }
-            traceData = val;
+        if (mode === "COUNT") {
+            val     = [tk, sv]; 
+            hover   = "";
         }
-        return {val, hover, traceData};
+
+        else {
+            val     = [(tk / fallbackCorrect) * 100, (Math.max(0, correctCount - (tk + sv)) / fallbackCorrect) * 100, (sv / fallbackCorrect) * 100]; 
+            hover   = "";
+        }
+
+        traceData = val;
+        return {val, hover, traceData, statsContext: stats};
     };
 
     const buildChartData = (tabMode, sortingFn, valExtractionFn, isSubDistribution) => {
         let pool = [];
+
         if (tabMode === "TIER") {
             ["1", "2", "3", "4"].forEach((tr) => {
                 if (!tierStats[tr] || tierStats[tr].length === 0) return;
                 let arr = [...tierStats[tr]].sort(sortingFn);
                 pool.push(...arr); pool.push({isSpacer: true});
             });
+
             if (pool.length > 0 && pool[pool.length - 1].isSpacer) pool.pop();
-        } else {
+        }
+
+        else {
             ["1", "2", "3", "4"].forEach((tr) => {if (tierStats[tr]) pool.push(...tierStats[tr]);});
             pool.sort(sortingFn);
         }
 
-        let yLabels = []; let customHovers = [];
-        let multiData = isSubDistribution ? Array.from({length: isSubDistribution === "X8" ? 8 : (isSubDistribution === "COUNT_BOTH" ? 2 : 3)}, () => []) : [];
-        let singleXVals = [];
+        let yLabels         = [];
+        let customHovers    = [];
+        let rawItems        = [];
+        let multiData       = isSubDistribution ? Array.from({length: isSubDistribution === "X8" ? 8 : (isSubDistribution === "COUNT_BASE" ? 2 : (isSubDistribution === "COUNT_BOTH" ? 2 : 3))}, () => []) : [];
+        let singleXVals     = [];
 
         pool.forEach(p => {
             if (p.isSpacer) {
-                yLabels.push(" ".repeat(gapCounter++));
-                customHovers.push("");
-                if (isSubDistribution) { multiData.forEach(arr => arr.push(null)); }
-                else { singleXVals.push(null); }
+                yLabels         .push(" ".repeat(gapCounter++));
+                customHovers    .push("");
+                rawItems        .push(null);
+
+                if (isSubDistribution)  multiData.forEach(arr => arr.push(null));
+                else                    singleXVals.push(null);
+
                 return;
             }
+
             yLabels.push(getPlayerStringName(p.Player));
             let extracted = valExtractionFn(p);
             customHovers.push(extracted.hover);
-            if (isSubDistribution) {
-                for(let i=0; i<multiData.length; i++) {
-                    multiData[i].push(extracted.traceData ? extracted.traceData[i] : 0);
-                }
-            } else {
-                singleXVals.push(extracted.val);
-            }
+            rawItems.push(p);
+
+            if (isSubDistribution) for (let i = 0; i < multiData.length; i++)   multiData[i].push(extracted.traceData ? extracted.traceData[i] : 0);
+            else                                                                singleXVals.push(extracted.val);
         });
 
-        return {yLabels, customHovers, multiData, singleXVals};
+        return {yLabels, customHovers, multiData, singleXVals, rawItems};
     };
 
-    // --- CHART 1 CONFIGURATION ---
     const c1Sort = (a, b) => {
-        let va = getC1ValueAndHover(a, globalChartMode, c1Sub).val;
-        let vb = getC1ValueAndHover(b, globalChartMode, c1Sub).val;
-        if (Array.isArray(va)) va = va.reduce((x,y)=>x+y,0);
-        if (Array.isArray(vb)) vb = vb.reduce((x,y)=>x+y,0);
-        return vb - va;
-    };
-    let c1Data = buildChartData(currentTierChartMode, c1Sort, (p) => getC1ValueAndHover(p, globalChartMode, c1Sub), c1Sub === "X/8" ? "X8" : null);
+        let chart1Div       = document.getElementById('tierChart_MainMetrics');
+        let hiddenTraces    = (chart1Div && chart1Div.data) ? chart1Div.data.filter(t => t.visible === 'legendonly').map(t => t.name) : [];
+        let extractedA      = getC1ValueAndHover(a, globalChartMode, c1Sub);
+        let extractedB      = getC1ValueAndHover(b, globalChartMode, c1Sub);
+        let va              = extractedA.val;
+        let vb              = extractedB.val;
 
-    let c1Traces = [];
-    if (c1Sub === "X/8") {
-        for(let i=0; i<8; i++) {
-            c1Traces.push({
-                x: c1Data.multiData[i].slice().reverse(),
-                y: c1Data.yLabels.slice().reverse(),
-                type: 'bar', orientation: 'h', barmode: 'stack',
-                name: `${i+1}/8s`,
-                marker: {color: c8Colors[i], line: {color: 'black', width: 1}},
-                text: c1Data.multiData[i].slice().reverse().map(v => v ? v.toFixed(globalChartMode==="RATE"?1:0) : ""),
-                textposition: 'inside', insidetextanchor: 'middle',
-                textfont: {family: 'Segoe UI', size: 14, color: 'white', weight: 'bold'}
-            });
+        if (globalChartMode === "COUNT" && c1Sub === "BASE") {
+            let names   = ["Rigs Hit", "Off Rigs Hit"];
+            let sa      = 0;
+            let sb      = 0;
+
+            if (!hiddenTraces.includes(names[0])) {sa += va[0]; sb += vb[0];}
+            if (!hiddenTraces.includes(names[1])) {sa += va[1]; sb += vb[1];}
+
+            return sb - sa;
         }
-    } else {
-        c1Traces.push({
-            x: c1Data.singleXVals.slice().reverse(),
-            y: c1Data.yLabels.slice().reverse(),
-            type: 'bar', orientation: 'h',
-            hovertext: c1Data.customHovers.slice().reverse(), hoverinfo: 'text',
-            text: c1Data.singleXVals.slice().reverse().map(v => v === null ? "" : v.toFixed(globalChartMode==="RATE"?2:0) + " "),
-            textposition: 'inside', insidetextanchor: 'end',
-            textfont: {family: 'Segoe UI', size: 14, color: 'black', weight: 'bold'},
-            marker: {color: 'white', line: {color: 'black', width: 2}}
-        });
-    }
 
-    const titleC1 = `<span style="font-size: 30px;"><b>Performance Metrics (${globalChartMode} - ${c1Sub})</b></span>`;
-    const layoutC1 = {
-        font: {family: 'Segoe UI'}, title: {text: titleC1, yref: 'container', y: 15, yanchor: 'top'},
-        xaxis: {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true, range: globalChartMode==="RATE"?[0,105]:null},
-        yaxis: {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: "  "},
-        bargap: 0.0, barmode: 'stack', margin: {l: 150, r: 0, t: 100, b: 25},
-        hoverlabel: {align: 'left', font: {family: 'Segoe UI', size: 15}}, showlegend: c1Sub === "X/8"
-    };
-    layoutC1.height = 35 * c1Data.yLabels.length;
-    Plotly.newPlot('tierChart_MainMetrics', c1Traces, layoutC1, {responsive: true, displayModeBar: false});
+        else if (c1Sub === "OVER-8") {
+            let sa = 0;
+            let sb = 0;
 
+            for (let i = 0; i < 8; i++) {
+                let name = `${i+1}/8`;
 
-    // --- CHART 2 CONFIGURATION ---
-    const c2Sort = (a, b) => {
-        let va = getC2ValueAndHover(a, globalChartMode, c2Sub).val;
-        let vb = getC2ValueAndHover(b, globalChartMode, c2Sub).val;
-        if (Array.isArray(va)) va = va.reduce((x,y)=>x+y,0);
-        if (Array.isArray(vb)) vb = vb.reduce((x,y)=>x+y,0);
+                if (!hiddenTraces.includes(name)) {
+                    sa += extractedA.traceData ? extractedA.traceData[i] : 0;
+                    sb += extractedB.traceData ? extractedB.traceData[i] : 0;
+                }
+            }
+
+            return sb - sa;
+        }
+
+        if (Array.isArray(va)) va = va.reduce((x, y)=>x + y, 0);
+        if (Array.isArray(vb)) vb = vb.reduce((x, y)=>x + y, 0);
+
         return vb - va;
     };
     
-    let c2LayoutSubMode = c2Sub === "BOTH" ? (globalChartMode === "COUNT" ? "COUNT_BOTH" : "RATE_BOTH") : null;
-    let c2Data = buildChartData(currentTierChartMode, c2Sort, (p) => getC2ValueAndHover(p, globalChartMode, c2Sub), c2LayoutSubMode);
+    let c1LayoutSubMode = (globalChartMode === "COUNT" && c1Sub === "BASE") ? "COUNT_BASE" : (c1Sub === "OVER-8" ? "X8" : null);
+    let c1Data          = buildChartData(currentTierChartMode, c1Sort, (p) => getC1ValueAndHover(p, globalChartMode, c1Sub), c1LayoutSubMode);
+    let c1Traces        = [];
 
-    let c2Traces = [];
-    if (c2Sub === "BOTH") {
-        if (globalChartMode === "COUNT") {
-            const c2Colors = ["#3232C8", "#C83232"]; 
-            const names = ["Lives Saved", "Lives Taken"];
-            for(let i=0; i<2; i++) {
-                c2Traces.push({
-                    x: c2Data.multiData[i].slice().reverse(),
-                    y: c2Data.yLabels.slice().reverse(),
-                    type: 'bar', orientation: 'h', barmode: 'stack',
-                    name: names[i],
-                    marker: {color: c2Colors[i], line: {color: 'black', width: 1}},
-                    text: c2Data.multiData[i].slice().reverse().map(v => v ? v.toFixed(0) : ""),
-                    textposition: 'inside', insidetextanchor: 'middle',
-                    textfont: {family: 'Segoe UI', size: 14, color: 'white', weight: 'bold'}
-                });
-            }
-        } else {
-            const c3Colors = ["#3232C8", "#7D327D", "#C83232"]; 
-            const names = ["Lives Saved", "Other Correct", "Lives Taken"];
-            for(let i=0; i<3; i++) {
-                c2Traces.push({
-                    x: c2Data.multiData[i].slice().reverse(),
-                    y: c2Data.yLabels.slice().reverse(),
-                    type: 'bar', orientation: 'h', barmode: 'stack',
-                    name: names[i],
-                    marker: {color: c3Colors[i], line: {color: 'black', width: 1}},
-                    text: c2Data.multiData[i].slice().reverse().map(v => v ? v.toFixed(1) : ""),
-                    textposition: 'inside', insidetextanchor: 'middle',
-                    textfont: {family: 'Segoe UI', size: 14, color: 'white', weight: 'bold'}
-                });
-            }
+    if (globalChartMode === "COUNT" && c1Sub === "BASE") {
+        const c1BaseColors  = [c2, c0];
+        const baseNames     = ["Rigs Hit", "Off Rigs Hit"];
+
+        let trace0Hovers = [];
+        let trace1Hovers = [];
+
+        c1Data.rawItems.forEach(p => {
+            if (!p) {trace0Hovers.push(""); trace1Hovers.push(""); return;}
+            let s = compilePlayerStatsFromSearch(getPlayerStringName(p.Player));
+            trace0Hovers.push(formatSampleTextList(s.rigHitsList));
+            trace1Hovers.push(formatSampleTextList(s.offListHitsList));
+        });
+
+        for (let i = 0; i < 2; i++) {
+            c1Traces.push({
+                x                   : c1Data.multiData[i]   .slice().reverse(),
+                y                   : c1Data.yLabels        .slice().reverse(),
+                type                : 'bar',
+                orientation         : 'h',
+                barmode             : 'stack',
+                name                : baseNames[i],
+                marker              : {color: c1BaseColors[i], line: {color: 'black', width: 1}},
+                hovertext           : (i === 0 ? trace0Hovers : trace1Hovers).slice().reverse(),
+                hoverinfo           : 'text',
+                text                : c1Data.multiData[i]   .slice().reverse().map(v => v ? v.toFixed(0) : ""),
+                textposition        : 'inside',
+                insidetextanchor    : 'middle',
+                textfont            : {family: 'Segoe UI', size: 15, color: 'white', weight: 'bold'}
+            });
         }
-    } else {
-        c2Traces.push({
-            x: c2Data.singleXVals.slice().reverse(),
-            y: c2Data.yLabels.slice().reverse(),
-            type: 'bar', orientation: 'h',
-            hovertext: c2Data.customHovers.slice().reverse(), hoverinfo: 'text',
-            text: c2Data.singleXVals.slice().reverse().map(v => v === null ? "" : v.toFixed(globalChartMode==="RATE"?2:0) + " "),
-            textposition: 'inside', insidetextanchor: 'end',
-            textfont: {family: 'Segoe UI', size: 14, color: 'black', weight: 'bold'},
-            marker: {color: 'white', line: {color: 'black', width: 2}}
+    }
+
+    else if (c1Sub === "OVER-8") {
+        let x8TraceHovers = Array.from({length: 8}, () => []);
+
+        c1Data.rawItems.forEach(p => {
+            if (!p) {for (let i = 0; i < 8; i++) x8TraceHovers[i].push(""); return;}
+            let s = compilePlayerStatsFromSearch(getPlayerStringName(p.Player));
+            for (let i = 0; i < 8; i++) x8TraceHovers[i].push(formatSampleTextList(s.x8Lists[i]));
+        });
+
+        for (let i = 0; i < 8; i++) {
+            c1Traces.push({
+                x                   : c1Data.multiData[i]   .slice().reverse(),
+                y                   : c1Data.yLabels        .slice().reverse(),
+                type                : 'bar',
+                orientation         : 'h',
+                barmode             : 'stack',
+                name                : `${i+1}/8`,
+                marker              : {color: c8Colors[i], line: {color: 'black', width: 1}},
+                hovertext           : x8TraceHovers[i]      .slice().reverse(),
+                hoverinfo           : 'text',
+                text                : c1Data.multiData[i]   .slice().reverse().map(v => v ? v.toFixed(globalChartMode === "RATE" ? 1 : 0) : ""),
+                textposition        : 'inside', insidetextanchor: 'middle',
+                textfont            : {family: 'Segoe UI', size: 15, color: 'white', weight: 'bold'}
+            });
+        }
+    }
+
+    else {
+        c1Traces.push({
+            x                   : c1Data.singleXVals    .slice().reverse(),
+            y                   : c1Data.yLabels        .slice().reverse(),
+            type                : 'bar',
+            orientation         : 'h',
+            hovertext           : c1Data.customHovers   .slice().reverse(),
+            hoverinfo           : 'text',
+            text                : c1Data.singleXVals    .slice().reverse().map(v => v === null ? "" : v.toFixed(globalChartMode === "RATE" ? 2 : 0) + " "),
+            textposition        : 'inside',
+            insidetextanchor    : 'end',
+            textfont            : {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'},
+            marker              : {color: 'white', line: {color: 'black', width: 2}}
         });
     }
 
-    const titleC2 = `<span style="font-size: 30px;"><b>Team Contribution (${globalChartMode} - ${c2Sub})</b></span>`;
-    const layoutC2 = {
-        font: {family: 'Segoe UI'}, title: {text: titleC2, yref: 'container', y: 15, yanchor: 'top'},
-        xaxis: {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true, range: globalChartMode==="RATE"?[0,105]:null},
-        yaxis: {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: "  "},
-        bargap: 0.0, barmode: 'stack', margin: {l: 150, r: 0, t: 100, b: 25},
-        hoverlabel: {align: 'left', font: {family: 'Segoe UI', size: 15}}, showlegend: c2Sub === "BOTH"
+    let displayTitleC1 = "";
+
+    if (globalChartMode === "COUNT") {
+        if      (c1Sub === "BASE")      displayTitleC1 = "Corrects";
+        else if (c1Sub === "OVER-8")    displayTitleC1 = "Over-8 Hit";
+        else if (c1Sub === "RIG")       displayTitleC1 = "Rigs";
+        else if (c1Sub === "CHANT")     displayTitleC1 = "Chanting Hit";
+    }
+
+    else {
+        if      (c1Sub === "BASE")      displayTitleC1 = "Guess Rate";
+        else if (c1Sub === "OVER-8")    displayTitleC1 = "Over-8 Distribution";
+        else if (c1Sub === "RIG")       displayTitleC1 = "Rig Rate";
+        else if (c1Sub === "HIT")       displayTitleC1 = "Rig Guess Rate";
+        else if (c1Sub === "OFF")       displayTitleC1 = "Off Rig Guess Rate";
+        else if (c1Sub === "CHANT")     displayTitleC1 = "Chanting Guess Rate";
+    }
+
+    let currentChart1Div = document.getElementById('tierChart_MainMetrics');
+
+    if (currentChart1Div && currentChart1Div.data && currentChart1Div.data.length === c1Traces.length) {
+        for (let i = 0; i < c1Traces.length; i++) if(currentChart1Div.data[i].visible === 'legendonly') c1Traces[i].visible = 'legendonly';
+    }
+
+    let rangeC1;
+
+    if (globalChartMode === "RATE") rangeC1 = [0, 105];
+    else                            rangeC1 = (c1Sub === "BASE" || c1Sub === "OVER-8") ? [0, absoluteMaxCorrectsC1 + 1] : null;
+
+    const titleC1       = `<span style="font-size: 30px;"><b>${displayTitleC1}</b></span>`;
+    const hasLegends    = (c1Sub === "OVER-8" || (globalChartMode === "COUNT" && c1Sub === "BASE")) ? true : false;
+
+    const layoutC1 = {
+        font        : {family: 'Segoe UI'}, title: {text: titleC1, yref: 'container', y: 15, yanchor: 'top'},
+        xaxis       : {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true, range: rangeC1},
+        yaxis       : {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: " "},
+        bargap      : 0.0,
+        barmode     : 'stack',
+        margin      : {l: 150, r: 0, t: hasLegends ? 100 : 50, b: 25},
+        hoverlabel  : {align: 'left', font: {family: 'Segoe UI', size: 15}}, 
+        showlegend  : hasLegends,
+        legend      : { 
+            orientation     : "h", 
+            yanchor         : "bottom",
+            y               : 1.01, 
+            xanchor         : "center",
+            x               : 0.40, 
+            traceorder      : "normal",
+            entrywidthmode  : "pixels",
+            entrywidth      : (globalChartMode === "COUNT" && c1Sub === "BASE") ? 40 : 20
+        }
     };
+
+    layoutC1.height = 35 * c1Data.yLabels.length;
+    Plotly.newPlot('tierChart_MainMetrics', c1Traces, layoutC1, {responsive: true, displayModeBar: false});
+    let newChart1Div = document.getElementById('tierChart_MainMetrics');
+
+    if (newChart1Div) {
+        newChart1Div.removeAllListeners('plotly_legendclick');
+
+        newChart1Div.on('plotly_legendclick', function(data) {
+            let traceIndex                          = data.curveNumber;
+            let currentVisibility                   = newChart1Div.data[traceIndex].visible || true;
+            newChart1Div.data[traceIndex].visible   = (currentVisibility === true) ? 'legendonly' : true;
+
+            renderTierCharts();
+            return false;
+        });
+        
+        newChart1Div.on('plotly_click', function(data) {
+            if (!data.points || data.points.length === 0) return;
+
+            const pt            = data.points[0];
+            const pNameClean    = String(pt.y).trim().toLowerCase();
+
+            if (!pNameClean) return;
+            let query = "";
+
+            if (c1Sub === "BASE") {
+                if (globalChartMode === "COUNT")    query = pt.curveNumber === 0 ? `list:${pNameClean} correct:${pNameClean}` : `list!:${pNameClean} correct:${pNameClean}`;
+                else                                query = `seen:${pNameClean}`;
+            }
+
+            else if (c1Sub === "OVER-8") {
+                let matchX8 = pt.curveNumber + 1;
+                query = `correct:${pNameClean} correct:${matchX8}`;
+            }
+
+            else if (c1Sub === "RIG") query = `list:${pNameClean}`;
+            else if (c1Sub === "HIT") query = `list:${pNameClean}`;
+            else if (c1Sub === "OFF") query = `list!:${pNameClean}`;
+
+            else if (c1Sub === "CHANT") {
+                if (globalChartMode === "COUNT") query = `correct:${pNameClean} chanting:yes`;
+                else query = `seen:${pNameClean} chanting:yes`;
+            }
+
+            if (query) window.searchPlayerMetricFromTable(query);
+        });
+    }
+
+    const c2Sort = (a, b) => {
+        let chart2Div       = document.getElementById('tierChart_LivesMetrics');
+        let hiddenTraces    = (chart2Div && chart2Div.data) ? chart2Div.data.filter(t => t.visible === 'legendonly').map(t => t.name) : [];
+        let extractedA      = getC2ValueAndHover(a, globalChartMode);
+        let extractedB      = getC2ValueAndHover(b, globalChartMode);
+        let va              = extractedA.val;
+        let vb              = extractedB.val;
+        let names           = globalChartMode === "COUNT" ? ["Lives Taken", "Lives Saved"] : ["Lives Taken", "Other Correct", "Lives Saved"];
+        let sa              = 0;
+        let sb              = 0;
+
+        for (let i = 0; i < names.length; i++) {
+            if (!hiddenTraces.includes(names[i])) {
+                sa += extractedA.traceData ? extractedA.traceData[i] : 0;
+                sb += extractedB.traceData ? extractedB.traceData[i] : 0;
+            }
+        }
+
+        return sb - sa;
+    };
+    
+    let c2LayoutSubMode = globalChartMode === "COUNT" ? "COUNT_BOTH" : "RATE_BOTH";
+    let c2Data          = buildChartData(currentTierChartMode, c2Sort, (p) => getC2ValueAndHover(p, globalChartMode), c2LayoutSubMode);
+    let c2Traces        = [];
+
+    if (globalChartMode === "COUNT") {
+        const c2Colors  = [c2, c0]; 
+        const names     = ["Lives Taken", "Lives Saved"]; 
+        let tkHovers    = [];
+        let svHovers    = [];
+
+        c2Data.rawItems.forEach(p => {
+            if(!p) {tkHovers.push(""); svHovers.push(""); return;}
+            let s = compilePlayerStatsFromSearch(getPlayerStringName(p.Player));
+            tkHovers.push(formatSampleTextList(s.livesTakenList));
+            svHovers.push(formatSampleTextList(s.livesSavedList));
+        });
+
+        for (let i = 0; i < 2; i++) {
+            c2Traces.push({
+                x                   : c2Data.multiData[i]               .slice().reverse(),
+                y                   : c2Data.yLabels                    .slice().reverse(),
+                type                : 'bar',
+                orientation         : 'h',
+                barmode             : 'stack',
+                name                : names[i],
+                marker              : {color: c2Colors[i], line: {color: 'black', width: 1}},
+                hovertext           : (i === 0 ? tkHovers : svHovers)   .slice().reverse(),
+                hoverinfo           : 'text',
+                text                : c2Data.multiData[i]               .slice().reverse().map(v => v ? v.toFixed(0) : ""),
+                textposition        : 'inside',
+                insidetextanchor    : 'middle',
+                textfont            : {family: 'Segoe UI', size: 15, color: 'white', weight: 'bold'}
+            });
+        }
+    }
+
+    else {
+        const c3Colors  = [c2, c1, c0]; 
+        const names     = ["Lives Taken", "Other Correct", "Lives Saved"]; 
+        let tkHovers    = [];
+        let othHovers   = [];
+        let svHovers    = [];
+
+        c2Data.rawItems.forEach(p => {
+            if(!p) {tkHovers.push(""); othHovers.push(""); svHovers.push(""); return;}
+            let s = compilePlayerStatsFromSearch(getPlayerStringName(p.Player));
+            tkHovers    .push(formatSampleTextList(s.livesTakenList));
+            othHovers   .push(formatSampleTextList(s.otherCorrectsList));
+            svHovers    .push(formatSampleTextList(s.livesSavedList));
+        });
+
+        for (let i = 0; i < 3; i++) {
+            c2Traces.push({
+                x                   : c2Data.multiData[i]                                       .slice().reverse(),
+                y                   : c2Data.yLabels                                            .slice().reverse(),
+                type                : 'bar',
+                orientation         : 'h',
+                barmode             : 'stack',
+                name                : names[i],
+                marker              : {color: c3Colors[i], line: {color: 'black', width: 1}},
+                hovertext           : (i === 0 ? tkHovers : (i === 1 ? othHovers : svHovers))   .slice().reverse(),
+                hoverinfo           : 'text',
+                text                : c2Data.multiData[i]                                       .slice().reverse().map(v => v ? v.toFixed(1) : ""),
+                textposition        : 'inside',
+                insidetextanchor    : 'middle',
+                textfont            : {family: 'Segoe UI', size: 15, color: 'white', weight: 'bold'}
+            });
+        }
+    }
+
+    let displayTitleC2      = globalChartMode === "COUNT" ? "Contribution" : "Contribution Rate";
+    let currentChart2Div    = document.getElementById('tierChart_LivesMetrics');
+
+    if (currentChart2Div && currentChart2Div.data && currentChart2Div.data.length === c2Traces.length) {
+        for (let i = 0; i < c2Traces.length; i++) if (currentChart2Div.data[i].visible === 'legendonly') c2Traces[i].visible = 'legendonly';
+    }
+
+    let rangeC2     = globalChartMode === "RATE" ? [0, 105] : [0, absoluteMaxCorrectsC2 + 1];
+    const titleC2   = `<span style="font-size: 30px;"><b>${displayTitleC2}</b></span>`;
+
+    const layoutC2 = {
+        font        : {family: 'Segoe UI'}, title: {text: titleC2, yref: 'container', y: 15, yanchor: 'top'},
+        xaxis       : {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true, range: rangeC2},
+        yaxis       : {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: " "},
+        bargap      : 0.0,
+        barmode     : 'stack',
+        margin      : {l: 150, r: 0, t: 100, b: 25},
+        hoverlabel  : {align: 'left', font: {family: 'Segoe UI', size: 15}}, 
+        showlegend  : true,
+        legend      : { 
+            orientation     : "h", 
+            yanchor         : "bottom",
+            y               : 1.01, 
+            xanchor         : "center",
+            x               : 0.425, 
+            traceorder      : "normal",
+            entrywidthmode  : "pixels",
+            entrywidth      : 80
+        }
+    };
+
     layoutC2.height = 35 * c2Data.yLabels.length;
     Plotly.newPlot('tierChart_LivesMetrics', c2Traces, layoutC2, {responsive: true, displayModeBar: false});
+    let newChart2Div = document.getElementById('tierChart_LivesMetrics');
 
+    if (newChart2Div) {
+        newChart2Div.removeAllListeners('plotly_legendclick');
 
-    // --- CHART 3 CONFIGURATION ---
+        newChart2Div.on('plotly_legendclick', function(data) {
+            let traceIndex                          = data.curveNumber;
+            let currentVisibility                   = newChart2Div.data[traceIndex].visible || true;
+            newChart2Div.data[traceIndex].visible   = (currentVisibility === true) ? 'legendonly' : true;
+
+            renderTierCharts();
+            return false;
+        });
+
+        newChart2Div.on('plotly_click', function(data) {
+            if (!data.points || data.points.length === 0) return;
+
+            const pt            = data.points[0];
+            const pNameClean    = String(pt.y).trim().toLowerCase();
+
+            if (!pNameClean) return;
+            let query = "";
+
+            if (globalChartMode === "COUNT") query = pt.curveNumber === 0 ? `lifetaken:${pNameClean}` : `lifesaved:${pNameClean}`;
+
+            else {
+                if      (pt.curveNumber === 0) query = `lifetaken:${pNameClean}`;
+                else if (pt.curveNumber === 1) query = `correct:${pNameClean} lifetaken!:${pNameClean} lifesaved!:${pNameClean}`;
+                else                           query = `lifesaved:${pNameClean}`;
+            }
+
+            if (query) window.searchPlayerMetricFromTable(query);
+        });
+    }
+
     const getC3ValueAndHover = (p, mode) => {
-        let pNameStr = getPlayerStringName(p.Player);
-        let pClean = pNameStr.replace(/[★▲▼]/g, "").trim().toLowerCase();
-        let pData = window.dashboardData.json_players.find(x => getPlayerStringName(x.Player).replace(/[★▲▼]/g, "").trim().toLowerCase() === pClean);
-        if(!pData || !pData["Median Time"]) return {val: null, hover: "No times logged"};
-        let det = pData["Median Time"].details;
-        let val = pData["Median Time"].count; 
+        let pNameStr    = getPlayerStringName(p.Player);
+        let pClean      = pNameStr.replace(/[★▲▼]/g, "").trim().toLowerCase();
+        let pData       = window.dashboardData.json_players.find(x => getPlayerStringName(x.Player).replace(/[★▲▼]/g, "").trim().toLowerCase() === pClean);
 
-        let metricsMap = {};
-        if(det) {
-            metricsMap["MIN"] = { label: "Minimum", val: parseFloat(det[0].split(": ")[1]).toFixed(2) };
-            metricsMap["MEAN"] = { label: "Mean", val: parseFloat(det[1].split(": ")[1]).toFixed(2) };
-            metricsMap["MED"] = { label: "Median", val: parseFloat(pData["Median Time"].count).toFixed(2) };
-            metricsMap["MAX"] = { label: "Maximum", val: parseFloat(det[2].split(": ")[1]).toFixed(2) };
-            metricsMap["STDEV"] = { label: "Standard Deviation", val: parseFloat(det[3].split(": ")[1]).toFixed(2) };
-            
+        if (!pData || !pData["Median Time"]) return {val: null, hover: "No times logged"};
+
+        let det         = pData["Median Time"].details;
+        let val         = pData["Median Time"].count; 
+        let metricsMap  = {};
+
+        if (det) {
+            metricsMap["MIN"]   = {label: "Minimum",            val: parseFloat(det[0].split(": ")[1]).toFixed(2)};
+            metricsMap["MEAN"]  = {label: "Mean",               val: parseFloat(det[1].split(": ")[1]).toFixed(2) };
+            metricsMap["MED"]   = {label: "Median",             val: parseFloat(pData["Median Time"].count).toFixed(2)};
+            metricsMap["MAX"]   = {label: "Maximum",            val: parseFloat(det[2].split(": ")[1]).toFixed(2)};
+            metricsMap["STDEV"] = {label: "Standard Deviation", val: parseFloat(det[3].split(": ")[1]).toFixed(2)};
+
             val = parseFloat(metricsMap[mode].val);
         }
 
         let nonChartedLines = [];
+
         Object.keys(metricsMap).forEach(k => {
             if (k !== mode) {
                 let cleanValStr = metricsMap[k].val.replace(/s$/, ""); 
@@ -1173,31 +1615,48 @@ function renderTierCharts() {
     };
 
     const c3Sort = (a, b) => {
-        let va = getC3ValueAndHover(a, c3Mode).val || 999;
-        let vb = getC3ValueAndHover(b, c3Mode).val || 999;
+        let va = getC3ValueAndHover(a, c3Mode).val || 20;
+        let vb = getC3ValueAndHover(b, c3Mode).val || 20;
+
         return va - vb; 
     };
+
     let c3Data = buildChartData(currentTierChartMode, c3Sort, (p) => getC3ValueAndHover(p, c3Mode), null);
 
     let c3Traces = [{
-        x: c3Data.singleXVals.slice().reverse(),
-        y: c3Data.yLabels.slice().reverse(),
-        type: 'bar', orientation: 'h',
-        hovertext: c3Data.customHovers.slice().reverse(), hoverinfo: 'text',
-        text: c3Data.singleXVals.slice().reverse().map(v => v === null ? "" : v.toFixed(2)),
-        textposition: 'inside', insidetextanchor: 'end',
-        textfont: {family: 'Segoe UI', size: 14, color: 'black', weight: 'bold'},
-        marker: {color: 'white', line: {color: 'black', width: 2}}
+        x                   : c3Data.singleXVals    .slice().reverse(),
+        y                   : c3Data.yLabels        .slice().reverse(),
+        type                : 'bar',
+        orientation         : 'h',
+        hovertext           : c3Data.customHovers   .slice().reverse(),
+        hoverinfo           : 'text',
+        text                : c3Data.singleXVals    .slice().reverse().map(v => v === null ? "" : v.toFixed(2) + " "),
+        textposition        : 'inside', 
+        insidetextanchor    : 'end',
+        textfont            : {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'},
+        marker              : {color: 'white', line: {color: 'black', width: 2}}
     }];
 
-    const titleC3 = `<span style="font-size: 30px;"><b>Guess Speed Tracking (${c3Mode})</b></span>`;
+    let displayTitleC3 = "";
+
+    if      (c3Mode === "MIN")      displayTitleC3 = "Minimum Time";
+    else if (c3Mode === "MEAN")     displayTitleC3 = "Mean Time";
+    else if (c3Mode === "MED")      displayTitleC3 = "Median Time";
+    else if (c3Mode === "MAX")      displayTitleC3 = "Maximum Time";
+    else if (c3Mode === "STDEV")    displayTitleC3 = "Time Standard Deviation";
+
+    const titleC3 = `<span style="font-size: 30px;"><b>${displayTitleC3}</b></span>`;
+
     const layoutC3 = {
-        font: {family: 'Segoe UI'}, title: {text: titleC3, yref: 'container', y: 15, yanchor: 'top'},
-        xaxis: {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true, range: [0, 21], tickmode: 'array', tickvals: [0,4,8,12,16,20]},
-        yaxis: {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: "  "},
-        bargap: 0.0, margin: {l: 150, r: 0, t: 100, b: 25},
-        hoverlabel: {align: 'left', font: {family: 'Segoe UI', size: 15}}, showlegend: false
+        font        : {family: 'Segoe UI'}, title: {text: titleC3, yref: 'container', y: 15, yanchor: 'top'},
+        xaxis       : {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true,  range       : [0, 21], tickmode: 'array', tickvals: [0, 4, 8, 12, 16, 20]},
+        yaxis       : {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix  : " "},
+        bargap      : 0.0,
+        margin      : {l: 150, r: 0, t: 50, b: 25},
+        hoverlabel  : {align: 'left', font: {family: 'Segoe UI', size: 15}},
+        showlegend  : false
     };
+
     layoutC3.height = 35 * c3Data.yLabels.length;
     Plotly.newPlot('tierChart_TimeMetrics', c3Traces, layoutC3, {responsive: true, displayModeBar: false});
 }
@@ -1536,21 +1995,21 @@ if (songChartDiv) {
 
         if (numY === 8) {
             if      (i === 0) queryParts.push("vintage<1995");
-            else if (i === 7) queryParts.push("vintage>2025");
+            else if (i === 7) queryParts.push("vintage>=2025");
             else {
                 let startYr = 1995 + (i - 1) * 5;
                 let endYr   = startYr + 5;
-                queryParts.push(`vintage>${startYr}`, `vintage<${endYr}`);
+                queryParts.push(`vintage>=${startYr}`, `vintage<${endYr}`);
             }
         }
 
         else {
             if      (i === 0) queryParts.push("vintage<1990");
-            else if (i === 8) queryParts.push("vintage>2025");
+            else if (i === 8) queryParts.push("vintage>=2025");
             else {
                 let startYr = 1990 + (i - 1) * 5;
                 let endYr   = startYr + 5;
-                queryParts.push(`vintage>${startYr}`, `vintage<${endYr}`);
+                queryParts.push(`vintage>=${startYr}`, `vintage<${endYr}`);
             }
         }
 
@@ -2314,7 +2773,6 @@ function renderSearchTable(filteredSongs) {
                     const hasGenres = song.genres_raw && song.genres_raw.length > 0;
                     td.className    = hasGenres ? "cursor-help hover:bg-gray-100 text-center text-black font-normal" : "text-center text-black font-normal";
                     if (hasGenres) {
-                        // Keep the list alphabetical for the user
                         let sortedGenres = [...song.genres_raw].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
                         td.setAttribute("data-songs", encodeURIComponent(JSON.stringify(sortedGenres)));
                     }
@@ -2326,7 +2784,6 @@ function renderSearchTable(filteredSongs) {
                     const hasTags = song.tags_raw && song.tags_raw.length > 0;
                     td.className  = hasTags ? "cursor-help hover:bg-gray-100 text-center text-black font-normal" : "text-center text-black font-normal";
                     if (hasTags) {
-                        // Keep the list alphabetical for the user
                         let sortedTags = [...song.tags_raw].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
                         td.setAttribute("data-songs", encodeURIComponent(JSON.stringify(sortedTags)));
                     }

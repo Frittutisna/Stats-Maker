@@ -72,15 +72,24 @@
         <div class="max-w-[2000px] mx-auto"> 
             <div id="tier-tab" class="tab-content">
                 <div class="max-w-[1000px] mx-auto">
-                    <div class="flex justify-end mb-4">
-                        <button id="tierModeToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold cursor-pointer" onclick="toggleTierChartMode()">TIER</button>
+                    <div class="flex justify-center mb-1 gap-1 items-center">
+                        <button id="tierModeToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold text-xs cursor-pointer" onclick="toggleTierChartMode()">TIER</button>
+                        <div class="h-[30px] w-[2px] bg-black"></div>
+                        <div class="flex gap-1">
+                            <button id="global_mode_btn" class="w-[60px] h-[30px] bg-black text-white text-xs font-bold cursor-pointer" onclick="toggleGlobalChartMode()">RATE</button>
+                            <button id="c1_sub_btn" class="w-[60px] h-[30px] bg-black text-white text-xs font-bold cursor-pointer" onclick="toggleC1Sub()">BASE</button>
+                            <button id="c3_mode_btn" class="w-[60px] h-[30px] bg-black text-white text-xs font-bold cursor-pointer" onclick="toggleC3Mode()">MED</button>
+                        </div>
                     </div>
-                    <div id="tierChart_GuessRate"></div>
-                    <div id="tierChart_LivesTaken"></div>
-                    <div id="tierChart_LivesSaved"></div>
-                    <div id="tierChart_ContributionRate"></div>
-                    <div id="tierChart_MedianTime"></div>
-                    <div id="tierChart_ChantingGuessRate"></div>
+                    <div>
+                        <div id="tierChart_MainMetrics"></div>
+                    </div>
+                    <div>
+                        <div id="tierChart_LivesMetrics"></div>
+                    </div>
+                    <div>
+                        <div id="tierChart_TimeMetrics"></div>
+                    </div>
                 </div>
             </div>
             <div id="song-tab" class="tab-content">
