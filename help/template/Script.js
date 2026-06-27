@@ -142,7 +142,7 @@ function switchDashboardTab(evt, tabId) {
     }
 
     if (helpWrapper) {
-        if (['player-tab', 'tier-tab', 'search-tab'].includes(tabId)) helpWrapper.classList.remove('invisible');
+        if (['player-tab', 'tier-tab', 'guess-tab', 'search-tab'].includes(tabId)) helpWrapper.classList.remove('invisible');
         else helpWrapper.classList.add('invisible');
     }
 
@@ -171,12 +171,21 @@ window.toggleGlobalHelp = function(event) {
     if (activeTab === 'player-tab') {
         document.getElementById("playerGuideDropdown")  .classList.toggle("hidden");
         document.getElementById("tierGuideDropdown")    .classList.add("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.add("hidden");
         document.getElementById("songGuideDropdown")    .classList.add("hidden");
     }
 
     else if (activeTab === 'tier-tab') {
         document.getElementById("tierGuideDropdown")    .classList.toggle("hidden");
         document.getElementById("playerGuideDropdown")  .classList.add("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.add("hidden");
+        document.getElementById("songGuideDropdown")    .classList.add("hidden");
+    }
+
+    else if (activeTab === 'guess-tab') {
+        document.getElementById("guessGuideDropdown")   .classList.toggle("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.add("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.add("hidden");
         document.getElementById("songGuideDropdown")    .classList.add("hidden");
     }
 
@@ -184,11 +193,24 @@ window.toggleGlobalHelp = function(event) {
         document.getElementById("songGuideDropdown")    .classList.toggle("hidden");
         document.getElementById("playerGuideDropdown")  .classList.add("hidden");
         document.getElementById("tierGuideDropdown")    .classList.add("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.add("hidden");
     }
 };
 
 document.addEventListener("click", () => {document.querySelectorAll('#globalGearWrapper > div, #globalHelpWrapper > div').forEach(el => {if (el.id.includes('Dropdown')) el.classList.add('hidden');});});
 const stopProp = (e) => e.stopPropagation();
+
+[
+    'playerColumnSettingsDropdown',
+    'columnSettingsDropdown',
+    'playerGuideDropdown',
+    'tierGuideDropdown',
+    'guessGuideDropdown',
+    'songGuideDropdown'
+].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("click", stopProp);
+});
 
 ['playerColumnSettingsDropdown', 'columnSettingsDropdown', 'playerGuideDropdown', 'tierGuideDropdown', 'songGuideDropdown'].forEach(id => {
     const el = document.getElementById(id);
@@ -2490,6 +2512,8 @@ window.cycleGuessListViewMode = function() {
     const listChart     = document.getElementById("listChartContainer");
     const xAxisDesc     = document.getElementById("listXAxisDescription");
     const yAxisDesc     = document.getElementById("listYAxisDescription");
+    const sizeDesc      = document.getElementById("listSizeDescription");
+    const colorDesc     = document.getElementById("listColorDescription");
 
     if (currentGuessListViewMode === "ALL") {
         currentGuessListViewMode    = "RIG";
@@ -2501,8 +2525,10 @@ window.cycleGuessListViewMode = function() {
         if (listCtx)    listCtx     .classList.remove   ("hidden");
         if (listChart)  listChart   .classList.remove   ("hidden");
 
-        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs from this player's list";
-        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs from this player's list";
+        if (xAxisDesc)  xAxisDesc   .innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs from this player's list";
+        if (yAxisDesc)  yAxisDesc   .innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs from this player's list";
+        if (sizeDesc)   sizeDesc    .innerHTML  = "<b>Size (Rig Rate)</b>";
+        if (colorDesc)  colorDesc   .innerHTML = "<b>Color (Rig Guess Rate)</b>";
 
         renderListChart();
     }
@@ -2512,8 +2538,10 @@ window.cycleGuessListViewMode = function() {
         btn.innerText               = "HIT";
         currentListChartMode        = "HIT";
 
-        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
-        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs that this player guessed correctly from their own list";
+        if (xAxisDesc) xAxisDesc    .innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
+        if (yAxisDesc) yAxisDesc    .innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs that this player guessed correctly from their own list";
+        if (sizeDesc)  sizeDesc     .innerHTML  = "<b>Size (Rig Rate)</b>";
+        if (colorDesc) colorDesc    .innerHTML = "<b>Color (Rig Guess Rate)</b>";
 
         renderListChart();
     }
