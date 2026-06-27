@@ -45,15 +45,16 @@ document.head.appendChild(dynamicStyles);
 
 const tabContainer  = document.getElementById('tabContainer');
 const tourTabBtn    = document.getElementById('tourTabBtn');
+const helpAnchor    = document.getElementById('globalHelpWrapper');
 
 if (use_teams)  tourTabBtn.innerText = "Tour/Team";
 else            tourTabBtn.innerText = "Tour";
 
-if (use_teams)  tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
-                tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
-if (watched)    tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess/List</button>`);
-else            tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
-                tabContainer.insertAdjacentHTML('beforeend', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
+if (use_teams)  helpAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'tier-tab')">Tier</button>`);
+                helpAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'song-tab')">Song</button>`);
+if (watched)    helpAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess/List</button>`);
+else            helpAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'guess-tab')">Guess</button>`);
+                helpAnchor.insertAdjacentHTML('beforebegin', `<button class="tab-btn" onclick="switchDashboardTab(event, 'search-tab')">Search</button>`);
 
 const thickBorderColumns = new Set([
     "Player",
@@ -129,9 +130,112 @@ function switchDashboardTab(evt, tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active-tab'));
     document.getElementById(tabId).classList.add('active-content');
-    evt.currentTarget.classList.add('active-tab');
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active-tab');
     window.dispatchEvent(new Event('resize'));
+
+    const gearWrapper = document.getElementById('globalGearWrapper');
+    const helpWrapper = document.getElementById('globalHelpWrapper');
+
+    if (gearWrapper) {
+        if (['player-tab', 'search-tab'].includes(tabId))   gearWrapper.classList.remove('invisible');
+        else                                                gearWrapper.classList.add('invisible');
+    }
+
+    if (helpWrapper) {
+        if (['player-tab', 'tier-tab', 'guess-tab', 'search-tab', 'song-tab'].includes(tabId))  helpWrapper.classList.remove('invisible');
+        else                                                                                    helpWrapper.classList.add('invisible');
+    }
+
+    document.querySelectorAll('#globalGearWrapper > div, #globalHelpWrapper > div').forEach(el => {if (el.id.includes('Dropdown')) el.classList.add('hidden');});
 }
+
+window.toggleGlobalGear = function(event) {
+    event.stopPropagation();
+    const activeTab = document.querySelector('.tab-content.active-content').id;
+    
+    if (activeTab === 'player-tab') {
+        document.getElementById("playerColumnSettingsDropdown") .classList.toggle   ("hidden");
+        document.getElementById("columnSettingsDropdown")       .classList.add      ("hidden");
+    }
+
+    else if (activeTab === 'search-tab') {
+        document.getElementById("columnSettingsDropdown")       .classList.toggle   ("hidden");
+        document.getElementById("playerColumnSettingsDropdown") .classList.add      ("hidden");
+    }
+};
+
+window.toggleGlobalHelp = function(event) {
+    event.stopPropagation();
+    const activeTab = document.querySelector('.tab-content.active-content').id;
+
+    if (activeTab === 'player-tab') {
+        document.getElementById("playerGuideDropdown")  .classList.toggle   ("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.add      ("hidden");
+        document.getElementById("songGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("searchGuideDropdown")  .classList.add      ("hidden");
+    }
+
+    else if (activeTab === 'tier-tab') {
+        document.getElementById("tierGuideDropdown")    .classList.toggle   ("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.add      ("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.add      ("hidden");
+        document.getElementById("songGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("searchGuideDropdown")  .classList.add      ("hidden");
+    }
+
+    else if (activeTab === 'guess-tab') {
+        document.getElementById("guessGuideDropdown")   .classList.toggle   ("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.add      ("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("songGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("searchGuideDropdown")  .classList.add      ("hidden");
+    }
+    
+    else if (activeTab === 'song-tab') {
+        document.getElementById("songGuideDropdown")    .classList.toggle   ("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.add      ("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.add      ("hidden");
+        document.getElementById("searchGuideDropdown")  .classList.add      ("hidden");
+    }
+
+    else if (activeTab === 'search-tab') {
+        document.getElementById("searchGuideDropdown")  .classList.toggle   ("hidden");
+        document.getElementById("playerGuideDropdown")  .classList.add      ("hidden");
+        document.getElementById("tierGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("songGuideDropdown")    .classList.add      ("hidden");
+        document.getElementById("guessGuideDropdown")   .classList.add      ("hidden");
+    }
+};
+
+document.addEventListener("click", () => {document.querySelectorAll('#globalGearWrapper > div, #globalHelpWrapper > div').forEach(el => {if (el.id.includes('Dropdown')) el.classList.add('hidden');});});
+const stopProp = (e) => e.stopPropagation();
+
+[
+    'playerColumnSettingsDropdown',
+    'columnSettingsDropdown',
+    'playerGuideDropdown',
+    'tierGuideDropdown',
+    'songGuideDropdown',
+    'guessGuideDropdown',
+    'searchGuideDropdown'
+].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("click", stopProp);
+});
+
+[
+    'playerColumnSettingsDropdown',
+    'columnSettingsDropdown',
+    'playerGuideDropdown',
+    'tierGuideDropdown',
+    'songGuideDropdown',
+    'searchGuideDropdown'
+].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("click", stopProp);
+});
 
 function getCrossProduct(o, a, b, xKey, yKey) {return (a[xKey] - o[xKey]) * (b[yKey] - o[yKey]) - (a[yKey] - o[yKey]) * (b[xKey] - o[xKey]);}
 
@@ -249,18 +353,6 @@ let activePlayerHeadersConfig = playerHeadersMasterConfig.filter(col => {
 });
 
 activePlayerHeadersConfig.forEach(col => {col.visible = col.def;});
-
-window.togglePlayerColumnSettingsMenu = function(event) {
-    event.stopPropagation();
-    document.getElementById("playerColumnSettingsDropdown").classList.toggle("hidden");
-};
-
-document.addEventListener("click", () => {
-    const pMenu = document.getElementById("playerColumnSettingsDropdown");
-    if (pMenu) pMenu.classList.add("hidden");
-});
-
-if (document.getElementById("playerColumnSettingsDropdown")) document.getElementById("playerColumnSettingsDropdown").addEventListener("click", (e) => e.stopPropagation());
 
 function initPlayerColumnSettings() {
     const container = document.getElementById("playerColumnCheckboxContainer");
@@ -970,48 +1062,23 @@ function renderTierCharts() {
         };
     };
 
-    const formatSampleTextList = (list, limit = 10) => {
-        let totalCount          = list.length;
-        let randomizedSample    = [...list].sort(() => Math.random() - 0.5).slice(0, limit);
+    const formatSampleTextList = (list) => {
+        return [...list]
+            .sort((a, b) => {
+                const cleanA = (a.startsWith('✓') || a.startsWith('✗') || a.startsWith('• ')) ? a.replace(/^[✓✗•]\s*/, '') : a;
+                const cleanB = (b.startsWith('✓') || b.startsWith('✗') || b.startsWith('• ')) ? b.replace(/^[✓✗•]\s*/, '') : b;
 
-        randomizedSample.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-        if (totalCount > limit) randomizedSample.push(`and ${totalCount - limit} more`);
-        return randomizedSample.join('<br>');
+                return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
+            })
+
+            .join('<br>');
     };
 
-    const formatFractionalSample = (fractionStr, songsList, limit = 10) => {
-        const ticks         = songsList.filter(s => s.startsWith('✓'));
-        const crosses       = songsList.filter(s => s.startsWith('✗'));
-        const totalValid    = ticks.length + crosses.length;
+    const formatFractionalSample = (fractionStr, songsList) => {
+        const ticks         = songsList.filter(s => s.startsWith('✓')).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        const crosses       = songsList.filter(s => s.startsWith('✗')).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
-        let tickTarget = 5;
-
-        if (totalValid > 0) {
-            tickTarget = Math.round((ticks.length / totalValid) * limit);
-            if (ticks.length > 0 && crosses.length > 0) tickTarget = Math.max(1, Math.min(limit - 1, tickTarget));
-        }
-
-        let crossTarget = limit - tickTarget;
-
-        if (ticks.length < tickTarget) {
-            tickTarget = ticks.length;
-            crossTarget = Math.min(crosses.length, limit - tickTarget);
-        }
-
-        else if (crosses.length < crossTarget) {
-            crossTarget = crosses.length;
-            tickTarget = Math.min(ticks.length, limit - crossTarget);
-        }
-
-        const sampledTicks      = ticks     .sort(() => Math.random() - 0.5).slice(0, tickTarget);
-        const sampledCrosses    = crosses   .sort(() => Math.random() - 0.5).slice(0, crossTarget);
-
-        sampledTicks    .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-        sampledCrosses  .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-
-        const outputSample = [...sampledTicks, ...sampledCrosses];
-
-        if (totalValid > limit) outputSample.push(`and ${totalValid - limit} more`);
+        const outputSample = [...ticks, ...crosses];
         return `<b>${fractionStr}</b><br>` + outputSample.join('<br>');
     };
 
@@ -1360,6 +1427,7 @@ function renderTierCharts() {
     };
 
     layoutC1.height = 35 * c1Data.yLabels.length;
+    c1Traces.forEach(t => t.hoverinfo = 'none');
     Plotly.newPlot('tierChart_MainMetrics', c1Traces, layoutC1, {responsive: true, displayModeBar: false});
     let newChart1Div = document.getElementById('tierChart_MainMetrics');
 
@@ -1376,7 +1444,8 @@ function renderTierCharts() {
         });
         
         newChart1Div.on('plotly_click', function(data) {
-            if (!data.points || data.points.length === 0) return;
+            if (data.event      && data.event.button    !== 0) return;
+            if (!data.points    || data.points.length   === 0) return;
 
             const pt            = data.points[0];
             const pNameClean    = String(pt.y).trim().toLowerCase();
@@ -1404,6 +1473,50 @@ function renderTierCharts() {
             }
 
             if (query) window.searchPlayerMetricFromTable(query);
+        });
+
+        newChart1Div.addEventListener('contextmenu', e => e.preventDefault());
+
+        newChart1Div.on('plotly_hover', function(data) {
+            if (!data.points || data.points.length === 0) return;
+
+            const pt            = data.points[0];
+            const tooltipNode   = document.getElementById('customJsTooltip');
+
+            if (tooltipNode && pt.hovertext) {
+                let traceColor = 'black';
+                if (pt.fullData && pt.fullData.marker) {
+                    traceColor = pt.fullData.marker.color;
+                    if (Array.isArray(traceColor)) {
+                        traceColor = traceColor[pt.pointIndex] || 'black';
+                    }
+                }
+
+                const isWhite = traceColor === 'white' || traceColor === '#ffffff' || traceColor === '#fff' || traceColor === 'rgb(255,255,255)' || traceColor === 'rgb(255, 255, 255)';
+
+                tooltipNode.style.display           = 'block';
+                tooltipNode.style.maxHeight         = '300px';
+                tooltipNode.style.overflowY         = 'auto';
+                tooltipNode.style.backgroundColor   = traceColor;
+                tooltipNode.style.color             = isWhite ? 'black' : 'white';
+                tooltipNode.style.border            = isWhite ? '1px solid black' : 'none';
+                tooltipNode.innerHTML               = pt.hovertext;
+                tooltipNode.style.left              = (data.event.pageX + 15) + 'px';
+                tooltipNode.style.top               = (data.event.pageY + 15) + 'px';
+            }
+        });
+
+        newChart1Div.on('plotly_unhover', function() {
+            const tooltipNode = document.getElementById('customJsTooltip');
+
+            if (tooltipNode && !tooltipNode.classList.contains('is-hovered')) {
+                tooltipNode.style.display           = 'none';
+                tooltipNode.style.backgroundColor   = 'black';
+                tooltipNode.style.color             = 'white';
+                tooltipNode.style.maxHeight         = '';
+                tooltipNode.style.overflowY         = '';
+                tooltipNode.style.border            = 'none';
+            }
         });
     }
 
@@ -1530,6 +1643,7 @@ function renderTierCharts() {
     };
 
     layoutC2.height = 35 * c2Data.yLabels.length;
+    c2Traces.forEach(t => t.hoverinfo = 'none');
     Plotly.newPlot('tierChart_LivesMetrics', c2Traces, layoutC2, {responsive: true, displayModeBar: false});
     let newChart2Div = document.getElementById('tierChart_LivesMetrics');
 
@@ -1546,7 +1660,8 @@ function renderTierCharts() {
         });
 
         newChart2Div.on('plotly_click', function(data) {
-            if (!data.points || data.points.length === 0) return;
+            if (data.event      && data.event.button    !== 0) return;
+            if (!data.points    || data.points.length   === 0) return;
 
             const pt            = data.points[0];
             const pNameClean    = String(pt.y).trim().toLowerCase();
@@ -1563,6 +1678,49 @@ function renderTierCharts() {
             }
 
             if (query) window.searchPlayerMetricFromTable(query);
+        });
+
+        newChart2Div.addEventListener('contextmenu', e => e.preventDefault());
+
+        newChart2Div.on('plotly_hover', function(data) {
+            if (!data.points || data.points.length === 0) return;
+
+            const pt            = data.points[0];
+            const tooltipNode   = document.getElementById('customJsTooltip');
+            
+            if (tooltipNode && pt.hovertext) {
+                let traceColor = 'black';
+
+                if (pt.fullData && pt.fullData.marker) {
+                    traceColor = pt.fullData.marker.color;
+                    if (Array.isArray(traceColor)) traceColor = traceColor[pt.pointIndex] || 'black';
+                }
+
+                const isWhite = traceColor === 'white' || traceColor === '#ffffff' || traceColor === '#fff' || traceColor === 'rgb(255,255,255)' || traceColor === 'rgb(255, 255, 255)';
+
+                tooltipNode.style.display           = 'block';
+                tooltipNode.style.maxHeight         = '300px';
+                tooltipNode.style.overflowY         = 'auto';
+                tooltipNode.style.backgroundColor   = traceColor;
+                tooltipNode.style.color             = isWhite ? 'black' : 'white';
+                tooltipNode.style.border            = isWhite ? '1px solid black' : 'none';
+                tooltipNode.innerHTML               = pt.hovertext;
+                tooltipNode.style.left              = (data.event.pageX + 15) + 'px';
+                tooltipNode.style.top               = (data.event.pageY + 15) + 'px';
+            }
+        });
+
+        newChart2Div.on('plotly_unhover', function() {
+            const tooltipNode = document.getElementById('customJsTooltip');
+
+            if (tooltipNode && !tooltipNode.classList.contains('is-hovered')) {
+                tooltipNode.style.display           = 'none';
+                tooltipNode.style.backgroundColor   = 'black';
+                tooltipNode.style.color             = 'white';
+                tooltipNode.style.maxHeight         = '';
+                tooltipNode.style.overflowY         = '';
+                tooltipNode.style.border            = 'none';
+            }
         });
     }
 
@@ -1614,7 +1772,7 @@ function renderTierCharts() {
         type                : 'bar',
         orientation         : 'h',
         hovertext           : c3Data.customHovers   .slice().reverse(),
-        hoverinfo           : 'text',
+        hoverinfo           : 'none',
         text                : c3Data.singleXVals    .slice().reverse().map(v => v === null ? "" : v.toFixed(2) + " "),
         textposition        : 'inside', 
         insidetextanchor    : 'end',
@@ -1644,6 +1802,43 @@ function renderTierCharts() {
 
     layoutC3.height = 35 * c3Data.yLabels.length;
     Plotly.newPlot('tierChart_TimeMetrics', c3Traces, layoutC3, {responsive: true, displayModeBar: false});
+    let newChart3Div = document.getElementById('tierChart_TimeMetrics');
+
+    if (newChart3Div) {
+        newChart3Div.addEventListener('contextmenu', e => e.preventDefault());
+
+        newChart3Div.on('plotly_hover', function(data) {
+            if (!data.points || data.points.length === 0) return;
+
+            const pt            = data.points[0];
+            const tooltipNode   = document.getElementById('customJsTooltip');
+
+            if (tooltipNode && pt.hovertext) {
+                tooltipNode.style.display           = 'block';
+                tooltipNode.style.maxHeight         = '300px';
+                tooltipNode.style.overflowY         = 'auto';
+                tooltipNode.style.backgroundColor   = 'white';
+                tooltipNode.style.color             = 'black';
+                tooltipNode.style.border            = '1px solid black';
+                tooltipNode.innerHTML               = pt.hovertext;
+                tooltipNode.style.left              = (data.event.pageX + 15) + 'px';
+                tooltipNode.style.top               = (data.event.pageY + 15) + 'px';
+            }
+        });
+
+        newChart3Div.on('plotly_unhover', function() {
+            const tooltipNode = document.getElementById('customJsTooltip');
+
+            if (tooltipNode && !tooltipNode.classList.contains('is-hovered')) {
+                tooltipNode.style.display           = 'none';
+                tooltipNode.style.backgroundColor   = 'black';
+                tooltipNode.style.color             = 'white';
+                tooltipNode.style.maxHeight         = '';
+                tooltipNode.style.overflowY         = '';
+                tooltipNode.style.border            = 'none';
+            }
+        });
+    }
 }
 
 function setupTooltipListeners() {
@@ -1691,17 +1886,6 @@ function setupTooltipListeners() {
         }, 100);
     }
 
-    function handleCellWheelScroll(e) {
-        if (tooltipNode && tooltipNode.style.display === 'block') {
-            const hasScrollbar = tooltipNode.scrollHeight > tooltipNode.clientHeight;
-
-            if (hasScrollbar) {
-                e.preventDefault();
-                tooltipNode.scrollTop += e.deltaY;
-            }
-        }
-    }
-
     if (tooltipNode && !tooltipNode._bound) {
         tooltipNode._bound = true;
 
@@ -1714,6 +1898,22 @@ function setupTooltipListeners() {
             tooltipNode.classList.remove('is-hovered');
             requestHideTooltip();
         });
+
+        window.addEventListener('wheel', (e) => {
+            if (tooltipNode.style.display === 'block') {
+                const rect = tooltipNode.getBoundingClientRect();
+
+                const isOverTooltip = (
+                    e.clientX >= rect.left && e.clientX <= rect.right &&
+                    e.clientY >= rect.top && e.clientY <= rect.bottom
+                );
+                
+                if (tooltipNode.scrollHeight > tooltipNode.clientHeight) {
+                    e.preventDefault();
+                    tooltipNode.scrollTop += e.deltaY;
+                }
+            }
+        }, {passive: false});
     }
 
     document.querySelectorAll('table th[data-metric], table td[data-metric]').forEach(th => {
@@ -1733,8 +1933,6 @@ function setupTooltipListeners() {
     });
 
     document.querySelectorAll('td[data-songs]').forEach(td => {
-        td.removeEventListener('wheel', handleCellWheelScroll);
-
         td.addEventListener('mouseenter', (e) => {
             try {
                 clearHideTimeout();
@@ -1746,6 +1944,7 @@ function setupTooltipListeners() {
                 else                                                {tooltipNode.style.backgroundColor = 'black';   tooltipNode.style.color = 'white';}
 
                 let displaySongs        = [...songs];
+                displaySongs            = window.translateHoverText(displaySongs);
                 const isPlayerSubHover  = td.parentNode.firstElementChild === td;
 
                 if (songs.length === 1 && !songs[0].startsWith('✓') && !songs[0].startsWith('✗') && songs[0].includes('/')) {
@@ -1793,7 +1992,6 @@ function setupTooltipListeners() {
 
         td.addEventListener('mousemove',    positionTooltip);
         td.addEventListener('mouseleave',   requestHideTooltip);
-        td.addEventListener('wheel',        handleCellWheelScroll, {passive: false});
     });
 }
 
@@ -1877,22 +2075,19 @@ for (let i = 0; i < numY; i++) {
             let val = matrixBins[key].over8Sum / matrixBins[key].count;
             rowZ.push(val);
 
-            let bin_songs       = matrixSongs[key] ? [...matrixSongs[key]] : [];
-            let song_hover_str  = "";
+            let bin_songs = matrixSongs[key] ? [...matrixSongs[key]] : [];
 
-            if (bin_songs.length > 10) {
-                const remainingCount = bin_songs.length - 10;
-                bin_songs = bin_songs.sort(() => Math.random() - 0.5).slice(0, 10);
-                bin_songs = formatAndSortSongsList(bin_songs, false);
-                song_hover_str = "<br>• " + bin_songs.join("<br>• ") + "<br>and " + remainingCount + " more";
-            }
+            bin_songs = bin_songs
+                .sort((a, b) => {
+                    const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
+                    const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
 
-            else if (bin_songs.length > 0) {
-                bin_songs = formatAndSortSongsList(bin_songs, false);
-                song_hover_str = "<br>• " + bin_songs.join("<br>• ");
-            }
+                    return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
+                })
 
-            rowText.push(`<b>${diffStr}<br>${vintageStr}<br>Over-8: ${val.toFixed(2)}</b>${song_hover_str}`);
+                .map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : `• ${s}`);
+
+            rowText.push(`<b>${diffStr}<br>${vintageStr}<br>Over-8: ${val.toFixed(2)}</b>`);
 
             annotations.push({
                 x               : j,
@@ -1956,8 +2151,7 @@ Plotly.newPlot('plotlySongChart', [{
     x               : Array.from({length: numX}, (_, i) => i),
     y               : Array.from({length: numY}, (_, i) => i),
     text            : textLabels,
-    hovertemplate   : '<span style="text-align: left; display: block;">%{text}</span><extra></extra>',
-    hoverlabel      : {align: 'left', bgcolor: bgColors, font: {family: 'Segoe UI', size: 15}},
+    hoverinfo       : 'none',
     type            : 'heatmap',
     colorscale      : [[0, c0], [0.375, c1], [0.625, c2], [1, c2]],
     zmin            : 0,
@@ -2008,14 +2202,73 @@ Plotly.newPlot('plotlySongChart', [{
         fixedrange      : true
     },
     annotations : annotations,
-    margin      : {l: 75, r: 0, t: 25, b: 75}
+    margin      : {l: 75, r: 0, t: 0, b: 75}
 }, {responsive: true, displayModeBar: false});
 
 const songChartDiv = document.getElementById('plotlySongChart');
 
 if (songChartDiv) {
-    songChartDiv.on('plotly_click', function(data) {
+    songChartDiv.addEventListener('contextmenu', e => e.preventDefault());
+
+    songChartDiv.on('plotly_hover', function(data) {
         if (!data.points || data.points.length === 0) return;
+
+        const pt    = data.points[0];
+        const j     = pt.x;
+        const i     = pt.y;
+        const key   = `${j}-${i}`;
+
+        if (matrixSongs && matrixSongs[key]) {
+            const tooltipNode = document.getElementById('customJsTooltip');
+            if (!tooltipNode) return;
+
+            let bin_songs   = [...matrixSongs[key]];
+            bin_songs       = window.translateHoverText(bin_songs);
+
+            bin_songs = bin_songs
+                .sort((a, b) => {
+                    const cleanA = (a.startsWith('✓') || a.startsWith('✗')) ? a.slice(2) : a;
+                    const cleanB = (b.startsWith('✓') || b.startsWith('✗')) ? b.slice(2) : b;
+
+                    return cleanA.toLowerCase().localeCompare(cleanB.toLowerCase());
+                })
+
+                .map(s => (s.startsWith('✓') || s.startsWith('✗')) ? s : `• ${s}`);
+
+            const baseInfo          = textLabels[i][j]  || "";
+            const currentCellColor  = bgColors[i][j]    || 'black';
+            
+            const isWhite = currentCellColor === 'white' || currentCellColor === '#ffffff' || currentCellColor === 'rgb(255,255,255)' || currentCellColor === 'rgb(255, 255, 255)';
+
+            tooltipNode.style.display           = 'block';
+            tooltipNode.style.maxHeight         = '300px';
+            tooltipNode.style.overflowY         = 'auto';
+            tooltipNode.style.backgroundColor   = currentCellColor;
+            tooltipNode.style.color             = isWhite ? 'black' : 'white';
+            tooltipNode.style.border            = isWhite ? '1px solid black' : 'none';
+            tooltipNode.innerHTML               = `${baseInfo}<br>${bin_songs.join('<br>')}`;
+            const event                         = data.event;
+            tooltipNode.style.left              = (event.pageX + 15) + 'px';
+            tooltipNode.style.top               = (event.pageY + 15) + 'px';
+        }
+    });
+
+    songChartDiv.on('plotly_unhover', function() {
+        const tooltipNode = document.getElementById('customJsTooltip');
+
+        if (tooltipNode && !tooltipNode.classList.contains('is-hovered')) {
+            tooltipNode.style.display           = 'none';
+            tooltipNode.style.backgroundColor   = 'black';
+            tooltipNode.style.color             = 'white';
+            tooltipNode.style.maxHeight         = '';
+            tooltipNode.style.overflowY         = '';
+            tooltipNode.style.border            = 'none';
+        }
+    });
+
+    songChartDiv.on('plotly_click', function(data) {
+        if (data.event      && data.event.button    !== 0) return;
+        if (!data.points    || data.points.length   === 0) return;
 
         const pt        = data.points[0];
         const j         = pt.x;
@@ -2053,7 +2306,6 @@ if (songChartDiv) {
                 let endDf   = startDf + 5;
                 queryParts.push(`difficulty>${startDf}`, `difficulty<${endDf}`);
             }
-
         }
 
         else {
@@ -2219,7 +2471,32 @@ if (guessChartDiv) {
     });
 }
 
-let currentListChartMode = "ALL"; 
+let currentListChartMode        = "ALL"; 
+let currentGuessListViewMode    = "ALL";
+let isGraphFocused              = false;
+
+if (watched) {
+    const glBtn = document.getElementById("guessListToggleBtn");
+    const fcBtn = document.getElementById("focusToggleBtn");
+
+    if (glBtn) glBtn.classList.remove("hidden");
+    if (fcBtn) fcBtn.classList.remove("hidden");
+}
+
+function getLocalizedChartBounds(dataArray, xKey, yKey) {
+    if (!dataArray || dataArray.length === 0) return window.unifiedChartLimits;
+
+    const xValues = dataArray.map(d => d[xKey]);
+    const yValues = dataArray.map(d => d[yKey]);
+
+    const xMin = Math.min(...xValues) - 0.25;
+    const xMax = Math.max(...xValues) + 0.25;
+    const yMin = Math.min(...yValues) - 1;
+    const yMax = Math.max(...yValues) + 1;
+
+    const dtickY = Math.max(2, Math.ceil((Math.max(...yValues) - Math.min(...yValues)) / 5));
+    return {xMin, xMax, yMin, yMax, dtickY};
+}
 
 if (document.getElementById('plotlyListChart') && arrowData) {
     window.listDataPool = {
@@ -2247,7 +2524,175 @@ if (document.getElementById('plotlyListChart') && arrowData) {
     renderListChart();
 }
 
+function updateSongHelpDropdown() {
+    const dropdown = document.getElementById("songGuideDropdown");
+    if (!dropdown) return;
+
+    dropdown.innerHTML = `
+        <p class="font-bold pb-1 mb-1 text-sm text-black">Example</p>
+        <hr class="border-black mb-2">
+        <p class="text-xs font-normal">
+            <b>Difficulty:</b> 25-30<br>
+            <b>Vintage:</b> 2015-2020<br>
+            <b>Over-8:</b> <b><span style="color: #3232c8;">6.26</span></b><br>
+            This means that, on average, <b><span style="color: #3232c8;">6.26/8</span></b> people guessed songs from <b>2015-2020</b> with a difficulty of <b>25-30</b> correctly
+        </p>
+    `;
+}
+
+function updateGuessHelpDropdown() {
+    const dropdown = document.getElementById("guessGuideDropdown");
+    if (!dropdown) return;
+
+    let guideText = `
+        <b class="bg-black text-white px-1 rounded">ALL/RIG/HIT</b><br>Cycles between different bubble charts:<br>
+        • <b>ALL:</b> All songs guessed correctly<br>
+        • <b>RIG:</b> All songs from this player's list<br>
+        • <b>HIT:</b> All songs from this player's list that they guessed correctly<br><br>
+        <b class="bg-black text-white px-1 rounded">FOCUS</b><br>Focuses on the chart shown instead of using the shared axis bounds
+    `;
+    
+    let exampleText = "";
+
+    if (currentGuessListViewMode === "ALL") exampleText = `
+        A <b>small, <span style="color: #3232c8;">blue</span></b> circle in the <b>bottom-left</b> means that, on average, this player:<br>
+        • Has low Guess Rate (<b>small</b>), yet<br>
+        • Is over-performing their Elo (<b><span style="color: #3232c8;">blue</span></b>),<br>
+        • Usually hits harder (<b>left</b>) songs, and<br>
+        • Prefers the older (<b>bottom</b>) ones
+    `;
+
+    else if (currentGuessListViewMode === "RIG") exampleText = `
+        A <b>big, <span style="color: #c83232;">red</span></b> circle in the <b>top-right</b> means that, on average, this player's list:<br>
+        • Usually has newer (<b>top</b>) songs,<br>
+        • Appears a lot (<b>big</b>),<br>
+        • Is difficult for the player (<b><span style="color: #c83232;">red</span></b>), yet<br>
+        • Easy for others (<b>right</b>)
+    `;
+
+    else if (currentGuessListViewMode === "HIT") exampleText = `
+        A <b>big, <span style="color: #c83232;">red</span></b> circle in the <b>top-right</b> means that, on average, this player:<br>
+        • Focuses heavily on newer (<b>top</b>) songs from their list,<br>
+        • Said list appears a lot (<b>big</b>),<br>
+        • Is difficult (<b><span style="color: #c83232;">red</span></b>) for them to get right, yet<br>
+        • Easy for others (<b>right</b>)
+    `;
+
+    dropdown.innerHTML = `
+        <p class="font-bold pb-1 mb-1">Guide</p>
+        <hr class="border-black mb-2">
+        <p class="mb-2 text-xs">${guideText}</p>
+        <p class="font-bold pb-1 mb-1 mt-3">Example</p>
+        <hr class="border-black mb-2">
+        <p class="text-xs font-normal">${exampleText}</p>
+    `;
+}
+
+function updateSearchHelpDropdown() {
+    const dropdown = document.getElementById("searchGuideDropdown");
+    if (!dropdown) return;
+
+    dropdown.innerHTML = `
+        <p class="font-bold border-b pb-1 mb-1">Guide</p>
+        <p class="mb-2 text-xs">
+            Search using <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> or <code class="bg-gray-200 px-1 rounded font-mono text-xs">columnname:value</code><br>
+            You can replace <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> with arithmetic operators (<code class="bg-gray-200 px-1 rounded font-mono text-xs">=, !:, !=, &lt;, &gt;, &lt;=, &gt;=)</code><br>
+            Combine query terms using explicit <code class="bg-gray-200 px-1 rounded font-mono text-xs">and/or</code> keywords<br>
+            Group precedence with <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code><br>
+            Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">(artist="aoi koga" or artist:"tomori kusunoki") and difficulty>20</code><br>
+            returns songs by Aoi Koga or Tomori Kusunoki with difficulties above 20
+        </p>
+        <div class="grid grid-cols-2 gap-2 pt-1 border-t text-xs">
+            <div>
+                <span class="block font-mono mb-1 font-bold text-gray-700">anime, songtype, chanting, animetype, song, artist, composer, arranger, correct, list</span>
+                <code class="bg-gray-200 px-1 rounded font-mono">anime:aikatsu artist:nanase</code> returns Nanase songs from Aikatsu<br>
+                <code class="bg-gray-200 px-1 rounded font-mono">songtype:ed animetype:movie</code> returns movie ending songs<br>
+                <code class="bg-gray-200 px-1 rounded font-mono">correct!=furlain</code> returns songs FurLain missed<br>
+            </div>
+            <div>
+                <span class="block font-mono mb-1 font-bold text-gray-700">vintage, difficulty, correct, list</span>
+                <code class="bg-gray-200 px-1 rounded font-mono">vintage&lt;"Summer 2023"</code> returns songs from anime before Summer 2023<br>
+                <code class="bg-gray-200 px-1 rounded font-mono">difficulty&lt;30 list&gt;4</code> returns songs with difficulty less than 30 listed by more than 4 people<br>
+                <code class="bg-gray-200 px-1 rounded font-mono">correct:0</code> returns songs no one got right<br>
+            </div>
+        </div>
+    `;
+}
+
+window.cycleGuessListViewMode = function() {
+    const btn           = document.getElementById("guessListToggleBtn");
+    const guessChart    = document.getElementById("guessChartContainer");
+    const listChart     = document.getElementById("listChartContainer");
+
+    if (currentGuessListViewMode === "ALL") {
+        currentGuessListViewMode    = "RIG";
+        btn.innerText               = "RIG";
+        currentListChartMode        = "ALL";
+
+        if (guessChart) guessChart  .classList.add      ("hidden");
+        if (listChart)  listChart   .classList.remove   ("hidden");
+
+        renderListChart();
+    }
+
+    else if (currentGuessListViewMode === "RIG") {
+        currentGuessListViewMode    = "HIT";
+        btn.innerText               = "HIT";
+        currentListChartMode        = "HIT";
+
+        renderListChart();
+    }
+
+    else {
+        currentGuessListViewMode    = "ALL";
+        btn.innerText               = "ALL";
+
+        if (guessChart) guessChart  .classList.remove   ("hidden");
+        if (listChart)  listChart   .classList.add      ("hidden");
+
+        window.dispatchEvent(new Event('resize'));
+        if (isGraphFocused) updateGuessChartAxesFocus();
+    }
+
+    updateGuessHelpDropdown();
+};
+
+window.toggleGraphFocus = function() {
+    const btn       = document.getElementById("focusToggleBtn");
+    isGraphFocused  = !isGraphFocused;
+
+    if (isGraphFocused) {
+        btn.style.backgroundColor   = "#ffffff";
+        btn.style.color             = "#000000";
+        btn.style.border            = "1px solid black";
+    }
+
+    else {
+        btn.style.backgroundColor   = "#000000";
+        btn.style.color             = "#ffffff";
+        btn.style.border            = "none";
+    }
+
+    if (currentGuessListViewMode === "ALL") updateGuessChartAxesFocus   ();
+    else                                    renderListChart             ();
+};
+
+function updateGuessChartAxesFocus() {
+    const targetChart = document.getElementById('plotlyGuessChart');
+    if (!targetChart || !scatterData) return;
+    const bounds = isGraphFocused ? getLocalizedChartBounds(scatterData, 'over8', 'vintage') : window.unifiedChartLimits;
+
+    Plotly.relayout(targetChart, {
+        'xaxis.range': [bounds.xMin, bounds.xMax],
+        'yaxis.range': [bounds.yMin, bounds.yMax],
+        'yaxis.dtick': bounds.dtickY
+    });
+}
+
 function renderListChart() {
+    if (!window.listDataPool || !window.listDataPool[currentListChartMode]) return;
+
     const activeScatterSource   = window.listDataPool[currentListChartMode];
     const listHull              = get75PercentileHull(activeScatterSource, 'x', 'y');
     let listTraces              = [];
@@ -2294,6 +2739,8 @@ function renderListChart() {
         }
     });
 
+    const currentBounds = isGraphFocused ? getLocalizedChartBounds(activeScatterSource, 'x', 'y') : window.unifiedChartLimits;
+
     Plotly.newPlot('plotlyListChart', listTraces, {
         font        : {family: 'Segoe UI'},
         xaxis       : {
@@ -2306,7 +2753,7 @@ function renderListChart() {
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false,
-            range       : [window.unifiedChartLimits.xMin, window.unifiedChartLimits.xMax]
+            range       : [currentBounds.xMin, currentBounds.xMax]
         },
         yaxis       : {
             title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
@@ -2314,12 +2761,12 @@ function renderListChart() {
             tickangle   : -90,
             showgrid    : true,
             tickformat  : 'd',
-            dtick       : window.unifiedChartLimits.dtickY,
+            dtick       : currentBounds.dtickY,
             ticks       : 'outside',
             ticklen     : 5,
             tickcolor   : 'rgba(0, 0, 0, 0)',
             fixedrange  : false,
-            range       : [window.unifiedChartLimits.yMin, window.unifiedChartLimits.yMax]
+            range       : [currentBounds.yMin, currentBounds.yMax]
         },
         margin      : {l: 75, r: 0, t: 25, b: 75},
         annotations : buildScatterAnnotations(activeScatterSource, 'x', 'y', 'size')
@@ -2344,70 +2791,34 @@ function renderListChart() {
     }
 }
 
-if (watched) {
-    const glBtn = document.getElementById("guessListToggleBtn");
-    if (glBtn) glBtn.classList.remove("hidden");
-}
+if (document.getElementById('plotlyListChart') && arrowData) {
+    window.listDataPool = {
+        "ALL": arrowData.map(d => ({
+            acronym     : d.acronym,
+            name        : d.name,
+            x           : d.x_start,
+            y           : d.y_start,
+            size        : d.rig_rate,
+            color       : d.grid_grs || d.rig_gr, 
+            hoverText   : `<b>${d.name}</b><br>Rig Over-8: ${d.x_start.toFixed(2)}<br>Rig Vintage: ${d.seasonal_vintage_start}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig GR: ${d.rig_gr.toFixed(2)}<extra></extra>`
+        })),
 
-let currentGuessListViewMode = "GUESS";
-
-window.toggleGuessListViewMode = function() {
-    const btn           = document.getElementById("guessListToggleBtn");
-    const guessCtx      = document.getElementById("guessViewSubContext");
-    const listCtx       = document.getElementById("listViewSubContext");
-    const guessChart    = document.getElementById("guessChartContainer");
-    const listChart     = document.getElementById("listChartContainer");
-    const listSubToggle = document.getElementById("listModeToggleContainer");
-
-    if (currentGuessListViewMode === "GUESS") {
-        currentGuessListViewMode    = "LIST";
-        btn.innerText               = "LIST";
-
-        if (guessCtx)       guessCtx        .classList.add      ("hidden");
-        if (guessChart)     guessChart      .classList.add      ("hidden");
-        if (listCtx)        listCtx         .classList.remove   ("hidden");
-        if (listChart)      listChart       .classList.remove   ("hidden");
-        if (listSubToggle)  listSubToggle   .classList.remove   ("hidden");
-
-        renderListChart();
-    }
-
-    else {
-        currentGuessListViewMode    = "GUESS";
-        btn.innerText               = "GUESS";
-
-        if (guessCtx)       guessCtx        .classList.remove   ("hidden");
-        if (guessChart)     guessChart      .classList.remove   ("hidden");
-        if (listCtx)        listCtx         .classList.add      ("hidden");
-        if (listChart)      listChart       .classList.add      ("hidden");
-        if (listSubToggle)  listSubToggle   .classList.add      ("hidden");
-
-        window.dispatchEvent(new Event('resize'));
-    }
-};
-
-window.toggleListChartMode = function() {
-    const btn               = document.getElementById("listModeToggleBtn");
-    currentListChartMode    = currentListChartMode === "ALL" ? "HIT" : "ALL";
-    btn.innerText           = currentListChartMode;
-    const xAxisDesc         = document.getElementById("listXAxisDescription");
-    const yAxisDesc         = document.getElementById("listYAxisDescription");
-
-    if (currentListChartMode === "HIT") {
-        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs that this player guessed correctly from their own list";
-        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs that this player guessed correctly from their own list";
-    }
-
-    else {
-        if (xAxisDesc) xAxisDesc.innerHTML = "<b>X-Axis (Over-8):</b> Mean of correct guessers across songs from this player's list";
-        if (yAxisDesc) yAxisDesc.innerHTML = "<b>Y-Axis (Vintage):</b> Median vintage across songs from this player's list";
-    }
+        "HIT": arrowData.map(d => ({
+            acronym     : d.acronym,
+            name        : d.name,
+            x           : d.x_end, 
+            y           : d.y_end,
+            size        : d.rig_rate, 
+            color       : d.grid_grs || d.rig_gr, 
+            hoverText   : `<b>${d.name}</b><br>Hit Rig Over-8: ${d.x_end.toFixed(2)}<br>Hit Rig Vintage: ${d.seasonal_vintage || d.seasonal_vintage_end}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig GR: ${d.rig_gr.toFixed(2)}<extra></extra>`
+        }))
+    };
 
     renderListChart();
-};
+}
 
 let globalSortState     = {columnName: "Anime", ascending: true};
-let currentSearchLang   = "JP"; 
+let currentSearchLang   = "JP";
 
 const searchHeadersConfig = [
     {id: "anime",       name: "Anime",      visible: true},
@@ -2476,6 +2887,39 @@ function parseFloatToVintage(val) {
     return `${season}&nbsp;${year}`;
 }
 
+window.translateHoverText = function(textArray) {
+    if (!globalSearchData || globalSearchData.length === 0) return textArray;
+
+    return textArray.map(line => {
+        if (typeof line !== 'string') return line;
+        let translatedLine = line;
+
+        for (let i = 0; i < globalSearchData.length; i++) {
+            const s     = globalSearchData[i];
+            const jp    = s.romaji  || "";
+            const en    = s.english || "";
+
+            if (!jp || !en || jp === en) continue;
+
+            if (currentSearchLang === "EN") {
+                if (translatedLine.includes(jp + " (OP") || translatedLine.includes(jp + " (ED") || translatedLine.includes(jp + " (IN")) {
+                    translatedLine = translatedLine.replace(jp + " (", en + " (");
+                    break;
+                }
+            }
+
+            else {
+                if (translatedLine.includes(en + " (OP") || translatedLine.includes(en + " (ED") || translatedLine.includes(en + " (IN")) {
+                    translatedLine = translatedLine.replace(en + " (", jp + " (");
+                    break;
+                }
+            }
+        }
+
+        return translatedLine;
+    });
+};
+
 window.toggleSearchLanguage = function() {
     const btn           = document.getElementById("langToggleBtn");
     currentSearchLang   = currentSearchLang === "JP" ? "EN" : "JP";
@@ -2483,45 +2927,8 @@ window.toggleSearchLanguage = function() {
 
     sortSearchData      ();
     triggerTableRefresh ();
+    renderTierCharts    ();
 };
-
-window.togglePlayerGuideMenu = function(event) {
-    event.stopPropagation();
-    document.getElementById("playerGuideDropdown").classList.toggle("hidden");
-};
-
-window.toggleSongGuideMenu = function(event) {
-    event.stopPropagation();
-    document.getElementById("songGuideDropdown").classList.toggle("hidden");
-};
-
-document.addEventListener("click", () => {
-    const pMenu     = document.getElementById("playerColumnSettingsDropdown");
-    const sMenu     = document.getElementById("columnSettingsDropdown");
-    const pGuide    = document.getElementById("playerGuideDropdown");
-    const sGuide    = document.getElementById("songGuideDropdown");
-
-    if (pMenu)  pMenu   .classList.add("hidden");
-    if (sMenu)  sMenu   .classList.add("hidden");
-    if (pGuide) pGuide  .classList.add("hidden");
-    if (sGuide) sGuide  .classList.add("hidden");
-});
-
-if (document.getElementById("playerGuideDropdown")) document.getElementById("playerGuideDropdown")  .addEventListener("click", (e) => e.stopPropagation());
-if (document.getElementById("songGuideDropdown"))   document.getElementById("songGuideDropdown")    .addEventListener("click", (e) => e.stopPropagation());
-
-window.toggleColumnSettingsMenu = function(event) {
-    event.stopPropagation();
-    const menu = document.getElementById("columnSettingsDropdown");
-    menu.classList.toggle("hidden");
-};
-
-document.addEventListener("click", () => {
-    const menu = document.getElementById("columnSettingsDropdown");
-    if (menu) menu.classList.add("hidden");
-});
-
-if (document.getElementById("columnSettingsDropdown")) document.getElementById("columnSettingsDropdown").addEventListener("click", (e) => {e.stopPropagation();});
 
 function initColumnSettingsCheckboxes() {
     const container = document.getElementById("columnCheckboxContainer");
@@ -2974,6 +3381,9 @@ fetch('Search.json')
         sortSearchData                  ();
         renderSearchTable               (globalSearchData);
         renderTierCharts                ();
+        updateSongHelpDropdown          ();
+        updateGuessHelpDropdown         ();
+        updateSearchHelpDropdown        ();
 
         const searchInput = document.getElementById('songSearchInput');
         if (searchInput) {

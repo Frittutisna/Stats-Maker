@@ -12,8 +12,60 @@
         <h2 id="dashboardTitle" class="text-4xl text-center font-bold">Tour Dashboard</h2>
         <p id="lastUpdatedSubtitle" class="text-xl text-center font-bold mb-1">Last updated: Some time ago</p>
         <div id="tabContainer" class="border-b flex justify-center mb-1">
+            <button id="langToggleBtn" class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleSearchLanguage()">JP</button>
             <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
             <button id="tourTabBtn" class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
+            <div id="globalHelpWrapper" class="relative">
+                <button class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleGlobalHelp(event)">?</button>
+                <div id="playerGuideDropdown" class="bg-white border p-4 w-[500px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black">
+                    <p class="font-bold border-b pb-1 mb-1">Guide</p>
+                    <p class="mb-1 pt-1 text-xs">
+                        Search using <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> or <code class="bg-gray-200 px-1 rounded font-mono text-xs">columnname:value</code><br><br>
+                        You can replace <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> with arithmetic operators (<code class="bg-gray-200 px-1 rounded font-mono text-xs">=, !:, !=, &lt;, &gt;, &lt;=, &gt;=)</code>,<br>
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">uf</code> with 
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">usefulness</code>, 
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">guess rate</code> with 
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">gr</code>, 
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">1/8s</code> with 
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">solos</code>, 
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">2/8s</code> with 
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">doubles</code>, and 
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">7/8s</code> with 
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">sevens</code><br><br>
+                        Combine query terms using explicit <code class="bg-gray-200 px-1 rounded font-mono text-xs">and/or</code> keywords<br>
+                        Group precedence with <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code><br>
+                        Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">elo&lt;90 or (opgr&gt;80 edguessrate&lt;30)</code> returns players that either have an Elo below 90 or those who have OP and ED Guess Rates above 80% and below 30%
+                    </p>
+                </div>
+                <div id="tierGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black">
+                    <p class="font-bold border-b pb-1 mb-1">Guide</p>
+                    <p class="mb-1 pt-1 text-xs">
+                        <b class="bg-black text-white px-1 rounded">TIER/ALL</b><br>Groups and sorts players within their Tiers or doing so globally<br><br>
+                        <b class="bg-black text-white px-1 rounded">RATE/COUNT</b><br>Switches between rates or pure counts for the first two charts<br><br>
+                        <b class="bg-black text-white px-1 rounded">BASE/OVER-8/RIG/HIT/OFF/CHANT</b><br>Cycles through metrics for the first chart<br><br>
+                        <b class="bg-black text-white px-1 rounded">MIN/MEAN/MED/MAX/STDEV</b><br>Cycles through aggregate modes for the third chart
+                    </p>
+                </div>
+                <div id="guessGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
+                <div id="songGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
+                <div id="searchGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
+            </div>
+            <div id="globalGearWrapper" class="relative">
+                <button class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleGlobalGear(event)">⚙</button>
+                <div id="playerColumnSettingsDropdown" class="bg-white border p-4 w-64 absolute right-0 top-[32px] hidden z-50 shadow-md">
+                    <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
+                        <input type="checkbox" id="playerAllColumnsMasterCheckbox" class="rounded accent-black">All
+                    </label>
+                    <div id="playerColumnCheckboxContainer" class="flex flex-col gap-2 text-xs max-h-[350px] overflow-y-auto"></div>
+                </div>
+                <div id="columnSettingsDropdown" class="bg-white border p-4 w-60 absolute right-0 top-[32px] hidden z-50 shadow-md">
+                    <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
+                        <input type="checkbox" id="allColumnsMasterCheckbox" class="rounded accent-black">All
+                    </label>
+                    <div id="columnCheckboxContainer" class="flex flex-col gap-2 text-sm"></div>
+                </div>
+            </div>
         </div>
         <div>
             <div id="player-tab" class="tab-content active-content">
@@ -23,41 +75,9 @@
                         <div id="playerSearchCounter" class="w-[75px] h-[30px] font-bold bg-black text-white flex items-center justify-center text-sm select-none shrink-0">
                             0/0
                         </div>
-                        <div class="relative w-[30px] h-[30px] shrink-0">
-                            <button id="playerColumnSettingsBtn" class="w-[30px] h-[30px] bg-black text-white text-xl cursor-pointer flex items-center justify-center" onclick="togglePlayerColumnSettingsMenu(event)">⚙</button>
-                            <div id="playerColumnSettingsDropdown" class="bg-white border p-4 w-64 absolute right-0 top-[32px] hidden z-50 shadow-md">
-                                <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
-                                    <input type="checkbox" id="playerAllColumnsMasterCheckbox" class="rounded accent-black">All
-                                </label>
-                                <div id="playerColumnCheckboxContainer" class="flex flex-col gap-2 text-xs max-h-[350px] overflow-y-auto"></div>
-                            </div>
-                        </div>
-                        <div class="relative w-[30px] h-[30px] shrink-0">
-                            <button class="w-[30px] h-[30px] bg-black text-white font-bold cursor-pointer flex items-center justify-center" onclick="togglePlayerGuideMenu(event)">?</button>
-                            <div id="playerGuideDropdown" class="bg-white border p-4 w-[500px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black">
-                                <p class="font-bold border-b pb-1 mb-1">Guide</p>
-                                <p class="mb-1 pt-1 text-xs">
-                                    Search using <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> or <code class="bg-gray-200 px-1 rounded font-mono text-xs">columnname:value</code><br><br>
-                                    You can replace <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> with arithmetic operators (<code class="bg-gray-200 px-1 rounded font-mono text-xs">=, !:, !=, &lt;, &gt;, &lt;=, &gt;=)</code>,<br>
-                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">uf</code> with 
-                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">usefulness</code>, 
-                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">guess rate</code> with 
-                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">gr</code>, 
-                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">1/8s</code> with 
-                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">solos</code>, 
-                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">2/8s</code> with 
-                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">doubles</code>, and 
-                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">7/8s</code> with 
-                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">sevens</code><br><br>
-                                    Combine query terms using explicit <code class="bg-gray-200 px-1 rounded font-mono text-xs">and/or</code> keywords<br>
-                                    Group precedence with <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code><br>
-                                    Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
-                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">elo&lt;90 or (opgr&gt;80 edguessrate&lt;30)</code> returns players that either have an Elo below 90 or those who have OP and ED Guess Rates above 80% and below 30%
-                                </p>
-                            </div>
-                        </div>
                     </div>
-                </div><div class="w-full overflow-x-auto block">
+                </div>
+                <div class="w-full overflow-x-auto block">
                     <table class="main-table" id="playerStandingsTable"></table>
                 </div>
             </div>
@@ -71,28 +91,16 @@
         </div>
         <div class="max-w-[2000px] mx-auto"> 
             <div id="tier-tab" class="tab-content">
-                <div class="max-w-[1000px] mx-auto">
-                    <div class="flex justify-center mb-1 gap-1 items-center">
-                        <button id="tierModeToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold text-xs cursor-pointer" onclick="toggleTierChartMode()">TIER</button>
-                        <div class="h-[30px] w-[2px] bg-black"></div>
-                        <div class="flex gap-1">
-                            <button id="global_mode_btn" class="w-[60px] h-[30px] bg-black text-white text-xs font-bold cursor-pointer" onclick="toggleGlobalChartMode()">RATE</button>
-                            <button id="c1_sub_btn" class="w-[60px] h-[30px] bg-black text-white text-xs font-bold cursor-pointer" onclick="toggleC1Sub()">BASE</button>
-                            <button id="c3_mode_btn" class="w-[60px] h-[30px] bg-black text-white text-xs font-bold cursor-pointer" onclick="toggleC3Mode()">MED</button>
-                            <div class="relative w-[30px] h-[30px] shrink-0">
-                                <button class="w-[30px] h-[30px] bg-black text-white font-bold cursor-pointer flex items-center justify-center" onclick="event.stopPropagation(); document.getElementById('tierGuideDropdown').classList.toggle('hidden')">?</button>
-                                <div id="tierGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black">
-                                    <p class="font-bold border-b pb-1 mb-1">Guide</p>
-                                    <p class="mb-1 pt-1 text-xs">
-                                        <b class="bg-black text-white px-1 rounded">TIER/ALL</b><br>Groups and sorts players within their Tiers or doing so globally<br><br>
-                                        <b class="bg-black text-white px-1 rounded">RATE/COUNT</b><br>Switches between rates or pure counts for the first two charts<br><br>
-                                        <b class="bg-black text-white px-1 rounded">BASE/OVER-8/RIG/HIT/OFF/CHANT</b><br>Cycles through metrics for the first chart<br><br>
-                                        <b class="bg-black text-white px-1 rounded">MIN/MEAN/MED/MAX/STDEV</b><br>Cycles through aggregate modes for the third chart
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                <div class="flex justify-center mb-1 gap-1 items-center">
+                    <button id="tierModeToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold text-xs cursor-pointer" onclick="toggleTierChartMode()">TIER</button>
+                    <div class="h-[30px] w-[2px] bg-black"></div>
+                    <div class="flex gap-1">
+                        <button id="global_mode_btn" class="w-[60px] h-[30px] bg-black text-white text-xs font-bold cursor-pointer" onclick="toggleGlobalChartMode()">RATE</button>
+                        <button id="c1_sub_btn" class="w-[60px] h-[30px] bg-black text-white text-xs font-bold cursor-pointer" onclick="toggleC1Sub()">BASE</button>
+                        <button id="c3_mode_btn" class="w-[60px] h-[30px] bg-black text-white text-xs font-bold cursor-pointer" onclick="toggleC3Mode()">MED</button>
                     </div>
+                </div>
+                <div class="max-w-[1000px] mx-auto">
                     <div>
                         <div id="tierChart_MainMetrics"></div>
                     </div>
@@ -106,77 +114,20 @@
             </div>
             <div id="song-tab" class="tab-content">
                 <div class="max-w-[1000px] mx-auto">
-                    <div>
-                        <p><b>X-Axis (Difficulty):</b> Difficulty bins in steps of 5 bounded by their lower/upper limits</p>
-                        <p><b>Y-Axis (Vintage):</b> Vintage bins in steps of 5 years< bounded by their lower/upper limits</p>
-                        <p><b>Color (Over-8):</b> Mean of correct guessers across songs in this vintage-difficulty bin</p>
-                    </div>
-                    <div class="mt-1 px-2 py-1 bg-gray-50 border">
-                        <b><p>Example</p></b>
-                        <ul class="mt-1 pt-1 border-t font-bold">
-                            <li>Difficulty: 25-30</li>
-                                <li>Vintage: 2015-2020</li>
-                                <li>Over-8: <b><span style="color: #3232c8;">6.26</span></b></li>
-                            </ul></b>
-                            <p>Means that on average, <b><span style="color: #3232c8;">6.26/8</span></b> people guessed songs from <b>2015-2020</b> with difficulty of <b>25-30</b> correctly</p>
-                        </div>
                     <div id="plotlySongChart" style="width:1000px; height:1000px;"></div>
                 </div>
             </div>
             <div id="guess-tab" class="tab-content">
+                <div class="flex justify-center mb-1 gap-1 items-center">
+                    <button id="guessListToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold text-xs cursor-pointer hidden" onclick="cycleGuessListViewMode()">ALL</button>
+                    <button id="focusToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold text-xs cursor-pointer hidden" onclick="toggleGraphFocus()">FOCUS</button>
+                </div>
                 <div class="max-w-[1000px] mx-auto">
-                    <div class="flex justify-between items-start gap-4 mb-4">
-                        <div>
-                            <div id="guessViewSubContext">
-                                <p><b>X-Axis (Over-8):</b> Mean of correct guessers across songs this player guessed correctly</p>
-                                <p><b>Y-Axis (Vintage):</b> Median vintage across songs this player guessed correctly</p>
-                                <p><b>Size (Guess Rate)</b></p>
-                                <p><b>Color (Score):</b> Calculates this player's value (Usefulness) against what's expected from their Elo</p>
-                            </div>
-                            <div id="listViewSubContext" class="hidden">
-                                <p id="listXAxisDescription"><b>X-Axis (Over-8):</b> Mean of correct guessers across songs from this player's list</p>
-                                <p id="listYAxisDescription"><b>Y-Axis (Vintage):</b> Median vintage across songs from this player's list</p>
-                                <p><b>Size (Rig Rate)</b></p>
-                                <p><b>Color (Rig Guess Rate)</b></p>
-                                <p></p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col items-end gap-1">
-                            <button id="guessListToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold cursor-pointer hidden" onclick="toggleGuessListViewMode()">GUESS</button>
-                            <div id="listModeToggleContainer" class="hidden">
-                                <button id="listModeToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold cursor-pointer" onclick="toggleListChartMode()">ALL</button>
-                            </div>
-                        </div>
-                    </div>
                     <div>
                         <div id="guessChartContainer">
-                            <div class="mt-1 px-2 py-1 bg-gray-50 border mb-5">
-                                <p class="font-bold">Example</p>
-                                <p class="mb-1 pt-1 border-t">
-                                    A <b>small, <span style="color: #3232c8;">blue</span></b> circle in the <b>bottom-left</b> means that, on average, this player:
-                                </p>
-                                <ul class="list-disc pl-5">
-                                    <li>Has low Guess Rate (<b>small</b>), yet</li>
-                                    <li>Is over-performing their Elo (<b><span style="color: #3232c8;">blue</span></b>),</li>
-                                    <li>Usually hits harder (<b>left</b>) songs, and</li>
-                                    <li>Prefers the older (<b>bottom</b>) ones</li>
-                                </ul>
-                            </div>
                             <div id="plotlyGuessChart" style="width:1000px; height:1000px;"></div>
                         </div>
                         <div id="listChartContainer" class="hidden">
-                            <div class="mt-1 px-2 py-1 bg-gray-50 border mb-5">
-                                <p class="font-bold">Example</p>
-                                <p class="mb-1 pt-1 border-t">
-                                    A <b>big, <span style="color: #c83232;">red</span></b> circle in the <b>top-right</b> means that, on average, this player's list:
-                                </p>
-                                <ul class="list-disc pl-5">
-                                    <li>Usually has newer (<b>top</b>) songs,</li>
-                                    <li>Appears a lot (<b>big</b>),</li>
-                                    <li>Is difficult for the player (<b><span style="color: #c83232;">red</span></b>), yet</li>
-                                    <li>Easy for others (<b>right</b>)</li>
-                                </ul>
-                            </div>
                             <div id="plotlyListChart" style="width:1000px; height:1000px;"></div>
                         </div>
                     </div>
@@ -185,48 +136,9 @@
             <div id="search-tab" class="tab-content">
                 <div class="w-full flex justify-center mb-1">
                     <div class="mx-auto w-full max-w-xl flex items-center justify-center gap-1">
-                        <button id="langToggleBtn" class="w-[30px] h-[30px] bg-black text-white font-bold cursor-pointer shrink-0" onclick="toggleSearchLanguage()">JP</button>
                         <input type="text" id="songSearchInput" placeholder="anime:chobits songtype:ed" class="w-full h-[30px] px-2 border text-sm">
                         <div id="searchCounter" class="w-[75px] h-[30px] font-bold bg-black text-white flex items-center justify-center shrink-0 text-sm">
                             0/0
-                        </div>
-                        <div class="relative w-[30px] h-[30px] shrink-0">
-                            <button id="columnSettingsBtn" class="w-[30px] h-[30px] bg-black text-white text-xl cursor-pointer flex items-center justify-center" onclick="toggleColumnSettingsMenu(event)">⚙</button>
-                            <div id="columnSettingsDropdown" class="bg-white border p-4 w-60 absolute right-0 top-[32px] hidden z-50 shadow-md">
-                                <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
-                                    <input type="checkbox" id="allColumnsMasterCheckbox" class="rounded accent-black">All
-                                </label>
-                                <div id="columnCheckboxContainer" class="flex flex-col gap-2 text-sm"></div>
-                            </div>
-                        </div>
-                        <div class="relative w-[30px] h-[30px] shrink-0">
-                            <button class="w-[30px] h-[30px] bg-black text-white font-bold cursor-pointer flex items-center justify-center" onclick="toggleSongGuideMenu(event)">?</button>
-                            <div id="songGuideDropdown" class="bg-white border p-4 w-[650px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black">
-                                <p class="font-bold border-b pb-1 mb-1">Guide</p>
-                                <p class="mb-2 text-xs">
-                                    Search using <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> or <code class="bg-gray-200 px-1 rounded font-mono text-xs">columnname:value</code><br>
-                                    You can replace <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> with arithmetic operators (<code class="bg-gray-200 px-1 rounded font-mono text-xs">=, !:, !=, &lt;, &gt;, &lt;=, &gt;=)</code><br>
-                                    Combine query terms using explicit <code class="bg-gray-200 px-1 rounded font-mono text-xs">and/or</code> keywords<br>
-                                    Group precedence with <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code><br>
-                                    Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
-                                    <code class="bg-gray-200 px-1 rounded font-mono text-xs">(artist="aoi koga" or artist:"tomori kusunoki") and difficulty>20</code><br>
-                                    returns songs by Aoi Koga or Tomori Kusunoki with difficulties above 20
-                                </p>
-                                <div class="grid grid-cols-2 gap-2 pt-1 border-t text-xs">
-                                    <div>
-                                        <span class="block font-mono mb-1 font-bold text-gray-700">anime, songtype, chanting, animetype, song, artist, composer, arranger, correct, list</span>
-                                        <code class="bg-gray-200 px-1 rounded font-mono">anime:aikatsu artist:nanase</code> returns Nanase songs from Aikatsu<br>
-                                        <code class="bg-gray-200 px-1 rounded font-mono">songtype:ed animetype:movie</code> returns movie ending songs<br>
-                                        <code class="bg-gray-200 px-1 rounded font-mono">correct!=furlain</code> returns songs FurLain missed<br>
-                                    </div>
-                                    <div>
-                                        <span class="block font-mono mb-1 font-bold text-gray-700">vintage, difficulty, correct, list</span>
-                                        <code class="bg-gray-200 px-1 rounded font-mono">vintage&lt;"Summer 2023"</code> returns songs from anime before Summer 2023<br>
-                                        <code class="bg-gray-200 px-1 rounded font-mono">difficulty&lt;30 list&gt;4</code> returns songs with difficulty less than 30 listed by more than 4 people<br>
-                                        <code class="bg-gray-200 px-1 rounded font-mono">correct:0</code> returns songs no one got right<br>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
