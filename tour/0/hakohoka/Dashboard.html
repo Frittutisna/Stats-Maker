@@ -79,6 +79,18 @@
                             <button id="global_mode_btn" class="w-[60px] h-[30px] bg-black text-white text-xs font-bold cursor-pointer" onclick="toggleGlobalChartMode()">RATE</button>
                             <button id="c1_sub_btn" class="w-[60px] h-[30px] bg-black text-white text-xs font-bold cursor-pointer" onclick="toggleC1Sub()">BASE</button>
                             <button id="c3_mode_btn" class="w-[60px] h-[30px] bg-black text-white text-xs font-bold cursor-pointer" onclick="toggleC3Mode()">MED</button>
+                            <div class="relative w-[30px] h-[30px] shrink-0">
+                                <button class="w-[30px] h-[30px] bg-black text-white font-bold cursor-pointer flex items-center justify-center" onclick="event.stopPropagation(); document.getElementById('tierGuideDropdown').classList.toggle('hidden')">?</button>
+                                <div id="tierGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black">
+                                    <p class="font-bold border-b pb-1 mb-1">Guide</p>
+                                    <p class="mb-1 pt-1 text-xs">
+                                        <b class="bg-black text-white px-1 rounded">TIER/ALL</b><br>Groups and sorts players within their Tiers or doing so globally<br><br>
+                                        <b class="bg-black text-white px-1 rounded">RATE/COUNT</b><br>Switches between rates or pure counts for the first two charts<br><br>
+                                        <b class="bg-black text-white px-1 rounded">BASE/OVER-8/RIG/HIT/OFF/CHANT</b><br>Cycles through metrics for the first chart<br><br>
+                                        <b class="bg-black text-white px-1 rounded">MIN/MEAN/MED/MAX/STDEV</b><br>Cycles through aggregate modes for the third chart
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div>

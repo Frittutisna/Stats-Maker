@@ -1311,6 +1311,7 @@ function renderTierCharts() {
             y                   : c1Data.yLabels        .slice().reverse(),
             type                : 'bar',
             orientation         : 'h',
+            barmode             : 'group',
             hovertext           : c1Data.customHovers   .slice().reverse(),
             hoverinfo           : 'text',
             text                : c1Data.singleXVals    .slice().reverse().map(v => v === null ? "" : v.toFixed(globalChartMode === "RATE" ? 2 : 0) + " "),
@@ -1355,8 +1356,8 @@ function renderTierCharts() {
 
     const layoutC1 = {
         font        : {family: 'Segoe UI'}, title: {text: titleC1, yref: 'container', y: 15, yanchor: 'top'},
-        xaxis       : {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true, range: rangeC1},
-        yaxis       : {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: " "},
+        xaxis       : {type: 'linear', tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true, range: rangeC1},
+        yaxis       : {type: 'category', tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: " "},
         bargap      : 0.0,
         barmode     : 'stack',
         margin      : {l: 150, r: 0, t: hasLegends ? 100 : 50, b: 25},
@@ -1525,8 +1526,8 @@ function renderTierCharts() {
 
     const layoutC2 = {
         font        : {family: 'Segoe UI'}, title: {text: titleC2, yref: 'container', y: 15, yanchor: 'top'},
-        xaxis       : {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true, range: rangeC2},
-        yaxis       : {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: " "},
+        xaxis       : {type: 'linear', tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true, range: rangeC2},
+        yaxis       : {type: 'category', tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: " "},
         bargap      : 0.0,
         barmode     : 'stack',
         margin      : {l: 150, r: 0, t: 100, b: 25},
