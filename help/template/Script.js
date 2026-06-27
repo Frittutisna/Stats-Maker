@@ -1844,17 +1844,6 @@ function setupTooltipListeners() {
         }, 100);
     }
 
-    function handleCellWheelScroll(e) {
-        if (tooltipNode && tooltipNode.style.display === 'block') {
-            const hasScrollbar = tooltipNode.scrollHeight > tooltipNode.clientHeight;
-
-            if (hasScrollbar) {
-                e.preventDefault();
-                tooltipNode.scrollTop += e.deltaY;
-            }
-        }
-    }
-
     if (tooltipNode && !tooltipNode._bound) {
         tooltipNode._bound = true;
 
@@ -1902,8 +1891,6 @@ function setupTooltipListeners() {
     });
 
     document.querySelectorAll('td[data-songs]').forEach(td => {
-        td.removeEventListener('wheel', handleCellWheelScroll);
-
         td.addEventListener('mouseenter', (e) => {
             try {
                 clearHideTimeout();
@@ -1963,7 +1950,6 @@ function setupTooltipListeners() {
 
         td.addEventListener('mousemove',    positionTooltip);
         td.addEventListener('mouseleave',   requestHideTooltip);
-        td.addEventListener('wheel',        handleCellWheelScroll, {passive: false});
     });
 }
 
@@ -2181,17 +2167,6 @@ const songChartDiv = document.getElementById('plotlySongChart');
 
 if (songChartDiv) {
     songChartDiv.addEventListener('contextmenu', e => e.preventDefault());
-
-    songChartDiv.addEventListener('wheel', function(e) {
-        const tooltipNode = document.getElementById('customJsTooltip');
-
-        if (tooltipNode && tooltipNode.style.display === 'block') {
-            if (tooltipNode.scrollHeight > tooltipNode.clientHeight) {
-                e.preventDefault();
-                tooltipNode.scrollTop += e.deltaY;
-            }
-        }
-    }, {passive: false});
 
     songChartDiv.on('plotly_hover', function(data) {
         if (!data.points || data.points.length === 0) return;
