@@ -58,11 +58,11 @@ else            tabContainer.insertAdjacentHTML('beforeend', `<button class="tab
 const thickBorderColumns = new Set([
     "Player",
     "Tier",
-    "Guess Rate",
+    "GR",
     "Score",
     "Mean Over-8",
     "Lives Saved",
-    "IN Guess Rate",
+    "IN GR",
     "Rig Rate",
     "Solo Rig Rate",
     "Over-8 Δ",
@@ -73,7 +73,7 @@ const thickBorderColumns = new Set([
     "Tier",
     "Lives Saved",
     "Median Vintage Hit",
-    "Chanting Guess Rate"
+    "Chant GR"
 ]);
 
 window.unifiedChartLimits = {xMin: 0, xMax: 8, yMin: 1980, yMax: 2026, dtickY: 5};
@@ -228,7 +228,7 @@ const sampleLargeSongList = (displaySongs) => {
     return [...formatAndSortSongsList(sampledTicks), ...formatAndSortSongsList(sampledCrosses)];
 };
 
-let globalPlayerSortState   = {columnName: "Guess Rate", ascending: false};
+let globalPlayerSortState   = {columnName: "GR", ascending: false};
 let globalFilteredPlayers   = [];
 let globalMetricHighlights  = {};
 
@@ -237,7 +237,7 @@ const playerHeadersMasterConfig = [
     {id: "team",                name: "Team",                   ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
     {id: "tier",                name: "Tier",                   ascMetric: true,    teamReq: true,  watchedReq: false,  def: false},
     {id: "elo",                 name: "Elo",                    ascMetric: false,   teamReq: true,  watchedReq: false,  def: true},
-    {id: "guessrate",           name: "Guess Rate",             ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "guessrate",           name: "GR",                     ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
     {id: "uf",                  name: "UF",                     ascMetric: false,   teamReq: true,  watchedReq: false,  def: true},
     {id: "score",               name: "Score",                  ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
     {id: "18s",                 name: "1/8s",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
@@ -246,22 +246,22 @@ const playerHeadersMasterConfig = [
     {id: "meanover8",           name: "Mean Over-8",            ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
     {id: "livestaken",          name: "Lives Taken",            ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
     {id: "livessaved",          name: "Lives Saved",            ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
-    {id: "opguessrate",         name: "OP Guess Rate",          ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "edguessrate",         name: "ED Guess Rate",          ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "inguessrate",         name: "IN Guess Rate",          ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "opguessrate",         name: "OP GR",                  ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "edguessrate",         name: "ED GR",                  ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
+    {id: "inguessrate",         name: "IN GR",                  ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
     {id: "rigs",                name: "Rigs",                   ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
     {id: "rigrate",             name: "Rig Rate",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
     {id: "solorigs",            name: "Solo Rigs",              ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
     {id: "solorigrate",         name: "Solo Rig Rate",          ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
     {id: "rigover8",            name: "Rig Over-8",             ascMetric: true,    teamReq: false, watchedReq: true,   def: false},
     {id: "over8delta",          name: "Over-8 Δ",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
-    {id: "rigguessrate",        name: "Rig Guess Rate",         ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
-    {id: "offguessrate",        name: "Off Guess Rate",         ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
+    {id: "rigguessrate",        name: "Rig GR",                 ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
+    {id: "offguessrate",        name: "Off GR",                 ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
     {id: "rigdelta",            name: "Rig Δ",                  ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
     {id: "meandifficultyhit",   name: "Mean Difficulty Hit",    ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
     {id: "medianvintagehit",    name: "Median Vintage Hit",     ascMetric: false,   teamReq: false, watchedReq: false,  def: false},
     {id: "mediantime",          name: "Median Time",            ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
-    {id: "chantguessrate",      name: "Chant Guess Rate",       ascMetric: false,   teamReq: false, watchedReq: false,  def: false}
+    {id: "chantguessrate",      name: "Chant GR",               ascMetric: false,   teamReq: false, watchedReq: false,  def: false}
 ];
 
 let activePlayerHeadersConfig = playerHeadersMasterConfig.filter(col => {
@@ -574,19 +574,19 @@ function sortAndRenderPlayers() {
             const currentPlayerName = String((rawPlayerVal !== null && typeof rawPlayerVal === 'object') ? rawPlayerVal.count : rawPlayerVal).toLowerCase();
 
             if (parseFloat(displayVal) > 0) {
-                if      (h.name === "Guess Rate")       clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName}')"`;
+                if      (h.name === "GR")               clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName}')"`;
                 else if (h.name === "1/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} correct:1')"`;
                 else if (h.name === "2/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} correct:2')"`;
                 else if (h.name === "7/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct!:${currentPlayerName} correct:7')"`;
                 else if (h.name === "Lives Taken")      clickHandler = ` onclick="searchPlayerMetricFromTable('lifetaken:${currentPlayerName}')"`;
                 else if (h.name === "Lives Saved")      clickHandler = ` onclick="searchPlayerMetricFromTable('lifesaved:${currentPlayerName}')"`;
-                else if (h.name === "OP Guess Rate")    clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:op')"`;
-                else if (h.name === "ED Guess Rate")    clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:ed')"`;
-                else if (h.name === "IN Guess Rate")    clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:in')"`;
+                else if (h.name === "OP GR")            clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:op')"`;
+                else if (h.name === "ED GR")            clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:ed')"`;
+                else if (h.name === "IN GR")            clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:in')"`;
                 else if (h.name === "Solo Rigs")        clickHandler = ` onclick="searchPlayerMetricFromTable('list:${currentPlayerName} list:1')"`;
-                else if (h.name === "Rig Guess Rate")   clickHandler = ` onclick="searchPlayerMetricFromTable('list:${currentPlayerName}')"`;
-                else if (h.name === "Off Guess Rate")   clickHandler = ` onclick="searchPlayerMetricFromTable('list!:${currentPlayerName}')"`;
-                else if (h.name === "Chant Guess Rate") clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} chanting:yes')"`;
+                else if (h.name === "Rig GR")           clickHandler = ` onclick="searchPlayerMetricFromTable('list:${currentPlayerName}')"`;
+                else if (h.name === "Off GR")           clickHandler = ` onclick="searchPlayerMetricFromTable('list!:${currentPlayerName}')"`;
+                else if (h.name === "Chant GR")         clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} chanting:yes')"`;
             }
 
             if ((h.name === "Player" && rawCell && rawCell.details && rawCell.details.length > 0) || 
@@ -671,10 +671,10 @@ function renderTourTable() {
         const mostFractionMatch = key.match(/^Most (\d)\/8s$/);
         if (mostFractionMatch) return ` onclick="sortPlayerColumnFromTour('${mostFractionMatch[1]}/8s', false)"`;
 
-        if (key === "Highest GR Without 1/8s")                                                              return ` onclick="searchPlayerFilterFromTour    ('solos=0', 'Guess Rate', false)"`;
-        if (key === "Lowest GR Without 1/8s")                                                               return ` onclick="searchPlayerFilterFromTour    ('solos=0', 'Guess Rate', true)"`;
-        if (key === "Highest GR With 1/8s")                                                                 return ` onclick="searchPlayerFilterFromTour    ('solos>0', 'Guess Rate', false)"`;
-        if (key === "Lowest GR With 1/8s")                                                                  return ` onclick="searchPlayerFilterFromTour    ('solos>0', 'Guess Rate', true)"`;
+        if (key === "Highest GR Without 1/8s")                                                              return ` onclick="searchPlayerFilterFromTour    ('solos=0', 'GR', false)"`;
+        if (key === "Lowest GR Without 1/8s")                                                               return ` onclick="searchPlayerFilterFromTour    ('solos=0', 'GR', true)"`;
+        if (key === "Highest GR With 1/8s")                                                                 return ` onclick="searchPlayerFilterFromTour    ('solos>0', 'GR', false)"`;
+        if (key === "Lowest GR With 1/8s")                                                                  return ` onclick="searchPlayerFilterFromTour    ('solos>0', 'GR', true)"`;
         if ((key === "Best Solo Rig Converter" || key === "Worst Solo Rig Converter") && encodedDetails)    return ` onclick="searchSoloRigConverter        (this)"`;
 
         return "";
@@ -2113,7 +2113,7 @@ if (scatterData) {
         y               : scatterData.map(d => d.vintage),
         text            : scatterData.map(d => d.acronym),
         customdata      : scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), d.performance.toFixed(2)]),
-        hovertemplate   : '<b>%{customdata[0]}</b><br>Mean Over-8: %{customdata[1]}<br>Median Vintage: %{customdata[2]}<br>Guess Rate: %{customdata[3]}<br>Score: %{customdata[4]}<extra></extra>',
+        hovertemplate   : '<b>%{customdata[0]}</b><br>Mean Over-8: %{customdata[1]}<br>Median Vintage: %{customdata[2]}<br>GR: %{customdata[3]}<br>Score: %{customdata[4]}<extra></extra>',
         hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}},
         mode            : 'markers',
         showlegend      : false,
@@ -2198,7 +2198,7 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             y           : d.y_start,
             size        : d.rig_rate,
             color       : d.grid_grs || d.rig_gr, 
-            hoverText   : `<b>${d.name}</b><br>Rig Over-8: ${d.x_start.toFixed(2)}<br>Rig Vintage: ${d.seasonal_vintage_start}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig Guess Rate: ${d.rig_gr.toFixed(2)}<extra></extra>`
+            hoverText   : `<b>${d.name}</b><br>Rig Over-8: ${d.x_start.toFixed(2)}<br>Rig Vintage: ${d.seasonal_vintage_start}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig GR: ${d.rig_gr.toFixed(2)}<extra></extra>`
         })),
 
         "HIT": arrowData.map(d => ({
@@ -2208,7 +2208,7 @@ if (document.getElementById('plotlyListChart') && arrowData) {
             y           : d.y_end,
             size        : d.rig_rate, 
             color       : d.grid_grs || d.rig_gr, 
-            hoverText   : `<b>${d.name}</b><br>Hit Rig Over-8: ${d.x_end.toFixed(2)}<br>Hit Rig Vintage: ${d.seasonal_vintage || d.seasonal_vintage_end}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig Guess Rate: ${d.rig_gr.toFixed(2)}<extra></extra>`
+            hoverText   : `<b>${d.name}</b><br>Hit Rig Over-8: ${d.x_end.toFixed(2)}<br>Hit Rig Vintage: ${d.seasonal_vintage || d.seasonal_vintage_end}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig GR: ${d.rig_gr.toFixed(2)}<extra></extra>`
         }))
     };
 
@@ -2245,7 +2245,7 @@ function renderListChart() {
             colorscale  : [[0, hexToRgba(c0)], [0.7, hexToRgba(c0)], [0.8, hexToRgba(c1)], [0.9, hexToRgba(c2)], [1, hexToRgba(c2)]],
             showscale   : true,
             colorbar    : {
-                title       : {text: '<b>Rig Guess Rate</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
+                title       : {text: '<b>Rig GR</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
                 thickness   : 25,
                 len         : 1.0,
                 y           : 0.5,
