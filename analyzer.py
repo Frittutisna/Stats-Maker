@@ -1234,7 +1234,7 @@ class TourAnalyzer:
                     delta_type          = (current_type_gr * 100) - hist_base_val
                     row[f"{t_key} Δ"]   = round(delta_type, 2)
 
-                else: row[f"Δ{t_key} Δ"] = np.nan
+                else: row[f"{t_key} Δ"] = np.nan
 
             if watched:
                 rig_over8 = np.mean(self.p_l_corr[name]) if self.p_l_corr[name] else np.nan
@@ -2177,11 +2177,11 @@ class TourAnalyzer:
             "Lives Taken",
             "Lives Saved",
             "OP GR",
-            "OP GR Δ",
+            "OP Δ",
             "ED GR",
-            "ED GR Δ",
+            "ED Δ",
             "IN GR",
-            "IN GR Δ",
+            "IN Δ",
             "Rigs",
             "Rig Rate",
             "Solo Rigs",
@@ -2811,7 +2811,7 @@ class TourAnalyzer:
         if not self.browser_path: return
         df = df.reset_index(drop = True)
 
-        delta_check_cols    = ["ΔGR", "ΔUF", "ΔOP", "ΔED", "ΔIN"]
+        delta_check_cols    = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]
         cols_to_drop        = [c for c in delta_check_cols if c in df.columns and df[c].isna().all()]
 
         if cols_to_drop: df = df.drop(columns = cols_to_drop)

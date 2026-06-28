@@ -59,11 +59,8 @@ else            helpAnchor.insertAdjacentHTML('beforebegin', `<button class="tab
 const thickBorderColumns = new Set([
     "Player",
     "Tier",
-    "Score",
     "Mean Over-8",
     "Lives Saved",
-    "Score",
-    "IN Δ",
     "Rig Rate",
     "Solo Rig Rate",
     "Over-8 Δ",
@@ -372,6 +369,17 @@ let activePlayerHeadersConfig = playerHeadersMasterConfig.filter(col => {
 
 activePlayerHeadersConfig.forEach(col => {col.visible = col.def;});
 
+const availableColumnNames = new Set(activePlayerHeadersConfig.map(c => c.name));
+
+if      (availableColumnNames.has("Score")) thickBorderColumns.add("Score");
+else if (availableColumnNames.has("GR Δ"))  thickBorderColumns.add("GR Δ");
+else                                        thickBorderColumns.add("GR");
+
+if      (availableColumnNames.has("IN Δ"))  thickBorderColumns.add("IN Δ");
+else if (availableColumnNames.has("IN GR")) thickBorderColumns.add("IN GR");
+else if (availableColumnNames.has("ED Δ"))  thickBorderColumns.add("ED Δ");
+else if (availableColumnNames.has("ED GR")) thickBorderColumns.add("ED GR");
+
 function initPlayerColumnSettings() {
     const container = document.getElementById("playerColumnCheckboxContainer");
     const masterChk = document.getElementById("playerAllColumnsMasterCheckbox");
@@ -419,8 +427,16 @@ function initPlayerColumnSettings() {
     }
 
     masterChk.addEventListener("change", () => {
-        activePlayerHeadersConfig.forEach(c => { c.visible = masterChk.checked; });
-        document.querySelectorAll(".player-col-toggle-checkbox").forEach(chk => chk.checked = masterChk.checked);
+        activePlayerHeadersConfig.forEach(c => { 
+            c.visible = masterChk.checked;
+
+            if (c.type === "categorical" && c.subOptions) {
+                if (masterChk.checked)  c.selectedOptions = new Set(c.subOptions.map(o => o.toLowerCase()));
+                else                    c.selectedOptions.clear();
+            }
+        });
+
+        container.querySelectorAll("input[type='checkbox']").forEach(chk => chk.checked = masterChk.checked);
         triggerPlayerTableRefresh();
     });
 
@@ -439,14 +455,16 @@ function initPlayerColumnSettings() {
         chk.addEventListener("change", () => {
             col.visible = chk.checked;
 
-            if (!chk.checked && col.type === "categorical" && col.selectedOptions) {
-                col.selectedOptions.clear();
-                colWrapper.querySelectorAll("input[type='checkbox']").forEach(subChk => { if (subChk !== chk) subChk.checked = false; });
-            }
+            if (col.type === "categorical" && col.subOptions) {
+                if (chk.checked) {
+                    col.subOptions.forEach(opt => col.selectedOptions.add(opt.toLowerCase()));
+                    colWrapper.querySelectorAll("input[type='checkbox']").forEach(subChk => subChk.checked = true);
+                }
 
-            else if (chk.checked && col.type === "categorical" && col.subOptions) {
-                col.subOptions.forEach(opt => col.selectedOptions.add(opt.toLowerCase()));
-                colWrapper.querySelectorAll("input[type='checkbox']").forEach(subChk => subChk.checked = true);
+                else {
+                    col.selectedOptions.clear();
+                    colWrapper.querySelectorAll("input[type='checkbox']").forEach(subChk => subChk.checked = false);
+                }
             }
 
             else if (!chk.checked && col.type === "range") {
@@ -3265,8 +3283,16 @@ function initColumnSettingsCheckboxes() {
     }
 
     masterChk.addEventListener("change", () => {
-        searchHeadersConfig.forEach(c => {c.visible = masterChk.checked;});
-        document.querySelectorAll(".col-toggle-checkbox").forEach(chk => {chk.checked = masterChk.checked;});
+        searchHeadersConfig.forEach(c => {
+            c.visible = masterChk.checked;
+
+            if (c.type === "categorical" && c.subOptions) {
+                if (masterChk.checked)  c.selectedOptions = new Set(c.subOptions.map(o => o.toLowerCase()));
+                else                    c.selectedOptions.clear();
+            }
+        });
+
+        container.querySelectorAll("input[type='checkbox']").forEach(chk => {chk.checked = masterChk.checked;});
         triggerTableRefresh();
     });
 
@@ -3285,16 +3311,18 @@ function initColumnSettingsCheckboxes() {
         chk.addEventListener("change", () => {
             col.visible = chk.checked;
 
-            if (!chk.checked && col.type === "categorical" && col.selectedOptions) {
-                col.selectedOptions.clear();
-                colWrapper.querySelectorAll("input[type='checkbox']").forEach(subChk => {if (subChk !== chk) subChk.checked = false;});
+            if (col.type === "categorical" && col.subOptions) {
+                if (chk.checked) {
+                    col.subOptions.forEach(opt => col.selectedOptions.add(opt.toLowerCase()));
+                    colWrapper.querySelectorAll("input[type='checkbox']").forEach(subChk => {subChk.checked = true;});
+                }
+
+                else {
+                    col.selectedOptions.clear();
+                    colWrapper.querySelectorAll("input[type='checkbox']").forEach(subChk => {subChk.checked = false;});
+                }
             }
 
-            else if (chk.checked && col.type === "categorical" && col.subOptions) {
-                col.subOptions.forEach(opt => col.selectedOptions.add(opt.toLowerCase()));
-                colWrapper.querySelectorAll("input[type='checkbox']").forEach(subChk => {subChk.checked = true;});
-            }
-            
             else if (!chk.checked && col.type === "range") {
                 col.currentMin = col.min;
                 col.currentMax = col.max;
