@@ -923,19 +923,19 @@ function sortAndRenderPlayers() {
             const currentPlayerName = String((rawPlayerVal !== null && typeof rawPlayerVal === 'object') ? rawPlayerVal.count : rawPlayerVal).toLowerCase();
 
             if (parseFloat(displayVal) > 0) {
-                if      (h.name === "GR")               clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName}')"`;
+                if      (h.name === "GR")               clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName}')"`;
                 else if (h.name === "1/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} correct:1')"`;
                 else if (h.name === "2/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} correct:2')"`;
                 else if (h.name === "7/8s")             clickHandler = ` onclick="searchPlayerMetricFromTable('correct!:${currentPlayerName} correct:7')"`;
                 else if (h.name === "Lives Taken")      clickHandler = ` onclick="searchPlayerMetricFromTable('lifetaken:${currentPlayerName}')"`;
                 else if (h.name === "Lives Saved")      clickHandler = ` onclick="searchPlayerMetricFromTable('lifesaved:${currentPlayerName}')"`;
-                else if (h.name === "OP GR")            clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:op')"`;
-                else if (h.name === "ED GR")            clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:ed')"`;
-                else if (h.name === "IN GR")            clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} songtype:in')"`;
+                else if (h.name === "OP GR")            clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} songtype:op')"`;
+                else if (h.name === "ED GR")            clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} songtype:ed')"`;
+                else if (h.name === "IN GR")            clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} songtype:in')"`;
                 else if (h.name === "Solo Rigs")        clickHandler = ` onclick="searchPlayerMetricFromTable('list:${currentPlayerName} list:1')"`;
-                else if (h.name === "Rig GR")           clickHandler = ` onclick="searchPlayerMetricFromTable('list:${currentPlayerName}')"`;
-                else if (h.name === "Off GR")           clickHandler = ` onclick="searchPlayerMetricFromTable('list!:${currentPlayerName}')"`;
-                else if (h.name === "Chant GR")         clickHandler = ` onclick="searchPlayerMetricFromTable('seen:${currentPlayerName} chanting:yes')"`;
+                else if (h.name === "Rig GR")           clickHandler = ` onclick="searchPlayerMetricFromTable('list:${currentPlayerName} correct:${currentPlayerName}')"`;
+                else if (h.name === "Off GR")           clickHandler = ` onclick="searchPlayerMetricFromTable('list!:${currentPlayerName} correct:${currentPlayerName}')"`;
+                else if (h.name === "Chant GR")         clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} chanting:yes')"`;
             }
 
             if ((h.name === "Player" && rawCell && rawCell.details && rawCell.details.length > 0) || 
@@ -1771,7 +1771,7 @@ function renderTierCharts() {
 
             if (c1Sub === "BASE") {
                 if (globalChartMode === "COUNT")    query = pt.curveNumber === 0 ? `list:${pNameClean} correct:${pNameClean}` : `list!:${pNameClean} correct:${pNameClean}`;
-                else                                query = `seen:${pNameClean}`;
+                else                                query = `correct:${pNameClean}`;
             }
 
             else if (c1Sub === "OVER-8") {
@@ -1779,14 +1779,10 @@ function renderTierCharts() {
                 query = `correct:${pNameClean} correct:${matchX8}`;
             }
 
-            else if (c1Sub === "RIG") query = `list:${pNameClean}`;
-            else if (c1Sub === "HIT") query = `list:${pNameClean}`;
-            else if (c1Sub === "OFF") query = `list!:${pNameClean}`;
-
-            else if (c1Sub === "CHANT") {
-                if (globalChartMode === "COUNT") query = `correct:${pNameClean} chanting:yes`;
-                else query = `seen:${pNameClean} chanting:yes`;
-            }
+            else if (c1Sub === "RIG")   query = `list:${pNameClean}`;
+            else if (c1Sub === "HIT")   query = `list:${pNameClean} correct:${pNameClean}`;
+            else if (c1Sub === "OFF")   query = `list!:${pNameClean} correct:${pNameClean}`;
+            else if (c1Sub === "CHANT") query = `correct:${pNameClean} chanting:yes`;
 
             if (query) window.searchPlayerMetricFromTable(query);
         });
@@ -2419,7 +2415,7 @@ for (let i = 0; i < numY; i++) {
                 x               : j,
                 y               : i,
                 text            : `<b>${matrixBins[key].count}</b>`,
-                font            : {family: 'Segoe UI', size: (numX > 8 ? 65 : 70), color: 'white'},
+                font            : {family: 'Segoe UI', size: (numX > 8 ? 50 : 60), color: 'white'},
                 showarrow       : false,
                 captureevents   : false
             });
@@ -2671,7 +2667,7 @@ function buildScatterAnnotations(data, xKey, yKey, sizeKeyMultiplier) {
     const yCenter = data.reduce((sum, d) => sum + d[yKey], 0) / data.length;
 
     data.forEach(d => {
-        const bubbleSize = Math.max(10, d[sizeKeyMultiplier] * 2);
+        const bubbleSize = Math.max(10, d[sizeKeyMultiplier] * 1.5);
         const baseOffset = (bubbleSize / 2) + 10;
 
         const dx = d[xKey] - xCenter;
@@ -2728,7 +2724,7 @@ if (scatterData) {
         mode            : 'markers',
         showlegend      : false,
         marker          : {
-            size        : scatterData.map(d => Math.max(10, d.gr * 2)),
+            size        : scatterData.map(d => Math.max(10, d.gr * 1.5)),
             opacity     : 0.95,
             color       : scatterData.map(d => d.performance),
             colorscale  : [[0, hexToRgba(c0)], [0.5, hexToRgba(c1)], [1, hexToRgba(c2)]],
@@ -3042,7 +3038,7 @@ function renderListChart() {
         mode            : 'markers',
         showlegend      : false,
         marker          : {
-            size        : activeScatterSource.map(d => Math.max(10, d.size * 2)),
+            size        : activeScatterSource.map(d => Math.max(10, d.size * 1.5)),
             opacity     : 0.95,
             color       : activeScatterSource.map(d => d.color),
             colorscale  : [[0, hexToRgba(c0)], [0.7, hexToRgba(c0)], [0.8, hexToRgba(c1)], [0.9, hexToRgba(c2)], [1, hexToRgba(c2)]],
