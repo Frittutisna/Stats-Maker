@@ -3045,16 +3045,13 @@ function initColumnSettingsCheckboxes() {
             else if (!chk.checked && col.type === "range") {
                 col.currentMin = col.min;
                 col.currentMax = col.max;
-                
-                const inputs = colWrapper.querySelectorAll("input[type='range']");
+
+                const inputs = colWrapper.querySelectorAll("input[type='number']");
 
                 if (inputs.length === 2) {
                     inputs[0].value = col.min;
                     inputs[1].value = col.max;
                 }
-
-                const labelDiv = colWrapper.querySelector(".text-gray-500");
-                if (labelDiv) labelDiv.innerHTML = `<span>Min: <b>${col.min}</b></span><span>Max: <b>${col.max}</b></span>`;
             }
 
             updateMasterCheckboxState   ();
@@ -3122,71 +3119,62 @@ function initColumnSettingsCheckboxes() {
             col.currentMin = col.min;
             col.currentMax = col.max;
 
-            const sliderContainer       = document.createElement("div");
-            sliderContainer.className   = "pl-6 flex flex-col gap-1 mt-1 w-full text-xs pr-2";
+            const inputContainer        = document.createElement("div");
+            inputContainer.className    = "pl-6 flex flex-col gap-1 mt-1 w-full text-black";
 
-            const outputLabel       = document.createElement("div");
-            outputLabel.className   = "text-gray-500 font-mono flex justify-between";
-            outputLabel.innerHTML   = `<span>Min: <b>${col.min}</b></span><span>Max: <b>${col.max}</b></span>`;
+            const boxWrapper            = document.createElement("div");
+            boxWrapper.className        = "flex gap-2 items-center justify-between";
 
-            const track     = document.createElement("div");
-            track.className = "relative w-full h-1 flex items-center mt-3 bg-gray-200 rounded-lg"; 
-
+            const minLabel      = document.createElement("label");
+            minLabel.className  = "flex items-center gap-1 font-mono";
+            minLabel.innerHTML  = "Min:";
             const inputMin      = document.createElement("input");
-            inputMin.type       = "range";
+            inputMin.type       = "number";
             inputMin.min        = col.min;
             inputMin.max        = col.max;
-            inputMin.step       = col.step;
             inputMin.value      = col.min;
-            inputMin.className  = "absolute w-full accent-black h-1 bg-transparent appearance-none cursor-pointer z-10";
+            inputMin.className  = "w-10 h-5 border text-center text-xs";
 
+            const maxLabel      = document.createElement("label");
+            maxLabel.className  = "flex items-center gap-1 font-mono";
+            maxLabel.innerHTML  = "Max:";
             const inputMax      = document.createElement("input");
-            inputMax.type       = "range";
+            inputMax.type       = "number";
             inputMax.min        = col.min;
             inputMax.max        = col.max;
-            inputMax.step       = col.step;
             inputMax.value      = col.max;
-            inputMax.className  = "absolute w-full accent-black h-1 bg-transparent appearance-none cursor-pointer z-20";
+            inputMax.className  = "w-10 h-5 border text-center text-xs";
 
-            const adjustSliderZIndex = (e) => {
-                const rect              = track.getBoundingClientRect();
-                const clickX            = e.clientX - rect.left;
-                const percentage        = clickX    / rect.width;
-                const estimatedValue    = col.min   + percentage    * (col.max - col.min);
+            minLabel        .appendChild(inputMin);
+            maxLabel        .appendChild(inputMax);
+            boxWrapper      .appendChild(minLabel);
+            boxWrapper      .appendChild(maxLabel);
+            inputContainer  .appendChild(boxWrapper);
 
-                if (Math.abs(estimatedValue - parseInt(inputMin.value)) < Math.abs(estimatedValue - parseInt(inputMax.value))) {
-                    inputMin.style.zIndex = "30";
-                    inputMax.style.zIndex = "20";
-                }
-
-                else {
-                    inputMin.style.zIndex = "10";
-                    inputMax.style.zIndex = "30";
-                }
-            };
-
-            track.addEventListener("mousemove", adjustSliderZIndex);
-            track.addEventListener("mousedown", adjustSliderZIndex);
-
-            const handleSliderInput = () => {
+            const handleTextbookInput = () => {
                 let valMin = parseInt(inputMin.value);
                 let valMax = parseInt(inputMax.value);
 
+                if (isNaN(valMin)) valMin = col.min;
+                if (isNaN(valMax)) valMax = col.max;
+
+                if (valMin < col.min) valMin = col.min;
+                if (valMax > col.max) valMax = col.max;
+
                 if (valMin > valMax) {
                     if (document.activeElement === inputMin) {
-                        inputMin.value  = valMax;
                         valMin          = valMax;
+                        inputMin.value  = valMin;
                     }
 
                     else {
-                        inputMax.value  = valMin;
                         valMax          = valMin;
+                        inputMax.value  = valMax;
                     }
                 }
 
-                col.currentMin          = valMin;
-                col.currentMax          = valMax;
-                outputLabel.innerHTML   = `<span>Min: <b>${valMin}</b></span><span>Max: <b>${valMax}</b></span>`;
+                col.currentMin = valMin;
+                col.currentMax = valMax;
             };
 
             const triggerRefreshDebounced = debounce(() => {
@@ -3200,14 +3188,29 @@ function initColumnSettingsCheckboxes() {
                 triggerTableRefresh();
             }, 150);
 
-            inputMin.addEventListener("input", () => { handleSliderInput(); triggerRefreshDebounced(); });
-            inputMax.addEventListener("input", () => { handleSliderInput(); triggerRefreshDebounced(); });
+            inputMin.addEventListener("input", () => { handleTextbookInput(); triggerRefreshDebounced(); });
+            inputMax.addEventListener("input", () => { handleTextbookInput(); triggerRefreshDebounced(); });
+            
+            masterChk.addEventListener("change", () => {
+                if (!masterChk.checked) {
+                    inputMin.value = col.min;
+                    inputMax.value = col.max;
+                    col.currentMin = col.min;
+                    col.currentMax = col.max;
+                }
 
-            track           .appendChild(inputMin);
-            track           .appendChild(inputMax);
-            sliderContainer .appendChild(outputLabel);
-            sliderContainer .appendChild(track);
-            colWrapper      .appendChild(sliderContainer);
+                else {
+                    let valMin = parseInt(inputMin.value);
+                    let valMax = parseInt(inputMax.value);
+
+                    col.currentMin = isNaN(valMin) ? col.min : valMin;
+                    col.currentMax = isNaN(valMax) ? col.max : valMax;
+                }
+
+                triggerTableRefresh();
+            });
+
+            colWrapper.appendChild(inputContainer);
         }
 
         if (col.type === "categorical" && col.subOptions) {
