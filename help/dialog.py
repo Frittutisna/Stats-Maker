@@ -184,7 +184,14 @@ class TourMetadataDialog(UnifiedDialog):
         super().__init__(parent, f"Tour {tour_id} Configuration", "")
 
         self.fill_color = "#000000"
-        ttk.Label(self.container, text = "What tour is this?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
+
+        left_frame  = ttk.Frame(self.container)
+        right_frame = ttk.Frame(self.container)
+
+        left_frame  .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
+        right_frame .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
+
+        ttk.Label(left_frame, text = "What tour is this?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         if      "Watched"   in init_label or init_label in ["Brute-force", "Masquerade", "Other Random", "Other Watched"]   : starting_lbl = init_label
         elif    "Random"    in init_label                                                                                   : starting_lbl = init_label
@@ -195,7 +202,7 @@ class TourMetadataDialog(UnifiedDialog):
         self.lbl_boxes = {}
 
         for opt in ["Random", "Watched", "Others"]:
-            f_opt = ttk.Frame(self.container)
+            f_opt = ttk.Frame(left_frame)
             f_opt.pack(anchor = "w", pady = 1)
 
             is_sel      = (self.lbl_var.get() == opt)
@@ -221,7 +228,7 @@ class TourMetadataDialog(UnifiedDialog):
 
                 for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_lbl_opt(o))
 
-        self.sub_lbl_container = ttk.Frame(self.container)
+        self.sub_lbl_container = ttk.Frame(left_frame)
         self.sub_lbl_container.pack(fill = tk.BOTH)
 
         columns_layout = [
@@ -253,6 +260,72 @@ class TourMetadataDialog(UnifiedDialog):
 
         self._update_lbl_state()
 
+        ttk.Label(left_frame, text = "Are there any new players?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+
+        has_round_elo       = False
+        round_elo_players   = set()
+
+        if elo_map:
+            for p in active_players:
+                p_low = p.lower()
+
+                if p_low in elo_map:
+                    try:
+                        val = float(elo_map[p_low])
+
+                        if val.is_integer():
+                            has_round_elo = True
+                            round_elo_players.add(p_low)
+
+                    except ValueError: pass
+
+        self.np_var     = tk.StringVar(value = "Yes" if has_round_elo else "No")
+        self.np_boxes   = {}
+
+        for opt in ["No", "Yes"]:
+            f_np = ttk.Frame(left_frame)
+            f_np.pack(anchor = "w")
+
+            is_sel      = (self.np_var.get() == opt)
+            bg_color    = self.fill_color if is_sel else "white"
+            box         = tk.Canvas(f_np, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
+
+            box.pack(side = tk.LEFT, padx = (0, 4))
+            self.np_boxes[opt] = box
+
+            lbl = ttk.Label(f_np, text = opt, font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+
+            for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_np_opt(o))
+
+        self.player_container = ttk.Frame(left_frame)
+        self.player_container.pack(fill = tk.BOTH)
+
+        self.player_vars    = {}
+        player_list         = sorted(list(active_players), key = str.lower)
+        num_players         = len(player_list)
+        rows_per_col        = 8 if num_players >= 16 else num_players
+
+        for i, name in enumerate(player_list):
+            col                     = i //  rows_per_col
+            row                     = i %   rows_per_col
+            is_round                = name.lower() in round_elo_players
+            var                     = tk.BooleanVar(value = is_round)
+            self.player_vars[name]  = var
+
+            item_frame              = ttk.Frame(self.player_container)
+            item_frame.grid(row = row, column = col, padx = 4, sticky = "w")
+
+            box = tk.Canvas(item_frame, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
+            box.pack(side = tk.LEFT, padx = (0, 4))
+
+            lbl = ttk.Label(item_frame, text = name, font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+
+            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n=name, b = box: self.toggle_custom_player(n, b))
+
+        self._update_np_state()
+
         has_extended_delta_data = False
         global_alias_path       = tour_dir / FILE_ALIAS
 
@@ -272,10 +345,10 @@ class TourMetadataDialog(UnifiedDialog):
         self.delta_var          = tk.StringVar(value = suggested_delta_default)
         self.delta_boxes        = {}
 
-        ttk.Label(self.container, text = "Do you want to fetch Δ data as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+        ttk.Label(right_frame, text = "Do you want to fetch Δ data as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         for opt in ["No", "Yes"]:
-            f_delta = ttk.Frame(self.container)
+            f_delta = ttk.Frame(right_frame)
             f_delta.pack(anchor = "w", pady = 1)
 
             is_sel      = (self.delta_var.get() == opt)
@@ -296,10 +369,10 @@ class TourMetadataDialog(UnifiedDialog):
         self.challonge_var      = tk.StringVar(value = "No")
         self.challonge_boxes    = {}
 
-        ttk.Label(self.container, text = "Do you want to fetch Challonge data as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+        ttk.Label(right_frame, text = "Do you want to fetch Challonge data as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
 
         for opt in ["No", "Yes"]:
-            f_chal = ttk.Frame(self.container)
+            f_chal = ttk.Frame(right_frame)
             f_chal.pack(anchor = "w", pady = 1)
 
             is_sel      = (self.challonge_var.get() == opt)
@@ -314,14 +387,14 @@ class TourMetadataDialog(UnifiedDialog):
 
             for w in (box, lbl): w.bind("<Button-1>", lambda _, o=opt: self._select_challonge_opt(o))
 
-        ttk.Label(self.container, text = "Do you want to use Dry's script as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+        ttk.Label(right_frame, text = "Do you want to use Dry's script as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
 
         self.dry_var    = tk.StringVar(value = "No")
         self.dry_boxes  = {}
         dry_options     = ["No", "Yes, but don't push it to the database", "Yes, and push it to the database"]
 
         for opt in dry_options:
-            f_dry = ttk.Frame(self.container)
+            f_dry = ttk.Frame(right_frame)
             f_dry.pack(anchor = "w", pady = 1)
 
             is_sel      = (self.dry_var.get() == opt)
@@ -336,12 +409,12 @@ class TourMetadataDialog(UnifiedDialog):
             
             for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_dry_opt(o))
 
-        ttk.Label(self.container, text = "What are the comma-separated guess rate threshold values?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
+        ttk.Label(right_frame, text = "What are the comma-separated guess rate threshold values?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         self.th_var     = tk.StringVar(value = "default")
         self.th_boxes   = {}
 
-        f_th1 = ttk.Frame(self.container)
+        f_th1 = ttk.Frame(right_frame)
         f_th1.pack(anchor = "w")
 
         box_th1 = tk.Canvas(f_th1, width = 10, height = 10, bg = self.fill_color, highlightthickness = 1, highlightbackground = "black")
@@ -353,7 +426,7 @@ class TourMetadataDialog(UnifiedDialog):
 
         for w in (box_th1, lbl_th1): w.bind("<Button-1>", lambda _: self._select_th_opt("default"))
 
-        f_th2 = ttk.Frame(self.container)
+        f_th2 = ttk.Frame(right_frame)
         f_th2.pack(anchor = "w")
 
         box_th2 = tk.Canvas(f_th2, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
@@ -370,9 +443,9 @@ class TourMetadataDialog(UnifiedDialog):
 
         for w in (box_th2, lbl_th2): w.bind("<Button-1>", lambda _: self._select_th_opt("custom"))
         self._update_th_state()
-        ttk.Label(self.container, text = "How many rounds have elapsed?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
+        ttk.Label(right_frame, text = "How many rounds have elapsed?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
-        self.spin = CustomSpinbox(self.container, from_ = 1, to = 6, initial_val = baseline_initial)
+        self.spin = CustomSpinbox(right_frame, from_ = 1, to = 6, initial_val = baseline_initial)
         self.spin.pack(anchor = "w")
 
         self.sub_vars = {}
@@ -391,7 +464,7 @@ class TourMetadataDialog(UnifiedDialog):
                             saved_subs_map[s_name.strip().lower()]  = o_name.strip()
 
             for sub_name in sorted_subs:
-                f_sub = ttk.Frame(self.container)
+                f_sub = ttk.Frame(right_frame)
                 f_sub.pack(anchor = "w") 
 
                 lbl = ttk.Label(f_sub, text = f"Who is {sub_name} subbing for?", font = ("Segoe UI", 10, "bold"))
@@ -426,72 +499,6 @@ class TourMetadataDialog(UnifiedDialog):
 
                 arrow_btn   .bind("<Button-1>", show_menu_func)
                 entry       .bind("<Button-1>", show_menu_func)
-
-        ttk.Label(self.container, text = "Are there any new players?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
-
-        has_round_elo       = False
-        round_elo_players   = set()
-
-        if elo_map:
-            for p in active_players:
-                p_low = p.lower()
-
-                if p_low in elo_map:
-                    try:
-                        val = float(elo_map[p_low])
-
-                        if val.is_integer():
-                            has_round_elo = True
-                            round_elo_players.add(p_low)
-
-                    except ValueError: pass
-
-        self.np_var     = tk.StringVar(value = "Yes" if has_round_elo else "No")
-        self.np_boxes   = {}
-
-        for opt in ["No", "Yes"]:
-            f_np = ttk.Frame(self.container)
-            f_np.pack(anchor = "w")
-
-            is_sel      = (self.np_var.get() == opt)
-            bg_color    = self.fill_color if is_sel else "white"
-            box         = tk.Canvas(f_np, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
-
-            box.pack(side = tk.LEFT, padx = (0, 4))
-            self.np_boxes[opt] = box
-
-            lbl = ttk.Label(f_np, text = opt, font = ("Segoe UI", 10))
-            lbl.pack(side = tk.LEFT)
-
-            for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_np_opt(o))
-
-        self.player_container = ttk.Frame(self.container)
-        self.player_container.pack(fill = tk.BOTH)
-
-        self.player_vars    = {}
-        player_list         = sorted(list(active_players), key = str.lower)
-        num_players         = len(player_list)
-        rows_per_col        = 8 if num_players >= 16 else num_players
-
-        for i, name in enumerate(player_list):
-            col                     = i //  rows_per_col
-            row                     = i %   rows_per_col
-            is_round                = name.lower() in round_elo_players
-            var                     = tk.BooleanVar(value = is_round)
-            self.player_vars[name]  = var
-
-            item_frame              = ttk.Frame(self.player_container)
-            item_frame.grid(row = row, column = col, padx = 4, sticky = "w")
-
-            box = tk.Canvas(item_frame, width = 10, height = 10, bg = "white", highlightthickness = 1, highlightbackground = "black")
-            box.pack(side = tk.LEFT, padx = (0, 4))
-
-            lbl = ttk.Label(item_frame, text = name, font = ("Segoe UI", 10))
-            lbl.pack(side = tk.LEFT)
-
-            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n=name, b = box: self.toggle_custom_player(n, b))
-
-        self._update_np_state()
 
         def on_close_cancel():
             self.result = None
