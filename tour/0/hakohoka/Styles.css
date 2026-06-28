@@ -208,3 +208,14 @@ td[data-songs].highlight-worst:hover::after {
     margin-left     : auto !important;
     margin-right    : auto !important;
 }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -appearance: textfield;
+}
