@@ -28,6 +28,20 @@ THRESH_TIME = 17.5
 THRESH_WTCH = 5
 URL_ALIAS   = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
 
+NGM_STATS_SHEET_ID  = "1ihfqssregh74curDyvRE0GAFihQfovUAHpYDrtOIrOA"
+SHEET_PLAYER_IDS    = 1903970832
+TOUR_MODE_SHEET_MAP = {
+    "Usual"         : 0,
+    "Random OP"     : 591917504,
+    "Random ED"     : 601464032,
+    "Random IN"     : 2075065970,
+    "Random OPED"   : 1506914251,
+    "Watched"       : 1719516221,
+    "Watched OP"    : "Watched OP",
+    "Watched ED"    : 484347985,
+    "Watched IN"    : 1177294729,
+}
+
 EXCLUDED_TAGS = {
     "Female Protagonist",
     "Male Protagonist",

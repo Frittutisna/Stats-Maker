@@ -1,4 +1,4 @@
-import datetime, hashlib, json, logging, math, matplotlib, os, re, shutil, subprocess, sys, time
+import datetime, gspread, hashlib, json, logging, math, matplotlib, os, re, shutil, subprocess, sys, time
 
 logging     .getLogger  ("adjustText").setLevel(logging.ERROR)
 matplotlib  .use        ('Agg')
@@ -9,15 +9,16 @@ import matplotlib.pyplot        as plt
 import numpy                    as np
 import pandas                   as pd
 
-from adjustText     import adjust_text
-from collections    import Counter, defaultdict
-from help.config    import *
-from help.dialog    import *
-from html2image     import Html2Image
-from pathlib        import Path
-from PIL            import Image
-from scipy.spatial  import ConvexHull
-from tkinter        import messagebox
+from adjustText             import adjust_text
+from collections            import Counter, defaultdict
+from dateutil.relativedelta import relativedelta
+from help.config            import *
+from help.dialog            import *
+from html2image             import Html2Image
+from pathlib                import Path
+from PIL                    import Image
+from scipy.spatial          import ConvexHull
+from tkinter                import messagebox
 
 TEAMS_RE = r"([^\s(]+)\s*\(([-]?\d+(?:\.\d+)?)\)"
 
@@ -95,6 +96,88 @@ class TourAnalyzer:
         except: pass
 
         return id_map
+
+    def _internal_clean_data(self, idtable, statstable, isWatched):
+        headers                 = idtable[0]
+        data                    = idtable[1:]
+        alias_df                = pd.DataFrame(data, columns = headers)
+        alias_df["Player Name"] = alias_df["Player Name"].str.strip().str.lower()
+        alias_to_id             = dict(zip(alias_df["Player Name"], alias_df["Player ID"]))
+
+        headers = statstable[0]
+        data    = statstable[1:]
+        df      = pd.DataFrame(data, columns = headers)
+        df      = df.replace(r"^\s*$", pd.NA, regex = True).dropna(how = "all")
+        
+        df["Player ID"] = df["Player name"].dropna().str.strip().str.lower().map(alias_to_id)
+        df["Timestamp"] = pd.to_datetime(df["Timestamp"], errors = "coerce")
+        
+        cols = [
+            "Rank",
+            "Guess rate",
+            "Usefulness",
+            "erigs",
+            "7/8s",
+            "avg/8",
+            "Lives taken",
+            "Lives saved", 
+            "WIN",
+            "LOSE",
+            "TIE",
+            "Total hit",
+            "OP guess rate",
+            "ED guess rate",
+            "IN guess rate"
+        ]
+
+        watched_cols = [
+            "Rigs hit",
+            "Rigs",
+            "Rigs missed",
+            "Solo rigs", 
+            "Missed solos",
+            "Lives lost on rigs",
+            "Offlist erigs",
+            "avg/8 of your rigs"
+        ]
+        
+        df[cols] = df[cols].apply(pd.to_numeric, errors="coerce")
+        
+        if isWatched:
+            df[watched_cols]    = df[watched_cols].apply(pd.to_numeric, errors="coerce")
+            cols.extend(watched_cols)
+            df["Offlist hit"]   = df["Total hit"] - df["Rigs hit"]
+        
+        df = df[(
+            pd.to_numeric(df["WIN"],    errors = 'coerce').fillna(0) + 
+            pd.to_numeric(df["LOSE"],   errors = 'coerce').fillna(0) + 
+            pd.to_numeric(df["TIE"],    errors = 'coerce').fillna(0)
+        ) >= 4]
+
+        return df
+
+    def _clean_data_local(self, idtable, statstable, maxFallbackWindow, activeTours, is_list):
+        df = self._internal_clean_data(idtable, statstable, is_list)
+        if df.empty: return pd.DataFrame(columns = ["Player ID", "Guess rate", "Usefulness", "OP guess rate", "ED guess rate", "IN guess rate"])
+
+        six_months_ago  = datetime.datetime.now() - relativedelta(months=maxFallbackWindow)
+        year_6m_ago     = six_months_ago.year
+        month_6m_ago    = six_months_ago.month
+
+        year_df = df[((df["Timestamp"].dt.year > year_6m_ago)) | ((df["Timestamp"].dt.year == year_6m_ago) & (df["Timestamp"].dt.month >= month_6m_ago))]
+        if year_df.empty: return pd.DataFrame(columns=["Player ID", "Guess rate", "Usefulness", "OP guess rate", "ED guess rate", "IN guess rate"])
+
+        year_df     = year_df.sort_values(["Player ID", "Timestamp"])
+        result_df   = year_df.groupby("Player ID").tail(activeTours)
+        
+        GR          = ["Guess rate", "Usefulness", "OP guess rate", "ED guess rate", "IN guess rate"]
+        agg_dict    = {col: "mean" if col in GR else "max" for col in result_df.columns if col != "Player ID"}
+        agg_dict    = {k: v for k, v in agg_dict.items() if k in result_df.columns}
+
+        result_df = result_df.groupby("Player ID").agg(agg_dict).reset_index()
+        result_df["Player ID"] = result_df["Player ID"].astype(int)
+
+        return result_df
 
     def _generate_acronyms(self, active_names):
         acronyms = {}
@@ -238,6 +321,71 @@ class TourAnalyzer:
 
         meta_res            = meta_dialog.result
         self.tour_label     = meta_res["tour_label"]
+        self.delta_choice   = meta_res.get("delta_choice", "No")
+        
+        if self.delta_choice == "Yes" and self.tour_label in TOUR_MODE_SHEET_MAP:
+            print(f"[?] Fetching historic baselines")
+
+            cred_file = self.script_dir / "help" / DIR_CREDS / "credentials.json"
+            auth_file = self.script_dir / "help" / DIR_CREDS / "authorized_user.json"
+
+            try:
+                gc          = gspread.oauth(credentials_filename = str(cred_file), authorized_user_filename = str(auth_file))
+                sheet       = gc.open_by_key(NGM_STATS_SHEET_ID)
+                wks_ids     = sheet.get_worksheet_by_id(SHEET_PLAYER_IDS)
+                rows_ids    = wks_ids.get_all_values()
+                sheet_ref   = TOUR_MODE_SHEET_MAP[self.tour_label]
+
+                if isinstance(sheet_ref, int)   : wks_stats = sheet.get_worksheet_by_id(sheet_ref)
+                else                            : wks_stats = sheet.worksheet(sheet_ref)
+
+                rows_stats          = wks_stats.get_all_values()
+                is_list_mode        = "Watched" in self.tour_label or self.tour_label == "Watched"
+                avg_df              = self._clean_data_local(rows_ids, rows_stats, 6, 10, is_list_mode)
+                history_profile_map = {}
+
+                for _, r_row in avg_df.iterrows():
+                    pid_key = int(r_row["Player ID"])
+
+                    history_profile_map[pid_key] = {
+                        "GR": float(r_row.get("Guess rate",     0.0)),
+                        "UF": float(r_row.get("Usefulness",     0.0)),
+                        "OP": float(r_row.get("OP guess rate",  0.0)),
+                        "ED": float(r_row.get("ED guess rate",  0.0)),
+                        "IN": float(r_row.get("IN guess rate",  0.0))
+                    }
+                
+                alias_txt_path      = self.script_dir / DIR_TOURS / FILE_ALIAS
+                current_alias_lines = []
+
+                if alias_txt_path.exists():
+                    with open(alias_txt_path, "r", encoding = "utf-8") as f_alias:
+                        for a_line in f_alias:
+                            if "," in a_line: current_alias_lines.append(a_line.strip().split(","))
+                
+                id_table_lookup = {r[0].strip().lower(): int(r[1]) for r in rows_ids[1:] if len(r) >= 2 and r[0] and r[1]}
+                
+                with open(alias_txt_path, "w", encoding = "utf-8") as f_out:
+                    for parts in current_alias_lines:
+                        p_name      = parts[0].strip()
+                        alias_name  = parts[1].strip()
+                        p_low       = p_name.lower()
+                        
+                        p_id = id_table_lookup.get(p_low)
+                        if p_id is None and alias_name.lower() in id_table_lookup: p_id = id_table_lookup.get(alias_name.lower())
+                            
+                        if p_id in history_profile_map:
+                            h_prof = history_profile_map[p_id]
+                            f_out.write(f"{p_name}, {alias_name}, {h_prof['GR']:.2f}, {h_prof['UF']:.2f}, {h_prof['OP']:.2f}, {h_prof['ED']:.2f}, {h_prof['IN']:.2f}\n")
+
+                        else: f_out.write(f"{p_name}, {alias_name}, N/A, N/A, N/A, N/A, N/A\n")
+
+                print("[✓] Historic baselines saved to alias.txt")
+
+            except Exception as e:
+                print(f"[!] Failed to fetch historic baselines: {e}")
+                print("[?] Continuing structural pipeline execution, ignoring baseline fetching")
+
         dry_mode_mapping    = {
             "Random"                : "1",
             "Watched"               : "2",
@@ -1008,14 +1156,45 @@ class TourAnalyzer:
             is_eligible = not ("▼" in d_name or "▲" in d_name)
             eligibility.append(is_eligible)
 
+            history_baselines   = {"GR": np.nan, "UF": np.nan, "OP": np.nan, "ED": np.nan, "IN": np.nan}
+            alias_txt_path      = self.script_dir / DIR_TOURS / FILE_ALIAS
+
+            if alias_txt_path.exists():
+                try:
+                    with open(alias_txt_path, "r", encoding = "utf-8") as f_alias:
+                        for a_line in f_alias:
+                            if "," in a_line:
+                                p_splits = [x.strip() for x in a_line.split(",")]
+                                if len(p_splits) >= 7 and (p_splits[0].lower() == name.lower() or p_splits[1].lower() == name.lower()):
+                                    if p_splits[2] != "N/A":
+                                        history_baselines = {
+                                            "GR": float(p_splits[2]),
+                                            "UF": float(p_splits[3]),
+                                            "OP": float(p_splits[4]),
+                                            "ED": float(p_splits[5]),
+                                            "IN": float(p_splits[6])
+                                        }
+
+                                    break
+
+                except Exception: pass
+
             row = {"Player": d_name}
             if self.use_teams: row["Elo"] = elo_map.get(name.lower(), np.nan)
-            row.update({"GR": cor / tot if tot else 0.0})
+
+            current_gr = cor / tot if tot else 0.0
+            row.update({"GR": current_gr})
+
+            delta_gr = (current_gr * 100) - history_baselines["GR"] if pd.notnull(history_baselines["GR"])  else np.nan
+            row.update({"GR Δ": round(delta_gr, 2)                   if pd.notnull(delta_gr)                 else np.nan})
 
             if self.use_teams: 
                 uf_val = (self.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
                 row.update({"UF": uf_val})
-                
+
+                delta_uf = uf_val - history_baselines["UF"] if pd.notnull(history_baselines["UF"])  else np.nan
+                row.update({"UF Δ": round(delta_uf, 2)       if pd.notnull(delta_uf)                 else np.nan})
+
                 try     : elo = float(elo_map.get(name.lower(), 0.0))
                 except  : elo = 0.0
 
@@ -1045,7 +1224,17 @@ class TourAnalyzer:
 
             for tid in active:
                 seen                = self.p_type_s[name][tid]
-                row[t_labels[tid]]  = self.p_type_c[name][tid] / seen if seen else np.nan
+                current_type_gr     = self.p_type_c[name][tid] / seen if seen else np.nan
+                row[t_labels[tid]]  = current_type_gr
+
+                t_key           = t_labels[tid].split(" ")[0] 
+                hist_base_val   = history_baselines.get(t_key, np.nan)
+                
+                if pd.notnull(current_type_gr) and pd.notnull(hist_base_val):
+                    delta_type          = (current_type_gr * 100) - hist_base_val
+                    row[f"{t_key} Δ"]   = round(delta_type, 2)
+
+                else: row[f"Δ{t_key} Δ"] = np.nan
 
             if watched:
                 rig_over8 = np.mean(self.p_l_corr[name]) if self.p_l_corr[name] else np.nan
