@@ -1582,6 +1582,9 @@ class TourAnalyzer:
         if "_win_pct" in df.columns : df_png = df.drop(columns = ["_tid", "_history", "_win_pct"])
         else                        : df_png = df.drop(columns = ["_tid", "_history"])
 
+        if "Win Record" in df_png.columns:
+            if (df_png["Win Record"].astype(str) == "0-0-0").all(): df_png = df_png.drop(columns = ["Win Record"])
+
         num_cols = ["Mean Elo", "Mean GR", "Mean Over-8", "Rig Synergy", "Off Synergy", "Shared Rigs"]
         for c in num_cols: df_png[c] = pd.to_numeric(df_png[c], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
@@ -2175,9 +2178,9 @@ class TourAnalyzer:
 
                 row.update({
                     "GR"            : {"count": float(row_data["GR"] * 100), "details": [f"{cor}/{tot}"] + self.player_song_details[name]["Overall"]},
-                    "GR Δ"          : float (row_data["GR Δ"])          if pd.notnull(row_data.get("GR Δ"))     else np.nan,
+                    "GR Δ"          : f"{float(row_data['GR Δ']):.2f}"  if pd.notnull(row_data.get("GR Δ"))     else np.nan,
                     "UF"            : float (row_data["UF"])            if "UF"     in row_data                 else np.nan,
-                    "UF Δ"          : float (row_data["UF Δ"])          if pd.notnull(row_data.get("UF Δ"))     else np.nan,
+                    "UF Δ"          : f"{float(row_data['UF Δ']):.2f}"  if pd.notnull(row_data.get("UF Δ"))     else np.nan,
                     "Score"         : float (row_data["Score"])         if "Score"  in row_data                 else np.nan,
                     "1/8s"          : int   (row_data["1/8s"]),
                     "2/8s"          : int   (row_data["2/8s"]),
@@ -2198,7 +2201,7 @@ class TourAnalyzer:
                         "details"   : [f"{succ}/{seen}"] + self.player_song_details[name][f"Type {tid}"]
                     } if pd.notnull(row_data[t_labels[tid]]) else np.nan
 
-                    row[delta_key] = float(row_data[delta_key]) if pd.notnull(row_data.get(delta_key)) else np.nan
+                    row[delta_key] = f"{float(row_data[delta_key]):.2f}" if pd.notnull(row_data.get(delta_key)) else np.nan
 
                 if watched:
                     succ_rig    = self.p_rigs_h [name]
