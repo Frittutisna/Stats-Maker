@@ -1764,7 +1764,7 @@ function renderTierCharts() {
         }
     };
 
-    layoutC1.height = 35 * c1Data.yLabels.length;
+    layoutC1.height = 25 * c1Data.yLabels.length;
     c1Traces.forEach(t => t.hoverinfo = 'none');
     Plotly.newPlot('tierChart_MainMetrics', c1Traces, layoutC1, {responsive: true, displayModeBar: false});
     let newChart1Div = document.getElementById('tierChart_MainMetrics');
@@ -2045,7 +2045,7 @@ function renderTierCharts() {
         }
     };
 
-    layoutC2.height = 35 * c2Data.yLabels.length;
+    layoutC2.height = 25 * c2Data.yLabels.length;
     c2Traces.forEach(t => t.hoverinfo = 'none');
     Plotly.newPlot('tierChart_LivesMetrics', c2Traces, layoutC2, {responsive: true, displayModeBar: false});
     let newChart2Div = document.getElementById('tierChart_LivesMetrics');
@@ -2211,7 +2211,7 @@ function renderTierCharts() {
         showlegend  : false
     };
 
-    layoutC3.height = 35 * c3Data.yLabels.length;
+    layoutC3.height = 25 * c3Data.yLabels.length;
     Plotly.newPlot('tierChart_TimeMetrics', c3Traces, layoutC3, {responsive: true, displayModeBar: false});
     let newChart3Div = document.getElementById('tierChart_TimeMetrics');
 
