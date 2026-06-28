@@ -232,9 +232,8 @@ class TourMetadataDialog(UnifiedDialog):
         self.sub_lbl_container.pack(fill = tk.BOTH)
 
         columns_layout = [
-            ["Watched OP",      "Watched ED",       "Watched IN",   "Watched IN -Chanting", "Watched 2+8s",     "Watched 5s", "Watched -2009"],
-            ["Random OP",       "Random ED",        "Random IN",    "Random OPED",          "Random Chanting"],
-            ["Other Random",    "Other Watched",    "Brute-force",  "Masquerade"]
+            ["Watched OP",  "Watched ED",   "Watched IN",   "Watched IN -Chanting", "Watched OPED",     "Watched 2+8s", "Watched 5s",       "Watched -2009"],
+            ["Random OP",   "Random ED",    "Random IN",    "Random OPED",          "Random Chanting",  "Other Random", "Other Watched",    "Brute-force"]
         ]
 
         self.sub_lbl_widgets = {}
