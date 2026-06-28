@@ -3019,7 +3019,7 @@ function initColumnSettingsCheckboxes() {
 
     searchHeadersConfig.forEach(col => {
         const colWrapper        = document.createElement("div");
-        colWrapper.className    = "flex flex-col";
+        colWrapper.className    = "flex flex-col space-y-1";
 
         const label     = document.createElement("label");
         label.className = "flex items-center gap-2 cursor-pointer w-full text-left font-bold";
@@ -3123,10 +3123,10 @@ function initColumnSettingsCheckboxes() {
             inputContainer.className    = "pl-6 flex flex-col gap-1 mt-1 w-full text-black";
 
             const boxWrapper            = document.createElement("div");
-            boxWrapper.className        = "flex gap-2 items-center justify-between";
+            boxWrapper.className        = "flex flex-col gap-1";
 
             const minLabel      = document.createElement("label");
-            minLabel.className  = "flex items-center gap-1 font-mono";
+            minLabel.className  = "flex items-center justify-start gap-2 font-mono"; 
             minLabel.innerHTML  = "Min:";
             const inputMin      = document.createElement("input");
             inputMin.type       = "number";
@@ -3136,7 +3136,7 @@ function initColumnSettingsCheckboxes() {
             inputMin.className  = "w-10 h-5 border text-center text-xs";
 
             const maxLabel      = document.createElement("label");
-            maxLabel.className  = "flex items-center gap-1 font-mono";
+            maxLabel.className  = "flex items-center justify-start gap-2 font-mono";
             maxLabel.innerHTML  = "Max:";
             const inputMax      = document.createElement("input");
             inputMax.type       = "number";
