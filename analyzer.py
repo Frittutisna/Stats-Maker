@@ -359,7 +359,7 @@ class TourAnalyzer:
                         "IN": float(r_row.get("IN guess rate",  0.0))
                     }
                 
-                alias_txt_path      = self.script_dir / DIR_TOURS / FILE_ALIAS
+                alias_txt_path      = self.tour_dir / FILE_ALIAS
                 current_alias_lines = []
 
                 if alias_txt_path.exists():
@@ -1049,7 +1049,7 @@ class TourAnalyzer:
         self.sub_relations                          = defaultdict(list)
         elo_map, assignments, rosters, t1_lookup    = {}, {}, defaultdict(set), {}
         avail                                       = sorted(list(all_known))
-        alias_path                                  = self.script_dir / DIR_TOURS / FILE_ALIAS
+        alias_path                                  = self.tour_dir / FILE_ALIAS
         local_aliases                               = {}
 
         if alias_path.exists():
@@ -1164,7 +1164,7 @@ class TourAnalyzer:
             eligibility.append(is_eligible)
 
             history_baselines   = {"GR": np.nan, "UF": np.nan, "OP": np.nan, "ED": np.nan, "IN": np.nan}
-            alias_txt_path      = self.script_dir / DIR_TOURS / FILE_ALIAS
+            alias_txt_path      = self.tour_dir / FILE_ALIAS
 
             if alias_txt_path.exists():
                 try:
@@ -1475,7 +1475,7 @@ class TourAnalyzer:
                 except Exception as e: print(f"[!] Failed to fetch Challonge data: {e}")
 
         alias_map   = {}
-        alias_path  = self.script_dir / DIR_TOURS / FILE_ALIAS
+        alias_path  = self.tour_dir / FILE_ALIAS
 
         if alias_path.exists():
             with open(alias_path, "r", encoding = "utf-8") as f:

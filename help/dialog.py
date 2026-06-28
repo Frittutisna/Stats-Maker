@@ -254,8 +254,7 @@ class TourMetadataDialog(UnifiedDialog):
         self._update_lbl_state()
 
         has_extended_delta_data = False
-        script_root_dir         = Path(__file__).parent.parent.absolute()
-        global_alias_path       = script_root_dir / DIR_TOURS / FILE_ALIAS
+        global_alias_path       = tour_dir / FILE_ALIAS
 
         if global_alias_path.exists():
             try:
