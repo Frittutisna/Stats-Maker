@@ -35,7 +35,9 @@
                         Combine query terms using explicit <code class="bg-gray-200 px-1 rounded font-mono text-xs">and/or</code> keywords<br>
                         Group precedence with <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code><br>
                         Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
-                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">elo&lt;90 or (opgr&gt;80 edguessrate&lt;30)</code> returns players that either have an Elo below 90 or those who have OP and ED Guess Rates above 80% and below 30%
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">elo&lt;90 or (opgr&gt;80 edguessrate&lt;30)</code> returns players that either have an Elo below 90 or those who have OP and ED Guess Rates above 80% and below 30%<br><br>
+                        <b class="bg-black text-white px-1 rounded">%/Δ</b><br>
+                        Swaps base percentages with their respective delta (Δ) variants
                     </p>
                 </div>
                 <div id="tierGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black">
@@ -75,6 +77,7 @@
                         <div id="playerSearchCounter" class="w-[75px] h-[30px] font-bold bg-black text-white flex items-center justify-center text-sm select-none shrink-0">
                             0/0
                         </div>
+                        <button id="playerMetricModeToggleBtn" class="w-[40px] h-[30px] bg-black text-white font-bold text-sm cursor-pointer select-none hidden shrink-0" onclick="togglePlayerMetricMode()">%</button>
                     </div>
                 </div>
                 <div class="w-full overflow-x-auto block">

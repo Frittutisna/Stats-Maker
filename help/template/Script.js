@@ -19,6 +19,7 @@ const {
     generated_timestamp : generatedTime
 } = window.dashboardData;
 
+let currentPlayerMetricMode = "%";
 let currentTierChartMode    = "TIER";
 let globalSearchData        = [];
 let globalChartMode         = "RATE";
@@ -438,6 +439,16 @@ function initPlayerColumnSettings() {
 
         container.querySelectorAll("input[type='checkbox']").forEach(chk => chk.checked = masterChk.checked);
         triggerPlayerTableRefresh();
+    });
+
+    const hasDeltaData  = activePlayerHeadersConfig.some(c => ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"].includes(c.name));
+    const toggleBtn     = document.getElementById("playerMetricModeToggleBtn");
+
+    if (toggleBtn && hasDeltaData) toggleBtn.classList.remove("hidden");
+
+    activePlayerHeadersConfig.forEach(col => {
+        if (currentPlayerMetricMode === "Δ" && ["GR", "UF", "OP GR", "ED GR", "IN GR"]  .includes(col.name)) col.visible = false;
+        if (currentPlayerMetricMode === "%" && ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"] .includes(col.name)) col.visible = false;
     });
 
     activePlayerHeadersConfig.forEach(col => {
@@ -1125,6 +1136,35 @@ function renderTeamTable() {
 
     table.innerHTML = thead + tbody + "</tbody>";
 }
+
+window.togglePlayerMetricMode = function() {
+    const btn               = document.getElementById("playerMetricModeToggleBtn");
+    currentPlayerMetricMode = currentPlayerMetricMode === "%" ? "Δ" : "%";
+    btn.innerText           = currentPlayerMetricMode;
+
+    const baseToDeltaMap = {
+        "GR"    : "GR Δ",
+        "UF"    : "UF Δ",
+        "OP GR" : "OP Δ",
+        "ED GR" : "ED Δ",
+        "IN GR" : "IN Δ",
+        "GR Δ"  : "GR",
+        "UF Δ"  : "UF",
+        "OP Δ"  : "OP GR",
+        "ED Δ"  : "ED GR",
+        "IN Δ"  : "IN GR"
+    };
+
+    activePlayerHeadersConfig.forEach(col => {
+        if      (currentPlayerMetricMode === "Δ" && ["GR", "UF", "OP GR", "ED GR", "IN GR"]     .includes(col.name)) col.visible = false;
+        else if (currentPlayerMetricMode === "%" && ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]    .includes(col.name)) col.visible = false;
+        else if (currentPlayerMetricMode === "Δ" && ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]    .includes(col.name)) col.visible = true;
+        else if (currentPlayerMetricMode === "%" && ["GR", "UF", "OP GR", "ED GR", "IN GR"]     .includes(col.name)) col.visible = col.def;
+    });
+
+    initPlayerColumnSettings    ();
+    triggerPlayerTableRefresh   ();
+};
 
 window.toggleTierChartMode = function() {
     const btn               = document.getElementById("tierModeToggleBtn");
