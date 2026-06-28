@@ -10,7 +10,9 @@ import numpy                    as np
 import pandas                   as pd
 
 from adjustText             import adjust_text
+from bs4                    import BeautifulSoup
 from collections            import Counter, defaultdict
+from curl_cffi              import requests
 from dateutil.relativedelta import relativedelta
 from help.config            import *
 from help.dialog            import *
@@ -19,6 +21,7 @@ from pathlib                import Path
 from PIL                    import Image
 from scipy.spatial          import ConvexHull
 from tkinter                import messagebox
+from urllib.parse           import urlparse, urlunparse
 
 TEAMS_RE = r"([^\s(]+)\s*\(([-]?\d+(?:\.\d+)?)\)"
 
@@ -319,9 +322,10 @@ class TourAnalyzer:
         meta_dialog = TourMetadataDialog(None, self.tour_id, init_label, default_th, baseline_initial, list(all_known), self.elo_map, sub_candidates_raw, original_players_display, self.tour_dir)
         if meta_dialog.result is None: sys.exit(0)
 
-        meta_res            = meta_dialog.result
-        self.tour_label     = meta_res["tour_label"]
-        self.delta_choice   = meta_res.get("delta_choice", "No")
+        meta_res                = meta_dialog.result
+        self.tour_label         = meta_res["tour_label"]
+        self.delta_choice       = meta_res.get("delta_choice",      "No")
+        self.challonge_choice   = meta_res.get("challonge_choice",  "No")
         
         if self.delta_choice == "Yes" and self.tour_label in TOUR_MODE_SHEET_MAP:
             print(f"[?] Fetching historic baselines")
@@ -1124,18 +1128,21 @@ class TourAnalyzer:
         original_players_display = [p for p in all_known if p.lower() in assignments and p.lower() not in [s.lower() for s in sub_candidates_raw]]
 
         if new_aliases:
-            existing_entries = []
+            existing_pairs = set()
 
             if alias_path.exists():
-                with open(alias_path, "r", encoding = "utf-8") as f: existing_entries = [l.strip().lower() for l in f.readlines()]
+                with open(alias_path, "r", encoding = "utf-8") as f:
+                    for l in f:
+                        parts = [p.strip().lower() for p in l.split(",")]
+                        if len(parts) >= 2: existing_pairs.add((parts[0], parts[1]))
 
             with open(alias_path, "a", encoding = "utf-8") as f:
                 for k, v in new_aliases.items():
-                    entry = f"{k}, {v}".lower()
+                    k_low, v_low = k.strip().lower(), v.strip().lower()
 
-                    if entry not in existing_entries:
+                    if (k_low, v_low) not in existing_pairs:
                         f.write(f"{k}, {v}\n")
-                        existing_entries.append(entry)
+                        existing_pairs.add((k_low, v_low))
 
         return True, elo_map, assignments, t1_lookup, rosters, all_known, sub_candidates_raw, original_players_display
 
@@ -1390,19 +1397,151 @@ class TourAnalyzer:
         df_tour = pd.DataFrame(split_stats, columns = ["Metric", "Value", "Metric", "Value"])
         self._export_png(df_tour, path, "Tour.png", "Tour Statistics")
 
+    def _download_challonge_page(self, url: str) -> str:
+        headers = {
+            "accept"            : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "accept-language"   : "en-US,en;q=0.9",
+            "cache-control"     : "no-cache",
+            "referer"           : "https://challonge.com/",
+        }
+
+        parsed = urlparse(url.strip())
+        if not parsed.scheme: parsed = urlparse("https://" + url.strip())
+
+        base        = urlunparse((parsed.scheme or "https", parsed.netloc, parsed.path.rstrip("/"), "", "", ""))
+        variants    = [base, base + "/module?multiplier=1&match_width_multiplier=1&show_final_results=1"]
+
+        for candidate_url in variants:
+            for imp in ["chrome124", "chrome123", "chrome120"]:
+                try:
+                    res = requests.get(candidate_url, headers=headers, impersonate=imp, timeout=15)
+                    if res.status_code == 200: return res.text
+
+                except: continue
+
+        raise RuntimeError("[!] Failed to fetch Challonge data: Blocked by Challonge")
+
+    def _parse_challonge_display_leader(self, display_name: str):
+        player_text = (display_name or "").split("|", 1)[0]
+        pattern     = r"([^\s\[(|]+)(?:\s*\[(.*?)\])?(?:\s*\((-?\d+(?:\.\d+)?)\))?"
+        ignored     = {"total", "guesses", "average", "avg", "="}
+
+        for name, _, _ in re.findall(pattern, player_text):
+            if not name or name.casefold() in ignored or re.fullmatch(r"-?\d+(?:\.\d+)?", name): continue
+            return name
+
+        return "Unknown Team"
+
     def _compute_team_rows(self, assigns, t1_lookup):
         if not getattr(self, 'use_teams', False): return pd.DataFrame()
+
+        if not t1_lookup:
+            for tid, players in self.rosters.items():
+                if players:
+                    sorted_players = sorted(list(players), key = str.lower)
+                    t1_lookup[tid] = sorted_players[0]
+
+        chal_matches = []
+
+        if getattr(self, 'challonge_choice', 'No') == "Yes":
+            codes_file  = self.tour_dir / FILE_CODES
+            chal_link   = None
+
+            if codes_file.exists():
+                with open(codes_file, "r", encoding = "utf-8") as f:
+                    for line in f:
+                        if line.strip().startswith("http"):
+                            chal_link = line.strip()
+                            break
+
+            if chal_link:
+                try:
+                    html = self._download_challonge_page(chal_link)
+                    soup = BeautifulSoup(html, "lxml")
+
+                    for script in soup.find_all("script"):
+                        if script.string and "window._initialStoreState" in script.string:
+                            match = re.search(r"window\._initialStoreState\['TournamentStore'\]\s*=\s*({.*?});", script.string, re.DOTALL)
+
+                            if match:
+                                data_str    = match.group(1).replace("'", '"')
+                                data_str    = re.sub(r",\s*}", "}", data_str)
+                                data_str    = re.sub(r",\s*]", "]", data_str)
+                                s_data      = json.loads(data_str)
+
+                                for _, rounds in s_data.get("matches_by_round", {}).items(): chal_matches.extend(rounds)
+                                break
+
+                except Exception as e: print(f"[!] Failed to fetch Challonge data: {e}")
+
+        alias_map   = {}
+        alias_path  = self.script_dir / DIR_TOURS / FILE_ALIAS
+
+        if alias_path.exists():
+            with open(alias_path, "r", encoding = "utf-8") as f:
+                for line in f:
+                    if "," in line:
+                        parts = [p.strip().lower() for p in line.split(",")]
+                        if len(parts) >= 2:
+                            alias_map[parts[0]] = parts[1]
+                            alias_map[parts[1]] = parts[0]
+
         res = []
 
         for tid in self.t_c_ps:
+            leader_name     = t1_lookup.get(tid, f"Team {tid}")
+            leader_variants = {leader_name.lower()}
+
+            if leader_name.lower() in alias_map: leader_variants.add(alias_map[leader_name.lower()])
+
+            wins_history                = defaultdict(list)
+            losses_history              = defaultdict(list)
+            ties_history                = defaultdict(list)
+            w_count, l_count, t_count   = 0, 0, 0
+
+            for m in chal_matches:
+                scores = m.get("scores")
+                if not isinstance(scores, list) or len(scores) < 2: continue
+
+                try     : s1, s2 = int(scores[0]), int(scores[1])
+                except  : continue
+
+                p1_leader = self._parse_challonge_display_leader(m["player1"].get("display_name", ""))
+                p2_leader = self._parse_challonge_display_leader(m["player2"].get("display_name", ""))
+
+                p1_match = p1_leader.lower() in leader_variants or alias_map.get(p1_leader.lower()) in leader_variants
+                p2_match = p2_leader.lower() in leader_variants or alias_map.get(p2_leader.lower()) in leader_variants
+
+                if p1_match or p2_match:
+                    if p1_match : my_score, opp_score, opp_name = s1, s2, p2_leader
+                    else        : my_score, opp_score, opp_name = s2, s1, p1_leader
+
+                    score_str = f"{my_score}-{opp_score}"
+                    if my_score > opp_score:
+                        w_count += 1
+                        wins_history[opp_name].append(score_str)
+
+                    elif my_score < opp_score:
+                        l_count += 1
+                        losses_history[opp_name].append(score_str)
+
+                    else:
+                        t_count += 1
+                        ties_history[opp_name].append(score_str)
+
+            h_payload = {
+                "summary"       : f"{w_count}-{l_count}-{t_count}",
+                "wins"          : dict(wins_history),
+                "losses"        : dict(losses_history),
+                "ties"          : dict(ties_history),
+                "total_matches" : w_count + l_count + t_count
+            }
+
             t_overs = []
 
             for original_name in self.s_part:
-                n_lower = original_name.lower()
-
-                if n_lower in assigns:
-                    t_info = assigns[n_lower]
-                    if t_info[0] == tid and self.c_counts[original_name] > 0: t_overs.append(self.p_overs_sum[original_name] / self.c_counts[original_name])
+                if original_name.lower() in assigns:
+                    if assigns[original_name.lower()][0] == tid and self.c_counts[original_name] > 0: t_overs.append(self.p_overs_sum[original_name] / self.c_counts[original_name])
          
             t_elos = []
 
@@ -1413,8 +1552,8 @@ class TourAnalyzer:
                     try     : t_elos.append(float(v))
                     except  : pass
 
-            res.append({
-                "Team Leader"   : t1_lookup.get(tid, f"Team {tid}"),
+            row = {
+                "Team Leader"   : leader_name,
                 "Mean Elo"      : np.mean(t_elos),
                 "Mean GR"       : np.mean(self.t_c_ps       [tid]) * 100,
                 "Total 1/8s"    : self.t_solos              [tid],
@@ -1422,19 +1561,32 @@ class TourAnalyzer:
                 "Rig Synergy"   : np.mean(self.t_on_syn     [tid]) * 100,
                 "Off Synergy"   : np.mean(self.t_off_syn    [tid]) * 100,
                 "Shared Rigs"   : np.mean(self.t_sh_rig     [tid]) * 100,
-                "_tid"          : tid
-            })
+                "_tid"          : tid,
+                "_history"      : h_payload
+            }
+
+            if getattr(self, 'text_var_wlt', 'No') == 'Yes' or h_payload["total_matches"] > 0:
+                row["Win Record"]   = h_payload["summary"]
+                tot                 = w_count + l_count + t_count
+                row["_win_pct"]     = (w_count / tot) if tot > 0 else -1.0
+
+            res.append(row)
 
         df = pd.DataFrame(res).sort_values(by = ["Mean GR", "Mean Elo"], ascending = [False, True])
         return df
 
     def _create_team_png(self, assigns, t1_lookup, path):
-        df          = self._compute_team_rows(assigns, t1_lookup)
-        df_png      = df.drop(columns = ["_tid"])
-        num_cols    = ["Mean Elo", "Mean GR", "Mean Over-8", "Rig Synergy", "Off Synergy", "Shared Rigs"]
+        self.text_var_wlt = "Yes" 
+        df = self._compute_team_rows(assigns, t1_lookup)
 
+        if "_win_pct" in df.columns : df_png = df.drop(columns = ["_tid", "_history", "_win_pct"])
+        else                        : df_png = df.drop(columns = ["_tid", "_history"])
+
+        num_cols = ["Mean Elo", "Mean GR", "Mean Over-8", "Rig Synergy", "Off Synergy", "Shared Rigs"]
         for c in num_cols: df_png[c] = pd.to_numeric(df_png[c], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+
         self._export_png(df_png, path, "Team.png", "Team Statistics")
+        self.text_var_wlt = "No"
 
     def _compute_tier_rows(self, assigns, has_chanting_songs):
         rows1, rows2 = [], []
@@ -2307,9 +2459,32 @@ class TourAnalyzer:
 
         for _, row_data in df_teams.iterrows():
             tid = row_data["_tid"]
+            h   = row_data["_history"]
+
             team_song_details[tid]["Total 1/8s"].sort(key = str.lower)
 
-            team_rows.append({
+            details_hover = []
+
+            if h["total_matches"] > 0:
+                def line_fmt(header, sub_dict):
+                    if not sub_dict: return ""
+                    items = []
+                    for opp, scores in sub_dict.items(): items.append(f"{opp} ({', '.join(scores)})")
+                    return f"{header}: {', '.join(items)}"
+
+                w_line = line_fmt("Win", h["wins"])
+                l_line = line_fmt("Loss", h["losses"])
+                t_line = line_fmt("Tie", h["ties"])
+
+                if w_line: details_hover.append(w_line)
+                if l_line: details_hover.append(l_line)
+                if t_line: details_hover.append(t_line)
+
+            summary_parts   = [int(x) for x in h["summary"].split("-")]
+            tot_m           = sum(summary_parts)
+            win_rate_val    = ((summary_parts[0] + 0.5 * summary_parts[2]) / tot_m * 100) if tot_m > 0 else np.nan
+
+            item_payload = {
                 "Team Leader"   : row_data["Team Leader"],
                 "Mean Elo"      : float (row_data["Mean Elo"]),
                 "Mean GR"       : float (row_data["Mean GR"]),
@@ -2318,19 +2493,32 @@ class TourAnalyzer:
                 "Rig Synergy"   : float (row_data["Rig Synergy"]),
                 "Off Synergy"   : float (row_data["Off Synergy"]),
                 "Shared Rigs"   : float (row_data["Shared Rigs"])
-            })
+            }
+
+            if h["total_matches"] > 0:
+                item_payload["Win Rate"]        = {"count": win_rate_val, "details": [h["summary"]] + details_hover}
+                item_payload["_win_pct_sort"]   = win_rate_val
+
+            else: item_payload["_win_pct_sort"] = -1.0
+
+            team_rows.append(item_payload)
 
         if team_rows:
             df_teams_temp = pd.DataFrame(team_rows)
 
             for col in df_teams_temp.columns:
-                num     = df_teams_temp[col].map(lambda x: x["count"]) if col == "Total 1/8s" else df_teams_temp[col]
-                desc    = ["Mean Elo", "Mean GR", "Total 1/8s", "Rig Synergy", "Off Synergy", "Shared Rigs"]
+                if col.startswith("_"): continue
+
+                num     = df_teams_temp[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
+                desc    = ["Mean Elo", "Mean GR", "Total 1/8s", "Rig Synergy", "Off Synergy", "Shared Rigs", "Win Rate"]
                 asc     = ["Mean Over-8"]
 
                 if not num.dropna().empty and (col in desc or col in asc):
-                    best_val    = num.dropna().min() if col in asc else num.dropna().max()
-                    worst_val   = num.dropna().max() if col in asc else num.dropna().min()
+                    clean_num = num.loc[df_teams_temp["_win_pct_sort"] != -1.0] if col == "Win Rate" else num
+                    if clean_num.dropna().empty: continue
+
+                    best_val    = clean_num.dropna().min() if col in asc else clean_num.dropna().max()
+                    worst_val   = clean_num.dropna().max() if col in asc else clean_num.dropna().min()
 
                     best_b_idx  = num[num == best_val]  .index
                     worst_b_idx = num[num == worst_val] .index
@@ -2346,7 +2534,8 @@ class TourAnalyzer:
             f_dict = {}
 
             for k, v in row.items():
-                if      k in ["Total 1/8s", "Team Leader"]                      : f_dict[k] = v
+                if      k.startswith("_")                                       : continue
+                if      k in ["Total 1/8s", "Win Rate", "Team Leader"]          : f_dict[k] = v
                 elif    pd.isnull(v) or (isinstance(v, float) and np.isnan(v))  : f_dict[k] = "N/A"
                 else                                                            : f_dict[k] = f"{float(v):.2f}"
 
@@ -2848,7 +3037,8 @@ class TourAnalyzer:
             "Total 1/8s",
             "Rig Synergy",
             "Off Synergy",
-            "Shared Rigs"
+            "Shared Rigs",
+            "Win Record"
         ]
 
         asc     = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8", "Mean Difficulty Hit"]
@@ -2859,8 +3049,20 @@ class TourAnalyzer:
 
         for col in df.columns:
             if col in desc or col in asc:
-                num     = pd.to_numeric(df[col].astype(str).str.replace('%',''), errors = 'coerce')
-                el_num  = num[mask].dropna() if mask is not None and col in rest else num.dropna()
+                if col == "Win Record":
+                    def parse_wlt(val):
+                        try:
+                            parts = [int(x) for x in str(val).split("-")]
+                            total = sum(parts)
+                            return ((parts[0] + 0.5 * parts[2]) / total) if total > 0 else -1.0
+
+                        except: return -1.0
+
+                    num = df[col].apply(parse_wlt)
+
+                else: num = pd.to_numeric(df[col].astype(str).str.replace('%',''), errors = 'coerce')
+
+                el_num = num[mask].dropna() if mask is not None and col in rest else num.dropna()
 
                 if not num.dropna().empty:
                     if col in desc:

@@ -1104,11 +1104,16 @@ function renderTeamTable() {
                 else if (isWorst)   cellStyle += "highlight-worst ";
             }
 
-            let finalVal = (h === "Team Leader") ? `<b>${displayVal}</b>` : displayVal;
+            let finalVal = displayVal;
+
+            if      (h === "Win Rate" && typeof displayVal === 'number')    finalVal = isNaN(displayVal) ? "N/A" : `${displayVal.toFixed(2)}`;
+            else if (h === "Team Leader")                                   finalVal = `<b>${displayVal}</b>`;
 
             if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
                 let encodedDetails  = encodeURIComponent(JSON.stringify(rawCell.details));
-                let clickHandler    = (h === "Total 1/8s") ? ` onclick="searchTeamSolos('${row["Team Leader"]}')"` : "";
+                let clickHandler    = "";
+
+                if (h === "Total 1/8s") clickHandler = ` onclick="searchTeamSolos('${row["Team Leader"]}')"`;
                 tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}"${clickHandler}>${finalVal}</td>`;
             }
 
@@ -2240,12 +2245,22 @@ function setupTooltipListeners() {
                 }
 
                 const fractionRegex = /^\d+\/\d+$/;
-                const containsRegex = fractionRegex.test(songs[0]);
+                const isWLTBracket  = /^\d+-\d+-\d+$/.test(songs[0]);
+                const containsRegex = fractionRegex.test(songs[0]) || isWLTBracket;
                 let fractionHeader  = "";
 
                 if (containsRegex) {
                     fractionHeader = `<b>${songs[0]}</b>`;
                     displaySongs.shift();
+                }
+
+                if (isWLTBracket) {
+                    tooltipNode.style.maxHeight = '300px';
+                    tooltipNode.style.overflowY = 'auto';
+                    tooltipNode.innerHTML       = `${fractionHeader}<br>${displaySongs.join('<br>')}`;
+
+                    positionTooltip(e);
+                    return;
                 }
 
                 if (containsRegex)  displaySongs = sampleLargeSongList(displaySongs).map(s => (s.startsWith('✓') || s.startsWith('✗') || !isPlayerSubHover) ? s : `• ${s}`);
