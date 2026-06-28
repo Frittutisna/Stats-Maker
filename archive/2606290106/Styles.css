@@ -1,0 +1,221 @@
+:root {
+    --rittu-blue        : #3232c8;
+    --rittu-red         : #c83232;
+    --rittu-grey        : #f0f0f0;
+    --hover-overlay     : rgba(128, 128, 128, 0.25);
+    --bold-border       : 2px solid black;
+    --normal-border     : 1px solid black;
+}
+
+body, table, th, td, button, input {font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;}
+
+.main-table {
+    border          : var(--bold-border);
+    border-collapse : collapse;
+    width           : max-content;
+    max-width       : 100%;
+    margin          : 0;
+    table-layout    : auto;
+}
+
+.main-table th {
+    background-color    : var(--rittu-grey);
+    border              : var(--normal-border);
+    border-bottom       : var(--bold-border);
+    padding             : 2px 5px;
+    line-height         : 1.1;
+    font-weight         : bold;
+    font-size           : clamp(10px, 1vw, 25px);
+    text-align          : center;
+}
+
+.main-table td {
+    border              : var(--normal-border);
+    padding             : 2px 5px;
+    line-height         : 1.1;
+    text-align          : center;
+    font-size           : clamp(9px, 0.9vw, 22.5px);
+}
+
+#searchSongsTable th {
+    font-size: clamp(10px, 1vw, 20px);
+}
+#searchSongsTable td {
+    font-size: clamp(9px, 0.9vw, 18px);
+}
+
+.main-table tr:nth-child(even)  {background-color   : var(--rittu-grey);}
+.border-group-line td           {border-bottom      : var(--bold-border) !important;}
+.border-col-group               {border-right       : var(--bold-border) !important;}
+
+.highlight-best,
+.highlight-worst {
+    color       : white !important;
+    font-weight : bold;
+}
+
+td[data-songs].highlight-best:hover {
+    background-color    : white             !important;
+    color               : var(--rittu-blue) !important;
+}
+
+td[data-songs].highlight-worst:hover {
+    background-color    : white             !important;
+    color               : var(--rittu-red)  !important;
+}
+
+th.has-explanation:hover,
+#tourStatsTable tr td.has-explanation:hover,
+td[data-songs]:not(.highlight-best):not(.highlight-worst):hover,
+#tourStatsTable td[onclick]:hover {
+    background-color: var(--hover-overlay) !important;
+}
+
+.tab-btn {
+    font-size       : 20px;
+    font-weight     : bold;
+    padding         : 3px 6px;
+    color           : black;
+    cursor          : pointer;
+}
+
+.tab-btn:hover {
+    background-color    : var(--rittu-grey);
+    color               : black;
+}
+
+.tab-btn.active-tab {
+    background-color    : black;
+    color               : white;
+}
+
+.tab-content {
+    display     : none;
+    width       : 100%;
+    max-width   : 100%;
+}
+
+.tab-content.active-content {display: block;}
+
+.table-center-wrapper {
+    display                     : flex;
+    flex-direction              : column;
+    align-items                 : center;
+    width                       : 100%;
+    overflow-x                  : auto;
+    -webkit-overflow-scrolling  : touch;
+}
+
+#customJsTooltip {
+    position            : absolute;
+    display             : none;
+    background-color    : black;
+    color               : white;
+    padding             : 6px 12px;
+    border-radius       : 6px;
+    font-size           : clamp(8px, 0.8vw, 20px);
+    z-index             : 9999;
+    text-align          : left;
+    max-width           : 90vw;
+    word-wrap           : break-word;
+    white-space         : normal;
+}
+
+td[data-songs],
+th.has-explanation,
+td.has-explanation {
+    cursor  : help;
+    position: relative;
+}
+
+td[data-songs]::after,
+th.has-explanation::after,
+td.has-explanation::after {
+    content             : '';
+    position            : absolute;
+    top                 : 2px;
+    right               : 2px;
+    width               : 2px;
+    height              : 2px;
+    background-color    : black;
+}
+
+th.has-explanation[style*="background-color: black"]:hover {
+    background-color: black !important;
+}
+
+th.has-explanation[style*="background-color: black"]::after {
+    background-color: white !important;
+}
+
+td[data-songs].highlight-best::after,
+td[data-songs].highlight-worst::after {
+    background-color: white;
+}
+
+td[data-songs].highlight-best:hover::after {
+    background-color: var(--rittu-blue);
+}
+
+td[data-songs].highlight-worst:hover::after {
+    background-color: var(--rittu-red);
+}
+
+.search-group-border {
+    border-right: 3px solid black !important;
+}
+
+.search-c2-text, 
+.search-c2-text a {
+    text-decoration: underline !important;
+}
+
+#playerColumnSettingsDropdown,
+#columnSettingsDropdown {
+    position    : absolute;
+    z-index     : 10;
+}
+
+#playerColumnSettingsDropdown input[type="checkbox"],
+#columnSettingsDropdown       input[type="checkbox"],
+#playerStandingsTable         tr td[onclick],
+#teamStatsTable               tr td[onclick],
+#tourStatsTable               tr td[onclick] {
+    cursor: pointer !important;
+}
+
+.w-max.max-w-full.overflow-x-auto,
+.table-center-wrapper,
+.w-full.overflow-x-auto {
+    -ms-overflow-style  : none !important;
+    scrollbar-width     : none !important;
+}
+
+.w-max.max-w-full.overflow-x-auto::-webkit-scrollbar,
+.table-center-wrapper::-webkit-scrollbar,
+.w-full.overflow-x-auto::-webkit-scrollbar {
+    display         : none  !important;
+    width           : 0     !important;
+    height          : 0     !important;
+}
+
+.w-full.overflow-x-auto {
+    align-items: stretch !important;
+}
+
+#playerStandingsTable,
+#searchSongsTable {
+    margin-left     : auto !important;
+    margin-right    : auto !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -appearance: textfield;
+}
