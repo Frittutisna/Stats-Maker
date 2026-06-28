@@ -1627,7 +1627,7 @@ function renderTierCharts() {
                 orientation         : 'h',
                 barmode             : 'stack',
                 name                : baseNames[i],
-                marker              : {color: c1BaseColors[i], line: {color: 'black', width: 1}},
+                marker              : {color: c1BaseColors[i]},
                 hovertext           : (i === 0 ? trace0Hovers : trace1Hovers).slice().reverse(),
                 hoverinfo           : 'text',
                 text                : c1Data.multiData[i]   .slice().reverse().map(v => v ? v.toFixed(0) : ""),
@@ -1662,7 +1662,7 @@ function renderTierCharts() {
                 orientation         : 'h',
                 barmode             : 'stack',
                 name                : `${i+1}/8`,
-                marker              : {color: c8Colors[i], line: {color: 'black', width: 1}},
+                marker              : {color: c8Colors[i]},
                 hovertext           : x8TraceHovers[i]      .slice().reverse(),
                 hoverinfo           : 'text',
                 text                : c1Data.multiData[i]   .slice().reverse().map(v => v ? v.toFixed(globalChartMode === "RATE" ? 1 : 0) : ""),
@@ -1673,6 +1673,9 @@ function renderTierCharts() {
     }
 
     else {
+        const isRateMode    = (globalChartMode === "RATE");
+        const maxCount      = Math.max(...c1Data.singleXVals.filter(v => v !== null)) || 1;
+
         c1Traces.push({
             x                   : c1Data.singleXVals    .slice().reverse(),
             y                   : c1Data.yLabels        .slice().reverse(),
@@ -1684,8 +1687,27 @@ function renderTierCharts() {
             text                : c1Data.singleXVals    .slice().reverse().map(v => v === null ? "" : v.toFixed(globalChartMode === "RATE" ? 2 : 0) + " "),
             textposition        : 'inside',
             insidetextanchor    : 'end',
-            textfont            : {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'},
-            marker              : {color: 'white', line: {color: 'black', width: 2}}
+            textfont            : {family: 'Segoe UI', size: 15, color: 'white', weight: 'bold'},
+            marker              : {
+                color       : c1Data.singleXVals.slice().reverse(),
+                colorscale  : (() => {
+                    if (globalChartMode === "RATE") {
+                        if (c1Sub === "BASE")   return [[0, c0], [0.20, c0], [0.50, c1], [0.80, c2], [1, c2]];
+                        if (c1Sub === "HIT")    return [[0, c0], [0.70, c0], [0.80, c1], [0.90, c2], [1, c2]];
+                    }
+
+                    return [[0, c0], [1, c2]];
+                })(),
+                cmin        : 0,
+                cmax        : (() => {
+                    if (globalChartMode === "RATE") {
+                        if (["CHANT", "RIG", "OFF"].includes(c1Sub)) return 50;
+                        return 100;
+                    }
+
+                    return Math.max(...c1Data.singleXVals.filter(v => v !== null)) || 1;
+                })()
+            }
         });
     }
 
@@ -1797,11 +1819,80 @@ function renderTierCharts() {
 
             if (tooltipNode && pt.hovertext) {
                 let traceColor = 'black';
+
                 if (pt.fullData && pt.fullData.marker) {
-                    traceColor = pt.fullData.marker.color;
-                    if (Array.isArray(traceColor)) {
-                        traceColor = traceColor[pt.pointIndex] || 'black';
+                    const mColor = pt.fullData.marker.color;
+
+                    if (Array.isArray(mColor)) {
+                        const rawVal = mColor[pt.pointIndex];
+
+                        if (rawVal !== undefined && rawVal !== null) {
+                            const maxVal    = pt.fullData.marker.cmax || 100;
+                            const norm      = Math.max(0, Math.min(1, rawVal / maxVal));
+
+                            const parseHex = (hex) => {
+                                let c = hex.replace('#', '');
+                                if (c.length === 3) c = c.split('').map(x => x + x).join('');
+                                return [parseInt(c.substring(0, 2), 16), parseInt(c.substring(2, 4), 16), parseInt(c.substring(4, 6), 16)];
+                            };
+
+                            const rgb0 = parseHex(c0);
+                            const rgb1 = parseHex(c1);
+                            const rgb2 = parseHex(c2);
+
+                            let r, g, b;
+
+                            if (globalChartMode === "RATE" && c1Sub === "BASE") {
+                                if (norm <= 0.20) [r, g, b] = rgb0;
+
+                                else if (norm <= 0.50) {
+                                    let t   = (norm - 0.20) / 0.30;
+                                    r       = rgb0[0] + t * (rgb1[0] - rgb0[0]);
+                                    g       = rgb0[1] + t * (rgb1[1] - rgb0[1]);
+                                    b       = rgb0[2] + t * (rgb1[2] - rgb0[2]);
+                                }
+
+                                else if (norm <= 0.80) {
+                                    let t   = (norm - 0.50) / 0.30;
+                                    r       = rgb1[0] + t * (rgb2[0] - rgb1[0]);
+                                    g       = rgb1[1] + t * (rgb2[1] - rgb1[1]);
+                                    b       = rgb1[2] + t * (rgb2[2] - rgb1[2]);
+                                } 
+
+                                else [r, g, b] = rgb2;
+                            }
+
+                            else if (globalChartMode === "RATE" && c1Sub === "HIT") {
+                                if (norm <= 0.70) [r, g, b] = rgb0;
+
+                                else if (norm <= 0.80) {
+                                    let t = (norm - 0.70) / 0.10;
+                                    r = rgb0[0] + t * (rgb1[0] - rgb0[0]);
+                                    g = rgb0[1] + t * (rgb1[1] - rgb0[1]);
+                                    b = rgb0[2] + t * (rgb1[2] - rgb0[2]);
+                                }
+
+                                else if (norm <= 0.90) {
+                                    let t = (norm - 0.80) / 0.10;
+                                    r = rgb1[0] + t * (rgb2[0] - rgb1[0]);
+                                    g = rgb1[1] + t * (rgb2[1] - rgb1[1]);
+                                    b = rgb1[2] + t * (rgb2[2] - rgb1[2]);
+                                }
+
+                                else [r, g, b] = rgb2;
+                            }
+
+                            else {
+                                r = rgb0[0] + norm * (rgb2[0] - rgb0[0]);
+                                g = rgb0[1] + norm * (rgb2[1] - rgb0[1]);
+                                b = rgb0[2] + norm * (rgb2[2] - rgb0[2]);
+                            }
+
+                            traceColor = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+                        }
                     }
+
+                    else traceColor = mColor || 'black';
                 }
 
                 const isWhite = traceColor === 'white' || traceColor === '#ffffff' || traceColor === '#fff' || traceColor === 'rgb(255,255,255)' || traceColor === 'rgb(255, 255, 255)';
@@ -1878,7 +1969,7 @@ function renderTierCharts() {
                 orientation         : 'h',
                 barmode             : 'stack',
                 name                : names[i],
-                marker              : {color: c2Colors[i], line: {color: 'black', width: 1}},
+                marker              : {color: c2Colors[i]},
                 hovertext           : (i === 0 ? tkHovers : svHovers)   .slice().reverse(),
                 hoverinfo           : 'text',
                 text                : c2Data.multiData[i]               .slice().reverse().map(v => v ? v.toFixed(0) : ""),
@@ -1912,7 +2003,7 @@ function renderTierCharts() {
                 orientation         : 'h',
                 barmode             : 'stack',
                 name                : names[i],
-                marker              : {color: c3Colors[i], line: {color: 'black', width: 1}},
+                marker              : {color: c3Colors[i]},
                 hovertext           : (i === 0 ? tkHovers : (i === 1 ? othHovers : svHovers))   .slice().reverse(),
                 hoverinfo           : 'text',
                 text                : c2Data.multiData[i]                                       .slice().reverse().map(v => v ? v.toFixed(1) : ""),
@@ -2076,7 +2167,10 @@ function renderTierCharts() {
         return va - vb; 
     };
 
-    let c3Data = buildChartData(currentTierChartMode, c3Sort, (p) => getC3ValueAndHover(p, c3Mode), null);
+    let c3Data          = buildChartData(currentTierChartMode, c3Sort, (p) => getC3ValueAndHover(p, c3Mode), null);
+    const validTimes    = c3Data.singleXVals.filter(v => v !== null);
+    const minTime       = Math.min(...validTimes) || 0;
+    const maxTime       = Math.max(...validTimes) || 20;
 
     let c3Traces = [{
         x                   : c3Data.singleXVals    .slice().reverse(),
@@ -2088,8 +2182,13 @@ function renderTierCharts() {
         text                : c3Data.singleXVals    .slice().reverse().map(v => v === null ? "" : v.toFixed(2) + " "),
         textposition        : 'inside', 
         insidetextanchor    : 'end',
-        textfont            : {family: 'Segoe UI', size: 15, color: 'black', weight: 'bold'},
-        marker              : {color: 'white', line: {color: 'black', width: 2}}
+        textfont            : {family: 'Segoe UI', size: 15, color: 'white', weight: 'bold'},
+        marker              : {
+            color       : c3Data.singleXVals.slice().reverse(),
+            colorscale  : [[0, c2], [1, c0]],
+            cmin        : minTime,
+            cmax        : maxTime
+        }
     }];
 
     let displayTitleC3 = "";
@@ -2126,12 +2225,45 @@ function renderTierCharts() {
             const tooltipNode   = document.getElementById('customJsTooltip');
 
             if (tooltipNode && pt.hovertext) {
+                let traceColor = 'white';
+
+                if (pt.fullData && pt.fullData.marker) {
+                    const mColor = pt.fullData.marker.color;
+
+                    if (Array.isArray(mColor)) {
+                        const rawVal = mColor[pt.pointIndex];
+
+                        if (rawVal !== undefined && rawVal !== null) {
+                            const minVal    = pt.fullData.marker.cmin || 0;
+                            const maxVal    = pt.fullData.marker.cmax || 20;
+                            const norm      = Math.max(0, Math.min(1, (rawVal - minVal) / (maxVal - minVal || 1)));
+
+                            const parseHex = (hex) => {
+                                let c = hex.replace('#', '');
+                                if (c.length === 3) c = c.split('').map(x => x + x).join('');
+                                return [parseInt(c.substring(0, 2), 16), parseInt(c.substring(2, 4), 16), parseInt(c.substring(4, 6), 16)];
+                            };
+
+                            const rgb2  = parseHex(c2);
+                            const rgb0  = parseHex(c0);
+                            const r     = rgb2[0] + norm * (rgb0[0] - rgb2[0]);
+                            const g     = rgb2[1] + norm * (rgb0[1] - rgb2[1]);
+                            const b     = rgb2[2] + norm * (rgb0[2] - rgb2[2]);
+                            traceColor  = `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+                        }
+                    }
+
+                    else traceColor = mColor || 'white';
+                }
+
+                const isWhite = traceColor === 'white' || traceColor === '#ffffff' || traceColor === '#fff' || traceColor === 'rgb(255,255,255)' || traceColor === 'rgb(255, 255, 255)';
+
                 tooltipNode.style.display           = 'block';
                 tooltipNode.style.maxHeight         = '300px';
                 tooltipNode.style.overflowY         = 'auto';
-                tooltipNode.style.backgroundColor   = 'white';
-                tooltipNode.style.color             = 'black';
-                tooltipNode.style.border            = '1px solid black';
+                tooltipNode.style.backgroundColor   = traceColor;
+                tooltipNode.style.color             = isWhite ? 'black' : 'white';
+                tooltipNode.style.border            = isWhite ? '1px solid black' : 'none';
                 tooltipNode.innerHTML               = pt.hovertext;
                 tooltipNode.style.left              = (data.event.pageX + 15) + 'px';
                 tooltipNode.style.top               = (data.event.pageY + 15) + 'px';
@@ -2770,7 +2902,7 @@ if (scatterData) {
                 ticktext    : ['0', '50', '100'],
                 tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'}
             },
-            line        : {color: 'black', width: 1},
+            line        : {color: 'black', width: 0},
             cmin        : 0,
             cmax        : 100
         }
@@ -3084,7 +3216,7 @@ function renderListChart() {
                 ticktext    : ['0', '70', '80', '90', '100'],
                 tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'}
             },
-            line        : {color: 'black', width: 1},
+            line        : {color: 'black', width: 0},
             cmin        : 0,
             cmax        : 100
         }
