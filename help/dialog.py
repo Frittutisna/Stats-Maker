@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from help.config    import DIR_TOURS, DIR_JSONS
+from help.config    import DIR_TOURS, DIR_JSONS, FILE_ALIAS
 from pathlib        import Path
 from tkinter        import ttk
 
@@ -253,6 +253,47 @@ class TourMetadataDialog(UnifiedDialog):
 
         self._update_lbl_state()
 
+        has_extended_delta_data = False
+        script_root_dir         = Path(__file__).parent.parent.absolute()
+        global_alias_path       = script_root_dir / DIR_TOURS / FILE_ALIAS
+
+        if global_alias_path.exists():
+            try:
+                with open(global_alias_path, "r", encoding = "utf-8") as f_alias:
+                    for line in f_alias:
+                        if "," in line:
+                            parts = line.strip().split(",")
+                            if len(parts) > 2:
+                                has_extended_delta_data = True
+                                break
+
+            except Exception: pass
+
+        suggested_delta_default = "No" if has_extended_delta_data else "Yes"
+        self.delta_var          = tk.StringVar(value = suggested_delta_default)
+        self.delta_boxes        = {}
+
+        ttk.Label(self.container, text = "Do you want to fetch Δ data as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+
+        for opt in ["No", "Yes"]:
+            f_delta = ttk.Frame(self.container)
+            f_delta.pack(anchor = "w", pady = 1)
+
+            is_sel      = (self.delta_var.get() == opt)
+            bg_color    = self.fill_color if is_sel else "white"
+
+            box = tk.Canvas(f_delta, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
+            box.pack(side = tk.LEFT, padx = (0, 4))
+            self.delta_boxes[opt] = box
+
+            lbl = ttk.Label(f_delta, text = opt, font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+
+            def make_delta_callback(choice_opt):
+                return lambda _: self._select_delta_opt(choice_opt)
+
+            for w in (box, lbl): w.bind("<Button-1>", make_delta_callback(opt))
+
         ttk.Label(self.container, text = "Do you want to use Dry's script as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
 
         self.dry_var    = tk.StringVar(value = "No")
@@ -503,6 +544,10 @@ class TourMetadataDialog(UnifiedDialog):
         color = self.fill_color if new_val else "white"
         box.configure(bg = color)
 
+    def _select_delta_opt(self, opt):
+        self.delta_var.set(opt)
+        for k, box in self.delta_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
+
     def on_confirm(self):
         try                 : base_exp = int(self.spin.get())
         except ValueError   : base_exp = 1
@@ -512,7 +557,16 @@ class TourMetadataDialog(UnifiedDialog):
         selected_new    = [name for name, var in self.player_vars.items() if var.get()] if self.np_var.get() == "Yes" else []
         sub_results     = {sub_name: var.get() for sub_name, var in self.sub_vars.items()}
         dry_choice      = self.dry_var      .get()
-        self.result     = {"tour_label": tour_label, "th_str": th_str, "base_exp": base_exp, "selected_new": selected_new, "sub_results": sub_results, "dry_choice": dry_choice}
+        delta_choice    = self.delta_var    .get()
+        self.result     = {
+            "tour_label"    : tour_label, 
+            "th_str"        : th_str, 
+            "base_exp"      : base_exp, 
+            "selected_new"  : selected_new, 
+            "sub_results"   : sub_results, 
+            "dry_choice"    : dry_choice,
+            "delta_choice"  : delta_choice
+        }
 
         if self.tour_dir and sub_results:
             existing_lines = []
