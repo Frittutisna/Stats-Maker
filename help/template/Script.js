@@ -321,7 +321,7 @@ let globalFilteredPlayers   = [];
 let globalMetricHighlights  = {};
 
 const playerHeadersMasterConfig = [
-    {id: "player",              name: "Player",                 ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "text"},
+    {id: "player",              name: "Player",                 ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "text",           locked: true},
     {id: "team",                name: "Team",                   ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "categorical",    subOptions: []},
     {id: "tier",                name: "Tier",                   ascMetric: true,    teamReq: true,  watchedReq: false,  def: false, type: "categorical",    subOptions: ["1", "2", "3", "4"]},
     {id: "elo",                 name: "Elo",                    ascMetric: false,   teamReq: true,  watchedReq: false,  def: true,  type: "range",          min: -10,   max: 200,   step: 1},
@@ -437,16 +437,43 @@ function initPlayerColumnSettings() {
     }
 
     masterChk.addEventListener("change", () => {
+        const isChecked = masterChk.checked;
+        
         activePlayerHeadersConfig.forEach(c => { 
-            c.visible = masterChk.checked;
+            if (c.locked) {
+                c.visible = true;
+                return;
+            }
+
+            c.visible = isChecked;
 
             if (c.type === "categorical" && c.subOptions) {
-                if (masterChk.checked)  c.selectedOptions = new Set(c.subOptions.map(o => o.toLowerCase()));
-                else                    c.selectedOptions.clear();
+                if (isChecked)  c.selectedOptions = new Set(c.subOptions.map(o => o.toLowerCase()));
+                else            c.selectedOptions.clear();
             }
         });
 
-        container.querySelectorAll("input[type='checkbox']").forEach(chk => chk.checked = masterChk.checked);
+        if (!isChecked) {
+            activePlayerHeadersConfig.forEach(c => {
+                if (c.type === "range") {
+                    c.currentMin = c.min;
+                    c.currentMax = c.max;
+                }
+            });
+        }
+
+        const individualCheckboxes = container.getElementsByClassName('player-col-toggle-checkbox');
+        for (let i = 0; i < individualCheckboxes.length; i++) individualCheckboxes[i].checked = isChecked;
+        
+        const allInputs = container.getElementsByTagName('input');
+
+        for (let i = 0; i < allInputs.length; i++) {
+            if (allInputs[i].type === 'checkbox') {
+                allInputs[i].checked        = isChecked;
+                allInputs[i].indeterminate  = false;
+            }
+        }
+
         triggerPlayerTableRefresh();
     });
 
@@ -471,6 +498,12 @@ function initPlayerColumnSettings() {
         chk.type        = "checkbox";
         chk.className   = "player-col-toggle-checkbox rounded accent-black";
         chk.checked     = col.visible;
+
+        if (col.locked) {
+            col.visible     = true;
+            chk.checked     = true;
+            chk.disabled    = true;
+        }
 
         chk.addEventListener("change", () => {
             col.visible = chk.checked;
