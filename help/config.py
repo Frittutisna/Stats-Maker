@@ -32,14 +32,16 @@ NGM_STATS_SHEET_ID  = "1ihfqssregh74curDyvRE0GAFihQfovUAHpYDrtOIrOA"
 SHEET_PLAYER_IDS    = 1903970832
 TOUR_MODE_SHEET_MAP = {
     "Usual"         : 0,
-    "Random OP"     : 591917504,
-    "Random ED"     : 601464032,
-    "Random IN"     : 2075065970,
-    "Random OPED"   : 1506914251,
     "Watched"       : 1719516221,
     "Watched OP"    : "Watched OP",
     "Watched ED"    : 484347985,
     "Watched IN"    : 1177294729,
+    "Watched 2+8s"  : 165193471,
+    "Watcehd 5s"    : 676003100,
+    "Random OP"     : 591917504,
+    "Random ED"     : 601464032,
+    "Random IN"     : 2075065970,
+    "Random OPED"   : 1506914251,
 }
 
 EXCLUDED_TAGS = {

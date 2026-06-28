@@ -3010,7 +3010,7 @@ class TourAnalyzer:
         df = df.reset_index(drop = True)
 
         delta_check_cols    = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]
-        cols_to_drop        = [c for c in delta_check_cols if c in df.columns and df[c].isna().all()]
+        cols_to_drop        = [c for c in delta_check_cols if c in df.columns and (df[c].isna() | (df[c].astype(str).str.strip() == "N/A")).all()]
 
         if cols_to_drop: df = df.drop(columns = cols_to_drop)
 
