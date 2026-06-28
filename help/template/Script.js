@@ -1159,15 +1159,15 @@ function renderTeamTable() {
 
             let finalVal = displayVal;
 
-            if      (h === "Win Rate" && typeof displayVal === 'number')    finalVal = isNaN(displayVal) ? "N/A" : `${displayVal.toFixed(2)}`;
-            else if (h === "Team Leader")                                   finalVal = `<b>${displayVal}</b>`;
+            if      (h === "Win Record")    finalVal = displayVal;
+            else if (h === "Team Leader")   finalVal = `<b>${displayVal}</b>`;
 
             if (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0) {
                 let encodedDetails  = encodeURIComponent(JSON.stringify(rawCell.details));
                 let clickHandler    = "";
 
                 if (h === "Total 1/8s") clickHandler = ` onclick="searchTeamSolos('${row["Team Leader"]}')"`;
-                tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}"${clickHandler}>${finalVal}</td>`;
+                tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}" data-metric="${h}"${clickHandler}>${finalVal}</td>`;
             }
 
             else tbody += `<td class="${cellStyle.trim()}">${finalVal}</td>`;
@@ -2636,23 +2636,26 @@ function setupTooltipListeners() {
                     return;
                 }
 
-                const fractionRegex = /^\d+\/\d+$/;
-                const isWLTBracket  = /^\d+-\d+-\d+$/.test(songs[0]);
-                const containsRegex = fractionRegex.test(songs[0]) || isWLTBracket;
-                let fractionHeader  = "";
+                const isTeamWinRecordColumn = td.getAttribute('data-metric') === "Win Record" || /^\d+-\d+-\d+$/.test(songs[0]);
+                const fractionRegex         = /^\d+\/\d+$/;
+                const containsRegex         = fractionRegex.test(songs[0]);
+                let fractionHeader          = "";
+
+                if (isTeamWinRecordColumn) {
+                    const hasHeader = /^\d+-\d+-\d+$/.test(songs[0]);
+                    if (hasHeader) displaySongs.shift();
+
+                    tooltipNode.style.maxHeight = '300px';
+                    tooltipNode.style.overflowY = 'auto';
+                    tooltipNode.innerHTML       = displaySongs.join('<br>');
+
+                    positionTooltip(e);
+                    return;
+                }
 
                 if (containsRegex) {
                     fractionHeader = `<b>${songs[0]}</b>`;
                     displaySongs.shift();
-                }
-
-                if (isWLTBracket) {
-                    tooltipNode.style.maxHeight = '300px';
-                    tooltipNode.style.overflowY = 'auto';
-                    tooltipNode.innerHTML       = `${fractionHeader}<br>${displaySongs.join('<br>')}`;
-
-                    positionTooltip(e);
-                    return;
                 }
 
                 if (containsRegex)  displaySongs = sampleLargeSongList(displaySongs).map(s => (s.startsWith('✓') || s.startsWith('✗') || !isPlayerSubHover) ? s : `• ${s}`);

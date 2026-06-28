@@ -2481,9 +2481,9 @@ class TourAnalyzer:
                     for opp, scores in sub_dict.items(): items.append(f"{opp} ({', '.join(scores)})")
                     return f"{header}: {', '.join(items)}"
 
-                w_line = line_fmt("Win", h["wins"])
-                l_line = line_fmt("Loss", h["losses"])
-                t_line = line_fmt("Tie", h["ties"])
+                w_line = line_fmt("Win",    h["wins"])
+                l_line = line_fmt("Loss",   h["losses"])
+                t_line = line_fmt("Tie",    h["ties"])
 
                 if w_line: details_hover.append(w_line)
                 if l_line: details_hover.append(l_line)
@@ -2505,7 +2505,7 @@ class TourAnalyzer:
             }
 
             if h["total_matches"] > 0:
-                item_payload["Win Rate"]        = {"count": win_rate_val, "details": [h["summary"]] + details_hover}
+                item_payload["Win Record"]      = {"count": h["summary"], "details": details_hover}
                 item_payload["_win_pct_sort"]   = win_rate_val
 
             else: item_payload["_win_pct_sort"] = -1.0
@@ -2519,11 +2519,11 @@ class TourAnalyzer:
                 if col.startswith("_"): continue
 
                 num     = df_teams_temp[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
-                desc    = ["Mean Elo", "Mean GR", "Total 1/8s", "Rig Synergy", "Off Synergy", "Shared Rigs", "Win Rate"]
+                desc    = ["Mean Elo", "Mean GR", "Total 1/8s", "Rig Synergy", "Off Synergy", "Shared Rigs", "Win Record"]
                 asc     = ["Mean Over-8"]
 
                 if not num.dropna().empty and (col in desc or col in asc):
-                    clean_num = num.loc[df_teams_temp["_win_pct_sort"] != -1.0] if col == "Win Rate" else num
+                    clean_num = num.loc[df_teams_temp["_win_pct_sort"] != -1.0] if col == "Win Record" else num
                     if clean_num.dropna().empty: continue
 
                     best_val    = clean_num.dropna().min() if col in asc else clean_num.dropna().max()
@@ -2544,7 +2544,7 @@ class TourAnalyzer:
 
             for k, v in row.items():
                 if      k.startswith("_")                                       : continue
-                if      k in ["Total 1/8s", "Win Rate", "Team Leader"]          : f_dict[k] = v
+                if      k in ["Total 1/8s", "Win Record", "Team Leader"]        : f_dict[k] = v
                 elif    pd.isnull(v) or (isinstance(v, float) and np.isnan(v))  : f_dict[k] = "N/A"
                 else                                                            : f_dict[k] = f"{float(v):.2f}"
 
