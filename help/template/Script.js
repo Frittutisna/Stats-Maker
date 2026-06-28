@@ -135,8 +135,8 @@ function switchDashboardTab(evt, tabId) {
     const helpWrapper = document.getElementById('globalHelpWrapper');
 
     if (gearWrapper) {
-        if (['player-tab', 'search-tab'].includes(tabId))   gearWrapper.classList.remove('invisible');
-        else                                                gearWrapper.classList.add('invisible');
+        if (['player-tab', 'tier-tab', 'search-tab'].includes(tabId))   gearWrapper.classList.remove('invisible');
+        else                                                            gearWrapper.classList.add('invisible');
     }
 
     if (helpWrapper) {
@@ -154,11 +154,19 @@ window.toggleGlobalGear = function(event) {
     if (activeTab === 'player-tab') {
         document.getElementById("playerColumnSettingsDropdown") .classList.toggle   ("hidden");
         document.getElementById("columnSettingsDropdown")       .classList.add      ("hidden");
+        document.getElementById("tierSettingsDropdown")         .classList.add      ("hidden");
+    }
+
+    else if (activeTab === 'tier-tab') {
+        document.getElementById("tierSettingsDropdown")         .classList.toggle   ("hidden");
+        document.getElementById("playerColumnSettingsDropdown") .classList.add      ("hidden");
+        document.getElementById("columnSettingsDropdown")       .classList.add      ("hidden");
     }
 
     else if (activeTab === 'search-tab') {
         document.getElementById("columnSettingsDropdown")       .classList.toggle   ("hidden");
         document.getElementById("playerColumnSettingsDropdown") .classList.add      ("hidden");
+        document.getElementById("tierSettingsDropdown")         .classList.add      ("hidden");
     }
 };
 
@@ -212,23 +220,12 @@ const stopProp = (e) => e.stopPropagation();
 
 [
     'playerColumnSettingsDropdown',
+    'tierSettingsDropdown',
     'columnSettingsDropdown',
     'playerGuideDropdown',
     'tierGuideDropdown',
     'songGuideDropdown',
     'guessGuideDropdown',
-    'searchGuideDropdown'
-].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener("click", stopProp);
-});
-
-[
-    'playerColumnSettingsDropdown',
-    'columnSettingsDropdown',
-    'playerGuideDropdown',
-    'tierGuideDropdown',
-    'songGuideDropdown',
     'searchGuideDropdown'
 ].forEach(id => {
     const el = document.getElementById(id);
@@ -1166,45 +1163,111 @@ window.togglePlayerMetricMode = function() {
     triggerPlayerTableRefresh   ();
 };
 
-window.toggleTierChartMode = function() {
-    const btn               = document.getElementById("tierModeToggleBtn");
-    currentTierChartMode    = currentTierChartMode === "TIER" ? "ALL" : "TIER";
-    btn.innerText           = currentTierChartMode;
-    renderTierCharts();
-};
+function syncTierDropdownDOMState() {
+    const isCount = globalChartMode === "COUNT";
 
-window.toggleGlobalChartMode = function() {
-    globalChartMode = globalChartMode === "RATE" ? "COUNT" : "RATE";
+    document.getElementById("opt_c1_base")      .innerText = isCount ? "Correct"        : "Guess Rate";
+    document.getElementById("opt_c1_over8")     .innerText = isCount ? "Over-8 Hit"     : "Over-8 Distribution";
+    document.getElementById("opt_c1_rig")       .innerText = isCount ? "Rigs"           : "Rig Rate";
+    document.getElementById("opt_c1_chant")     .innerText = isCount ? "Chanting Hit"   : "Chanting Guess Rate";
+    document.getElementById("label_group_c1")   .innerText = "General";
+    document.getElementById("label_group_c2")   .innerText = "Contribution";
 
-    if (globalChartMode === "COUNT" && (c1Sub === "HIT" || c1Sub === "OFF")) {
-        c1Sub           = "BASE";
-        const subBtn    = document.getElementById("c1_sub_btn");
+    const hitLabel = document.getElementById("label_opt_c1_hit");
+    const offLabel = document.getElementById("label_opt_c1_off");
 
-        if (subBtn) subBtn.innerText = "BASE";
+    if (isCount) {
+        if (hitLabel) hitLabel.classList.add("hidden");
+        if (offLabel) offLabel.classList.add("hidden");
+
+        if (c1Sub === "HIT" || c1Sub === "OFF") {
+            c1Sub = "BASE";
+            document.querySelector('input[name="tierSubMetricsRadio"][value="BASE"]').checked = true;
+        }
     }
 
-    document.getElementById("global_mode_btn").innerText = globalChartMode;
-    renderTierCharts();
-};
+    else {
+        if (hitLabel) hitLabel.classList.remove("hidden");
+        if (offLabel) offLabel.classList.remove("hidden");
+    }
+}
 
-window.toggleC1Sub = function() {
-    const subs                                      = globalChartMode === "COUNT" ? ["BASE", "OVER-8", "RIG", "CHANT"] : ["BASE", "OVER-8", "RIG", "HIT", "OFF", "CHANT"];
-    let idx                                         = subs.indexOf(c1Sub);
-    if (idx === -1) idx                             = 0; 
-    c1Sub                                           = subs[(idx + 1) % subs.length];
-    document.getElementById("c1_sub_btn").innerText = c1Sub;
-    renderTierCharts();
-};
+function initTierDropdownListeners() {
+    document.querySelectorAll('input[name="tierSortRadio"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            currentTierChartMode = e.target.value;
+            renderTierCharts();
+        });
+    });
 
-window.toggleC2Sub = function() {};
+    document.querySelectorAll('input[name="tierDisplayRadio"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            globalChartMode = e.target.value;
+            syncTierDropdownDOMState();
+            renderTierCharts();
+        });
+    });
 
-window.toggleC3Mode = function() {
-    const modes                                         = ["MIN", "MEAN", "MED", "MAX", "STDEV"];
-    let idx                                             = modes.indexOf(c3Mode);
-    c3Mode                                              = modes[(idx + 1) % modes.length];
-    document.getElementById("c3_mode_btn").innerText    = c3Mode;
-    renderTierCharts();
-};
+    document.querySelectorAll('input[name="tierChartGroupRadio"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const selectedGroup = e.target.value;
+
+            if (selectedGroup !== 'C1') document.querySelectorAll('input[name="tierSubMetricsRadio"]').forEach(r => r.checked = false);
+            else {
+                const checkedSub = document.querySelector('input[name="tierSubMetricsRadio"]:checked');
+
+                if (!checkedSub) {
+                    const defaultSub = document.querySelector('input[name="tierSubMetricsRadio"][value="BASE"]');
+
+                    if (defaultSub) {
+                        defaultSub.checked  = true;
+                        c1Sub               = "BASE";
+                    }
+                }
+            }
+
+            if (selectedGroup !== 'C3') document.querySelectorAll('input[name="tierTimeRadio"]').forEach(r => r.checked = false);
+            else {
+                const checkedTime = document.querySelector('input[name="tierTimeRadio"]:checked');
+
+                if (!checkedTime) {
+                    const defaultTime = document.querySelector('input[name="tierTimeRadio"][value="MED"]');
+
+                    if (defaultTime) {
+                        defaultTime.checked = true;
+                        c3Mode              = "MED";
+                    }
+                }
+            }
+
+            renderTierCharts();
+        });
+    });
+
+    document.querySelectorAll('input[name="tierSubMetricsRadio"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            c1Sub = e.target.value;
+
+            document.querySelector      ('input[name="tierChartGroupRadio"][value="C1"]').checked = true;
+            document.querySelectorAll   ('input[name="tierTimeRadio"]').forEach(r => r.checked = false);
+
+            renderTierCharts();
+        });
+    });
+
+    document.querySelectorAll('input[name="tierTimeRadio"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            c3Mode = e.target.value;
+
+            document.querySelector      ('input[name="tierChartGroupRadio"][value="C3"]').checked = true;
+            document.querySelectorAll   ('input[name="tierSubMetricsRadio"]').forEach(r => r.checked = false);
+
+            renderTierCharts();
+        });
+    });
+}
+
+initTierDropdownListeners();
 
 function generateLinearColors(startHex, endHex, steps) {
     const parse = (hex) => [parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16)];
@@ -1228,6 +1291,39 @@ const c8Colors = generateLinearColors(c2, c0, 8);
 function renderTierCharts() {
     if ((!document.getElementById('tierChart_MainMetrics') && !document.getElementById('tierChart_MainMetricsMain')) || !tierStats) return;
     if (!globalSearchData || globalSearchData.length === 0)                                                                         return;
+
+    let checkedGroup = document.querySelector('input[name="tierChartGroupRadio"]:checked')?.value;
+
+    if (!checkedGroup) {
+        if (document.querySelector('input[name="tierSubMetricsRadio"]:checked')) {
+            checkedGroup                                                                    = "C1";
+            document.querySelector('input[name="tierChartGroupRadio"][value="C1"]').checked = true;
+        }
+
+        else if (document.querySelector('input[name="tierTimeRadio"]:checked')) {
+            checkedGroup                                                                    = "C3";
+            document.querySelector('input[name="tierChartGroupRadio"][value="C3"]').checked = true;
+        }
+
+        else {
+            checkedGroup                                                                            = "C1";
+            document.querySelector('input[name="tierChartGroupRadio"][value="C1"]')     .checked    = true;
+            document.querySelector('input[name="tierSubMetricsRadio"][value="BASE"]')   .checked    = true;
+            c1Sub = "BASE";
+        }
+    }
+
+    const containerC1 = document.getElementById("container_tierChart_MainMetrics");
+    const containerC2 = document.getElementById("container_tierChart_LivesMetrics");
+    const containerC3 = document.getElementById("container_tierChart_TimeMetrics");
+
+    if (containerC1) containerC1.classList.add("hidden");
+    if (containerC2) containerC2.classList.add("hidden");
+    if (containerC3) containerC3.classList.add("hidden");
+
+    if (checkedGroup === "C1" && containerC1) containerC1.classList.remove("hidden");
+    if (checkedGroup === "C2" && containerC2) containerC2.classList.remove("hidden");
+    if (checkedGroup === "C3" && containerC3) containerC3.classList.remove("hidden");
 
     let gapCounter      = 0;
     const hasChanting   = globalSearchData.some(s => s.chanting && s.chanting.toLowerCase() === "yes");
@@ -1633,6 +1729,7 @@ function renderTierCharts() {
                 text                : c1Data.multiData[i]   .slice().reverse().map(v => v ? v.toFixed(0) : ""),
                 textposition        : 'inside',
                 insidetextanchor    : 'middle',
+                textangle           : 0,
                 textfont            : {family: 'Segoe UI', size: 15, color: 'white', weight: 'bold'}
             });
         }
@@ -1666,7 +1763,9 @@ function renderTierCharts() {
                 hovertext           : x8TraceHovers[i]      .slice().reverse(),
                 hoverinfo           : 'text',
                 text                : c1Data.multiData[i]   .slice().reverse().map(v => v ? v.toFixed(globalChartMode === "RATE" ? 1 : 0) : ""),
-                textposition        : 'inside', insidetextanchor: 'middle',
+                textposition        : 'inside',
+                insidetextanchor    : 'middle',
+                textangle           : 0,
                 textfont            : {family: 'Segoe UI', size: 15, color: 'white', weight: 'bold'}
             });
         }
@@ -1687,6 +1786,7 @@ function renderTierCharts() {
             text                : c1Data.singleXVals    .slice().reverse().map(v => v === null ? "" : v.toFixed(globalChartMode === "RATE" ? 2 : 0) + " "),
             textposition        : 'inside',
             insidetextanchor    : 'end',
+            textangle           : 0,
             textfont            : {family: 'Segoe UI', size: 15, color: 'white', weight: 'bold'},
             marker              : {
                 color       : c1Data.singleXVals.slice().reverse(),
@@ -1764,7 +1864,7 @@ function renderTierCharts() {
         }
     };
 
-    layoutC1.height = 25 * c1Data.yLabels.length;
+    layoutC1.height = 27.5 * c1Data.yLabels.length;
     c1Traces.forEach(t => t.hoverinfo = 'none');
     Plotly.newPlot('tierChart_MainMetrics', c1Traces, layoutC1, {responsive: true, displayModeBar: false});
     let newChart1Div = document.getElementById('tierChart_MainMetrics');
@@ -1975,6 +2075,7 @@ function renderTierCharts() {
                 text                : c2Data.multiData[i]               .slice().reverse().map(v => v ? v.toFixed(0) : ""),
                 textposition        : 'inside',
                 insidetextanchor    : 'middle',
+                textangle           : 0,
                 textfont            : {family: 'Segoe UI', size: 15, color: 'white', weight: 'bold'}
             });
         }
@@ -2009,6 +2110,7 @@ function renderTierCharts() {
                 text                : c2Data.multiData[i]                                       .slice().reverse().map(v => v ? v.toFixed(1) : ""),
                 textposition        : 'inside',
                 insidetextanchor    : 'middle',
+                textangle           : 0,
                 textfont            : {family: 'Segoe UI', size: 15, color: 'white', weight: 'bold'}
             });
         }
@@ -2045,7 +2147,7 @@ function renderTierCharts() {
         }
     };
 
-    layoutC2.height = 25 * c2Data.yLabels.length;
+    layoutC2.height = 27.5 * c2Data.yLabels.length;
     c2Traces.forEach(t => t.hoverinfo = 'none');
     Plotly.newPlot('tierChart_LivesMetrics', c2Traces, layoutC2, {responsive: true, displayModeBar: false});
     let newChart2Div = document.getElementById('tierChart_LivesMetrics');
@@ -2182,6 +2284,7 @@ function renderTierCharts() {
         text                : c3Data.singleXVals    .slice().reverse().map(v => v === null ? "" : v.toFixed(2) + " "),
         textposition        : 'inside', 
         insidetextanchor    : 'end',
+        textangle           : 0,
         textfont            : {family: 'Segoe UI', size: 15, color: 'white', weight: 'bold'},
         marker              : {
             color       : c3Data.singleXVals.slice().reverse(),
@@ -2211,7 +2314,7 @@ function renderTierCharts() {
         showlegend  : false
     };
 
-    layoutC3.height = 25 * c3Data.yLabels.length;
+    layoutC3.height = 27.5 * c3Data.yLabels.length;
     Plotly.newPlot('tierChart_TimeMetrics', c3Traces, layoutC3, {responsive: true, displayModeBar: false});
     let newChart3Div = document.getElementById('tierChart_TimeMetrics');
 
