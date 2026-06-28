@@ -938,10 +938,10 @@ function sortAndRenderPlayers() {
                 else if (h.name === "Chant GR")         clickHandler = ` onclick="searchPlayerMetricFromTable('correct:${currentPlayerName} chanting:yes')"`;
             }
 
-            if ((h.name === "Player" && rawCell && rawCell.details && rawCell.details.length > 0) || 
-                (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0)) {
+            if (h.name !== "GR" && ((h.name === "Player" && rawCell && rawCell.details && rawCell.details.length > 0) || 
+                (rawCell !== null && typeof rawCell === 'object' && rawCell.details && rawCell.details.length > 0))) {
                 let encodedDetails = encodeURIComponent(JSON.stringify(rawCell.details));
-                tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}"${clickHandler}>${finalVal}</td>`;
+                tbody += `<td class="${cellStyle.trim()}" data-songs="${encodedDetails}" data-metric="${h.name}"${clickHandler}>${finalVal}</td>`;
             }
 
             else tbody += `<td class="${cellStyle.trim()}"${clickHandler}>${finalVal}</td>`;
@@ -2254,6 +2254,35 @@ function setupTooltipListeners() {
                 if      (td.classList.contains('highlight-best'))   {tooltipNode.style.backgroundColor = c2;        tooltipNode.style.color = 'white';}
                 else if (td.classList.contains('highlight-worst'))  {tooltipNode.style.backgroundColor = c0;        tooltipNode.style.color = 'white';}
                 else                                                {tooltipNode.style.backgroundColor = 'black';   tooltipNode.style.color = 'white';}
+
+                const metricName = td.getAttribute('data-metric');
+
+                if (metricName === "Off GR") {
+                    let cleanSongs      = [...songs];
+                    let fractionHeader  = "";
+
+                    if (cleanSongs.length > 0 && (/^\d+\/\d+$/.test(cleanSongs[0]) || /^\d+-\d+-\d+$/.test(cleanSongs[0]))) {
+                        fractionHeader = `<b>${cleanSongs[0]}</b>`;
+                        cleanSongs.shift();
+                    }
+
+                    else {
+                        let total           = cleanSongs.length;
+                        let correctCount    = cleanSongs.filter(s => s.startsWith('✓')).length;
+                        fractionHeader      = `<b>${correctCount}/${total}</b>`;
+                    }
+
+                    let correctSongs    = cleanSongs.filter(s => s.startsWith('✓')).map(s => s.slice(2));
+                    correctSongs        = window.translateHoverText(correctSongs);
+                    let displaySongs    = formatAndSortSongsList(correctSongs, true);
+
+                    tooltipNode.style.maxHeight = '300px';
+                    tooltipNode.style.overflowY = 'auto';
+                    tooltipNode.innerHTML       = `${fractionHeader}<br>${displaySongs.join('<br>')}`;
+
+                    positionTooltip(e);
+                    return;
+                }
 
                 let displaySongs        = [...songs];
                 displaySongs            = window.translateHoverText(displaySongs);
