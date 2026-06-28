@@ -314,35 +314,35 @@ let globalFilteredPlayers   = [];
 let globalMetricHighlights  = {};
 
 const playerHeadersMasterConfig = [
-    {id: "player",              name: "Player",                 ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "team",                name: "Team",                   ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
-    {id: "tier",                name: "Tier",                   ascMetric: true,    teamReq: true,  watchedReq: false,  def: false},
-    {id: "elo",                 name: "Elo",                    ascMetric: false,   teamReq: true,  watchedReq: false,  def: true},
-    {id: "guessrate",           name: "GR",                     ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "uf",                  name: "UF",                     ascMetric: false,   teamReq: true,  watchedReq: false,  def: true},
-    {id: "score",               name: "Score",                  ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
-    {id: "18s",                 name: "1/8s",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "28s",                 name: "2/8s",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "78s",                 name: "7/8s",                   ascMetric: true,    teamReq: false, watchedReq: false,  def: true},
-    {id: "meanover8",           name: "Mean Over-8",            ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
-    {id: "livestaken",          name: "Lives Taken",            ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
-    {id: "livessaved",          name: "Lives Saved",            ascMetric: false,   teamReq: true,  watchedReq: false,  def: false},
-    {id: "opguessrate",         name: "OP GR",                  ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "edguessrate",         name: "ED GR",                  ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "inguessrate",         name: "IN GR",                  ascMetric: false,   teamReq: false, watchedReq: false,  def: true},
-    {id: "rigs",                name: "Rigs",                   ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
-    {id: "rigrate",             name: "Rig Rate",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
-    {id: "solorigs",            name: "Solo Rigs",              ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
-    {id: "solorigrate",         name: "Solo Rig Rate",          ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
-    {id: "rigover8",            name: "Rig Over-8",             ascMetric: true,    teamReq: false, watchedReq: true,   def: false},
-    {id: "over8delta",          name: "Over-8 Δ",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
-    {id: "rigguessrate",        name: "Rig GR",                 ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
-    {id: "offguessrate",        name: "Off GR",                 ascMetric: false,   teamReq: false, watchedReq: true,   def: true},
-    {id: "rigdelta",            name: "Rig Δ",                  ascMetric: false,   teamReq: false, watchedReq: true,   def: false},
-    {id: "meandifficultyhit",   name: "Mean Difficulty Hit",    ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
-    {id: "medianvintagehit",    name: "Median Vintage Hit",     ascMetric: false,   teamReq: false, watchedReq: false,  def: false},
-    {id: "mediantime",          name: "Median Time",            ascMetric: true,    teamReq: false, watchedReq: false,  def: false},
-    {id: "chantguessrate",      name: "Chant GR",               ascMetric: false,   teamReq: false, watchedReq: false,  def: false}
+    {id: "player",              name: "Player",                 ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "text"},
+    {id: "team",                name: "Team",                   ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "categorical",    subOptions: []},
+    {id: "tier",                name: "Tier",                   ascMetric: true,    teamReq: true,  watchedReq: false,  def: false, type: "categorical",    subOptions: ["1", "2", "3", "4"]},
+    {id: "elo",                 name: "Elo",                    ascMetric: false,   teamReq: true,  watchedReq: false,  def: true,  type: "range",          min: -10,   max: 200,   step: 1},
+    {id: "guessrate",           name: "GR",                     ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "uf",                  name: "UF",                     ascMetric: false,   teamReq: true,  watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "score",               name: "Score",                  ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "18s",                 name: "1/8s",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "28s",                 name: "2/8s",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "78s",                 name: "7/8s",                   ascMetric: true,    teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "meanover8",           name: "Mean Over-8",            ascMetric: true,    teamReq: false, watchedReq: false,  def: false, type: "range",          min: 0,     max: 8,     step: 0.01},
+    {id: "livestaken",          name: "Lives Taken",            ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "livessaved",          name: "Lives Saved",            ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "opguessrate",         name: "OP GR",                  ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "edguessrate",         name: "ED GR",                  ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "inguessrate",         name: "IN GR",                  ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "rigs",                name: "Rigs",                   ascMetric: false,   teamReq: false, watchedReq: true,   def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "rigrate",             name: "Rig Rate",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "solorigs",            name: "Solo Rigs",              ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "solorigrate",         name: "Solo Rig Rate",          ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "rigover8",            name: "Rig Over-8",             ascMetric: true,    teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 8,     step: 0.01},
+    {id: "over8delta",          name: "Over-8 Δ",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: -8,    max: 8,     step: 1},
+    {id: "rigguessrate",        name: "Rig GR",                 ascMetric: false,   teamReq: false, watchedReq: true,   def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "offguessrate",        name: "Off GR",                 ascMetric: false,   teamReq: false, watchedReq: true,   def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "rigdelta",            name: "Rig Δ",                  ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: -1000, max: 100,   step: 0.01},
+    {id: "meandifficultyhit",   name: "Mean Difficulty Hit",    ascMetric: true,    teamReq: false, watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 0.01},
+    {id: "medianvintagehit",    name: "Median Vintage Hit",     ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: 1900,  max: 2026,  step: 1},
+    {id: "mediantime",          name: "Median Time",            ascMetric: true,    teamReq: false, watchedReq: false,  def: false, type: "range",          min: 0,     max: 20,    step: 0.01},
+    {id: "chantguessrate",      name: "Chant GR",               ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 1}
 ];
 
 let activePlayerHeadersConfig = playerHeadersMasterConfig.filter(col => {
@@ -361,23 +361,58 @@ function initPlayerColumnSettings() {
     if (!container || !masterChk) return;
     container.innerHTML = "";
 
-    const updateMasterState = () => {
+    if (players && players.length > 0) {
+        const uniqueTeams = new Set();
+
+        players.forEach(p => {
+            if (p["Team"]) {
+                const tVal = (typeof p["Team"] === 'object') ? p["Team"].count : p["Team"];
+                if (tVal) uniqueTeams.add(String(tVal).trim());
+            }
+        });
+
+        const teamConfig = activePlayerHeadersConfig.find(c => c.id === "team");
+        if (teamConfig) teamConfig.subOptions = Array.from(uniqueTeams).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+
+        activePlayerHeadersConfig.forEach(col => {
+            if (col.type === "range") {
+                const numericValues = players.map(p => {
+                    const raw = p[col.name];
+                    const val = (raw !== null && typeof raw === 'object') ? raw.count : raw;
+
+                    if (col.id === "medianvintagehit" && typeof val === 'string') return parseVintageToFloat(val);
+                    return parseFloat(val);
+                }).filter(v => !isNaN(v) && v !== -Infinity && v !== Infinity);
+
+                if (numericValues.length > 0) {
+                    col.min = Math.floor(Math.min(...numericValues));
+                    col.max = Math.ceil(Math.max(...numericValues));
+                }
+            }
+        });
+    }
+
+    function updateMasterCheckboxState() {
         const allChecked        = activePlayerHeadersConfig.every(c => c.visible);
         const noneChecked       = activePlayerHeadersConfig.every(c => !c.visible);
         masterChk.checked       = allChecked;
         masterChk.className     = "rounded accent-black";
         masterChk.indeterminate = !allChecked && !noneChecked;
-    };
+    }
 
     masterChk.addEventListener("change", () => {
         activePlayerHeadersConfig.forEach(c => { c.visible = masterChk.checked; });
         document.querySelectorAll(".player-col-toggle-checkbox").forEach(chk => chk.checked = masterChk.checked);
-        sortAndRenderPlayers();
+        triggerPlayerTableRefresh();
     });
 
     activePlayerHeadersConfig.forEach(col => {
+        const colWrapper        = document.createElement("div");
+        colWrapper.className    = "flex flex-col space-y-1";
+
         const label     = document.createElement("label");
-        label.className = "flex items-center gap-2 cursor-pointer w-full text-left font-normal text-black";
+        label.className = "flex items-center gap-2 cursor-pointer w-full text-left font-bold text-black";
+
         const chk       = document.createElement("input");
         chk.type        = "checkbox";
         chk.className   = "player-col-toggle-checkbox rounded accent-black";
@@ -386,16 +421,204 @@ function initPlayerColumnSettings() {
         chk.addEventListener("change", () => {
             col.visible = chk.checked;
 
-            updateMasterState       ();
-            sortAndRenderPlayers    ();
+            if (!chk.checked && col.type === "categorical" && col.selectedOptions) {
+                col.selectedOptions.clear();
+                colWrapper.querySelectorAll("input[type='checkbox']").forEach(subChk => { if (subChk !== chk) subChk.checked = false; });
+            }
+
+            else if (chk.checked && col.type === "categorical" && col.subOptions) {
+                col.subOptions.forEach(opt => col.selectedOptions.add(opt.toLowerCase()));
+                colWrapper.querySelectorAll("input[type='checkbox']").forEach(subChk => subChk.checked = true);
+            }
+
+            else if (!chk.checked && col.type === "range") {
+                col.currentMin = col.min;
+                col.currentMax = col.max;
+
+                const inputs = colWrapper.querySelectorAll("input[type='number']");
+
+                if (inputs.length === 2) {
+                    inputs[0].value = col.min;
+                    inputs[1].value = col.max;
+                }
+            }
+
+            updateMasterCheckboxState();
+            triggerPlayerTableRefresh();
         });
 
-        label.appendChild       (chk);
-        label.appendChild       (document.createTextNode(col.name));
-        container.appendChild   (label);
+        label       .appendChild(chk);
+        label       .appendChild(document.createTextNode(col.name));
+        colWrapper  .appendChild(label);
+
+        if (col.type === "categorical" && col.subOptions) {
+            const subContainer      = document.createElement("div");
+            subContainer.className  = "pl-6 flex flex-col text-xs";
+
+            if (col.visible)    col.selectedOptions = new Set(col.subOptions.map(o => o.toLowerCase()));
+            else                col.selectedOptions = new Set();
+
+            col.subOptions.forEach(opt => {
+                const subLabel      = document.createElement("label");
+                subLabel.className  = "flex items-center gap-1 cursor-pointer text-gray-700 hover:text-black py-0.5 pr-6";
+
+                const subChk        = document.createElement("input");
+                subChk.type         = "checkbox";
+                subChk.className    = "rounded accent-black scale-90";
+                subChk.checked      = col.visible;
+
+                subChk.addEventListener("change", () => {
+                    if (subChk.checked) col.selectedOptions.add(opt.toLowerCase());
+                    else                col.selectedOptions.delete(opt.toLowerCase());
+
+                    const totalChildren = col.subOptions.length;
+                    const selectedCount = col.selectedOptions.size;
+
+                    if (selectedCount === totalChildren) {
+                        chk.checked         = true;
+                        chk.indeterminate   = false;
+                        col.visible         = true;
+                    }
+
+                    else if (selectedCount === 0) {
+                        chk.checked         = false;
+                        chk.indeterminate   = false;
+                        col.visible         = false;
+                    }
+
+                    else {
+                        chk.checked         = false;
+                        chk.indeterminate   = true;
+                        col.visible         = true;
+                    }
+
+                    updateMasterCheckboxState();
+                    triggerPlayerTableRefresh();
+                });
+
+                subLabel        .appendChild(subChk);
+                subLabel        .appendChild(document.createTextNode(opt));
+                subContainer    .appendChild(subLabel);
+            });
+
+            colWrapper.appendChild(subContainer);
+        }
+
+        if (col.type === "range") {
+            col.currentMin = col.min;
+            col.currentMax = col.max;
+
+            const inputContainer        = document.createElement("div");
+            inputContainer.className    = "pl-6 flex flex-col gap-1 mt-1 w-full text-black";
+
+            const boxWrapper        = document.createElement("div");
+            boxWrapper.className    = "flex flex-col gap-1";
+
+            const minLabel      = document.createElement("label");
+            minLabel.className  = "flex items-center justify-start gap-2 font-mono";
+            minLabel.innerHTML  = "Min:";
+            const inputMin      = document.createElement("input");
+            inputMin.type       = "number";
+            inputMin.className  = "w-10 h-5 border text-center text-xs";
+            inputMin.value      = col.min;
+
+            const maxLabel      = document.createElement("label");
+            maxLabel.className  = "flex items-center justify-start gap-2 font-mono";
+            maxLabel.innerHTML  = "Max:";
+            const inputMax      = document.createElement("input");
+            inputMax.type       = "number";
+            inputMax.className  = "w-10 h-5 border text-center text-xs";
+            inputMax.value      = col.max;
+
+            minLabel        .appendChild(inputMin);
+            maxLabel        .appendChild(inputMax);
+            boxWrapper      .appendChild(minLabel);
+            boxWrapper      .appendChild(maxLabel);
+            inputContainer  .appendChild(boxWrapper);
+
+            const handleTextbookInput = () => {
+                let valMin = parseFloat(inputMin.value);
+                let valMax = parseFloat(inputMax.value);
+
+                if (isNaN(valMin)) valMin = col.min;
+                if (isNaN(valMax)) valMax = col.max;
+
+                col.currentMin = valMin;
+                col.currentMax = valMax;
+            };
+
+            const triggerRefreshDebounced = debounce(() => {
+                if (!col.visible && (col.currentMin > col.min || col.currentMax < col.max)) {
+                    col.visible = true;
+                    chk.checked = true;
+
+                    updateMasterCheckboxState();
+                }
+
+                triggerPlayerTableRefresh();
+            }, 150);
+
+            inputMin.addEventListener("input", () => { handleTextbookInput(); triggerRefreshDebounced(); });
+            inputMax.addEventListener("input", () => { handleTextbookInput(); triggerRefreshDebounced(); });
+
+            masterChk.addEventListener("change", () => {
+                if (!masterChk.checked) {
+                    inputMin.value = col.min;
+                    inputMax.value = col.max;
+                    col.currentMin = col.min;
+                    col.currentMax = col.max;
+                }
+
+                else {
+                    col.currentMin = isNaN(parseFloat(inputMin.value)) ? col.min : parseFloat(inputMin.value);
+                    col.currentMax = isNaN(parseFloat(inputMax.value)) ? col.max : parseFloat(inputMax.value);
+                }
+
+                triggerPlayerTableRefresh();
+            });
+
+            colWrapper.appendChild(inputContainer);
+        }
+
+        container.appendChild(colWrapper);
     });
 
-    updateMasterState();
+    updateMasterCheckboxState();
+}
+
+function triggerPlayerTableRefresh() {
+    const playerSearchInput = document.getElementById('playerSearchInput');
+
+    if (playerSearchInput && playerSearchInput.value.trim()) playerSearchInput.dispatchEvent(new Event('input'));
+
+    else {
+        globalFilteredPlayers = processPlayerRuntimeSettings(players || []);
+        sortAndRenderPlayers();
+    }
+}
+
+function processPlayerRuntimeSettings(targetPool) {
+    return targetPool.filter(p => {
+        for (let col of activePlayerHeadersConfig) {
+            const rawVal    = p[col.name];
+            let targetVal   = (rawVal !== null && typeof rawVal === 'object') ? rawVal.count : rawVal;
+
+            if (col.type === "categorical" && col.selectedOptions) {
+                if (!col.visible) continue;
+                const matchString = String(targetVal || "").trim().toLowerCase();
+                if (matchString && !col.selectedOptions.has(matchString)) return false;
+            }
+
+            if (col.type === "range" && col.currentMin !== undefined && col.currentMax !== undefined) {
+                let checkNum = parseFloat(targetVal);
+                if (col.id === "medianvintagehit" && typeof targetVal === 'string') checkNum = parseVintageToFloat(targetVal);
+                if (isNaN(checkNum))                                                continue; 
+                if (checkNum < col.currentMin || checkNum > col.currentMax)         return false;
+            }
+        }
+
+        return true;
+    });
 }
 
 function cacheGlobalHighlights() {
@@ -698,13 +921,15 @@ function renderPlayerTable() {
     const playerSearchInput = document.getElementById('playerSearchInput');
 
     const triggerPlayerQueryProcess = () => {
-        const rawQuery = playerSearchInput ? playerSearchInput.value.trim() : "";
-        globalFilteredPlayers = processPlayerFiltering(rawQuery);
+        const rawQuery          = playerSearchInput ? playerSearchInput.value.trim() : "";
+        let textFiltered        = processPlayerFiltering(rawQuery);
+        globalFilteredPlayers   = processPlayerRuntimeSettings(textFiltered);
+
         sortAndRenderPlayers();
     };
 
     if (playerSearchInput) playerSearchInput.addEventListener('input', debounce(triggerPlayerQueryProcess, 250));
-    globalFilteredPlayers = [...players];
+    globalFilteredPlayers = processPlayerRuntimeSettings([...players]);
     sortAndRenderPlayers();
 }
 
@@ -3071,7 +3296,7 @@ function initColumnSettingsCheckboxes() {
 
             col.subOptions.forEach(opt => {
                 const subLabel      = document.createElement("label");
-                subLabel.className  = "flex items-center gap-1.5 cursor-pointer text-gray-700 hover:text-black py-0.5";
+                subLabel.className  = "flex items-center gap-1 cursor-pointer text-gray-700 hover:text-black py-0.5";
 
                 const subChk        = document.createElement("input");
                 subChk.type         = "checkbox";
