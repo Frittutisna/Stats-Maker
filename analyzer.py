@@ -805,8 +805,8 @@ class TourAnalyzer:
                     "Stats.png"                         : "1-Player.png",
                     "Stats2.png"                        : "2-Type.png",
                     "Stats3 - Watched Exclusive.png"    : "3-List.png",
-                    "Stats4.png"                        : "4-Extra.png",
-                    "Stats Songs.png"                   : "5-Song.png"
+                    "Stats Songs.png"                   : "4-Song.png",
+                    "Stats4.png"                        : "5-Extra.png"
                 }
 
                 print("[?] Copying Dry's PNGs back")
