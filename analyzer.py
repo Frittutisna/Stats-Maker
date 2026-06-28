@@ -1308,6 +1308,12 @@ class TourAnalyzer:
         if "Over-8 Δ"       in df_png.columns: df_png["Over-8 Δ"]       = pd.to_numeric(df_png["Over-8 Δ"], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
         for c in pcts: df_png[c] = pd.to_numeric(df_png[c], errors = 'coerce').mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        delta_cols = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]
+
+        for dc in delta_cols:
+            if dc in df_png.columns:
+                df_png[dc] = pd.to_numeric(df_png[dc], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+
         self._export_png(df_png, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask, val_str)
 
     def _compute_tour_stats(self, use_teams, watched):

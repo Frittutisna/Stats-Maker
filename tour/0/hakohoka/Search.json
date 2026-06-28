@@ -259,6 +259,206 @@
         ]
     },
     {
+        "romaji": "Aikatsu! Music Award: Minna de Shou o Moracchaima Show!",
+        "english": "Aikatsu! Music Award: Minna de Shou o Moracchaima Show!",
+        "song": "Egao no Suncatcher",
+        "artist_raw": "Risuko・Mona from STAR☆ANIS",
+        "artist_arr": [
+            "Risuko・Mona from STAR☆ANIS"
+        ],
+        "composer": "Takao Nagatani",
+        "arranger": "Takao Nagatani",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=17125",
+        "anime_type": "Movie",
+        "vintage": "Summer 2015",
+        "genres_raw": [
+            "Music"
+        ],
+        "tags_raw": [
+            "CGI",
+            "Cute Girls Doing Cute Things",
+            "Henshin",
+            "Idol",
+            "Dancing",
+            "Musical Theater"
+        ],
+        "difficulty": "36.84",
+        "video_url": "https://nawdist.animemusicquiz.com/priqqp.mp3",
+        "guessers_flat": [
+            "ruuka",
+            "PotassiumF"
+        ],
+        "guessers_hover": [
+            "Team ruuka: ruuka (5.25), PotassiumF (3.29)",
+            "Team Hathaway_Noa: None"
+        ],
+        "listers_flat": [
+            "PotassiumF"
+        ],
+        "listers_hover": [
+            "Team ruuka: PotassiumF",
+            "Team Hathaway_Noa: None"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [
+            "potassiumf",
+            "ruuka"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            1
+        ]
+    },
+    {
+        "romaji": "Amagami-san Chi no Enmusubi",
+        "english": "Tying the Knot With an Amagami Sister",
+        "song": "Kamisama no Iutoori!",
+        "artist_raw": "≠ME",
+        "artist_arr": [
+            "≠ME"
+        ],
+        "composer": "Kanata Saito",
+        "arranger": "Kanata Saito",
+        "type": "Ending 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=27976",
+        "anime_type": "TV",
+        "vintage": "Fall 2024",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Ecchi",
+            "Romance",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Shounen",
+            "Slapstick",
+            "Family Life",
+            "Time Manipulation",
+            "Coming of Age",
+            "Body Swapping",
+            "Tsundere",
+            "Urban Fantasy",
+            "Memory Manipulation",
+            "Shrine Maiden",
+            "Tomboy",
+            "Adoption",
+            "Religion",
+            "Found Family",
+            "Orphan",
+            "Time Loop",
+            "Cohabitation"
+        ],
+        "difficulty": "21.01",
+        "video_url": "https://nawdist.animemusicquiz.com/wz8z3p.mp3",
+        "guessers_flat": [],
+        "guessers_hover": [
+            "Team konomi: None",
+            "Team SUS_DOMESTICUS: None"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "konomi"
+        ],
+        "listers_hover": [
+            "Team konomi: konomi",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": []
+    },
+    {
+        "romaji": "Amanchu!",
+        "english": "Amanchu!",
+        "song": "Million Clouds",
+        "artist_raw": "Maaya Sakamoto",
+        "artist_arr": [
+            "Maaya Sakamoto"
+        ],
+        "composer": "Frida Sundemo",
+        "arranger": "Shin Kouno",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=17700",
+        "anime_type": "TV",
+        "vintage": "Summer 2016",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Iyashikei",
+            "School Club",
+            "Scuba Diving",
+            "Coastal"
+        ],
+        "difficulty": "31.88",
+        "video_url": "https://nawdist.animemusicquiz.com/qoq1mk.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "zomg",
+            "bamboo",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (8.48), bamboo (3.67), zomg (3.17)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (4.33)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "zomg"
+        ],
+        "listers_hover": [
+            "Team konomi: zomg",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "sus_domesticus"
+        ],
+        "correct_teams_flat": [
+            3,
+            2,
+            2,
+            2
+        ]
+    },
+    {
         "romaji": "Angel Heart",
         "english": "Angel Heart",
         "song": "Gloria",
@@ -321,6 +521,75 @@
         "correct_teams_flat": [
             6,
             2
+        ]
+    },
+    {
+        "romaji": "Ani Tore! EX",
+        "english": "Anime De Training! Ex",
+        "song": "Vital☆Exercise",
+        "artist_raw": "Miku Ito, Azumi Waki, Miyu Komaki, Maria Naganawa, Kanon Takao",
+        "artist_arr": [
+            "Miku Ito",
+            "Azumi Waki",
+            "Miyu Komaki",
+            "Maria Naganawa",
+            "Kanon Takao"
+        ],
+        "composer": "Kousuke Okui",
+        "arranger": "Yashikin",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=17599",
+        "anime_type": "TV",
+        "vintage": "Fall 2015",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life",
+            "Sports"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Educational",
+            "Meta",
+            "Fitness",
+            "POV"
+        ],
+        "difficulty": "31.28",
+        "video_url": "https://nawdist.animemusicquiz.com/4zy82w.mp3",
+        "guessers_flat": [
+            "jaimeywea",
+            "Hathaway_Noa",
+            "ruuka",
+            "Tugia"
+        ],
+        "guessers_hover": [
+            "Team ruuka: ruuka (8.54), Tugia (4.44)",
+            "Team Hathaway_Noa: Hathaway_Noa (13.44), jaimeywea (7.37)"
+        ],
+        "listers_flat": [
+            "Tugia"
+        ],
+        "listers_hover": [
+            "Team ruuka: Tugia",
+            "Team Hathaway_Noa: None"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4,
+            4,
+            1,
+            1
         ]
     },
     {
@@ -526,6 +795,95 @@
     {
         "romaji": "Arifureta Shokugyou de Sekai Saikyou",
         "english": "Arifureta: From Commonplace to World's Strongest",
+        "song": "Kin-iro ni Somaru Yoake",
+        "artist_raw": "Yuuki Kuwahara",
+        "artist_arr": [
+            "Yuuki Kuwahara"
+        ],
+        "composer": "Yusuke Tojima",
+        "arranger": "Yusuke Tojima",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20363",
+        "anime_type": "TV",
+        "vintage": "Summer 2019",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy",
+            "Psychological"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Female Harem",
+            "Magic",
+            "Vampire",
+            "Tragedy",
+            "CGI",
+            "Nudity",
+            "Anti-Hero",
+            "Alternate Universe",
+            "Guns",
+            "Dragons",
+            "Isekai",
+            "Revenge",
+            "Kemonomimi",
+            "Monster Girl",
+            "Chuunibyou",
+            "Software Development",
+            "Conspiracy",
+            "Anachronism",
+            "Dungeon",
+            "Cosmic Horror",
+            "Medieval"
+        ],
+        "difficulty": "17.80",
+        "video_url": "https://nawdist.animemusicquiz.com/xavcpa.mp3",
+        "guessers_flat": [
+            "Serozero",
+            "jaimeywea",
+            "LiljaKatsuragi"
+        ],
+        "guessers_hover": [
+            "Team Hathaway_Noa: jaimeywea (15.55), LiljaKatsuragi (18.79), Serozero (8.81)",
+            "Team ruuka: None"
+        ],
+        "listers_flat": [
+            "Serozero",
+            "jaimeywea",
+            "LiljaKatsuragi",
+            "Sabetin",
+            "ruuka"
+        ],
+        "listers_hover": [
+            "Team ruuka: ruuka, Sabetin",
+            "Team Hathaway_Noa: jaimeywea, LiljaKatsuragi, Serozero"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [
+            "serozero",
+            "liljakatsuragi",
+            "jaimeywea"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4,
+            4,
+            4
+        ]
+    },
+    {
+        "romaji": "Arifureta Shokugyou de Sekai Saikyou",
+        "english": "Arifureta: From Commonplace to World's Strongest",
         "song": "Hajime no Uta",
         "artist_raw": "DracoVirgo",
         "artist_arr": [
@@ -607,6 +965,75 @@
             2,
             2,
             1
+        ]
+    },
+    {
+        "romaji": "Assemble Insert",
+        "english": "Assemble Insert",
+        "song": "Excellent Change! Kyuukyoku Sentai Kouga Man",
+        "artist_raw": "Masayuki Yamamoto",
+        "artist_arr": [
+            "Masayuki Yamamoto"
+        ],
+        "composer": "Masayuki Yamamoto",
+        "arranger": "Kouhei Tanaka",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=538",
+        "anime_type": "OVA",
+        "vintage": "Fall 1989",
+        "genres_raw": [
+            "Comedy",
+            "Mecha",
+            "Music",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Police",
+            "Super Power",
+            "Idol",
+            "Meta",
+            "Real Robot",
+            "Superhero",
+            "Dancing",
+            "Crime"
+        ],
+        "difficulty": "19.46",
+        "video_url": "https://nawdist.animemusicquiz.com/o5b258.mp3",
+        "guessers_flat": [
+            "RyoutaVN",
+            "zomg"
+        ],
+        "guessers_hover": [
+            "Team konomi: zomg (5.35)",
+            "Team SUS_DOMESTICUS: RyoutaVN (5.35)"
+        ],
+        "listers_flat": [
+            "RyoutaVN",
+            "zomg"
+        ],
+        "listers_hover": [
+            "Team konomi: zomg",
+            "Team SUS_DOMESTICUS: RyoutaVN"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "zomg",
+            "ryoutavn"
+        ],
+        "correct_teams_flat": [
+            3,
+            2
         ]
     },
     {
@@ -750,6 +1177,74 @@
             3,
             3,
             3,
+            5
+        ]
+    },
+    {
+        "romaji": "BanG Dream! Asonjatta!",
+        "english": "BanG Dream! Asonjatta!",
+        "song": "Nesshoku Starmine",
+        "artist_raw": "Roselia",
+        "artist_arr": [
+            "Roselia"
+        ],
+        "composer": "Noriyasu Agematsu",
+        "arranger": "Ryutaro Fujinaga",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22411",
+        "anime_type": "OVA",
+        "vintage": "Fall 2017",
+        "genres_raw": [
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Band",
+            "Volleyball",
+            "Tsundere",
+            "Chuunibyou",
+            "Urban",
+            "Coastal",
+            "Rock Music"
+        ],
+        "difficulty": "29.96",
+        "video_url": "https://nawdist.animemusicquiz.com/3vvpxc.mp3",
+        "guessers_flat": [
+            "mahzrunner",
+            "Jlin2",
+            "redeyes",
+            "Spitzell"
+        ],
+        "guessers_hover": [
+            "Team redeyes: redeyes (7.31), Spitzell (15.54)",
+            "Team Jlin2: Jlin2 (11.02), mahzrunner (10.85)"
+        ],
+        "listers_flat": [
+            "redeyes",
+            "Spitzell"
+        ],
+        "listers_hover": [
+            "Team redeyes: redeyes, Spitzell",
+            "Team Jlin2: None"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6,
+            6,
+            5,
             5
         ]
     },
@@ -1063,6 +1558,78 @@
         ]
     },
     {
+        "romaji": "Black★Rock Shooter",
+        "english": "Black★Rock Shooter",
+        "song": "One day",
+        "artist_raw": "nagi",
+        "artist_arr": [
+            "nagi"
+        ],
+        "composer": "ryo",
+        "arranger": "ryo",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=11318",
+        "anime_type": "OVA",
+        "vintage": "Summer 2010",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Swordplay",
+            "School Club",
+            "Volleyball",
+            "Alternate Universe",
+            "Body Swapping",
+            "Guns",
+            "Basketball",
+            "Isekai",
+            "Urban Fantasy",
+            "LGBTQ+ Themes",
+            "Urban",
+            "Spearplay"
+        ],
+        "difficulty": "22.17",
+        "video_url": "https://nawdist.animemusicquiz.com/ljltez.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "bamboo",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (4.32), bamboo (4.18)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (6.31)"
+        ],
+        "listers_flat": [
+            "bamboo"
+        ],
+        "listers_hover": [
+            "Team konomi: bamboo",
+            "Team SUS_DOMESTICUS: None"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "sus_domesticus"
+        ],
+        "correct_teams_flat": [
+            3,
+            2,
+            2
+        ]
+    },
+    {
         "romaji": "Bleach: Sennen Kessen-hen",
         "english": "Bleach: Thousand-Year Blood War",
         "song": "Endroll",
@@ -1200,6 +1767,82 @@
             5,
             4,
             4
+        ]
+    },
+    {
+        "romaji": "Bokura no",
+        "english": "Bokurano",
+        "song": "Vermillion",
+        "artist_raw": "Chiaki Ishikawa",
+        "artist_arr": [
+            "Chiaki Ishikawa"
+        ],
+        "composer": "Chiaki Ishikawa",
+        "arranger": "Masala Nishida",
+        "type": "Ending 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=7213",
+        "anime_type": "TV",
+        "vintage": "Spring 2007",
+        "genres_raw": [
+            "Drama",
+            "Mecha",
+            "Psychological",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Seinen",
+            "Tragedy",
+            "Politics",
+            "Alternate Universe",
+            "Super Robot",
+            "Aliens",
+            "Yakuza",
+            "Philosophy",
+            "Death Game",
+            "Denpa"
+        ],
+        "difficulty": "30.74",
+        "video_url": "https://nawdist.animemusicquiz.com/p6x6g7.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "zomg",
+            "bamboo",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (7.74), bamboo (3.57), zomg (9.05)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (3.46)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "zomg",
+            "bamboo"
+        ],
+        "listers_hover": [
+            "Team konomi: bamboo, zomg",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "sus_domesticus"
+        ],
+        "correct_teams_flat": [
+            3,
+            2,
+            2,
+            2
         ]
     },
     {
@@ -1523,13 +2166,93 @@
             "jaimeywea"
         ],
         "lives_taken_flat": [
-            "hathaway_noa",
-            "serozero"
+            "serozero",
+            "hathaway_noa"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4,
             4
+        ]
+    },
+    {
+        "romaji": "Choujikuu Yousai Macross: Ai, Oboete Imasu ka",
+        "english": "Super Dimension Fortress Macross: Do You Remember Love?",
+        "song": "Tenshi no E no Gu",
+        "artist_raw": "Mari Iijima",
+        "artist_arr": [
+            "Mari Iijima"
+        ],
+        "composer": "Mari Iijima",
+        "arranger": "Nobuyuki Shimizu",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=366",
+        "anime_type": "Movie",
+        "vintage": "Summer 1984",
+        "genres_raw": [
+            "Action",
+            "Mecha",
+            "Music",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Space",
+            "Primarily Adult Cast",
+            "War",
+            "Idol",
+            "Love Triangle",
+            "Real Robot",
+            "Space Opera",
+            "Aliens",
+            "Ships",
+            "Aviation",
+            "Lost Civilization",
+            "Language Barrier",
+            "Urban"
+        ],
+        "difficulty": "24.94",
+        "video_url": "https://nawdist.animemusicquiz.com/fpeowi.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "RyoutaVN"
+        ],
+        "guessers_hover": [
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (3.79), Tapumomo_ (3.75), RyoutaVN (7.38)",
+            "Team konomi: None"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "RyoutaVN"
+        ],
+        "listers_hover": [
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS, Tapumomo_, RyoutaVN",
+            "Team konomi: None"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [
+            "ryoutavn",
+            "tapumomo_",
+            "sus_domesticus"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            3
         ]
     },
     {
@@ -1601,6 +2324,154 @@
             4,
             4,
             4
+        ]
+    },
+    {
+        "romaji": "Chu-Bra!!",
+        "english": "Chu-Bra!!",
+        "song": "Choose Bright!!",
+        "artist_raw": "Minori Chihara, Minako Kotobuki, Sayuri Yahagi, Yoko Hikasa",
+        "artist_arr": [
+            "Minori Chihara",
+            "Minako Kotobuki",
+            "Sayuri Yahagi",
+            "Yoko Hikasa"
+        ],
+        "composer": "Kaoru Ookubo",
+        "arranger": "Kaoru Ookubo",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=11135",
+        "anime_type": "TV",
+        "vintage": "Winter 2010",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "School Club",
+            "Coming of Age",
+            "Educational"
+        ],
+        "difficulty": "20.64",
+        "video_url": "https://nawdist.animemusicquiz.com/z1qspz.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "bamboo"
+        ],
+        "guessers_hover": [
+            "Team konomi: bamboo (5.86)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (19.52)"
+        ],
+        "listers_flat": [
+            "bamboo"
+        ],
+        "listers_hover": [
+            "Team konomi: bamboo",
+            "Team SUS_DOMESTICUS: None"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "bamboo",
+            "sus_domesticus"
+        ],
+        "correct_teams_flat": [
+            3,
+            2
+        ]
+    },
+    {
+        "romaji": "Date A Live IV",
+        "english": "Date A Live IV",
+        "song": "S.O.S.",
+        "artist_raw": "sweet ARMS",
+        "artist_arr": [
+            "sweet ARMS"
+        ],
+        "composer": "Go Sakabe",
+        "arranger": "Go Sakabe",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24112",
+        "anime_type": "TV",
+        "vintage": "Spring 2022",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Ecchi",
+            "Mecha",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Parody",
+            "Space",
+            "Super Power",
+            "Slapstick",
+            "CGI",
+            "Cute Girls Doing Cute Things",
+            "Time Manipulation",
+            "Love Triangle",
+            "Yandere",
+            "Tsundere",
+            "Urban Fantasy",
+            "Memory Manipulation"
+        ],
+        "difficulty": "37.82",
+        "video_url": "https://nawdist.animemusicquiz.com/7jycoh.mp3",
+        "guessers_flat": [
+            "Serozero",
+            "jaimeywea",
+            "LiljaKatsuragi",
+            "Hathaway_Noa",
+            "Sabetin",
+            "ruuka"
+        ],
+        "guessers_hover": [
+            "Team ruuka: ruuka (18.94), Sabetin (17.67)",
+            "Team Hathaway_Noa: Hathaway_Noa (17.52), jaimeywea (7.71), LiljaKatsuragi (4.37), Serozero (3.46)"
+        ],
+        "listers_flat": [
+            "Serozero",
+            "LiljaKatsuragi",
+            "Sabetin",
+            "ruuka"
+        ],
+        "listers_hover": [
+            "Team ruuka: ruuka, Sabetin",
+            "Team Hathaway_Noa: LiljaKatsuragi, Serozero"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4,
+            4,
+            4,
+            4,
+            1,
+            1
         ]
     },
     {
@@ -2099,6 +2970,67 @@
         ]
     },
     {
+        "romaji": "Eiga Doraemon: Nobita no Chikyuu Symphony",
+        "english": "Doraemon: Nobita's Earth Symphony",
+        "song": "Time Paradox",
+        "artist_raw": "Vaundy",
+        "artist_arr": [
+            "Vaundy"
+        ],
+        "composer": "Vaundy",
+        "arranger": "Vaundy",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=28934",
+        "anime_type": "Movie",
+        "vintage": "Winter 2024",
+        "genres_raw": [
+            "Adventure",
+            "Comedy",
+            "Music",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Kids"
+        ],
+        "difficulty": "30.44",
+        "video_url": "https://nawdist.animemusicquiz.com/ruyiz3.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "SUS_DOMESTICUS"
+        ],
+        "guessers_hover": [
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (19.19), HakoHoka (19.88)",
+            "Team konomi: None"
+        ],
+        "listers_flat": [
+            "HakoHoka"
+        ],
+        "listers_hover": [
+            "Team SUS_DOMESTICUS: HakoHoka",
+            "Team konomi: None"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [
+            "hakohoka",
+            "sus_domesticus"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3
+        ]
+    },
+    {
         "romaji": "Eiga Doraemon: Nobita no Kyouryuu",
         "english": "Doraemon: Nobita's Dinosaur",
         "song": "Pocket no Naka ni",
@@ -2224,6 +3156,75 @@
         ]
     },
     {
+        "romaji": "Eiga Mahoutsukai Precure!: Kiseki no Henshin! Cure Mofurun!",
+        "english": "Eiga Mahoutsukai Precure!: Kiseki no Henshin! Cure Mofurun!",
+        "song": "Kirameku Chikai",
+        "artist_raw": "Rie Takahashi・Yui Horie・Saori Hayami・Ayaka Saitou",
+        "artist_arr": [
+            "Rie Takahashi・Yui Horie・Saori Hayami・Ayaka Saitou"
+        ],
+        "composer": "Hiroshi Takaki",
+        "arranger": "Hiroshi Takaki",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18589",
+        "anime_type": "Movie",
+        "vintage": "Fall 2016",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy",
+            "Mahou Shoujo"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Magic",
+            "Henshin",
+            "Superhero",
+            "Witch",
+            "Shapeshifting"
+        ],
+        "difficulty": "18.68",
+        "video_url": "https://nawdist.animemusicquiz.com/ntv1rw.mp3",
+        "guessers_flat": [
+            "Catge",
+            "Jlin2",
+            "Metak"
+        ],
+        "guessers_hover": [
+            "Team redeyes: Metak (6.25)",
+            "Team Jlin2: Jlin2 (5.87), Catge (4.85)"
+        ],
+        "listers_flat": [
+            "Catge",
+            "redeyes",
+            "Metak"
+        ],
+        "listers_hover": [
+            "Team redeyes: redeyes, Metak",
+            "Team Jlin2: Catge"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "metak"
+        ],
+        "correct_teams_flat": [
+            6,
+            6,
+            5
+        ]
+    },
+    {
         "romaji": "Eigo de Perara♪",
         "english": "Eigo de Perara♪",
         "song": "Hokey Pokey",
@@ -2282,6 +3283,72 @@
             2,
             2,
             1,
+            1,
+            1
+        ]
+    },
+    {
+        "romaji": "Eternity Memories",
+        "english": "Eternity Memories",
+        "song": "Watashi-iro Gift",
+        "artist_raw": "Dekoration with Haruka Yoshimura",
+        "artist_arr": [
+            "Dekoration with Haruka Yoshimura"
+        ],
+        "composer": "Cher Watanabe",
+        "arranger": "Cher Watanabe",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=25439",
+        "anime_type": "ONA",
+        "vintage": "Summer 2022",
+        "genres_raw": [
+            "Fantasy",
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Idol",
+            "Alternate Universe",
+            "Dancing"
+        ],
+        "difficulty": "22.94",
+        "video_url": "https://nawdist.animemusicquiz.com/ky788f.mp3",
+        "guessers_flat": [
+            "LiljaKatsuragi",
+            "ruuka",
+            "Tugia"
+        ],
+        "guessers_hover": [
+            "Team ruuka: ruuka (12.93), Tugia (13.57)",
+            "Team Hathaway_Noa: LiljaKatsuragi (4.80)"
+        ],
+        "listers_flat": [
+            "Serozero",
+            "LiljaKatsuragi",
+            "Hathaway_Noa",
+            "ruuka"
+        ],
+        "listers_hover": [
+            "Team ruuka: ruuka",
+            "Team Hathaway_Noa: Hathaway_Noa, LiljaKatsuragi, Serozero"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "liljakatsuragi"
+        ],
+        "correct_teams_flat": [
+            4,
             1,
             1
         ]
@@ -2503,6 +3570,84 @@
             2,
             1,
             1
+        ]
+    },
+    {
+        "romaji": "Fairy Tail: Final Season",
+        "english": "Fairy Tail: Final Season",
+        "song": "MORE THAN LiKE",
+        "artist_raw": "BiSH",
+        "artist_arr": [
+            "BiSH"
+        ],
+        "composer": "Kenta Matsukuma",
+        "arranger": "SCRAMBLES",
+        "type": "Opening 4",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20846",
+        "anime_type": "TV",
+        "vintage": "Fall 2018",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Shounen",
+            "Super Power",
+            "Tragedy",
+            "Family Life",
+            "Time Manipulation",
+            "Nudity",
+            "Primarily Adult Cast",
+            "War",
+            "Time Skip",
+            "Dragons"
+        ],
+        "difficulty": "28.73",
+        "video_url": "https://nawdist.animemusicquiz.com/j2vc41.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "RyoutaVN",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (15.93)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (5.32), Tapumomo_ (4.49), RyoutaVN (5.17), HakoHoka (5.67)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "konomi"
+        ],
+        "listers_hover": [
+            "Team konomi: konomi",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "konomi"
+        ],
+        "correct_teams_flat": [
+            3,
+            3,
+            3,
+            3,
+            2
         ]
     },
     {
@@ -2995,6 +4140,129 @@
         ]
     },
     {
+        "romaji": "Garakuta-doori no Stain",
+        "english": "Ga-Ra-Ku-Ta: Mr. Stain on Junk Alley",
+        "song": "Tandem",
+        "artist_raw": "HALCALI",
+        "artist_arr": [
+            "HALCALI"
+        ],
+        "composer": "DJ FUMIYA",
+        "arranger": "DJ FUMIYA",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=54",
+        "anime_type": "TV",
+        "vintage": "Winter 2003",
+        "genres_raw": [
+            "Comedy"
+        ],
+        "tags_raw": [
+            "Full CGI",
+            "Aliens",
+            "No Dialogue"
+        ],
+        "difficulty": "26.33",
+        "video_url": "https://nawdist.animemusicquiz.com/74xxml.mp3",
+        "guessers_flat": [
+            "Catge",
+            "Jlin2",
+            "provenance",
+            "Metak"
+        ],
+        "guessers_hover": [
+            "Team redeyes: provenance (3.51), Metak (4.87)",
+            "Team Jlin2: Jlin2 (14.95), Catge (4.46)"
+        ],
+        "listers_flat": [
+            "Catge",
+            "provenance"
+        ],
+        "listers_hover": [
+            "Team redeyes: provenance",
+            "Team Jlin2: Catge"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6,
+            6,
+            5,
+            5
+        ]
+    },
+    {
+        "romaji": "Garden of Remembrance",
+        "english": "Garden of Remembrance",
+        "song": "Garden of Remembrance",
+        "artist_raw": "Lovely Summer Chan",
+        "artist_arr": [
+            "Lovely Summer Chan"
+        ],
+        "composer": "Lovely Summer Chan",
+        "arranger": "Lovely Summer Chan",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=25846",
+        "anime_type": "ONA",
+        "vintage": "Summer 2024",
+        "genres_raw": [
+            "Music"
+        ],
+        "tags_raw": [
+            "Drawing",
+            "Food",
+            "No Dialogue"
+        ],
+        "difficulty": "22.88",
+        "video_url": "https://nawdist.animemusicquiz.com/kzr0zl.mp3",
+        "guessers_flat": [
+            "Tugia",
+            "PotassiumF"
+        ],
+        "guessers_hover": [
+            "Team ruuka: Tugia (6.08), PotassiumF (4.56)",
+            "Team Hathaway_Noa: None"
+        ],
+        "listers_flat": [
+            "Tugia",
+            "PotassiumF"
+        ],
+        "listers_hover": [
+            "Team ruuka: Tugia, PotassiumF",
+            "Team Hathaway_Noa: None"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [
+            "potassiumf",
+            "tugia"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            1
+        ]
+    },
+    {
         "romaji": "Gekijouban Hibike! Euphonium: Ensemble Contest-hen",
         "english": "Sound! Euphonium: Ensemble Contest Arc",
         "song": "Omens of Love",
@@ -3064,6 +4332,64 @@
             3,
             5,
             5
+        ]
+    },
+    {
+        "romaji": "Gekijouban Inazuma Eleven: Aratanaru Eiyuu-tachi no Joshou",
+        "english": "Gekijouban Inazuma Eleven: Aratanaru Eiyuu-tachi no Joshou",
+        "song": "Yuusha no Tamashii",
+        "artist_raw": "T-Pistonz",
+        "artist_arr": [
+            "T-Pistonz"
+        ],
+        "composer": "Tohru Yamazaki & S.KAWAI",
+        "arranger": "S.KAWAI",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=33454",
+        "anime_type": "Movie",
+        "vintage": "Fall 2024",
+        "genres_raw": [
+            "Action",
+            "Sports"
+        ],
+        "tags_raw": [],
+        "difficulty": "28.43",
+        "video_url": "https://nawdist.animemusicquiz.com/ejrpec.mp3",
+        "guessers_flat": [
+            "Tapumomo_",
+            "RyoutaVN"
+        ],
+        "guessers_hover": [
+            "Team SUS_DOMESTICUS: Tapumomo_ (8.44), RyoutaVN (9.08)",
+            "Team konomi: None"
+        ],
+        "listers_flat": [
+            "Tapumomo_",
+            "RyoutaVN"
+        ],
+        "listers_hover": [
+            "Team SUS_DOMESTICUS: Tapumomo_, RyoutaVN",
+            "Team konomi: None"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [
+            "ryoutavn",
+            "tapumomo_"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3
         ]
     },
     {
@@ -3298,6 +4624,73 @@
         ]
     },
     {
+        "romaji": "Gekijouban Pocket Monsters XY&Z: Volcanion to Karakuri no Magearna",
+        "english": "Pokémon the Movie: Volcanion and the Mechanical Marvel",
+        "song": "Post ni Koe o Nageirete",
+        "artist_raw": "YUKI",
+        "artist_arr": [
+            "YUKI"
+        ],
+        "composer": "Hiroaki Yokoyama",
+        "arranger": "Rui Momota, Kenji Tamai, YUKI",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18227",
+        "anime_type": "Movie",
+        "vintage": "Summer 2016",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Tragedy",
+            "Steampunk",
+            "Animals",
+            "Primarily Child Cast"
+        ],
+        "difficulty": "20.87",
+        "video_url": "https://nawdist.animemusicquiz.com/i6yja2.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (14.49), bamboo (17.41)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (10.09), Tapumomo_ (3.46)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "konomi"
+        ],
+        "listers_hover": [
+            "Team konomi: konomi",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS, Tapumomo_"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            2,
+            2
+        ]
+    },
+    {
         "romaji": "Gekijouban Pocket Monsters: Best Wishes! Kyurem VS Seikenshi Keldeo",
         "english": "Pokémon the Movie: Kyurem VS. The Sword of Justice",
         "song": "Memories",
@@ -3352,8 +4745,8 @@
             "redeyes"
         ],
         "lives_taken_flat": [
-            "hathaway_noa",
-            "liljakatsuragi"
+            "liljakatsuragi",
+            "hathaway_noa"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -3501,8 +4894,8 @@
             "redeyes"
         ],
         "lives_taken_flat": [
-            "provenance",
-            "redeyes"
+            "redeyes",
+            "provenance"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -3571,8 +4964,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "metak",
-            "redeyes"
+            "redeyes",
+            "metak"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -4534,6 +5927,75 @@
         ]
     },
     {
+        "romaji": "Hello World",
+        "english": "Hello World",
+        "song": "Shinsekai",
+        "artist_raw": "OKAMOTO'S",
+        "artist_arr": [
+            "OKAMOTO'S"
+        ],
+        "composer": "Sho Okamoto & Kouki Okamoto",
+        "arranger": "OKAMOTO'S & Takeshi Kobayashi",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22139",
+        "anime_type": "Movie",
+        "vintage": "Summer 2019",
+        "genres_raw": [
+            "Drama",
+            "Psychological",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Full CGI",
+            "Time Manipulation",
+            "Coming of Age",
+            "Virtual World",
+            "Alternate Universe",
+            "Rehabilitation",
+            "Augmented Reality",
+            "Philosophy",
+            "Age Regression",
+            "Urban"
+        ],
+        "difficulty": "25.46",
+        "video_url": "https://nawdist.animemusicquiz.com/rbdg6c.mp3",
+        "guessers_flat": [
+            "Jlin2"
+        ],
+        "guessers_hover": [
+            "Team Jlin2: Jlin2 (3.49)",
+            "Team redeyes: None"
+        ],
+        "listers_flat": [
+            "Jlin2",
+            "redeyes"
+        ],
+        "listers_hover": [
+            "Team redeyes: redeyes",
+            "Team Jlin2: Jlin2"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [
+            "jlin2"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6
+        ]
+    },
+    {
         "romaji": "Hengen Taima Yakou Karura Mau! Sendai Kokeshi Enka",
         "english": "Karura Mau",
         "song": "Maitobe Karura!",
@@ -4703,6 +6165,88 @@
             "Parenthood"
         ],
         "difficulty": "16.32",
+        "video_url": "https://nawdist.animemusicquiz.com/uma9yo.mp3",
+        "guessers_flat": [
+            "ruuka",
+            "Tugia",
+            "PotassiumF"
+        ],
+        "guessers_hover": [
+            "Team ruuka: ruuka (14.38), Tugia (4.24), PotassiumF (3.70)",
+            "Team Hathaway_Noa: None"
+        ],
+        "listers_flat": [
+            "ruuka",
+            "Tugia",
+            "PotassiumF"
+        ],
+        "listers_hover": [
+            "Team ruuka: ruuka, Tugia, PotassiumF",
+            "Team Hathaway_Noa: None"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [
+            "potassiumf",
+            "ruuka",
+            "tugia"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            1,
+            1
+        ]
+    },
+    {
+        "romaji": "Hinamatsuri",
+        "english": "Hinamatsuri",
+        "song": "Hajimete no Kimochi",
+        "artist_raw": "Ari Ozawa",
+        "artist_arr": [
+            "Ari Ozawa"
+        ],
+        "composer": "Lucas",
+        "arranger": "Lucas",
+        "type": "Ending 4",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20335",
+        "anime_type": "TV",
+        "vintage": "Spring 2018",
+        "genres_raw": [
+            "Comedy",
+            "Sci-Fi",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Super Power",
+            "Satire",
+            "Slapstick",
+            "Family Life",
+            "Cute Girls Doing Cute Things",
+            "Nudity",
+            "Coming of Age",
+            "Time Skip",
+            "Yakuza",
+            "Surreal Comedy",
+            "Urban",
+            "Kuudere",
+            "Adoption",
+            "Found Family",
+            "Homeless",
+            "Parenthood"
+        ],
+        "difficulty": "16.32",
         "video_url": "https://naedist.animemusicquiz.com/uma9yo.mp3",
         "guessers_flat": [
             "PotassiumF",
@@ -4732,8 +6276,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "tugia",
-            "potassiumf"
+            "potassiumf",
+            "tugia"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -4929,6 +6473,68 @@
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
+            2
+        ]
+    },
+    {
+        "romaji": "Idol Densetsu Eriko",
+        "english": "Legendary Idol Eriko",
+        "song": "May be Dream",
+        "artist_raw": "Eriko Tamura",
+        "artist_arr": [
+            "Eriko Tamura"
+        ],
+        "composer": "Kyouhei Tsutsumi",
+        "arranger": "Motoki Funayama",
+        "type": "Ending 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=1766",
+        "anime_type": "TV",
+        "vintage": "Spring 1989",
+        "genres_raw": [
+            "Music"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Idol",
+            "Amnesia",
+            "Urban"
+        ],
+        "difficulty": "24.64",
+        "video_url": "https://nawdist.animemusicquiz.com/9yve55.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "zomg"
+        ],
+        "guessers_hover": [
+            "Team konomi: zomg (8.93)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (5.70)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "zomg"
+        ],
+        "listers_hover": [
+            "Team konomi: zomg",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "zomg",
+            "sus_domesticus"
+        ],
+        "correct_teams_flat": [
+            3,
             2
         ]
     },
@@ -5411,8 +7017,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "caramel36",
-            "jlin2"
+            "jlin2",
+            "caramel36"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -5695,8 +7301,8 @@
             "mahzrunner"
         ],
         "lives_taken_flat": [
-            "caramel36",
-            "jlin2"
+            "jlin2",
+            "caramel36"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -5932,6 +7538,72 @@
         ]
     },
     {
+        "romaji": "Kairyuu to Yuubinya-san",
+        "english": "Dragonite and the Postman",
+        "song": "Kami Hikouki",
+        "artist_raw": "suis from Yorushika × Evan Call",
+        "artist_arr": [
+            "suis from Yorushika × Evan Call"
+        ],
+        "composer": "Evan Call",
+        "arranger": "Evan Call",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=34591",
+        "anime_type": "ONA",
+        "vintage": "Winter 2025",
+        "genres_raw": [
+            "Adventure",
+            "Fantasy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Work",
+            "Dragons",
+            "Animals",
+            "Travel",
+            "Creature Taming"
+        ],
+        "difficulty": "31.39",
+        "video_url": "https://nawdist.animemusicquiz.com/gte618.mp3",
+        "guessers_flat": [
+            "jaimeywea",
+            "Hathaway_Noa",
+            "Sabetin"
+        ],
+        "guessers_hover": [
+            "Team ruuka: Sabetin (7.50)",
+            "Team Hathaway_Noa: Hathaway_Noa (10.44), jaimeywea (7.43)"
+        ],
+        "listers_flat": [
+            "jaimeywea",
+            "Sabetin"
+        ],
+        "listers_hover": [
+            "Team ruuka: Sabetin",
+            "Team Hathaway_Noa: jaimeywea"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "sabetin"
+        ],
+        "correct_teams_flat": [
+            4,
+            4,
+            1
+        ]
+    },
+    {
         "romaji": "Kakumeiki Valvrave",
         "english": "Valvrave the Liberator",
         "song": "REALISM",
@@ -6067,6 +7739,65 @@
             5,
             4,
             5
+        ]
+    },
+    {
+        "romaji": "Kakyuusei",
+        "english": "Kakyuusei",
+        "song": "Rose Garden -Shiawase no Niwa-",
+        "artist_raw": "Akiko Kimura",
+        "artist_arr": [
+            "Akiko Kimura"
+        ],
+        "composer": "Chihiro Fujii",
+        "arranger": "Anri Sekine",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=179",
+        "anime_type": "TV",
+        "vintage": "Summer 1999",
+        "genres_raw": [
+            "Drama",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Love Triangle",
+            "Work",
+            "Urban"
+        ],
+        "difficulty": "20.49",
+        "video_url": "https://nawdist.animemusicquiz.com/kwahzj.mp3",
+        "guessers_flat": [
+            "Jlin2"
+        ],
+        "guessers_hover": [
+            "Team Jlin2: Jlin2 (18.49)",
+            "Team redeyes: None"
+        ],
+        "listers_flat": [
+            "redeyes"
+        ],
+        "listers_hover": [
+            "Team redeyes: redeyes",
+            "Team Jlin2: None"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [
+            "jlin2"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6
         ]
     },
     {
@@ -6285,6 +8016,75 @@
             1,
             1,
             6
+        ]
+    },
+    {
+        "romaji": "Kannagi",
+        "english": "Kannagi",
+        "song": "Pure♥Love Generation",
+        "artist_raw": "Risa Hayamizu",
+        "artist_arr": [
+            "Risa Hayamizu"
+        ],
+        "composer": "Satoru Kosaki",
+        "arranger": "Satoru Kosaki",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=9295",
+        "anime_type": "TV",
+        "vintage": "Fall 2008",
+        "genres_raw": [
+            "Comedy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Shounen",
+            "Otaku Culture",
+            "Idol",
+            "Love Triangle",
+            "Gods",
+            "Memory Manipulation",
+            "Shrine Maiden",
+            "Dissociative Identities"
+        ],
+        "difficulty": "15.86",
+        "video_url": "https://nawdist.animemusicquiz.com/k7f3mi.mp3",
+        "guessers_flat": [
+            "mahzrunner",
+            "redeyes",
+            "provenance"
+        ],
+        "guessers_hover": [
+            "Team redeyes: redeyes (18.81), provenance (3.10)",
+            "Team Jlin2: mahzrunner (5.08)"
+        ],
+        "listers_flat": [
+            "mahzrunner",
+            "provenance"
+        ],
+        "listers_hover": [
+            "Team redeyes: provenance",
+            "Team Jlin2: mahzrunner"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "mahzrunner"
+        ],
+        "correct_teams_flat": [
+            6,
+            5,
+            5
         ]
     },
     {
@@ -6557,6 +8357,90 @@
         ]
     },
     {
+        "romaji": "Kidou Senshi Gundam GQuuuuuuX",
+        "english": "Mobile Suit Gundam GQuuuuuuX",
+        "song": "Midnight Reflection",
+        "artist_raw": "NOMELON NOLEMON",
+        "artist_arr": [
+            "NOMELON NOLEMON"
+        ],
+        "composer": "Tsumiki",
+        "arranger": "Tsumiki",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=34125",
+        "anime_type": "TV",
+        "vintage": "Spring 2025",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Swordplay",
+            "Space",
+            "Tragedy",
+            "CGI",
+            "Politics",
+            "Cyberpunk",
+            "Love Triangle",
+            "Meta",
+            "Alternate Universe",
+            "Achronological Order",
+            "Guns",
+            "Super Robot",
+            "Real Robot",
+            "Space Opera",
+            "Robots",
+            "Fugitive",
+            "Isekai",
+            "Espionage",
+            "Conspiracy",
+            "Class Struggle"
+        ],
+        "difficulty": "36.92",
+        "video_url": "https://nawdist.animemusicquiz.com/ly5lbw.mp3",
+        "guessers_flat": [
+            "Serozero",
+            "Hathaway_Noa",
+            "Sabetin",
+            "ruuka"
+        ],
+        "guessers_hover": [
+            "Team ruuka: ruuka (8.11), Sabetin (15.49)",
+            "Team Hathaway_Noa: Hathaway_Noa (6.73), Serozero (15.43)"
+        ],
+        "listers_flat": [
+            "Serozero",
+            "Hathaway_Noa",
+            "ruuka"
+        ],
+        "listers_hover": [
+            "Team ruuka: ruuka",
+            "Team Hathaway_Noa: Hathaway_Noa, Serozero"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4,
+            4,
+            1,
+            1
+        ]
+    },
+    {
         "romaji": "Kidou Senshi Gundam Thunderbolt",
         "english": "Mobile Suit Gundam Thunderbolt",
         "song": "Tada Naku dake ~Oh god, I'm alone~",
@@ -6793,6 +8677,156 @@
         ]
     },
     {
+        "romaji": "Kimetsu no Yaiba: Katanakaji no Sato-hen",
+        "english": "Demon Slayer: Kimetsu no Yaiba Swordsmith Village Arc",
+        "song": "Kamado Nezuko no Uta",
+        "artist_raw": "Go Shiina featuring Nami Nakagawa",
+        "artist_arr": [
+            "Go Shiina featuring Nami Nakagawa"
+        ],
+        "composer": "Go Shiina",
+        "arranger": "Go Shiina",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=25353",
+        "anime_type": "TV",
+        "vintage": "Spring 2023",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Drama",
+            "Fantasy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Historical",
+            "Swordplay",
+            "Shounen",
+            "Super Power",
+            "Tragedy",
+            "CGI",
+            "Gore",
+            "Guns",
+            "Rural",
+            "Monster Girl",
+            "Body Horror",
+            "Clone",
+            "Orphan",
+            "Curses"
+        ],
+        "difficulty": "31.37",
+        "video_url": "https://nawdist.animemusicquiz.com/dgl2yk.mp3",
+        "guessers_flat": [
+            "Catge",
+            "Caramel36",
+            "mahzrunner",
+            "Jlin2",
+            "redeyes",
+            "provenance",
+            "Metak",
+            "Spitzell"
+        ],
+        "guessers_hover": [
+            "Team redeyes: redeyes (8.86), provenance (4.06), Spitzell (4.54), Metak (15.00)",
+            "Team Jlin2: Jlin2 (9.55), mahzrunner (9.64), Catge (5.04), Caramel36 (5.46)"
+        ],
+        "listers_flat": [
+            "Catge",
+            "Caramel36",
+            "Metak"
+        ],
+        "listers_hover": [
+            "Team redeyes: Metak",
+            "Team Jlin2: Catge, Caramel36"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6,
+            6,
+            6,
+            6,
+            5,
+            5,
+            5,
+            5
+        ]
+    },
+    {
+        "romaji": "King of Prism: Pride the Hero",
+        "english": "King of Prism: Pride the Hero",
+        "song": "CRAZY GONNA CRAZY",
+        "artist_raw": "Junta Terashima & Shouta Aoi",
+        "artist_arr": [
+            "Junta Terashima & Shouta Aoi"
+        ],
+        "composer": "Tetsuya Komuro",
+        "arranger": "michitomo",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18731",
+        "anime_type": "Movie",
+        "vintage": "Spring 2017",
+        "genres_raw": [
+            "Music",
+            "Sports"
+        ],
+        "tags_raw": [
+            "Boys' Love",
+            "Idol",
+            "Ice Skating"
+        ],
+        "difficulty": "28.87",
+        "video_url": "https://nawdist.animemusicquiz.com/tc6er9.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (4.96), bamboo (4.56)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (4.39), Tapumomo_ (19.87)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "bamboo"
+        ],
+        "listers_hover": [
+            "Team konomi: bamboo",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            2,
+            2
+        ]
+    },
+    {
         "romaji": "King of Prism: Shiny Seven Stars",
         "english": "King of Prism: Shiny Seven Stars",
         "song": "masquerade",
@@ -6920,6 +8954,84 @@
             1,
             1,
             6,
+            1
+        ]
+    },
+    {
+        "romaji": "Kinsou no Vermeil: Gakeppuchi Majutsushi wa Saikyou no Yakusai to Mahou Sekai o Tsukisusumu",
+        "english": "Vermeil in Gold",
+        "song": "Mortal With You",
+        "artist_raw": "Mili",
+        "artist_arr": [
+            "Mili"
+        ],
+        "composer": "Cassie Wei & Yamato Kasai",
+        "arranger": "Yamato Kasai",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=25419",
+        "anime_type": "TV",
+        "vintage": "Summer 2022",
+        "genres_raw": [
+            "Ecchi",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Female Harem",
+            "Magic",
+            "Shounen",
+            "Nudity",
+            "Age Gap",
+            "Love Triangle",
+            "Yandere",
+            "Monster Girl",
+            "Terrorism",
+            "Succubus"
+        ],
+        "difficulty": "36.57",
+        "video_url": "https://nawdist.animemusicquiz.com/lmep3l.mp3",
+        "guessers_flat": [
+            "Serozero",
+            "jaimeywea",
+            "LiljaKatsuragi",
+            "Sabetin",
+            "ruuka",
+            "Tugia"
+        ],
+        "guessers_hover": [
+            "Team ruuka: ruuka (10.46), Tugia (3.67), Sabetin (7.69)",
+            "Team Hathaway_Noa: jaimeywea (8.17), LiljaKatsuragi (3.33), Serozero (14.06)"
+        ],
+        "listers_flat": [
+            "jaimeywea",
+            "LiljaKatsuragi",
+            "Sabetin",
+            "ruuka"
+        ],
+        "listers_hover": [
+            "Team ruuka: ruuka, Sabetin",
+            "Team Hathaway_Noa: jaimeywea, LiljaKatsuragi"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4,
+            4,
+            4,
+            1,
+            1,
             1
         ]
     },
@@ -7282,6 +9394,91 @@
         ]
     },
     {
+        "romaji": "Koukyoushihen Eureka Seven",
+        "english": "Eureka Seven",
+        "song": "sakura",
+        "artist_raw": "NIRGILIS",
+        "artist_arr": [
+            "NIRGILIS"
+        ],
+        "composer": "Kouki Itou, Acchu Iwata, Minoru Kurihara",
+        "arranger": "NIRGILIS",
+        "type": "Opening 4",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=4797",
+        "anime_type": "TV",
+        "vintage": "Spring 2005",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Drama",
+            "Mecha",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Tragedy",
+            "Coming of Age",
+            "Politics",
+            "Anti-Hero",
+            "Primarily Adult Cast",
+            "War",
+            "Guns",
+            "Super Robot",
+            "Real Robot",
+            "Bullying",
+            "Aliens",
+            "Terrorism",
+            "Ships",
+            "Environmental",
+            "Aviation",
+            "Philosophy",
+            "Cult",
+            "Surfing",
+            "Kuudere",
+            "Found Family",
+            "Parenthood",
+            "Cohabitation"
+        ],
+        "difficulty": "36.04",
+        "video_url": "https://nawdist.animemusicquiz.com/b78ucl.mp3",
+        "guessers_flat": [
+            "Serozero",
+            "ruuka"
+        ],
+        "guessers_hover": [
+            "Team ruuka: ruuka (14.90)",
+            "Team Hathaway_Noa: Serozero (4.02)"
+        ],
+        "listers_flat": [
+            "Serozero"
+        ],
+        "listers_hover": [
+            "Team Hathaway_Noa: Serozero",
+            "Team ruuka: None"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "ruuka",
+            "serozero"
+        ],
+        "correct_teams_flat": [
+            4,
+            1
+        ]
+    },
+    {
         "romaji": "Koutetsujou no Kabaneri: Unato Kessen",
         "english": "Kabaneri of the Iron Fortress: The Battle of Unato",
         "song": "Sakase ya Sakase",
@@ -7415,8 +9612,8 @@
             "mahzrunner"
         ],
         "lives_taken_flat": [
-            "jaimeywea",
-            "serozero"
+            "serozero",
+            "jaimeywea"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -7592,6 +9789,74 @@
             1,
             6,
             6
+        ]
+    },
+    {
+        "romaji": "Kuusen Madoushi Kouhosei no Kyoukan",
+        "english": "Sky Wizards Academy",
+        "song": "D.O.B.",
+        "artist_raw": "Iori Nomizu",
+        "artist_arr": [
+            "Iori Nomizu"
+        ],
+        "composer": "Mirai Show",
+        "arranger": "CHOKKAKU",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16515",
+        "anime_type": "TV",
+        "vintage": "Summer 2015",
+        "genres_raw": [
+            "Action",
+            "Ecchi",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Swordplay"
+        ],
+        "difficulty": "30.83",
+        "video_url": "https://nawdist.animemusicquiz.com/3x2ns7.mp3",
+        "guessers_flat": [
+            "Catge",
+            "Jlin2",
+            "redeyes",
+            "provenance",
+            "Metak",
+            "Spitzell"
+        ],
+        "guessers_hover": [
+            "Team redeyes: redeyes (7.78), provenance (8.64), Spitzell (4.55), Metak (18.91)",
+            "Team Jlin2: Jlin2 (10.72), Catge (3.52)"
+        ],
+        "listers_flat": [
+            "redeyes",
+            "Spitzell"
+        ],
+        "listers_hover": [
+            "Team redeyes: redeyes, Spitzell",
+            "Team Jlin2: None"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6,
+            6,
+            5,
+            5,
+            5,
+            5
         ]
     },
     {
@@ -8034,6 +10299,150 @@
         ]
     },
     {
+        "romaji": "Magic Knight Rayearth",
+        "english": "Magic Knight Rayearth",
+        "song": "Hikari to Kage o Dakishimeta Mama",
+        "artist_raw": "Naomi Tamura",
+        "artist_arr": [
+            "Naomi Tamura"
+        ],
+        "composer": "Hiroto Ishikawa & Naomi Tamura",
+        "arranger": "Ryujin Inoue & Toshimitsu Takahashi",
+        "type": "Opening 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=446",
+        "anime_type": "TV",
+        "vintage": "Spring 1995",
+        "genres_raw": [
+            "Adventure",
+            "Drama",
+            "Fantasy",
+            "Mahou Shoujo",
+            "Mecha",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Swordplay",
+            "Shoujo",
+            "Super Power",
+            "Tragedy",
+            "Henshin",
+            "War",
+            "Age Gap",
+            "Super Robot",
+            "Yandere",
+            "Isekai",
+            "Elf"
+        ],
+        "difficulty": "28.32",
+        "video_url": "https://nawdist.animemusicquiz.com/qqhf47.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "zomg",
+            "bamboo"
+        ],
+        "guessers_hover": [
+            "Team konomi: bamboo (7.82), zomg (4.57)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (4.70), Tapumomo_ (8.67)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "zomg"
+        ],
+        "listers_hover": [
+            "Team konomi: zomg",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            2,
+            2
+        ]
+    },
+    {
+        "romaji": "Mahouka Koukou no Rettousei 3rd Season",
+        "english": "The Irregular at Magic High School Season 3",
+        "song": "Both Sides Of The Story",
+        "artist_raw": "Lotus Juice",
+        "artist_arr": [
+            "Lotus Juice"
+        ],
+        "composer": "Taku Iwasaki",
+        "arranger": "Taku Iwasaki",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=29053",
+        "anime_type": "TV",
+        "vintage": "Spring 2024",
+        "genres_raw": [
+            "Action",
+            "Sci-Fi",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Police",
+            "CGI",
+            "Politics",
+            "Fugitive"
+        ],
+        "difficulty": "23.51",
+        "video_url": "https://nawdist.animemusicquiz.com/4rdfgf.mp3",
+        "guessers_flat": [
+            "Caramel36",
+            "mahzrunner",
+            "Jlin2"
+        ],
+        "guessers_hover": [
+            "Team Jlin2: Jlin2 (17.98), mahzrunner (10.42), Caramel36 (5.99)",
+            "Team redeyes: None"
+        ],
+        "listers_flat": [
+            "Caramel36",
+            "redeyes"
+        ],
+        "listers_hover": [
+            "Team redeyes: redeyes",
+            "Team Jlin2: Caramel36"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [
+            "jlin2",
+            "caramel36",
+            "mahzrunner"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6,
+            6,
+            6
+        ]
+    },
+    {
         "romaji": "Mairimashita! Iruma-kun",
         "english": "Welcome to Demon School! Iruma-kun",
         "song": "Legend Leaf Mitsuke Uta",
@@ -8094,6 +10503,79 @@
         "lives_taken_flat": [],
         "lives_saved_flat": [],
         "correct_teams_flat": []
+    },
+    {
+        "romaji": "Maou Gakuin no Futekigousha II",
+        "english": "The Misfit of Demon King Academy II",
+        "song": "SEIEN",
+        "artist_raw": "Lenny code fiction",
+        "artist_arr": [
+            "Lenny code fiction"
+        ],
+        "composer": "Ko Katagiri",
+        "arranger": "Lenny code fiction & Ryo Eguchi",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24105",
+        "anime_type": "TV",
+        "vintage": "Winter 2023",
+        "genres_raw": [
+            "Action",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Female Harem",
+            "Magic",
+            "Super Power",
+            "Tragedy",
+            "Time Manipulation",
+            "Reincarnation",
+            "Conspiracy",
+            "Twins",
+            "Kuudere",
+            "Marriage"
+        ],
+        "difficulty": "32.97",
+        "video_url": "https://nawdist.animemusicquiz.com/kt3e1v.mp3",
+        "guessers_flat": [
+            "Catge",
+            "Caramel36",
+            "Jlin2",
+            "redeyes",
+            "Spitzell"
+        ],
+        "guessers_hover": [
+            "Team redeyes: redeyes (6.08), Spitzell (15.25)",
+            "Team Jlin2: Jlin2 (5.90), Catge (2.94), Caramel36 (3.42)"
+        ],
+        "listers_flat": [
+            "Caramel36",
+            "redeyes"
+        ],
+        "listers_hover": [
+            "Team redeyes: redeyes",
+            "Team Jlin2: Caramel36"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6,
+            6,
+            6,
+            5,
+            5
+        ]
     },
     {
         "romaji": "Maria-sama ga Miteru 3rd Season",
@@ -8159,6 +10641,67 @@
             2,
             2,
             2
+        ]
+    },
+    {
+        "romaji": "Maria-sama ga Miteru 3rd Season",
+        "english": "Maria Watches Over Us 3rd Season",
+        "song": "Kirei na Senritsu",
+        "artist_raw": "KOTOKO",
+        "artist_arr": [
+            "KOTOKO"
+        ],
+        "composer": "Marty Friedman",
+        "arranger": "Tomoyuki Nakazawa & Maiko Iuchi",
+        "type": "Ending 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=6113",
+        "anime_type": "OVA",
+        "vintage": "Fall 2006",
+        "genres_raw": [
+            "Drama",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Shoujo",
+            "Yuri",
+            "Coming of Age",
+            "LGBTQ+ Themes",
+            "Ojou-sama"
+        ],
+        "difficulty": "23.55",
+        "video_url": "https://nawdist.animemusicquiz.com/9hmy66.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS"
+        ],
+        "guessers_hover": [
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (4.30)",
+            "Team konomi: None"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "zomg"
+        ],
+        "listers_hover": [
+            "Team konomi: zomg",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [
+            "sus_domesticus"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3
         ]
     },
     {
@@ -8311,6 +10854,75 @@
         ]
     },
     {
+        "romaji": "Mayonaka Heart Tune",
+        "english": "Tune In to the Midnight Heart",
+        "song": "Yonagi (Rikka Version)",
+        "artist_raw": "Momoko Seto",
+        "artist_arr": [
+            "Momoko Seto"
+        ],
+        "composer": "Naoto Kiyota",
+        "arranger": "Naoto Kiyota",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=35149",
+        "anime_type": "TV",
+        "vintage": "Winter 2026",
+        "genres_raw": [
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Shounen",
+            "School Club",
+            "Tsundere",
+            "Acting",
+            "VTuber"
+        ],
+        "difficulty": "16.67",
+        "video_url": "https://nawdist.animemusicquiz.com/drw886.webm",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "RyoutaVN",
+            "zomg",
+            "Kyuuuu",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (10.22), zomg (9.35), Kyuuuu (9.41)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (10.64), RyoutaVN (3.04)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "RyoutaVN",
+            "Kyuuuu"
+        ],
+        "listers_hover": [
+            "Team konomi: Kyuuuu",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS, RyoutaVN"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            2,
+            2,
+            2
+        ]
+    },
+    {
         "romaji": "Mewkledreamy",
         "english": "Mewkledreamy",
         "song": "Yukai Hajimare",
@@ -8379,6 +10991,74 @@
             2,
             1,
             1
+        ]
+    },
+    {
+        "romaji": "Midara na Ao-chan wa Benkyou ga Dekinai",
+        "english": "Ao-chan Can't Study!",
+        "song": "Koi wa Miracle",
+        "artist_raw": "Spira Spica",
+        "artist_arr": [
+            "Spira Spica"
+        ],
+        "composer": "Yuji Teranishi",
+        "arranger": "Ryosuke Shigenaga",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21814",
+        "anime_type": "TV",
+        "vintage": "Spring 2019",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Nudity",
+            "Love Triangle",
+            "Tsundere",
+            "Writing",
+            "Psychosexual"
+        ],
+        "difficulty": "27.91",
+        "video_url": "https://nawdist.animemusicquiz.com/rnnmas.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (7.91)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (3.64), Tapumomo_ (7.05)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "konomi"
+        ],
+        "listers_hover": [
+            "Team konomi: konomi",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS, Tapumomo_"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "konomi"
+        ],
+        "correct_teams_flat": [
+            3,
+            3,
+            2
         ]
     },
     {
@@ -8572,6 +11252,85 @@
         ]
     },
     {
+        "romaji": "Monster Musume no Iru Nichijou",
+        "english": "Monster Musume: Everyday Life with Monster Girls",
+        "song": "Karitakatta",
+        "artist_raw": "ANM48",
+        "artist_arr": [
+            "ANM48"
+        ],
+        "composer": "Kajuu 100%",
+        "arranger": "Kajuu 100%",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16856",
+        "anime_type": "TV",
+        "vintage": "Summer 2015",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Female Harem",
+            "Parody",
+            "Seinen",
+            "Slapstick",
+            "Nudity",
+            "Primarily Adult Cast",
+            "Zombie",
+            "Monster Girl",
+            "Chuunibyou",
+            "Urban Fantasy",
+            "Tanned Skin",
+            "Mermaid",
+            "Centaur",
+            "Dullahan",
+            "Cohabitation",
+            "Interspecies"
+        ],
+        "difficulty": "19.83",
+        "video_url": "https://nawdist.animemusicquiz.com/exap2e.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "RyoutaVN"
+        ],
+        "guessers_hover": [
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (18.37), RyoutaVN (5.43)",
+            "Team konomi: None"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "RyoutaVN",
+            "zomg"
+        ],
+        "listers_hover": [
+            "Team konomi: zomg",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS, RyoutaVN"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [
+            "ryoutavn",
+            "sus_domesticus"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3
+        ]
+    },
+    {
         "romaji": "Motto! Ojamajo Doremi: Kaeru Ishi no Himitsu",
         "english": "Motto! Ojamajo Doremi: Kaeru Ishi no Himitsu",
         "song": "Kaeru ga Hitotsu Nakya",
@@ -8631,6 +11390,76 @@
         ],
         "correct_teams_flat": [
             6,
+            2
+        ]
+    },
+    {
+        "romaji": "Musaigen no Phantom World",
+        "english": "Myriad Colors Phantom World",
+        "song": "Junshin Always",
+        "artist_raw": "Azusa Tadokoro",
+        "artist_arr": [
+            "Azusa Tadokoro"
+        ],
+        "composer": "Shota Horie",
+        "arranger": "Shota Horie",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=17731",
+        "anime_type": "TV",
+        "vintage": "Winter 2016",
+        "genres_raw": [
+            "Action",
+            "Ecchi",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "School Club",
+            "Episodic",
+            "Mythology",
+            "Youkai",
+            "Urban Fantasy",
+            "Exorcism"
+        ],
+        "difficulty": "31.96",
+        "video_url": "https://nawdist.animemusicquiz.com/b63bpd.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "SUS_DOMESTICUS",
+            "bamboo",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (9.35), bamboo (17.86)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (3.70), HakoHoka (4.86)"
+        ],
+        "listers_flat": [
+            "HakoHoka",
+            "SUS_DOMESTICUS",
+            "konomi"
+        ],
+        "listers_hover": [
+            "Team konomi: konomi",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS, HakoHoka"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            2,
             2
         ]
     },
@@ -9047,8 +11876,8 @@
             "ruuka"
         ],
         "lives_taken_flat": [
-            "tugia",
-            "ruuka"
+            "ruuka",
+            "tugia"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -9113,8 +11942,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "spitzell",
-            "redeyes"
+            "redeyes",
+            "spitzell"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -9490,6 +12319,167 @@
         ]
     },
     {
+        "romaji": "Ochikobore Fruit Tart",
+        "english": "Dropout Idol Fruit Tart",
+        "song": "Tart na Kimochi",
+        "artist_raw": "Fruit Tart",
+        "artist_arr": [
+            "Fruit Tart"
+        ],
+        "composer": "John Kanda",
+        "arranger": "John Kanda",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22604",
+        "anime_type": "TV",
+        "vintage": "Fall 2020",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi",
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Yuri",
+            "Cute Girls Doing Cute Things",
+            "Idol",
+            "Meta",
+            "Dancing"
+        ],
+        "difficulty": "28.50",
+        "video_url": "https://nawdist.animemusicquiz.com/ahuctw.mp3",
+        "guessers_flat": [
+            "mahzrunner",
+            "Jlin2",
+            "Metak",
+            "Spitzell"
+        ],
+        "guessers_hover": [
+            "Team redeyes: Spitzell (8.04), Metak (8.00)",
+            "Team Jlin2: Jlin2 (19.19), mahzrunner (5.97)"
+        ],
+        "listers_flat": [
+            "Metak"
+        ],
+        "listers_hover": [
+            "Team redeyes: Metak",
+            "Team Jlin2: None"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6,
+            6,
+            5,
+            5
+        ]
+    },
+    {
+        "romaji": "Odd Taxi",
+        "english": "Odd Taxi",
+        "song": "Choujou Koi Genshou",
+        "artist_raw": "Mystery Kiss",
+        "artist_arr": [
+            "Mystery Kiss"
+        ],
+        "composer": "Vava",
+        "arranger": "Vava",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23921",
+        "anime_type": "TV",
+        "vintage": "Spring 2021",
+        "genres_raw": [
+            "Drama",
+            "Mystery",
+            "Psychological",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Cars",
+            "Martial Arts",
+            "Police",
+            "Satire",
+            "Tragedy",
+            "Anti-Hero",
+            "Gangs",
+            "Mafia",
+            "Primarily Adult Cast",
+            "Idol",
+            "Work",
+            "Bullying",
+            "Yakuza",
+            "Fugitive",
+            "Amnesia",
+            "Revenge",
+            "Noir",
+            "Philosophy",
+            "Animals",
+            "Twins",
+            "Urban",
+            "Crime",
+            "Suicide",
+            "Adoption",
+            "Anthropomorphism",
+            "Primarily Animal Cast",
+            "Hip-hop Music",
+            "Aromantic",
+            "Manzai"
+        ],
+        "difficulty": "28.82",
+        "video_url": "https://nawdist.animemusicquiz.com/hans08.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "RyoutaVN",
+            "zomg",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (4.41), zomg (10.92)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (3.96), Tapumomo_ (2.95), RyoutaVN (4.73)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "zomg",
+            "konomi"
+        ],
+        "listers_hover": [
+            "Team konomi: konomi, zomg",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            3,
+            2,
+            2
+        ]
+    },
+    {
         "romaji": "Okusama ga Seitokaichou!",
         "english": "My Wife is the Student Council President",
         "song": "Koi Suru☆Hiyoko",
@@ -9852,6 +12842,78 @@
         ]
     },
     {
+        "romaji": "Osananajimi ga Zettai ni Makenai Love Come",
+        "english": "Osamake: Romcom Where The Childhood Friend Won't Lose",
+        "song": "Chance! & Revenge!",
+        "artist_raw": "Riko Azuna",
+        "artist_arr": [
+            "Riko Azuna"
+        ],
+        "composer": "Shinji Suzuki",
+        "arranger": "Shinji Suzuki",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23945",
+        "anime_type": "TV",
+        "vintage": "Spring 2021",
+        "genres_raw": [
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "School Club",
+            "Idol",
+            "Love Triangle",
+            "Amnesia",
+            "Revenge",
+            "Memory Manipulation",
+            "Acting",
+            "Tomboy"
+        ],
+        "difficulty": "35.01",
+        "video_url": "https://nawdist.animemusicquiz.com/iitw7a.mp3",
+        "guessers_flat": [
+            "Catge",
+            "mahzrunner",
+            "Jlin2",
+            "Metak",
+            "Spitzell"
+        ],
+        "guessers_hover": [
+            "Team redeyes: Spitzell (3.16), Metak (8.54)",
+            "Team Jlin2: Jlin2 (10.87), mahzrunner (13.72), Catge (4.27)"
+        ],
+        "listers_flat": [
+            "mahzrunner",
+            "Metak",
+            "Spitzell"
+        ],
+        "listers_hover": [
+            "Team redeyes: Spitzell, Metak",
+            "Team Jlin2: mahzrunner"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6,
+            6,
+            6,
+            5,
+            5
+        ]
+    },
+    {
         "romaji": "Otome Game Sekai wa Mob ni Kibishii Sekai desu",
         "english": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs",
         "song": "Silent Minority",
@@ -9997,6 +13059,75 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
+        ]
+    },
+    {
+        "romaji": "Paradox Live The Animation",
+        "english": "Paradox Live The Animation",
+        "song": "4 REAL",
+        "artist_raw": "The Cat's Whiskers",
+        "artist_arr": [
+            "The Cat's Whiskers"
+        ],
+        "composer": "LOWEND ORDER",
+        "arranger": "LOWEND ORDER",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=25732",
+        "anime_type": "TV",
+        "vintage": "Fall 2023",
+        "genres_raw": [
+            "Drama",
+            "Music",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "CGI",
+            "Primarily Adult Cast",
+            "Idol",
+            "Conspiracy",
+            "Urban",
+            "Suicide",
+            "Found Family",
+            "Hip-hop Music"
+        ],
+        "difficulty": "27.53",
+        "video_url": "https://nawdist.animemusicquiz.com/cx8qa3.mp3",
+        "guessers_flat": [
+            "RyoutaVN",
+            "zomg",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (8.06), zomg (8.68)",
+            "Team SUS_DOMESTICUS: RyoutaVN (10.67)"
+        ],
+        "listers_flat": [
+            "konomi"
+        ],
+        "listers_hover": [
+            "Team konomi: konomi",
+            "Team SUS_DOMESTICUS: None"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "ryoutavn"
+        ],
+        "correct_teams_flat": [
+            3,
+            2,
+            2
         ]
     },
     {
@@ -10151,6 +13282,218 @@
         ]
     },
     {
+        "romaji": "Phantom: Requiem for the Phantom",
+        "english": "Phantom: Requiem for the Phantom",
+        "song": "Canzone of voice",
+        "artist_raw": "Tokyo Konsei Gasshou-dan",
+        "artist_arr": [
+            "Tokyo Konsei Gasshou-dan"
+        ],
+        "composer": "Hikaru Nanase",
+        "arranger": "Hikaru Nanase",
+        "type": "Insert",
+        "chanting": "Yes",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=10541",
+        "anime_type": "TV",
+        "vintage": "Spring 2009",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Coming of Age",
+            "Anti-Hero",
+            "Mafia",
+            "Guns",
+            "Foreign",
+            "Amnesia",
+            "Assassins",
+            "Noir",
+            "Memory Manipulation",
+            "Crime"
+        ],
+        "difficulty": "38.89",
+        "video_url": "https://nawdist.animemusicquiz.com/u0yzjz.mp3",
+        "guessers_flat": [
+            "bamboo"
+        ],
+        "guessers_hover": [
+            "Team konomi: bamboo (2.86)",
+            "Team SUS_DOMESTICUS: None"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "bamboo"
+        ],
+        "listers_hover": [
+            "Team konomi: bamboo",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [
+            "bamboo"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2
+        ]
+    },
+    {
+        "romaji": "Pocket Monsters XY",
+        "english": "Pokémon XY",
+        "song": "Peasmile!",
+        "artist_raw": "J☆Dee'Z with Ikue Ootani",
+        "artist_arr": [
+            "J☆Dee'Z with Ikue Ootani"
+        ],
+        "composer": "Hirokazu Tanaka",
+        "arranger": "Hirokazu Tanaka",
+        "type": "Ending 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15491",
+        "anime_type": "TV",
+        "vintage": "Fall 2013",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Slapstick",
+            "Super Robot",
+            "Outdoor Activities",
+            "Animals",
+            "Primarily Child Cast",
+            "Proxy Battle",
+            "Creature Taming"
+        ],
+        "difficulty": "25.79",
+        "video_url": "https://nawdist.animemusicquiz.com/z47eod.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "bamboo",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (18.59), bamboo (12.83)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (7.44)"
+        ],
+        "listers_flat": [
+            "Tapumomo_",
+            "konomi"
+        ],
+        "listers_hover": [
+            "Team konomi: konomi",
+            "Team SUS_DOMESTICUS: Tapumomo_"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "sus_domesticus"
+        ],
+        "correct_teams_flat": [
+            3,
+            2,
+            2
+        ]
+    },
+    {
+        "romaji": "Pocket Monsters: Celebi Toki o Koeta Deai",
+        "english": "Pokémon 4Ever",
+        "song": "Ashita Tenki ni Shite Okure",
+        "artist_raw": "Fumiya Fujii",
+        "artist_arr": [
+            "Fumiya Fujii"
+        ],
+        "composer": "Hirokazu Tanaka",
+        "arranger": "Yasuhiro Tomita",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=901",
+        "anime_type": "Movie",
+        "vintage": "Summer 2001",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Time Manipulation",
+            "Rural",
+            "Outdoor Activities",
+            "Environmental",
+            "Animals",
+            "Primarily Child Cast",
+            "Fairy",
+            "Proxy Battle",
+            "Creature Taming"
+        ],
+        "difficulty": "15.79",
+        "video_url": "https://nawdist.animemusicquiz.com/y1obwt.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo"
+        ],
+        "guessers_hover": [
+            "Team konomi: bamboo (2.95)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (4.69), Tapumomo_ (3.68)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo"
+        ],
+        "listers_hover": [
+            "Team konomi: bamboo",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS, Tapumomo_"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "bamboo"
+        ],
+        "correct_teams_flat": [
+            3,
+            3,
+            2
+        ]
+    },
+    {
         "romaji": "Pretty Rhythm: Aurora Dream",
         "english": "Pretty Rhythm: Aurora Dream",
         "song": "Everybody's Gonna Be Happy",
@@ -10212,9 +13555,9 @@
         ],
         "lives_taken_flat": [
             "provenance",
+            "redeyes",
             "metak",
-            "spitzell",
-            "redeyes"
+            "spitzell"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -10605,6 +13948,71 @@
         ]
     },
     {
+        "romaji": "Rinne no Lagrange",
+        "english": "Lagrange: The Flower of Rin-ne",
+        "song": "TRY UNITE! -Rasmeg Duo-",
+        "artist_raw": "Megumi Nakajima",
+        "artist_arr": [
+            "Megumi Nakajima"
+        ],
+        "composer": "Rasmus Faber",
+        "arranger": "Rasmus Faber",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=13290",
+        "anime_type": "TV",
+        "vintage": "Winter 2012",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Mecha"
+        ],
+        "tags_raw": [
+            "School Club",
+            "Real Robot",
+            "Aliens"
+        ],
+        "difficulty": "29.53",
+        "video_url": "https://nawdist.animemusicquiz.com/ffhc0q.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "zomg",
+            "bamboo",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (4.64), bamboo (4.05), zomg (12.53)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (10.22), Tapumomo_ (5.00)"
+        ],
+        "listers_flat": [
+            "bamboo"
+        ],
+        "listers_hover": [
+            "Team konomi: bamboo",
+            "Team SUS_DOMESTICUS: None"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            2,
+            2,
+            2
+        ]
+    },
+    {
         "romaji": "Robot Girls Z+",
         "english": "Robot Girls Z+",
         "song": "Tatakai no Uta",
@@ -10863,6 +14271,130 @@
         ]
     },
     {
+        "romaji": "Sakasama no Patema",
+        "english": "Patema Inverted",
+        "song": "Patema Inverse",
+        "artist_raw": "Estelle Micheau",
+        "artist_arr": [
+            "Estelle Micheau"
+        ],
+        "composer": "Michiru Oshima",
+        "arranger": "Michiru Oshima",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=13906",
+        "anime_type": "Movie",
+        "vintage": "Spring 2013",
+        "genres_raw": [
+            "Adventure",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Post-Apocalyptic",
+            "Steampunk",
+            "Survival",
+            "Dystopian",
+            "Environmental",
+            "Lost Civilization"
+        ],
+        "difficulty": "26.51",
+        "video_url": "https://nawdist.animemusicquiz.com/os0yc2.mp3",
+        "guessers_flat": [
+            "Jlin2",
+            "redeyes",
+            "provenance",
+            "Spitzell"
+        ],
+        "guessers_hover": [
+            "Team redeyes: redeyes (13.57), provenance (3.24), Spitzell (6.85)",
+            "Team Jlin2: Jlin2 (3.09)"
+        ],
+        "listers_flat": [
+            "provenance"
+        ],
+        "listers_hover": [
+            "Team redeyes: provenance",
+            "Team Jlin2: None"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "jlin2"
+        ],
+        "correct_teams_flat": [
+            6,
+            5,
+            5,
+            5
+        ]
+    },
+    {
+        "romaji": "Sakura no Chikai: Marronni☆Yell Higashi no Hichou Shimotsuke-shi o Yell!",
+        "english": "Sakura no Chikai: Marronni☆Yell Higashi no Hichou Shimotsuke-shi o Yell!",
+        "song": "Marronni☆YELL!!",
+        "artist_raw": "Marronni☆Yell",
+        "artist_arr": [
+            "Marronni☆Yell"
+        ],
+        "composer": "Kiyonori Higuchi",
+        "arranger": "Yuji Miyagawa",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23200",
+        "anime_type": "Special",
+        "vintage": "Winter 2018",
+        "genres_raw": [
+            "Music"
+        ],
+        "tags_raw": [
+            "Idol"
+        ],
+        "difficulty": "18.42",
+        "video_url": "https://nawdist.animemusicquiz.com/82id5b.mp3",
+        "guessers_flat": [
+            "ruuka"
+        ],
+        "guessers_hover": [
+            "Team ruuka: ruuka (9.67)",
+            "Team Hathaway_Noa: None"
+        ],
+        "listers_flat": [
+            "jaimeywea"
+        ],
+        "listers_hover": [
+            "Team Hathaway_Noa: jaimeywea",
+            "Team ruuka: None"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [
+            "ruuka"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1
+        ]
+    },
+    {
         "romaji": "Sakura Trick",
         "english": "Sakura Trick",
         "song": "Kiss(and)Love",
@@ -11019,6 +14551,427 @@
         ]
     },
     {
+        "romaji": "Sakura-sou no Pet na Kanojo",
+        "english": "The Pet Girl of Sakurasou",
+        "song": "I call your name again",
+        "artist_raw": "Mariko Nakatsu",
+        "artist_arr": [
+            "Mariko Nakatsu"
+        ],
+        "composer": "Takeshi Shirobayashi & Ippei Anbo",
+        "arranger": "Ippei Anbo",
+        "type": "Opening 3",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14238",
+        "anime_type": "TV",
+        "vintage": "Fall 2012",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Family Life",
+            "Nudity",
+            "Coming of Age",
+            "Drawing",
+            "Love Triangle",
+            "Work",
+            "Yandere",
+            "Tsundere",
+            "Hikikomori",
+            "Software Development",
+            "Kuudere",
+            "Disability",
+            "Found Family",
+            "Boarding School",
+            "Cohabitation"
+        ],
+        "difficulty": "37.48",
+        "video_url": "https://nawdist.animemusicquiz.com/ute1kb.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "RyoutaVN",
+            "zomg",
+            "bamboo",
+            "Kyuuuu",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (2.62), bamboo (9.11), zomg (6.45), Kyuuuu (7.48)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (3.95), Tapumomo_ (9.49), RyoutaVN (3.43), HakoHoka (6.37)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "RyoutaVN",
+            "zomg",
+            "bamboo",
+            "Kyuuuu",
+            "konomi"
+        ],
+        "listers_hover": [
+            "Team konomi: konomi, bamboo, zomg, Kyuuuu",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS, Tapumomo_, RyoutaVN"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2
+        ]
+    },
+    {
+        "romaji": "Sasayaku You ni Koi o Utau",
+        "english": "Whisper Me a Love Song",
+        "song": "Giftee",
+        "artist_raw": "Hana Shimano",
+        "artist_arr": [
+            "Hana Shimano"
+        ],
+        "composer": "Shou Watanabe",
+        "arranger": "Takuya Watanabe",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26890",
+        "anime_type": "TV",
+        "vintage": "Spring 2024",
+        "genres_raw": [
+            "Drama",
+            "Music",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Yuri",
+            "School Club",
+            "Cute Girls Doing Cute Things",
+            "Coming of Age",
+            "Band",
+            "Love Triangle",
+            "LGBTQ+ Themes",
+            "Rock Music",
+            "Aromantic"
+        ],
+        "difficulty": "26.32",
+        "video_url": "https://nawdist.animemusicquiz.com/i60d32.mp3",
+        "guessers_flat": [
+            "Caramel36",
+            "Jlin2"
+        ],
+        "guessers_hover": [
+            "Team Jlin2: Jlin2 (8.38), Caramel36 (13.96)",
+            "Team redeyes: None"
+        ],
+        "listers_flat": [
+            "Caramel36"
+        ],
+        "listers_hover": [
+            "Team Jlin2: Caramel36",
+            "Team redeyes: None"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [
+            "jlin2",
+            "caramel36"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6,
+            6
+        ]
+    },
+    {
+        "romaji": "Sayonara Ryuusei, Konnichiwa Jinsei",
+        "english": "Good Bye, Dragon Life",
+        "song": "Kimi to Mita Keshiki",
+        "artist_raw": "EverdreaM",
+        "artist_arr": [
+            "EverdreaM"
+        ],
+        "composer": "Takaya Kawasaki",
+        "arranger": "Yuichi Ohno",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32462",
+        "anime_type": "TV",
+        "vintage": "Fall 2024",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Swordplay",
+            "Dragons",
+            "Reincarnation",
+            "Rural",
+            "Monster Girl"
+        ],
+        "difficulty": "27.89",
+        "video_url": "https://nawdist.animemusicquiz.com/1rihrq.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (7.74)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (12.23)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "konomi"
+        ],
+        "listers_hover": [
+            "Team konomi: konomi",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "konomi",
+            "sus_domesticus"
+        ],
+        "correct_teams_flat": [
+            3,
+            2
+        ]
+    },
+    {
+        "romaji": "School Days",
+        "english": "School Days",
+        "song": "Anata ga... Inai -remix ver.-",
+        "artist_raw": "Minami Kuribayashi",
+        "artist_arr": [
+            "Minami Kuribayashi"
+        ],
+        "composer": "Masaaki Iizuka",
+        "arranger": "Masaaki Iizuka",
+        "type": "Ending 7",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=7815",
+        "anime_type": "TV",
+        "vintage": "Summer 2007",
+        "genres_raw": [
+            "Drama",
+            "Psychological",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Tragedy",
+            "Gore",
+            "Nudity",
+            "Anti-Hero",
+            "Trains",
+            "Love Triangle",
+            "Yandere",
+            "Bullying",
+            "Revenge",
+            "Urban"
+        ],
+        "difficulty": "22.16",
+        "video_url": "https://nawdist.animemusicquiz.com/nf8bj9.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo"
+        ],
+        "guessers_hover": [
+            "Team konomi: bamboo (4.03)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (3.81), Tapumomo_ (3.23)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo"
+        ],
+        "listers_hover": [
+            "Team konomi: bamboo",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS, Tapumomo_"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "bamboo"
+        ],
+        "correct_teams_flat": [
+            3,
+            3,
+            2
+        ]
+    },
+    {
+        "romaji": "Seirei Gensouki 2",
+        "english": "Seirei Gensouki: Spirit Chronicles Season 2",
+        "song": "Auftakt",
+        "artist_raw": "Aguri Onishi",
+        "artist_arr": [
+            "Aguri Onishi"
+        ],
+        "composer": "Koichi Tsurusaki",
+        "arranger": "Koichi Tsurusaki",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24949",
+        "anime_type": "TV",
+        "vintage": "Fall 2024",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Swordplay",
+            "Super Power",
+            "CGI",
+            "Fugitive",
+            "Isekai",
+            "Medieval"
+        ],
+        "difficulty": "29.34",
+        "video_url": "https://nawdist.animemusicquiz.com/1asleg.mp3",
+        "guessers_flat": [
+            "mahzrunner",
+            "Jlin2",
+            "redeyes"
+        ],
+        "guessers_hover": [
+            "Team redeyes: redeyes (6.35)",
+            "Team Jlin2: Jlin2 (7.03), mahzrunner (5.91)"
+        ],
+        "listers_flat": [
+            "mahzrunner",
+            "redeyes"
+        ],
+        "listers_hover": [
+            "Team redeyes: redeyes",
+            "Team Jlin2: mahzrunner"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "redeyes"
+        ],
+        "correct_teams_flat": [
+            6,
+            6,
+            5
+        ]
+    },
+    {
+        "romaji": "Sengoku Basara Ni",
+        "english": "Sengoku Basara: Samurai Kings Two",
+        "song": "FATE",
+        "artist_raw": "Angelo",
+        "artist_arr": [
+            "Angelo"
+        ],
+        "composer": "KIRITO",
+        "arranger": "Angelo & Shinichirou Fukuda",
+        "type": "Ending 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=11431",
+        "anime_type": "TV",
+        "vintage": "Summer 2010",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Swordplay",
+            "Super Power",
+            "Samurai"
+        ],
+        "difficulty": "16.69",
+        "video_url": "https://nawdist.animemusicquiz.com/13msns.mp3",
+        "guessers_flat": [],
+        "guessers_hover": [
+            "Team konomi: None",
+            "Team SUS_DOMESTICUS: None"
+        ],
+        "listers_flat": [
+            "Kyuuuu"
+        ],
+        "listers_hover": [
+            "Team konomi: Kyuuuu",
+            "Team SUS_DOMESTICUS: None"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": []
+    },
+    {
         "romaji": "Senki Zesshou Symphogear AXZ",
         "english": "Senki Zesshou Symphogear AXZ",
         "song": "Melodious Moonlight",
@@ -11101,6 +15054,92 @@
             3,
             5,
             5
+        ]
+    },
+    {
+        "romaji": "Senki Zesshou Symphogear G",
+        "english": "Senki Zesshou Symphogear G",
+        "song": "ORBITAL BEAT",
+        "artist_raw": "Yoshino Nanjo & Ai Kayano",
+        "artist_arr": [
+            "Yoshino Nanjo & Ai Kayano"
+        ],
+        "composer": "Yusuke Kato",
+        "arranger": "Yusuke Kato",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15228",
+        "anime_type": "TV",
+        "vintage": "Summer 2013",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Mahou Shoujo",
+            "Music",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Swordplay",
+            "Super Power",
+            "Yuri",
+            "Tragedy",
+            "Gore",
+            "Henshin",
+            "Politics",
+            "Idol",
+            "Guns",
+            "Mythology",
+            "Fugitive",
+            "Reincarnation",
+            "Terrorism",
+            "Ships",
+            "LGBTQ+ Themes",
+            "Drugs",
+            "Cult",
+            "Urban",
+            "Kuudere",
+            "Spearplay",
+            "Orphan",
+            "Brainwashing",
+            "Human Experimentation"
+        ],
+        "difficulty": "29.47",
+        "video_url": "https://nawdist.animemusicquiz.com/0xsnav.mp3",
+        "guessers_flat": [
+            "ruuka",
+            "PotassiumF"
+        ],
+        "guessers_hover": [
+            "Team ruuka: ruuka (5.47), PotassiumF (6.97)",
+            "Team Hathaway_Noa: None"
+        ],
+        "listers_flat": [
+            "LiljaKatsuragi",
+            "ruuka",
+            "PotassiumF"
+        ],
+        "listers_hover": [
+            "Team ruuka: ruuka, PotassiumF",
+            "Team Hathaway_Noa: LiljaKatsuragi"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [
+            "potassiumf",
+            "ruuka"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            1
         ]
     },
     {
@@ -11256,6 +15295,92 @@
         ]
     },
     {
+        "romaji": "Sentai Red Isekai de Boukensha ni Naru",
+        "english": "The Red Ranger Becomes an Adventurer in Another World",
+        "song": "Saa Ikou! Kizuna Five",
+        "artist_raw": "Ryusei",
+        "artist_arr": [
+            "Ryusei"
+        ],
+        "composer": "Koichiro Kameyama",
+        "arranger": "Koichiro Kameyama",
+        "type": "Opening 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=33194",
+        "anime_type": "TV",
+        "vintage": "Winter 2025",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Parody",
+            "Swordplay",
+            "Shounen",
+            "CGI",
+            "Henshin",
+            "Nudity",
+            "Guns",
+            "Super Robot",
+            "Tsundere",
+            "Superhero",
+            "Motorcycles",
+            "Dragons",
+            "Isekai",
+            "Archery",
+            "Surreal Comedy",
+            "Tokusatsu",
+            "Elf",
+            "Shapeshifting",
+            "Spearplay",
+            "Royal Affairs",
+            "Desert",
+            "Medieval"
+        ],
+        "difficulty": "35.24",
+        "video_url": "https://nawdist.animemusicquiz.com/fuhkbd.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "RyoutaVN",
+            "Kyuuuu",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (4.45), Kyuuuu (6.51)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (5.40), RyoutaVN (5.15)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "konomi"
+        ],
+        "listers_hover": [
+            "Team konomi: konomi",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            2,
+            2
+        ]
+    },
+    {
         "romaji": "Shakugan no Shana",
         "english": "Burning-Eyed Shana",
         "song": "Yoake Umare Kuru Shoujo",
@@ -11391,6 +15516,163 @@
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
+            5
+        ]
+    },
+    {
+        "romaji": "Shin Tennis no Ouji-sama OVA vs Genius 10",
+        "english": "The Prince of Tennis II OVA vs. Genius 10",
+        "song": "Party Time",
+        "artist_raw": "Aozu",
+        "artist_arr": [
+            "Aozu"
+        ],
+        "composer": "Minoru Komorita",
+        "arranger": "Minoru Komorita",
+        "type": "Ending 9",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16338",
+        "anime_type": "OVA",
+        "vintage": "Fall 2014",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Sports"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Tennis"
+        ],
+        "difficulty": "36.30",
+        "video_url": "https://nawdist.animemusicquiz.com/z30lie.mp3",
+        "guessers_flat": [
+            "mahzrunner",
+            "Jlin2",
+            "redeyes",
+            "provenance",
+            "Spitzell"
+        ],
+        "guessers_hover": [
+            "Team redeyes: redeyes (8.59), provenance (3.92), Spitzell (8.82)",
+            "Team Jlin2: Jlin2 (4.71), mahzrunner (6.91)"
+        ],
+        "listers_flat": [
+            "Jlin2",
+            "redeyes"
+        ],
+        "listers_hover": [
+            "Team redeyes: redeyes",
+            "Team Jlin2: Jlin2"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6,
+            6,
+            5,
+            5,
+            5
+        ]
+    },
+    {
+        "romaji": "Shingeki no Kyojin",
+        "english": "Attack on Titan",
+        "song": "The Reluctant Heroes",
+        "artist_raw": "mpi",
+        "artist_arr": [
+            "mpi"
+        ],
+        "composer": "Hiroyuki Sawano",
+        "arranger": "Hiroyuki Sawano",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14950",
+        "anime_type": "TV",
+        "vintage": "Spring 2013",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy",
+            "Mystery"
+        ],
+        "tags_raw": [
+            "Military",
+            "Swordplay",
+            "Shounen",
+            "Super Power",
+            "Tragedy",
+            "Post-Apocalyptic",
+            "Gore",
+            "Steampunk",
+            "Henshin",
+            "Coming of Age",
+            "Survival",
+            "Time Skip",
+            "Dystopian",
+            "Amnesia",
+            "Rural",
+            "Revenge",
+            "Kaiju",
+            "Espionage",
+            "Memory Manipulation",
+            "Kuudere",
+            "Cannibalism",
+            "Suicide",
+            "Orphan"
+        ],
+        "difficulty": "40.00",
+        "video_url": "https://nawdist.animemusicquiz.com/rgjyil.mp3",
+        "guessers_flat": [
+            "Catge",
+            "Caramel36",
+            "mahzrunner",
+            "Jlin2",
+            "Metak",
+            "Spitzell"
+        ],
+        "guessers_hover": [
+            "Team redeyes: Spitzell (4.02), Metak (11.06)",
+            "Team Jlin2: Jlin2 (3.50), mahzrunner (15.55), Catge (2.70), Caramel36 (6.07)"
+        ],
+        "listers_flat": [
+            "Catge",
+            "Caramel36",
+            "Jlin2",
+            "redeyes",
+            "Spitzell"
+        ],
+        "listers_hover": [
+            "Team redeyes: redeyes, Spitzell",
+            "Team Jlin2: Jlin2, Catge, Caramel36"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            6,
+            6,
+            6,
+            6,
+            5,
             5
         ]
     },
@@ -11671,6 +15953,76 @@
         ]
     },
     {
+        "romaji": "Shiunji-ke no Kodomo-tachi",
+        "english": "The Shiunji Family Children",
+        "song": "LIKE YOU o(>< = ><)o LOVE YOU?",
+        "artist_raw": "Shiunji-ke no Kodomo-tachi",
+        "artist_arr": [
+            "Shiunji-ke no Kodomo-tachi"
+        ],
+        "composer": "Akki, Shota Horie, Ginnojou Hoshi",
+        "arranger": "Akki, Shota Horie, Ginnojou Hoshi",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32099",
+        "anime_type": "TV",
+        "vintage": "Spring 2025",
+        "genres_raw": [
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Seinen",
+            "Slapstick",
+            "CGI",
+            "Coming of Age",
+            "Tsundere",
+            "Tennis",
+            "Kuudere",
+            "Adoption"
+        ],
+        "difficulty": "31.78",
+        "video_url": "https://nawdist.animemusicquiz.com/16mljz.mp3",
+        "guessers_flat": [
+            "mahzrunner",
+            "Jlin2",
+            "Metak"
+        ],
+        "guessers_hover": [
+            "Team redeyes: Metak (4.83)",
+            "Team Jlin2: Jlin2 (9.05), mahzrunner (11.88)"
+        ],
+        "listers_flat": [
+            "mahzrunner",
+            "Jlin2",
+            "Metak"
+        ],
+        "listers_hover": [
+            "Team redeyes: Metak",
+            "Team Jlin2: Jlin2, mahzrunner"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "metak"
+        ],
+        "correct_teams_flat": [
+            6,
+            6,
+            5
+        ]
+    },
+    {
         "romaji": "Show By Rock!! Mashumairesh!!",
         "english": "Show By Rock!! Mashumairesh!!",
         "song": "Colorful Snow Drop",
@@ -11726,8 +16078,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "mahzrunner",
-            "jlin2"
+            "jlin2",
+            "mahzrunner"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12114,6 +16466,96 @@
         "correct_teams_flat": [
             3,
             1
+        ]
+    },
+    {
+        "romaji": "Smile Precure!",
+        "english": "Glitter Force",
+        "song": "Yay! Yay! Yay!",
+        "artist_raw": "Hitomi Yoshida",
+        "artist_arr": [
+            "Hitomi Yoshida"
+        ],
+        "composer": "Hideaki Takatori",
+        "arranger": "Yuya Saito",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=13809",
+        "anime_type": "TV",
+        "vintage": "Winter 2012",
+        "genres_raw": [
+            "Fantasy",
+            "Mahou Shoujo"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Kids",
+            "Magic",
+            "Swordplay",
+            "Super Power",
+            "Cute Girls Doing Cute Things",
+            "Henshin",
+            "Drawing",
+            "Football",
+            "Superhero",
+            "Robots",
+            "Witch",
+            "Episodic",
+            "Calligraphy",
+            "Dragons",
+            "Isekai",
+            "Rural",
+            "Samurai",
+            "Urban Fantasy",
+            "Fairy Tale",
+            "Primarily Child Cast",
+            "Tokusatsu",
+            "Language Barrier",
+            "Werewolf",
+            "Urban",
+            "Fairy",
+            "Restaurant"
+        ],
+        "difficulty": "34.67",
+        "video_url": "https://nawdist.animemusicquiz.com/hq9ki3.mp3",
+        "guessers_flat": [
+            "Catge",
+            "mahzrunner",
+            "Jlin2",
+            "Metak"
+        ],
+        "guessers_hover": [
+            "Team redeyes: Metak (8.38)",
+            "Team Jlin2: Jlin2 (6.64), mahzrunner (3.75), Catge (2.20)"
+        ],
+        "listers_flat": [
+            "Catge",
+            "mahzrunner",
+            "Metak"
+        ],
+        "listers_hover": [
+            "Team redeyes: Metak",
+            "Team Jlin2: mahzrunner, Catge"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "metak"
+        ],
+        "correct_teams_flat": [
+            6,
+            6,
+            6,
+            5
         ]
     },
     {
@@ -12554,6 +16996,88 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
+        ]
+    },
+    {
+        "romaji": "Sousou no Frieren",
+        "english": "Frieren: Beyond Journey's End",
+        "song": "Frieren the Slayer",
+        "artist_raw": "Budapest Scoring Choir",
+        "artist_arr": [
+            "Budapest Scoring Choir"
+        ],
+        "composer": "Evan Call",
+        "arranger": "Evan Call",
+        "type": "Insert",
+        "chanting": "Yes",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26334",
+        "anime_type": "TV",
+        "vintage": "Fall 2023",
+        "genres_raw": [
+            "Adventure",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Shounen",
+            "Iyashikei",
+            "Time Skip",
+            "Episodic",
+            "Foreign",
+            "Rural",
+            "Philosophy",
+            "Elf",
+            "Dungeon",
+            "Asexual",
+            "Rotoscoping",
+            "Kuudere",
+            "Adoption",
+            "Found Family",
+            "Spearplay",
+            "Travel",
+            "Aromantic",
+            "Medieval"
+        ],
+        "difficulty": "19.42",
+        "video_url": "https://nawdist.animemusicquiz.com/yymafz.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "RyoutaVN",
+            "Kyuuuu",
+            "konomi"
+        ],
+        "guessers_hover": [
+            "Team konomi: konomi (6.95), Kyuuuu (5.61)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (8.12), RyoutaVN (5.44)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS",
+            "Kyuuuu",
+            "konomi"
+        ],
+        "listers_hover": [
+            "Team konomi: konomi, Kyuuuu",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            2,
+            2
         ]
     },
     {
@@ -13263,6 +17787,291 @@
         ]
     },
     {
+        "romaji": "Takopii no Genzai",
+        "english": "Takopi's Original Sin",
+        "song": "Lucky Days",
+        "artist_raw": "Kanako Kishi",
+        "artist_arr": [
+            "Kanako Kishi"
+        ],
+        "composer": "Yoshiaki Fujisawa",
+        "arranger": "Yoshiaki Fujisawa",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=34142",
+        "anime_type": "TV",
+        "vintage": "Summer 2025",
+        "genres_raw": [
+            "Drama",
+            "Psychological",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Gore",
+            "Time Manipulation",
+            "Time Skip",
+            "Achronological Order",
+            "Bullying",
+            "Aliens",
+            "Rural",
+            "Revenge",
+            "Urban Fantasy",
+            "Memory Manipulation",
+            "Philosophy",
+            "Primarily Child Cast",
+            "Crime",
+            "Denpa",
+            "Shapeshifting",
+            "Suicide",
+            "Estranged Family",
+            "Parenthood"
+        ],
+        "difficulty": "32.55",
+        "video_url": "https://nawdist.animemusicquiz.com/hsf7lnnu2s5sxo9k.mp3",
+        "guessers_flat": [
+            "jaimeywea",
+            "LiljaKatsuragi",
+            "Hathaway_Noa",
+            "Sabetin",
+            "Tugia",
+            "PotassiumF"
+        ],
+        "guessers_hover": [
+            "Team ruuka: Tugia (3.69), PotassiumF (4.24), Sabetin (3.35)",
+            "Team Hathaway_Noa: Hathaway_Noa (10.11), jaimeywea (5.70), LiljaKatsuragi (4.47)"
+        ],
+        "listers_flat": [
+            "Sabetin"
+        ],
+        "listers_hover": [
+            "Team ruuka: Sabetin",
+            "Team Hathaway_Noa: None"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4,
+            4,
+            4,
+            1,
+            1,
+            1
+        ]
+    },
+    {
+        "romaji": "Takunomi.",
+        "english": "Takunomi.",
+        "song": "Stoic ni Detox",
+        "artist_raw": "Mashinomi",
+        "artist_arr": [
+            "Mashinomi"
+        ],
+        "composer": "Mashinomi",
+        "arranger": "Hiroaki Yokoyama",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20394",
+        "anime_type": "TV",
+        "vintage": "Winter 2018",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Primarily Adult Cast",
+            "Educational",
+            "Food",
+            "Office Lady"
+        ],
+        "difficulty": "21.87",
+        "video_url": "https://nawdist.animemusicquiz.com/6do48p.mp3",
+        "guessers_flat": [
+            "Serozero",
+            "Hathaway_Noa",
+            "Tugia",
+            "PotassiumF"
+        ],
+        "guessers_hover": [
+            "Team ruuka: Tugia (3.76), PotassiumF (6.64)",
+            "Team Hathaway_Noa: Hathaway_Noa (5.07), Serozero (5.84)"
+        ],
+        "listers_flat": [
+            "Serozero",
+            "Tugia",
+            "PotassiumF"
+        ],
+        "listers_hover": [
+            "Team ruuka: Tugia, PotassiumF",
+            "Team Hathaway_Noa: Serozero"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4,
+            4,
+            1,
+            1
+        ]
+    },
+    {
+        "romaji": "Tantei Opera Milky Holmes: Psycho no Aisatsu",
+        "english": "Tantei Opera Milky Holmes: Psycho no Aisatsu",
+        "song": "Milky Holmes ga Yatte Kuru Yay! Yay! Yay!",
+        "artist_raw": "Milky Holmes",
+        "artist_arr": [
+            "Milky Holmes"
+        ],
+        "composer": "Hiroaki Sakurai",
+        "arranger": "Seiji Mutou",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22320",
+        "anime_type": "Special",
+        "vintage": "Fall 2018",
+        "genres_raw": [
+            "Comedy",
+            "Mystery"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Cute Girls Doing Cute Things",
+            "Card Battle",
+            "Detective"
+        ],
+        "difficulty": "20.84",
+        "video_url": "https://nawdist.animemusicquiz.com/yjah7u.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "zomg",
+            "bamboo"
+        ],
+        "guessers_hover": [
+            "Team konomi: bamboo (8.01), zomg (4.10)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (4.66)"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS"
+        ],
+        "listers_hover": [
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS",
+            "Team konomi: None"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "sus_domesticus"
+        ],
+        "correct_teams_flat": [
+            3,
+            2,
+            2
+        ]
+    },
+    {
+        "romaji": "Tensai Ouji no Akaji Kokka Saisei Jutsu",
+        "english": "The Genius Prince's Guide to Raising a Nation Out of Debt",
+        "song": "Hitori to Kimi to",
+        "artist_raw": "Yoshino Nanjo",
+        "artist_arr": [
+            "Yoshino Nanjo"
+        ],
+        "composer": "Yukari Hashimoto",
+        "arranger": "Yukari Hashimoto",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23998",
+        "anime_type": "TV",
+        "vintage": "Winter 2022",
+        "genres_raw": [
+            "Comedy",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Military",
+            "Politics",
+            "War",
+            "Economics",
+            "Conspiracy",
+            "Royal Affairs",
+            "Kingdom Management"
+        ],
+        "difficulty": "27.84",
+        "video_url": "https://nawdist.animemusicquiz.com/p43g28.mp3",
+        "guessers_flat": [
+            "jaimeywea",
+            "LiljaKatsuragi",
+            "Hathaway_Noa",
+            "Sabetin",
+            "ruuka",
+            "Tugia"
+        ],
+        "guessers_hover": [
+            "Team ruuka: ruuka (4.27), Tugia (14.81), Sabetin (3.04)",
+            "Team Hathaway_Noa: Hathaway_Noa (5.42), jaimeywea (4.52), LiljaKatsuragi (4.15)"
+        ],
+        "listers_flat": [
+            "jaimeywea",
+            "LiljaKatsuragi",
+            "Sabetin",
+            "ruuka"
+        ],
+        "listers_hover": [
+            "Team ruuka: ruuka, Sabetin",
+            "Team Hathaway_Noa: jaimeywea, LiljaKatsuragi"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4,
+            4,
+            4,
+            1,
+            1,
+            1
+        ]
+    },
+    {
         "romaji": "Teppen!!!!!!!!!!!!!!!",
         "english": "Teppen!!!!!!!!!!!!!!! Laughing 'til You Cry",
         "song": "Ahatte Teppen",
@@ -13318,8 +18127,8 @@
             "redeyes"
         ],
         "lives_taken_flat": [
-            "hathaway_noa",
-            "liljakatsuragi"
+            "liljakatsuragi",
+            "hathaway_noa"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -14067,6 +18876,73 @@
         ]
     },
     {
+        "romaji": "T・P BON",
+        "english": "T・P BON",
+        "song": "Bon Bon Bon",
+        "artist_raw": "Ryan Brahms",
+        "artist_arr": [
+            "Ryan Brahms"
+        ],
+        "composer": "Michiru Oshima",
+        "arranger": "Michiru Oshima",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=30154",
+        "anime_type": "ONA",
+        "vintage": "Spring 2024",
+        "genres_raw": [
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Shounen",
+            "CGI",
+            "Time Manipulation",
+            "War",
+            "Episodic",
+            "Foreign",
+            "Slavery",
+            "Travel"
+        ],
+        "difficulty": "37.33",
+        "video_url": "https://nawdist.animemusicquiz.com/51u82t.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo"
+        ],
+        "guessers_hover": [
+            "Team konomi: bamboo (3.39)",
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (9.77), Tapumomo_ (12.48)"
+        ],
+        "listers_flat": [
+            "bamboo"
+        ],
+        "listers_hover": [
+            "Team konomi: bamboo",
+            "Team SUS_DOMESTICUS: None"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "bamboo"
+        ],
+        "correct_teams_flat": [
+            3,
+            3,
+            2
+        ]
+    },
+    {
         "romaji": "Ueki no Housoku",
         "english": "The Law of Ueki",
         "song": "Kokoro no Wakusei ~Little planets~",
@@ -14353,6 +19229,64 @@
         ]
     },
     {
+        "romaji": "W: Wish",
+        "english": "W: Wish",
+        "song": "GLORY DAYS",
+        "artist_raw": "Saeko Chiba",
+        "artist_arr": [
+            "Saeko Chiba"
+        ],
+        "composer": "TARAWO",
+        "arranger": "Toshimichi Isoe",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=4465",
+        "anime_type": "TV",
+        "vintage": "Fall 2004",
+        "genres_raw": [
+            "Drama",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Orphan"
+        ],
+        "difficulty": "21.53",
+        "video_url": "https://nawdist.animemusicquiz.com/179cby.mp3",
+        "guessers_flat": [
+            "SUS_DOMESTICUS"
+        ],
+        "guessers_hover": [
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS (2.88)",
+            "Team konomi: None"
+        ],
+        "listers_flat": [
+            "SUS_DOMESTICUS"
+        ],
+        "listers_hover": [
+            "Team SUS_DOMESTICUS: SUS_DOMESTICUS",
+            "Team konomi: None"
+        ],
+        "room_players": [
+            "HakoHoka",
+            "Kyuuuu",
+            "RyoutaVN",
+            "SUS_DOMESTICUS",
+            "Tapumomo_",
+            "bamboo",
+            "konomi",
+            "zomg"
+        ],
+        "lives_taken_flat": [
+            "sus_domesticus"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3
+        ]
+    },
+    {
         "romaji": "Wakako-zake",
         "english": "Wakako-zake",
         "song": "Shiawase no Kaerimichi",
@@ -14628,6 +19562,69 @@
         "correct_teams_flat": [
             2,
             2,
+            1,
+            1
+        ]
+    },
+    {
+        "romaji": "Youjo Shachou",
+        "english": "Cute Executive Officer",
+        "song": "Kaisha ni Kaerou!",
+        "artist_raw": "Hisako Kanemoto feat. Kotori Koiwai",
+        "artist_arr": [
+            "Hisako Kanemoto feat. Kotori Koiwai"
+        ],
+        "composer": "Shuhei Kamada",
+        "arranger": "Shuhei Kamada",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23920",
+        "anime_type": "ONA",
+        "vintage": "Winter 2021",
+        "genres_raw": [
+            "Comedy"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Work",
+            "Surreal Comedy"
+        ],
+        "difficulty": "24.33",
+        "video_url": "https://nawdist.animemusicquiz.com/hvj4se.mp3",
+        "guessers_flat": [
+            "jaimeywea",
+            "Sabetin",
+            "PotassiumF"
+        ],
+        "guessers_hover": [
+            "Team ruuka: PotassiumF (4.14), Sabetin (11.63)",
+            "Team Hathaway_Noa: jaimeywea (6.85)"
+        ],
+        "listers_flat": [
+            "jaimeywea",
+            "Sabetin",
+            "PotassiumF"
+        ],
+        "listers_hover": [
+            "Team ruuka: PotassiumF, Sabetin",
+            "Team Hathaway_Noa: jaimeywea"
+        ],
+        "room_players": [
+            "Hathaway_Noa",
+            "LiljaKatsuragi",
+            "PotassiumF",
+            "Sabetin",
+            "Serozero",
+            "Tugia",
+            "jaimeywea",
+            "ruuka"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "jaimeywea"
+        ],
+        "correct_teams_flat": [
+            4,
             1,
             1
         ]
@@ -15152,6 +20149,77 @@
             1,
             6,
             1
+        ]
+    },
+    {
+        "romaji": "ZatsuTabi: That's Journey",
+        "english": "ZatsuTabi: That's Journey",
+        "song": "Tabi Shiyo! don't you?",
+        "artist_raw": "harmoe",
+        "artist_arr": [
+            "harmoe"
+        ],
+        "composer": "Hayato Tanaka",
+        "arranger": "Hayato Tanaka",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=28365",
+        "anime_type": "TV",
+        "vintage": "Spring 2025",
+        "genres_raw": [
+            "Adventure",
+            "Comedy",
+            "Drama",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Yuri",
+            "Iyashikei",
+            "Cute Girls Doing Cute Things",
+            "Primarily Adult Cast",
+            "Drawing",
+            "Trains",
+            "Food",
+            "LGBTQ+ Themes",
+            "Travel"
+        ],
+        "difficulty": "29.48",
+        "video_url": "https://nawdist.animemusicquiz.com/50lbhf.mp3",
+        "guessers_flat": [
+            "Jlin2",
+            "Metak"
+        ],
+        "guessers_hover": [
+            "Team redeyes: Metak (6.64)",
+            "Team Jlin2: Jlin2 (4.81)"
+        ],
+        "listers_flat": [
+            "Jlin2",
+            "Metak"
+        ],
+        "listers_hover": [
+            "Team redeyes: Metak",
+            "Team Jlin2: Jlin2"
+        ],
+        "room_players": [
+            "Caramel36",
+            "Catge",
+            "Jlin2",
+            "Metak",
+            "Spitzell",
+            "mahzrunner",
+            "provenance",
+            "redeyes"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "metak",
+            "jlin2"
+        ],
+        "correct_teams_flat": [
+            6,
+            5
         ]
     },
     {
