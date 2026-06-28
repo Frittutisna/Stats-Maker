@@ -3484,7 +3484,7 @@ const searchHeadersConfig = [
         max         : 100,
         step        : 1
     },
-    {id: "song",        name: "Song",       visible: true,  type: "text"},
+    {id: "song",        name: "Song",       visible: true,  type: "text", locked: true},
     {id: "artist",      name: "Artist",     visible: true,  type: "text"},
     {id: "composer",    name: "Composer",   visible: false, type: "text"},
     {id: "arranger",    name: "Arranger",   visible: false, type: "text"},
@@ -3635,16 +3635,43 @@ function initColumnSettingsCheckboxes() {
     }
 
     masterChk.addEventListener("change", () => {
+        const isChecked = masterChk.checked;
+
         searchHeadersConfig.forEach(c => {
-            c.visible = masterChk.checked;
+            if (c.locked) {
+                c.visible = true;
+                return;
+            }
+
+            c.visible = isChecked;
 
             if (c.type === "categorical" && c.subOptions) {
-                if (masterChk.checked)  c.selectedOptions = new Set(c.subOptions.map(o => o.toLowerCase()));
-                else                    c.selectedOptions.clear();
+                if (isChecked)  c.selectedOptions = new Set(c.subOptions.map(o => o.toLowerCase()));
+                else            c.selectedOptions.clear();
             }
         });
 
-        container.querySelectorAll("input[type='checkbox']").forEach(chk => {chk.checked = masterChk.checked;});
+        if (!isChecked) {
+            searchHeadersConfig.forEach(c => {
+                if (c.type === "range") {
+                    c.currentMin = c.min;
+                    c.currentMax = c.max;
+                }
+            });
+        }
+
+        const individualCheckboxes = container.getElementsByClassName('col-toggle-checkbox');
+        for (let i = 0; i < individualCheckboxes.length; i++) if (!individualCheckboxes[i].disabled) individualCheckboxes[i].checked = isChecked;
+
+        const allInputs = container.getElementsByTagName('input');
+
+        for (let i = 0; i < allInputs.length; i++) {
+            if (allInputs[i].type === 'checkbox' && !allInputs[i].disabled) {
+                allInputs[i].checked        = isChecked;
+                allInputs[i].indeterminate  = false;
+            }
+        }
+
         triggerTableRefresh();
     });
 
@@ -3659,6 +3686,12 @@ function initColumnSettingsCheckboxes() {
         chk.type        = "checkbox";
         chk.className   = "col-toggle-checkbox rounded accent-black";
         chk.checked     = col.visible;
+
+        if (col.locked) {
+            col.visible     = true;
+            chk.checked     = true;
+            chk.disabled    = true;
+        }
 
         chk.addEventListener("change", () => {
             col.visible = chk.checked;
