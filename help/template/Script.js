@@ -451,9 +451,9 @@ function initPlayerColumnSettings() {
     });
 
     const hasDeltaData  = activePlayerHeadersConfig.some(c => ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"].includes(c.name));
-    const toggleBtn     = document.getElementById("playerMetricModeToggleBtn");
+    const metricSection = document.getElementById("playerMetricModeSection");
 
-    if (toggleBtn && hasDeltaData) toggleBtn.classList.remove("hidden");
+    if (metricSection && hasDeltaData) metricSection.classList.remove("hidden");
 
     activePlayerHeadersConfig.forEach(col => {
         if (currentPlayerMetricMode === "Δ" && ["GR", "UF", "OP GR", "ED GR", "IN GR"]  .includes(col.name)) col.visible = false;
@@ -1146,23 +1146,8 @@ function renderTeamTable() {
     table.innerHTML = thead + tbody + "</tbody>";
 }
 
-window.togglePlayerMetricMode = function() {
-    const btn               = document.getElementById("playerMetricModeToggleBtn");
-    currentPlayerMetricMode = currentPlayerMetricMode === "%" ? "Δ" : "%";
-    btn.innerText           = currentPlayerMetricMode;
-
-    const baseToDeltaMap = {
-        "GR"    : "GR Δ",
-        "UF"    : "UF Δ",
-        "OP GR" : "OP Δ",
-        "ED GR" : "ED Δ",
-        "IN GR" : "IN Δ",
-        "GR Δ"  : "GR",
-        "UF Δ"  : "UF",
-        "OP Δ"  : "OP GR",
-        "ED Δ"  : "ED GR",
-        "IN Δ"  : "IN GR"
-    };
+window.updatePlayerMetricModeFromRadio = function(selectedMode) {
+    currentPlayerMetricMode = selectedMode;
 
     activePlayerHeadersConfig.forEach(col => {
         if      (currentPlayerMetricMode === "Δ" && ["GR", "UF", "OP GR", "ED GR", "IN GR"]     .includes(col.name)) col.visible = false;
@@ -1174,6 +1159,16 @@ window.togglePlayerMetricMode = function() {
     initPlayerColumnSettings    ();
     triggerPlayerTableRefresh   ();
 };
+
+function initPlayerRadioSettingsListeners() {
+    document.querySelectorAll('input[name="playerMetricModeRadio"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            window.updatePlayerMetricModeFromRadio(e.target.value);
+        });
+    });
+}
+
+initPlayerRadioSettingsListeners();
 
 function syncTierDropdownDOMState() {
     const isCount = globalChartMode === "COUNT";

@@ -35,9 +35,11 @@
                         Combine query terms using explicit <code class="bg-gray-200 px-1 rounded font-mono text-xs">and/or</code> keywords<br>
                         Group precedence with <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code><br>
                         Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
-                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">elo&lt;90 or (opgr&gt;80 edguessrate&lt;30)</code> returns players that either have an Elo below 90 or those who have OP and ED Guess Rates above 80% and below 30%<br><br>
-                        <b class="bg-black text-white px-1 rounded">%/Δ</b><br>
-                        Swaps base percentages with their respective delta (Δ) variants
+                        <code class="bg-gray-200 px-1 rounded font-mono text-xs">elo&lt;90 or (opgr&gt;80 edguessrate&lt;30)</code> 
+                        returns players that either have an Elo below 90 or those who have OP and ED Guess Rates above 80% and below 30%<br><br>
+                        Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings.<br>
+                        • <b>Current:</b> Shows empirical metrics for (OP/ED/IN) GR and UF<br>
+                        • <b>Delta:</b> Compares them against their historical baselines
                     </p>
                 </div>
                 <div id="tierGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black">
@@ -63,8 +65,14 @@
             </div>
             <div id="globalGearWrapper" class="relative">
                 <button class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleGlobalGear(event)">⚙</button>
-                <div id="playerColumnSettingsDropdown" class="bg-white border p-4 min-w-40 absolute right-0 top-[32px] hidden z-50 shadow-md">
-                    <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm text-black">
+                <div id="playerColumnSettingsDropdown" class="bg-white border p-4 min-w-44 absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black flex flex-col gap-1">
+                    <div id="playerMetricModeSection" class="hidden">
+                        <p class="font-bold pb-1 mb-1">Display</p>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="playerMetricModeRadio" value="%" checked class="accent-black">Current</label>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="playerMetricModeRadio" value="Δ" class="accent-black">Delta</label>
+                        <div class="border-b my-1.5"></div>
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer font-bold text-sm text-black">
                         <input type="checkbox" id="playerAllColumnsMasterCheckbox" class="rounded accent-black">All
                     </label>
                     <div id="playerColumnCheckboxContainer" class="flex flex-col gap-0.5 text-xs max-h-[400px] overflow-y-auto"></div>
@@ -142,7 +150,6 @@
                         <div id="playerSearchCounter" class="w-[75px] h-[30px] font-bold bg-black text-white flex items-center justify-center text-sm select-none shrink-0">
                             0/0
                         </div>
-                        <button id="playerMetricModeToggleBtn" class="w-[40px] h-[30px] bg-black text-white font-bold text-sm cursor-pointer select-none hidden shrink-0" onclick="togglePlayerMetricMode()">%</button>
                     </div>
                 </div>
                 <div class="w-full overflow-x-auto block">
