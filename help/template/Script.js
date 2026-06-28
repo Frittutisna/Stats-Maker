@@ -2821,20 +2821,68 @@ let globalSortState     = {columnName: "Anime", ascending: true};
 let currentSearchLang   = "JP";
 
 const searchHeadersConfig = [
-    {id: "anime",       name: "Anime",      visible: true},
-    {id: "type",        name: "Song Type",  visible: true},
-    {id: "chanting",    name: "Chanting",   visible: false},
-    {id: "anime_type",  name: "Anime Type", visible: false},
-    {id: "vintage",     name: "Vintage",    visible: false},
-    {id: "genre",       name: "Genre",      visible: false},
-    {id: "tag",         name: "Tag",        visible: false},
-    {id: "difficulty",  name: "Difficulty", visible: false},
-    {id: "song",        name: "Song",       visible: true},
-    {id: "artist",      name: "Artist",     visible: true},
-    {id: "composer",    name: "Composer",   visible: false},
-    {id: "arranger",    name: "Arranger",   visible: false},
-    {id: "guessers",    name: "Correct",    visible: true},
-    {id: "listers",     name: "List",       visible: false}
+    {id: "anime", name: "Anime", visible: true, type: "text"},
+
+    {
+        id          : "type",
+        name        : "Song Type",
+        visible     : true,
+        type        : "categorical",
+        subOptions  : ["Opening", "Ending", "Insert"]
+    },
+    {
+        id          : "chanting",
+        name        : "Chanting",
+        visible     : false,
+        type        : "categorical",
+        subOptions  : ["Yes", "No"]
+    },
+    {
+        id          : "anime_type",
+        name        : "Anime Type", visible: false,
+        type        : "categorical",
+        subOptions  : ["TV", "Movie", "OVA", "ONA", "Special"]
+    },
+    {
+        id          : "vintage",
+        name        : "Vintage",
+        visible     : false,
+        type        : "range",
+        min         : 1900,
+        max         : 2026,
+        step        : 1
+    },
+    {
+        id          : "difficulty",  
+        name        : "Difficulty",
+        visible     : false,
+        type        : "range",
+        min         : 0,
+        max         : 100,
+        step        : 1
+    },
+    {id: "song",        name: "Song",       visible: true,  type: "text"},
+    {id: "artist",      name: "Artist",     visible: true,  type: "text"},
+    {id: "composer",    name: "Composer",   visible: false, type: "text"},
+    {id: "arranger",    name: "Arranger",   visible: false, type: "text"},
+    {
+        id          : "guessers",
+        name        : "Correct",
+        visible     : true,
+        type        : "range",
+        min         : 0,
+        max         : 8,
+        step        : 1
+    },
+    {
+        id          : "listers",     
+        name        : "List",       
+        visible     : false, 
+        type        : "range",        
+        min         : 0,
+        max         : 8,
+        step        : 1
+    }
 ];
 
 function debounce(func, wait) {
@@ -2937,6 +2985,25 @@ function initColumnSettingsCheckboxes() {
     if (!container || !masterChk) return;
     container.innerHTML = "";
 
+    if (globalSearchData && globalSearchData.length > 0) {
+        const parsedVints = globalSearchData.map(s => s._vintageParsed) .filter(v => !isNaN(v) && v !== -Infinity);
+        const parsedDiffs = globalSearchData.map(s => s._diffParsed)    .filter(d => !isNaN(d) && d !== -Infinity);
+
+        const vintConfig  = searchHeadersConfig.find(c => c.id === "vintage");
+        const diffConfig  = searchHeadersConfig.find(c => c.id === "difficulty");
+
+        if (vintConfig && parsedVints.length > 0) {
+            vintConfig.min = Math.floor (Math.min(...parsedVints));
+            vintConfig.max = Math.ceil  (Math.max(...parsedVints));
+        }
+
+        if (diffConfig && parsedDiffs.length > 0) {
+            diffConfig.min = 0;
+            const maxDiff  = Math.max(...parsedDiffs);
+            diffConfig.max = Math.ceil(maxDiff / 5) * 5; 
+        }
+    }
+
     function updateMasterCheckboxState() {
         const allChecked        = searchHeadersConfig.every(c => c.visible);
         const noneChecked       = searchHeadersConfig.every(c => !c.visible);
@@ -2945,29 +3012,215 @@ function initColumnSettingsCheckboxes() {
     }
 
     masterChk.addEventListener("change", () => {
-        searchHeadersConfig.forEach(c => { c.visible = masterChk.checked; });
+        searchHeadersConfig.forEach(c => {c.visible = masterChk.checked;});
         document.querySelectorAll(".col-toggle-checkbox").forEach(chk => {chk.checked = masterChk.checked;});
         triggerTableRefresh();
     });
 
     searchHeadersConfig.forEach(col => {
+        const colWrapper        = document.createElement("div");
+        colWrapper.className    = "flex flex-col";
+
         const label     = document.createElement("label");
-        label.className = "flex items-center gap-2 cursor-pointer w-full text-left";
-        
+        label.className = "flex items-center gap-2 cursor-pointer w-full text-left font-bold";
+
         const chk       = document.createElement("input");
         chk.type        = "checkbox";
         chk.className   = "col-toggle-checkbox rounded accent-black";
         chk.checked     = col.visible;
-        
+
         chk.addEventListener("change", () => {
             col.visible = chk.checked;
-            updateMasterCheckboxState();
-            triggerTableRefresh();
+
+            if (!chk.checked && col.type === "categorical" && col.selectedOptions) {
+                col.selectedOptions.clear();
+                colWrapper.querySelectorAll("input[type='checkbox']").forEach(subChk => {if (subChk !== chk) subChk.checked = false;});
+            }
+
+            else if (chk.checked && col.type === "categorical" && col.subOptions) {
+                col.subOptions.forEach(opt => col.selectedOptions.add(opt.toLowerCase()));
+                colWrapper.querySelectorAll("input[type='checkbox']").forEach(subChk => {subChk.checked = true;});
+            }
+            
+            else if (!chk.checked && col.type === "range") {
+                col.currentMin = col.min;
+                col.currentMax = col.max;
+                
+                const inputs = colWrapper.querySelectorAll("input[type='range']");
+
+                if (inputs.length === 2) {
+                    inputs[0].value = col.min;
+                    inputs[1].value = col.max;
+                }
+
+                const labelDiv = colWrapper.querySelector(".text-gray-500");
+                if (labelDiv) labelDiv.innerHTML = `<span>Min: <b>${col.min}</b></span><span>Max: <b>${col.max}</b></span>`;
+            }
+
+            updateMasterCheckboxState   ();
+            triggerTableRefresh         ();
         });
 
         label       .appendChild(chk);
         label       .appendChild(document.createTextNode(col.name));
-        container   .appendChild(label);
+        colWrapper  .appendChild(label);
+
+        if (col.type === "categorical" && col.subOptions) {
+            const subContainer = document.createElement("div");
+            subContainer.className = "pl-6 flex flex-col text-xs";
+
+            if (col.visible)    col.selectedOptions = new Set(col.subOptions.map(o => o.toLowerCase()));
+            else                col.selectedOptions = new Set();
+
+            col.subOptions.forEach(opt => {
+                const subLabel      = document.createElement("label");
+                subLabel.className  = "flex items-center gap-1.5 cursor-pointer text-gray-700 hover:text-black py-0.5";
+
+                const subChk        = document.createElement("input");
+                subChk.type         = "checkbox";
+                subChk.className    = "rounded accent-black scale-90";
+                subChk.checked      = col.visible;
+
+                subChk.addEventListener("change", () => {
+                    if (subChk.checked) col.selectedOptions.add     (opt.toLowerCase());
+                    else                col.selectedOptions.delete  (opt.toLowerCase());
+
+                    const totalChildren = col.subOptions.length;
+                    const selectedCount = col.selectedOptions.size;
+
+                    if (selectedCount === totalChildren) {
+                        chk.checked         = true;
+                        chk.indeterminate   = false;
+                        col.visible         = true;
+                    }
+
+                    else if (selectedCount === 0) {
+                        chk.checked         = false;
+                        chk.indeterminate   = false;
+                        col.visible         = false;
+                    }
+
+                    else {
+                        chk.checked         = false;
+                        chk.indeterminate   = true;
+                        col.visible         = true;
+                    }
+
+                    updateMasterCheckboxState   ();
+                    triggerTableRefresh     ();
+                });
+
+                subLabel        .appendChild(subChk);
+                subLabel        .appendChild(document.createTextNode(opt));
+                subContainer    .appendChild(subLabel);
+            });
+
+            colWrapper.appendChild(subContainer);
+        }
+
+        if (col.type === "range") {
+            col.currentMin = col.min;
+            col.currentMax = col.max;
+
+            const sliderContainer       = document.createElement("div");
+            sliderContainer.className   = "pl-6 flex flex-col gap-1 mt-1 w-full text-xs pr-2";
+
+            const outputLabel       = document.createElement("div");
+            outputLabel.className   = "text-gray-500 font-mono flex justify-between";
+            outputLabel.innerHTML   = `<span>Min: <b>${col.min}</b></span><span>Max: <b>${col.max}</b></span>`;
+
+            const track     = document.createElement("div");
+            track.className = "relative w-full h-1 flex items-center mt-3 bg-gray-200 rounded-lg"; 
+
+            const inputMin      = document.createElement("input");
+            inputMin.type       = "range";
+            inputMin.min        = col.min;
+            inputMin.max        = col.max;
+            inputMin.step       = col.step;
+            inputMin.value      = col.min;
+            inputMin.className  = "absolute w-full accent-black h-1 bg-transparent appearance-none cursor-pointer z-10";
+
+            const inputMax      = document.createElement("input");
+            inputMax.type       = "range";
+            inputMax.min        = col.min;
+            inputMax.max        = col.max;
+            inputMax.step       = col.step;
+            inputMax.value      = col.max;
+            inputMax.className  = "absolute w-full accent-black h-1 bg-transparent appearance-none cursor-pointer z-20";
+
+            const adjustSliderZIndex = (e) => {
+                const rect              = track.getBoundingClientRect();
+                const clickX            = e.clientX - rect.left;
+                const percentage        = clickX    / rect.width;
+                const estimatedValue    = col.min   + percentage    * (col.max - col.min);
+
+                if (Math.abs(estimatedValue - parseInt(inputMin.value)) < Math.abs(estimatedValue - parseInt(inputMax.value))) {
+                    inputMin.style.zIndex = "30";
+                    inputMax.style.zIndex = "20";
+                }
+
+                else {
+                    inputMin.style.zIndex = "10";
+                    inputMax.style.zIndex = "30";
+                }
+            };
+
+            track.addEventListener("mousemove", adjustSliderZIndex);
+            track.addEventListener("mousedown", adjustSliderZIndex);
+
+            const handleSliderInput = () => {
+                let valMin = parseInt(inputMin.value);
+                let valMax = parseInt(inputMax.value);
+
+                if (valMin > valMax) {
+                    if (document.activeElement === inputMin) {
+                        inputMin.value  = valMax;
+                        valMin          = valMax;
+                    }
+
+                    else {
+                        inputMax.value  = valMin;
+                        valMax          = valMin;
+                    }
+                }
+
+                col.currentMin          = valMin;
+                col.currentMax          = valMax;
+                outputLabel.innerHTML   = `<span>Min: <b>${valMin}</b></span><span>Max: <b>${valMax}</b></span>`;
+            };
+
+            const triggerRefreshDebounced = debounce(() => {
+                if (!col.visible && (col.currentMin > col.min || col.currentMax < col.max)) {
+                    col.visible = true;
+                    chk.checked = true;
+
+                    updateMasterCheckboxState();
+                }
+
+                triggerTableRefresh();
+            }, 150);
+
+            inputMin.addEventListener("input", () => { handleSliderInput(); triggerRefreshDebounced(); });
+            inputMax.addEventListener("input", () => { handleSliderInput(); triggerRefreshDebounced(); });
+
+            track           .appendChild(inputMin);
+            track           .appendChild(inputMax);
+            sliderContainer .appendChild(outputLabel);
+            sliderContainer .appendChild(track);
+            colWrapper      .appendChild(sliderContainer);
+        }
+
+        if (col.type === "categorical" && col.subOptions) {
+            const totalChildren = col.subOptions.length;
+            const selectedCount = col.selectedOptions.size;
+
+            if (selectedCount > 0 && selectedCount < totalChildren) {
+                chk.checked         = false;
+                chk.indeterminate   = true;
+            }
+        }
+
+        container.appendChild(colWrapper);
     });
 
     updateMasterCheckboxState();
@@ -3125,11 +3378,45 @@ function evaluateQuery(song, key, operator, value) {
 }
 
 function renderSearchTable(filteredSongs) {
+    let runtimeFilteredList = filteredSongs.filter(song => {
+        for (let col of searchHeadersConfig) {
+            if (col.type === "categorical" && col.selectedOptions) {
+                if (!col.visible) continue; 
+                let matchValue = "";
+
+                if (col.id === "type") {
+                    const tStr = song._typeLower;
+
+                    if      (tStr.includes("opening"))  matchValue = "opening";
+                    else if (tStr.includes("ending"))   matchValue = "ending";
+                    else if (tStr.includes("insert"))   matchValue = "insert";
+                }
+
+                else if (col.id === "chanting")     matchValue = song._chantingLower;
+                else if (col.id === "anime_type")   matchValue = song._animeTypeLower;
+
+                if (matchValue && !col.selectedOptions.has(matchValue)) return false;
+            }
+
+            if (col.type === "range" && col.currentMin !== undefined && col.currentMax !== undefined) {
+                let targetNum = 0;
+
+                if      (col.id === "vintage")      targetNum = song._vintageParsed;
+                else if (col.id === "difficulty")   targetNum = song._diffParsed === -Infinity ? 0 : song._diffParsed;
+                else if (col.id === "guessers")     targetNum = song._guessersCount;
+                else if (col.id === "listers")      targetNum = song._listersCount;
+
+                if (isNaN(targetNum) || targetNum < col.currentMin || targetNum > col.currentMax) return false;
+            }
+        }
+        return true;
+    });
+
     const table         = document.getElementById('searchSongsTable');
     const counterNode   = document.getElementById('searchCounter');
 
     if (!table)         return;
-    if (counterNode)    counterNode.innerText = `${filteredSongs.length}/${globalSearchData.length}`;
+    if (counterNode)    counterNode.innerText = `${runtimeFilteredList.length}/${globalSearchData.length}`;
 
     const activeCols = searchHeadersConfig.filter(c => c.visible);
 
@@ -3138,7 +3425,7 @@ function renderSearchTable(filteredSongs) {
         return;
     }
 
-    if (filteredSongs.length === 0) {
+    if (runtimeFilteredList.length === 0) {
         table.innerHTML = `<thead><tr><th>Error</th></tr></thead><tbody><tr><td class="p-2 text-center text-black">No songs matched your specific constraints</td></tr></tbody>`;
         return;
     }
@@ -3162,7 +3449,7 @@ function renderSearchTable(filteredSongs) {
     const compVisible = activeCols.some(c => c.id === "composer");
     const arrVisible  = activeCols.some(c => c.id === "arranger");
 
-    filteredSongs.forEach(song => {
+    runtimeFilteredList.forEach(song => {
         const tr            = document.createElement('tr');
         let skipComposer    = false;
         let skipArranger    = false;
