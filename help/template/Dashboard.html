@@ -45,13 +45,13 @@
                     <p class="mb-1 pt-1 text-xs">
                         Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings<br>
                         Only one chart is visible at any time<br><br>
-                        <b class="font-bold">Sort:</b><br>
-                        • <b>Global:</b> Sorts and ranks all players globaller<br>
+                        <b class="font-bold">Sort</b><br>
+                        • <b>Global:</b> Sorts and ranks all players globally<br>
                         • <b>Tier:</b> Sorts and ranks players within their respective Tiers<br><br>
-                        <b class="font-bold">Display:</b><br>
+                        <b class="font-bold">Display</b><br>
                         • <b>Rate:</b> Shows percentages<br>
                         • <b>Count:</b> Shows raw counts<br><br>
-                        <b class="font-bold">Chart:</b><br>
+                        <b class="font-bold">Chart</b><br>
                         • <b>General:</b> Charts various metrics (Correct, Over-8, (Off) Rig, Chanting)<br>
                         • <b>Contribution:</b> Charts direct contribution to life count (Lives Taken/Saved, Other Correct)<br>
                         • <b>Time:</b> Charts Time aggregate metrics (Minimum, Mean, Median, Maximum, or Standard Deviation)
@@ -119,6 +119,19 @@
                         </div>
                     </div>
                 </div>
+                <div id="guessSettingsDropdown" class="bg-white border p-4 w-44 absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black flex flex-col gap-1">
+                    <div>
+                        <p class="font-bold border-b pb-1 mb-1">Display</p>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="guessDisplayRadio" value="ALL" checked class="accent-black">Corrects</label>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="guessDisplayRadio" value="RIG" class="accent-black">Rigs</label>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="guessDisplayRadio" value="HIT" class="accent-black">Rigs Hit</label>
+                    </div>
+                    <div class="mt-1">
+                        <p class="font-bold border-b pb-1 mb-1">Focus</p>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="guessFocusRadio" value="ON" class="accent-black">On</label>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="guessFocusRadio" value="OFF" checked class="accent-black">Off</label>
+                    </div>
+                </div>
             </div>
         </div>
         <div>
@@ -164,11 +177,7 @@
                 </div>
             </div>
             <div id="guess-tab" class="tab-content">
-                <div class="flex justify-center mb-1 gap-1 items-center">
-                    <button id="guessListToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold text-xs cursor-pointer hidden" onclick="cycleGuessListViewMode()">ALL</button>
-                    <button id="focusToggleBtn" class="w-[60px] h-[30px] bg-black text-white font-bold text-xs cursor-pointer hidden" onclick="toggleGraphFocus()">FOCUS</button>
-                </div>
-                <div class="max-w-[800px] mx-auto">
+                <div class="max-w-[800px] mx-auto pt-2">
                     <div>
                         <div id="guessChartContainer">
                             <div id="plotlyGuessChart" style="width:800px; height:800px;"></div>

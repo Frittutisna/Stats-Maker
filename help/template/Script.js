@@ -125,8 +125,9 @@ updateTimeSubtitle();
 setInterval(updateTimeSubtitle, 1000);
 
 function switchDashboardTab(evt, tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active-tab'));
+    document.querySelectorAll('.tab-content')   .forEach(el => el.classList.remove('active-content'));
+    document.querySelectorAll('.tab-btn')       .forEach(el => el.classList.remove('active-tab'));
+
     document.getElementById(tabId).classList.add('active-content');
     if (evt && evt.currentTarget) evt.currentTarget.classList.add('active-tab');
     window.dispatchEvent(new Event('resize'));
@@ -135,8 +136,8 @@ function switchDashboardTab(evt, tabId) {
     const helpWrapper = document.getElementById('globalHelpWrapper');
 
     if (gearWrapper) {
-        if (['player-tab', 'tier-tab', 'search-tab'].includes(tabId))   gearWrapper.classList.remove('invisible');
-        else                                                            gearWrapper.classList.add('invisible');
+        if (['player-tab', 'tier-tab', 'search-tab'].includes(tabId) || (tabId === 'guess-tab' && watched)) gearWrapper.classList.remove    ('invisible');
+        else                                                                                                gearWrapper.classList.add       ('invisible');
     }
 
     if (helpWrapper) {
@@ -155,17 +156,27 @@ window.toggleGlobalGear = function(event) {
         document.getElementById("playerColumnSettingsDropdown") .classList.toggle   ("hidden");
         document.getElementById("columnSettingsDropdown")       .classList.add      ("hidden");
         document.getElementById("tierSettingsDropdown")         .classList.add      ("hidden");
+        document.getElementById("guessSettingsDropdown")        .classList.add      ("hidden");
     }
 
     else if (activeTab === 'tier-tab') {
         document.getElementById("tierSettingsDropdown")         .classList.toggle   ("hidden");
         document.getElementById("playerColumnSettingsDropdown") .classList.add      ("hidden");
         document.getElementById("columnSettingsDropdown")       .classList.add      ("hidden");
+        document.getElementById("guessSettingsDropdown")        .classList.add      ("hidden");
     }
 
     else if (activeTab === 'search-tab') {
         document.getElementById("columnSettingsDropdown")       .classList.toggle   ("hidden");
         document.getElementById("playerColumnSettingsDropdown") .classList.add      ("hidden");
+        document.getElementById("tierSettingsDropdown")         .classList.add      ("hidden");
+        document.getElementById("guessSettingsDropdown")        .classList.add      ("hidden");
+    }
+
+    else if (activeTab === 'guess-tab' && watched) {
+        document.getElementById("guessSettingsDropdown")        .classList.toggle   ("hidden");
+        document.getElementById("playerColumnSettingsDropdown") .classList.add      ("hidden");
+        document.getElementById("columnSettingsDropdown")       .classList.add      ("hidden");
         document.getElementById("tierSettingsDropdown")         .classList.add      ("hidden");
     }
 };
@@ -221,6 +232,7 @@ const stopProp = (e) => e.stopPropagation();
 [
     'playerColumnSettingsDropdown',
     'tierSettingsDropdown',
+    'guessSettingsDropdown',
     'columnSettingsDropdown',
     'playerGuideDropdown',
     'tierGuideDropdown',
@@ -1268,6 +1280,58 @@ function initTierDropdownListeners() {
 }
 
 initTierDropdownListeners();
+
+function initGuessDropdownListeners() {
+    document.querySelectorAll('input[name="guessDisplayRadio"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const val           = e.target.value;
+            const guessChart    = document.getElementById("guessChartContainer");
+            const listChart     = document.getElementById("listChartContainer");
+
+            if (val === "ALL") {
+                currentGuessListViewMode = "ALL";
+
+                if (guessChart) guessChart  .classList.remove   ("hidden");
+                if (listChart)  listChart   .classList.add      ("hidden");
+
+                window.dispatchEvent(new Event('resize'));
+                updateGuessChartAxesFocus();
+            } 
+
+            else if (val === "RIG") {
+                currentGuessListViewMode    = "RIG";
+                currentListChartMode        = "ALL";
+
+                if (guessChart) guessChart  .classList.add      ("hidden");
+                if (listChart)  listChart   .classList.remove   ("hidden");
+
+                renderListChart();
+            } 
+
+            else if (val === "HIT") {
+                currentGuessListViewMode    = "HIT";
+                currentListChartMode        = "HIT";
+
+                if (guessChart) guessChart  .classList.add      ("hidden");
+                if (listChart)  listChart   .classList.remove   ("hidden");
+                renderListChart();
+            }
+
+            updateGuessHelpDropdown();
+        });
+    });
+
+    document.querySelectorAll('input[name="guessFocusRadio"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            isGraphFocused = (e.target.value === "ON");
+
+            if (currentGuessListViewMode === "ALL") updateGuessChartAxesFocus   ();
+            else                                    renderListChart             ();
+        });
+    });
+}
+
+initGuessDropdownListeners();
 
 function generateLinearColors(startHex, endHex, steps) {
     const parse = (hex) => [parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16)];
@@ -3131,11 +3195,14 @@ function updateGuessHelpDropdown() {
     if (!dropdown) return;
 
     let guideText = `
-        <b class="bg-black text-white px-1 rounded">ALL/RIG/HIT</b><br>Cycles between different bubble charts:<br>
-        • <b>ALL:</b> All songs guessed correctly<br>
-        • <b>RIG:</b> All songs from this player's list<br>
-        • <b>HIT:</b> All songs from this player's list that they guessed correctly<br><br>
-        <b class="bg-black text-white px-1 rounded">FOCUS</b><br>Focuses on the chart shown instead of using the shared axis bounds
+        <b>Display</b><br>
+        Changes the dataset shown on the bubble chart<br>
+        • <b>Corrects:</b> All songs guessed correctly<br>
+        • <b>Rigs:</b> All songs from this player's list<br>
+        • <b>Rigs Hit:</b> All songs guessed correctly from this player's list<br><br>
+        <b>Focus</b><br>
+        • <b>On:</b> Scales the axes to fit only the current chart<br>
+        • <b>Off:</b> Uses the shared axis bounds for easy comparison between charts
     `;
     
     let exampleText = "";
@@ -3205,64 +3272,6 @@ function updateSearchHelpDropdown() {
         </div>
     `;
 }
-
-window.cycleGuessListViewMode = function() {
-    const btn           = document.getElementById("guessListToggleBtn");
-    const guessChart    = document.getElementById("guessChartContainer");
-    const listChart     = document.getElementById("listChartContainer");
-
-    if (currentGuessListViewMode === "ALL") {
-        currentGuessListViewMode    = "RIG";
-        btn.innerText               = "RIG";
-        currentListChartMode        = "ALL";
-
-        if (guessChart) guessChart  .classList.add      ("hidden");
-        if (listChart)  listChart   .classList.remove   ("hidden");
-
-        renderListChart();
-    }
-
-    else if (currentGuessListViewMode === "RIG") {
-        currentGuessListViewMode    = "HIT";
-        btn.innerText               = "HIT";
-        currentListChartMode        = "HIT";
-
-        renderListChart();
-    }
-
-    else {
-        currentGuessListViewMode    = "ALL";
-        btn.innerText               = "ALL";
-
-        if (guessChart) guessChart  .classList.remove   ("hidden");
-        if (listChart)  listChart   .classList.add      ("hidden");
-
-        window.dispatchEvent(new Event('resize'));
-        if (isGraphFocused) updateGuessChartAxesFocus();
-    }
-
-    updateGuessHelpDropdown();
-};
-
-window.toggleGraphFocus = function() {
-    const btn       = document.getElementById("focusToggleBtn");
-    isGraphFocused  = !isGraphFocused;
-
-    if (isGraphFocused) {
-        btn.style.backgroundColor   = "#ffffff";
-        btn.style.color             = "#000000";
-        btn.style.border            = "1px solid black";
-    }
-
-    else {
-        btn.style.backgroundColor   = "#000000";
-        btn.style.color             = "#ffffff";
-        btn.style.border            = "none";
-    }
-
-    if (currentGuessListViewMode === "ALL") updateGuessChartAxesFocus   ();
-    else                                    renderListChart             ();
-};
 
 function updateGuessChartAxesFocus() {
     const targetChart = document.getElementById('plotlyGuessChart');
