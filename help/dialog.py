@@ -294,6 +294,27 @@ class TourMetadataDialog(UnifiedDialog):
 
             for w in (box, lbl): w.bind("<Button-1>", make_delta_callback(opt))
 
+        self.challonge_var      = tk.StringVar(value = "No")
+        self.challonge_boxes    = {}
+
+        ttk.Label(self.container, text = "Do you want to fetch Challonge data as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+
+        for opt in ["No", "Yes"]:
+            f_chal = ttk.Frame(self.container)
+            f_chal.pack(anchor = "w", pady = 1)
+
+            is_sel      = (self.challonge_var.get() == opt)
+            bg_color    = self.fill_color if is_sel else "white"
+
+            box = tk.Canvas(f_chal, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
+            box.pack(side = tk.LEFT, padx = (0, 4))
+            self.challonge_boxes[opt] = box
+
+            lbl = ttk.Label(f_chal, text = opt, font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+
+            for w in (box, lbl): w.bind("<Button-1>", lambda _, o=opt: self._select_challonge_opt(o))
+
         ttk.Label(self.container, text = "Do you want to use Dry's script as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
 
         self.dry_var    = tk.StringVar(value = "No")
@@ -548,6 +569,10 @@ class TourMetadataDialog(UnifiedDialog):
         self.delta_var.set(opt)
         for k, box in self.delta_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
 
+    def _select_challonge_opt(self, opt):
+        self.challonge_var.set(opt)
+        for k, box in self.challonge_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
+
     def on_confirm(self):
         try                 : base_exp = int(self.spin.get())
         except ValueError   : base_exp = 1
@@ -559,13 +584,14 @@ class TourMetadataDialog(UnifiedDialog):
         dry_choice      = self.dry_var      .get()
         delta_choice    = self.delta_var    .get()
         self.result     = {
-            "tour_label"    : tour_label, 
-            "th_str"        : th_str, 
-            "base_exp"      : base_exp, 
-            "selected_new"  : selected_new, 
-            "sub_results"   : sub_results, 
-            "dry_choice"    : dry_choice,
-            "delta_choice"  : delta_choice
+            "tour_label"        : tour_label, 
+            "th_str"            : th_str, 
+            "base_exp"          : base_exp, 
+            "selected_new"      : selected_new, 
+            "sub_results"       : sub_results, 
+            "dry_choice"        : dry_choice,
+            "delta_choice"      : delta_choice,
+            "challonge_choice"  : self.challonge_var.get()
         }
 
         if self.tour_dir and sub_results:
