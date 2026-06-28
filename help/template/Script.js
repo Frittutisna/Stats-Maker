@@ -447,9 +447,18 @@ function initPlayerColumnSettings() {
             triggerPlayerTableRefresh();
         });
 
-        label       .appendChild(chk);
-        label       .appendChild(document.createTextNode(col.name));
-        colWrapper  .appendChild(label);
+        label.appendChild(chk);
+        label.appendChild(document.createTextNode(col.name));
+
+        if (colExplanations[col.name]) {
+            const explanationIndicator      = document.createElement("span");
+            explanationIndicator.className  = "-ml-1.5 text-black cursor-help select-none font-normal text-base text-bold has-explanation";
+            explanationIndicator.setAttribute("data-metric", col.name);
+            explanationIndicator.innerHTML  = "🛈";
+            label.appendChild(explanationIndicator);
+        }
+
+        colWrapper.appendChild(label);
 
         if (col.type === "categorical" && col.subOptions) {
             const subContainer      = document.createElement("div");
@@ -583,7 +592,8 @@ function initPlayerColumnSettings() {
         container.appendChild(colWrapper);
     });
 
-    updateMasterCheckboxState();
+    updateMasterCheckboxState   ();
+    setupTooltipListeners       ();
 }
 
 function triggerPlayerTableRefresh() {
@@ -2141,7 +2151,7 @@ function setupTooltipListeners() {
         }, {passive: false});
     }
 
-    document.querySelectorAll('table th[data-metric], table td[data-metric]').forEach(th => {
+    document.querySelectorAll('[data-metric]').forEach(th => {
         const metricKey = th.getAttribute('data-metric');
         if (!colExplanations[metricKey]) return;
 
