@@ -59,10 +59,11 @@ else            helpAnchor.insertAdjacentHTML('beforebegin', `<button class="tab
 const thickBorderColumns = new Set([
     "Player",
     "Tier",
-    "GR",
     "Score",
     "Mean Over-8",
     "Lives Saved",
+    "UF Δ",
+    "IN Δ",
     "IN GR",
     "Rig Rate",
     "Solo Rig Rate",
@@ -319,7 +320,9 @@ const playerHeadersMasterConfig = [
     {id: "tier",                name: "Tier",                   ascMetric: true,    teamReq: true,  watchedReq: false,  def: false, type: "categorical",    subOptions: ["1", "2", "3", "4"]},
     {id: "elo",                 name: "Elo",                    ascMetric: false,   teamReq: true,  watchedReq: false,  def: true,  type: "range",          min: -10,   max: 200,   step: 1},
     {id: "guessrate",           name: "GR",                     ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "grdelta",             name: "GR Δ",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: -100,  max: 100,   step: 1},
     {id: "uf",                  name: "UF",                     ascMetric: false,   teamReq: true,  watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "ufdelta",             name: "UF Δ",                   ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: -100,  max: 100,   step: 1},
     {id: "score",               name: "Score",                  ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 1},
     {id: "18s",                 name: "1/8s",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
     {id: "28s",                 name: "2/8s",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
@@ -328,8 +331,11 @@ const playerHeadersMasterConfig = [
     {id: "livestaken",          name: "Lives Taken",            ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 1},
     {id: "livessaved",          name: "Lives Saved",            ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 1},
     {id: "opguessrate",         name: "OP GR",                  ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "opdelta",             name: "OP Δ",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: -100,  max: 100,   step: 1},
     {id: "edguessrate",         name: "ED GR",                  ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "eddelta",             name: "ED Δ",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: -100,  max: 100,   step: 1},
     {id: "inguessrate",         name: "IN GR",                  ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "indelta",             name: "IN Δ",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: -100,  max: 100,   step: 1},
     {id: "rigs",                name: "Rigs",                   ascMetric: false,   teamReq: false, watchedReq: true,   def: true,  type: "range",          min: 0,     max: 100,   step: 1},
     {id: "rigrate",             name: "Rig Rate",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 100,   step: 1},
     {id: "solorigs",            name: "Solo Rigs",              ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 100,   step: 1},
@@ -348,6 +354,18 @@ const playerHeadersMasterConfig = [
 let activePlayerHeadersConfig = playerHeadersMasterConfig.filter(col => {
     if (col.teamReq     && !use_teams)  return false;
     if (col.watchedReq  && !watched)    return false;
+
+    if (["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"].includes(col.name)) {
+        if (!players || players.length === 0) return false;
+
+        const areAllRowsMissingValue = players.every(p => {
+            const rawItem   = p[col.name];
+            const parsedVal = (rawItem !== null && typeof rawItem === 'object') ? rawItem.count : rawItem;
+            return parsedVal === undefined || parsedVal === null || parsedVal === "N/A" || isNaN(parseFloat(parsedVal));
+        });
+
+        if (areAllRowsMissingValue) return false;
+    }
 
     return true;
 });
