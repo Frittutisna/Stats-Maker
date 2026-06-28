@@ -1166,7 +1166,7 @@ window.togglePlayerMetricMode = function() {
 function syncTierDropdownDOMState() {
     const isCount = globalChartMode === "COUNT";
 
-    document.getElementById("opt_c1_base")      .innerText = isCount ? "Correct"        : "Guess Rate";
+    document.getElementById("opt_c1_base")      .innerText = isCount ? "Corrects"       : "Guess Rate";
     document.getElementById("opt_c1_over8")     .innerText = isCount ? "Over-8 Hit"     : "Over-8 Distribution";
     document.getElementById("opt_c1_rig")       .innerText = isCount ? "Rigs"           : "Rig Rate";
     document.getElementById("opt_c1_chant")     .innerText = isCount ? "Chanting Hit"   : "Chanting Guess Rate";
