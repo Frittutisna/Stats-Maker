@@ -2984,8 +2984,12 @@ class TourAnalyzer:
                 guessers_hover  = group_by_team_structure(guessers_flat,    include_times = True)
                 listers_hover   = group_by_team_structure(listers_flat,     include_times = False)
 
-                raw_genres      = si.get("animeGenre",              [])                             if isinstance(si.get("animeGenre"), list) else []
-                raw_tags        = [t for t in si.get("animeTags",   []) if t not in EXCLUDED_TAGS]  if isinstance(si.get("animeTags"),  list) else []
+                raw_genres      = si.get("animeGenre",              [])                             if isinstance(si.get("animeGenre"),             list) else []
+                raw_tags        = [t for t in si.get("animeTags",   []) if t not in EXCLUDED_TAGS]  if isinstance(si.get("animeTags"),              list) else []
+                raw_alts        = si.get("altAnimeNames",           [])                             if isinstance(si.get("altAnimeNames"),          list) else []
+                raw_alts_ans    = si.get("altAnimeNamesAnswers",    [])                             if isinstance(si.get("altAnimeNamesAnswers"),   list) else []
+                titles_to_check = {anime_romaji.lower().strip(), anime_english.lower().strip()}
+                combined_alts   = list({alt.strip() for alt in (raw_alts + raw_alts_ans) if isinstance(alt, str) and alt.strip().lower() not in titles_to_check})
 
                 search_songs_list.append({
                     "romaji"                : anime_romaji,
@@ -3011,7 +3015,8 @@ class TourAnalyzer:
                     "room_players"          : room_players_list,
                     "lives_taken_flat"      : lives_taken_players,
                     "lives_saved_flat"      : lives_saved_players,
-                    "correct_teams_flat"    : [self.assignments[p.lower()][0] for p in guessers_flat if p.lower() in self.assignments]
+                    "correct_teams_flat"    : [self.assignments[p.lower()][0] for p in guessers_flat if p.lower() in self.assignments],
+                    "alts"                  : combined_alts
                 })
 
         search_songs_list.sort(key = lambda x: x["romaji"].lower())

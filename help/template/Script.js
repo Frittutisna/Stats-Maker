@@ -3519,8 +3519,21 @@ let globalSortState     = {columnName: "Anime", ascending: true};
 let currentSearchLang   = "JP";
 
 const searchHeadersConfig = [
-    {id: "anime", name: "Anime", visible: true, type: "text"},
-
+    {
+        id          : "anime",
+        name        : "Anime",
+        visible     : true,
+        type        : "text"
+    },
+    {
+        id          : "alt",
+        name        : "Alt",
+        visible     : false,
+        type        : "range",
+        min         : 0,
+        max         : 20,
+        step        : 1
+    },
     {
         id          : "type",
         name        : "Song Type",
@@ -3559,10 +3572,30 @@ const searchHeadersConfig = [
         max         : 100,
         step        : 1
     },
-    {id: "song",        name: "Song",       visible: true,  type: "text", locked: true},
-    {id: "artist",      name: "Artist",     visible: true,  type: "text"},
-    {id: "composer",    name: "Composer",   visible: false, type: "text"},
-    {id: "arranger",    name: "Arranger",   visible: false, type: "text"},
+    {
+        id          : "song",
+        name        : "Song",
+        visible     : true,
+        type        : "text",
+        locked      : true
+    },
+    {
+        id          : "artist",
+        name        : "Artist",
+        visible     : true,
+        type        : "text"},
+    {
+        id          : "composer",
+        name        : "Composer",
+        visible     : false,
+        type        : "text"
+    },
+    {
+        id          : "arranger",
+        name        : "Arranger",
+        visible     : false,
+        type        : "text"
+    },
     {
         id          : "guessers",
         name        : "Correct",
@@ -3860,98 +3893,100 @@ function initColumnSettingsCheckboxes() {
             col.currentMin = col.min;
             col.currentMax = col.max;
 
-            const inputContainer        = document.createElement("div");
-            inputContainer.className    = "pl-6 flex flex-col gap-1 mt-1 w-full text-black";
+            if (col.id !== "alt") {
+                const inputContainer        = document.createElement("div");
+                inputContainer.className    = "pl-6 flex flex-col gap-1 mt-1 w-full text-black";
 
-            const boxWrapper            = document.createElement("div");
-            boxWrapper.className        = "flex flex-col gap-1";
+                const boxWrapper            = document.createElement("div");
+                boxWrapper.className        = "flex flex-col gap-1";
 
-            const minLabel      = document.createElement("label");
-            minLabel.className  = "flex items-center justify-start gap-2 font-mono"; 
-            minLabel.innerHTML  = "Min:";
-            const inputMin      = document.createElement("input");
-            inputMin.type       = "number";
-            inputMin.min        = col.min;
-            inputMin.max        = col.max;
-            inputMin.value      = col.min;
-            inputMin.className  = "w-10 h-5 border text-center text-xs";
+                const minLabel      = document.createElement("label");
+                minLabel.className  = "flex items-center justify-start gap-2 font-mono"; 
+                minLabel.innerHTML  = "Min:";
+                const inputMin      = document.createElement("input");
+                inputMin.type       = "number";
+                inputMin.min        = col.min;
+                inputMin.max        = col.max;
+                inputMin.value      = col.min;
+                inputMin.className  = "w-10 h-5 border text-center text-xs";
 
-            const maxLabel      = document.createElement("label");
-            maxLabel.className  = "flex items-center justify-start gap-2 font-mono";
-            maxLabel.innerHTML  = "Max:";
-            const inputMax      = document.createElement("input");
-            inputMax.type       = "number";
-            inputMax.min        = col.min;
-            inputMax.max        = col.max;
-            inputMax.value      = col.max;
-            inputMax.className  = "w-10 h-5 border text-center text-xs";
+                const maxLabel      = document.createElement("label");
+                maxLabel.className  = "flex items-center justify-start gap-2 font-mono";
+                maxLabel.innerHTML  = "Max:";
+                const inputMax      = document.createElement("input");
+                inputMax.type       = "number";
+                inputMax.min        = col.min;
+                inputMax.max        = col.max;
+                inputMax.value      = col.max;
+                inputMax.className  = "w-10 h-5 border text-center text-xs";
 
-            minLabel        .appendChild(inputMin);
-            maxLabel        .appendChild(inputMax);
-            boxWrapper      .appendChild(minLabel);
-            boxWrapper      .appendChild(maxLabel);
-            inputContainer  .appendChild(boxWrapper);
+                minLabel        .appendChild(inputMin);
+                maxLabel        .appendChild(inputMax);
+                boxWrapper      .appendChild(minLabel);
+                boxWrapper      .appendChild(maxLabel);
+                inputContainer  .appendChild(boxWrapper);
 
-            const handleTextbookInput = () => {
-                let valMin = parseInt(inputMin.value);
-                let valMax = parseInt(inputMax.value);
-
-                if (isNaN(valMin)) valMin = col.min;
-                if (isNaN(valMax)) valMax = col.max;
-
-                if (valMin < col.min) valMin = col.min;
-                if (valMax > col.max) valMax = col.max;
-
-                if (valMin > valMax) {
-                    if (document.activeElement === inputMin) {
-                        valMin          = valMax;
-                        inputMin.value  = valMin;
-                    }
-
-                    else {
-                        valMax          = valMin;
-                        inputMax.value  = valMax;
-                    }
-                }
-
-                col.currentMin = valMin;
-                col.currentMax = valMax;
-            };
-
-            const triggerRefreshDebounced = debounce(() => {
-                if (!col.visible && (col.currentMin > col.min || col.currentMax < col.max)) {
-                    col.visible = true;
-                    chk.checked = true;
-
-                    updateMasterCheckboxState();
-                }
-
-                triggerTableRefresh();
-            }, 150);
-
-            inputMin.addEventListener("input", () => { handleTextbookInput(); triggerRefreshDebounced(); });
-            inputMax.addEventListener("input", () => { handleTextbookInput(); triggerRefreshDebounced(); });
-            
-            masterChk.addEventListener("change", () => {
-                if (!masterChk.checked) {
-                    inputMin.value = col.min;
-                    inputMax.value = col.max;
-                    col.currentMin = col.min;
-                    col.currentMax = col.max;
-                }
-
-                else {
+                const handleTextbookInput = () => {
                     let valMin = parseInt(inputMin.value);
                     let valMax = parseInt(inputMax.value);
 
-                    col.currentMin = isNaN(valMin) ? col.min : valMin;
-                    col.currentMax = isNaN(valMax) ? col.max : valMax;
-                }
+                    if (isNaN(valMin)) valMin = col.min;
+                    if (isNaN(valMax)) valMax = col.max;
 
-                triggerTableRefresh();
-            });
+                    if (valMin < col.min) valMin = col.min;
+                    if (valMax > col.max) valMax = col.max;
 
-            colWrapper.appendChild(inputContainer);
+                    if (valMin > valMax) {
+                        if (document.activeElement === inputMin) {
+                            valMin          = valMax;
+                            inputMin.value  = valMin;
+                        }
+
+                        else {
+                            valMax          = valMin;
+                            inputMax.value  = valMax;
+                        }
+                    }
+
+                    col.currentMin = valMin;
+                    col.currentMax = valMax;
+                };
+
+                const triggerRefreshDebounced = debounce(() => {
+                    if (!col.visible && (col.currentMin > col.min || col.currentMax < col.max)) {
+                        col.visible = true;
+                        chk.checked = true;
+
+                        updateMasterCheckboxState();
+                    }
+
+                    triggerTableRefresh();
+                }, 150);
+
+                inputMin.addEventListener("input", () => { handleTextbookInput(); triggerRefreshDebounced(); });
+                inputMax.addEventListener("input", () => { handleTextbookInput(); triggerRefreshDebounced(); });
+                
+                masterChk.addEventListener("change", () => {
+                    if (!masterChk.checked) {
+                        inputMin.value = col.min;
+                        inputMax.value = col.max;
+                        col.currentMin = col.min;
+                        col.currentMax = col.max;
+                    }
+
+                    else {
+                        let valMin = parseInt(inputMin.value);
+                        let valMax = parseInt(inputMax.value);
+
+                        col.currentMin = isNaN(valMin) ? col.min : valMin;
+                        col.currentMax = isNaN(valMax) ? col.max : valMax;
+                    }
+
+                    triggerTableRefresh();
+                });
+
+                colWrapper.appendChild(inputContainer);
+            }
         }
 
         if (col.type === "categorical" && col.subOptions) {
@@ -3999,6 +4034,7 @@ function sortSearchData() {
             case "Difficulty"   : valA = a._diffParsed;                             valB = b._diffParsed;                           break;
             case "Correct"      : valA = a._guessersCount;                          valB = b._guessersCount;                        break;
             case "List"         : valA = a._listersCount;                           valB = b._listersCount;                         break;
+            case "Alt"          : valA = a._altsCount;                              valB = b._altsCount;                            break;
             default: return 0;
         }
 
@@ -4090,6 +4126,11 @@ function evaluateQuery(song, key, operator, value) {
             const tids      = song.correct_teams_flat || [];
             const isSweep   = tids.length === 4 && tids.every(id => id === tids[0]);
             return (value === "yes" || value === "true") ? isSweep : !isSweep;
+        }
+
+        case "alt": {
+            if (isNaN(value))   return song._altsLower.some(altName => altName.includes(value));
+            else                return matchNumericConstraint(song._altsCount, operator, parseFloat(value));
         }
     }
 
@@ -4263,7 +4304,7 @@ function renderSearchTable(filteredSongs) {
 
                 case "difficulty":
                     td.className    = "text-center font-normal font-mono text-black";
-                    td.textContent  = song.difficulty;
+                    td.textContent  = song.difficulty === "Unrated" ? "" : song.difficulty;
                     break;
 
                 case "song": {
@@ -4348,7 +4389,7 @@ function renderSearchTable(filteredSongs) {
                     const hasGuesses    = song.guessers_hover && song.guessers_hover.length > 0;
                     td.className        = hasGuesses ? "cursor-help hover:bg-gray-100 text-center text-black font-normal" : "text-center text-black font-normal";
                     if (hasGuesses) td.setAttribute("data-songs", encodeURIComponent(JSON.stringify(song.guessers_hover)));
-                    td.textContent      = song._guessersCount;
+                    td.textContent      = song._guessersCount === 0 ? "" : song._guessersCount;
                     break;
                 }
 
@@ -4356,7 +4397,18 @@ function renderSearchTable(filteredSongs) {
                     const hasLists  = song.listers_hover && song.listers_hover.length > 0;
                     td.className    = hasLists ? "cursor-help hover:bg-gray-100 text-center text-black font-normal" : "text-center text-black font-normal";
                     if (hasLists) td.setAttribute("data-songs", encodeURIComponent(JSON.stringify(song.listers_hover)));
-                    td.textContent  = song._listersCount;
+                    td.textContent  = song._listersCount === 0 ? "" : song._listersCount;
+                    break;
+                }
+
+                case "alt": {
+                    const hasAlts   = song.alts && song.alts.length > 0;
+                    td.className    = hasAlts ? "cursor-help hover:bg-gray-100 text-center text-black font-normal font-mono" : "text-center text-black font-normal font-mono";
+                    if (hasAlts) {
+                        let sortedAlts = [...song.alts].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+                        td.setAttribute("data-songs", encodeURIComponent(JSON.stringify(sortedAlts)));
+                    }
+                    td.textContent  = song._altsCount === 0 ? "" : song._altsCount;
                     break;
                 }
             }
@@ -4379,6 +4431,7 @@ fetch('Search.json')
             if (!song.guessers_flat && song.guessers_hover) song.guessers_flat  = song.guessers_hover.map(g => g.split(' (')[0]);
             if (!song.listers_flat  && song.listers_hover)  song.listers_flat   = song.listers_hover;
 
+            song._altsLower         = (song.alts                || []).map(a => String(a).toLowerCase());
             song._romajiLower       = (song.romaji              || "").toLowerCase();
             song._englishLower      = (song.english             || "").toLowerCase();
             song._songLower         = (song.song                || "").toLowerCase();
@@ -4396,9 +4449,10 @@ fetch('Search.json')
             song._roomPlayersLower  = (song.room_players        || []).map(p => p.toLowerCase());
             song._livesTakenLower   = (song.lives_taken_flat    || []);
             song._livesSavedLower   = (song.lives_saved_flat    || []);
-            song._diffParsed        = song.difficulty === "Unrated"   ? -Infinity                     : parseFloat(song.difficulty);
-            song._guessersCount     = song.guessers_flat              ? song.guessers_flat    .length : 0;
-            song._listersCount      = song.listers_flat               ? song.listers_flat     .length : 0;
+            song._diffParsed        = song.difficulty === "Unrated"   ? -Infinity                   : parseFloat(song.difficulty);
+            song._altsCount         = Array.isArray(song.alts)        ? song.alts           .length : 0;
+            song._guessersCount     = song.guessers_flat              ? song.guessers_flat  .length : 0;
+            song._listersCount      = song.listers_flat               ? song.listers_flat   .length : 0;
             song._vintageParsed     = parseVintageToFloat(song.vintage);
             song._correctTeamsLower = (song.correct_teams_flat  || []).map(tid => {
                 const leader = window.dashboardData.json_teams.find(t => t._tid === tid || t.tid === tid);
@@ -4508,6 +4562,7 @@ fetch('Search.json')
                         song._vintageLower      .includes               (wordClean)     ||
                         song._animeTypeLower    .includes               (wordClean)     ||
                         song._chantingLower     .includes               (wordClean)     ||
+                        song._altsLower         .some(a => a.includes   (wordClean))    ||
                         song._genresLower       .some(g => g.includes   (wordClean))    ||
                         song._tagsLower         .some(t => t.includes   (wordClean))    ||
                         song.difficulty         .toLowerCase().includes (wordClean)
