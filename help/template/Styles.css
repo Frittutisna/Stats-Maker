@@ -227,3 +227,12 @@ input::-webkit-inner-spin-button {
 input[type=number] {
     -appearance: textfield;
 }
+
+.quiz-mc-btn { 
+    width           : 100%      !important;
+    max-width       : 300px     !important;
+    table-layout    : fixed     !important;
+    white-space     : nowrap    !important;
+    overflow        : hidden    !important;
+    text-overflow   : ellipsis  !important;
+}

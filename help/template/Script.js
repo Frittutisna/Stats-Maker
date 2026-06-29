@@ -5351,12 +5351,15 @@ function evaluateMatrixConditions(song) {
     return true;
 }
 
+let quizCurrentMode = "entry";
+
 function startQuizEngine() {
     enforceQuizInputBounds();
 
     quizSoundLimit      = parseInt(document.getElementById("quizSoundTimeInput").value);
     quizNoSoundLimit    = parseInt(document.getElementById("quizExtraTimeInput").value);
     const count         = parseInt(document.getElementById("quizSongCountInput").value);
+    quizCurrentMode     = document.getElementById("quizModeSelect").value;
 
     const pool = globalSearchData.filter(song => {
         if (!song.video_url) return false;
@@ -5414,6 +5417,16 @@ function startQuizEngine() {
     document.getElementById("globalQuizPauseBtn")   .innerText = "❚❚";
     document.getElementById("quizScoreValue")       .innerText = `1/${quizActivePool.length}: 0`;
 
+    if (quizCurrentMode === "mc") {
+        document.getElementById("quizInterfaceBody")    .classList.add("hidden");
+        document.getElementById("quizMcInterfaceBody")  .classList.remove("hidden");
+    }
+
+    else {
+        document.getElementById("quizMcInterfaceBody")  .classList.add("hidden");
+        document.getElementById("quizInterfaceBody")    .classList.remove("hidden");
+    }
+
     executeQuizTrack();
 }
 
@@ -5429,6 +5442,13 @@ function executeQuizTrack() {
         return;
     }
 
+    const scoreNode = document.getElementById("quizScoreValue");
+
+    if (scoreNode) {
+        scoreNode.innerText     = `${quizIndex + 1}/${quizActivePool.length}: ${quizScore}`;
+        scoreNode.style.color   = "";
+    }
+
     document.getElementById("quizScoreValue").innerText = `${quizIndex + 1}/${quizActivePool.length}: ${quizScore}`;
 
     const label     = document.getElementById("quizResolutionLabel");
@@ -5438,13 +5458,39 @@ function executeQuizTrack() {
     const inputEl = document.getElementById("quizAnimeInput");
     if (inputEl) {inputEl.value = ""; inputEl.disabled = false;}
 
-    const song          = quizActivePool[quizIndex];
+    const song = quizActivePool[quizIndex];
+
+    if (quizCurrentMode === "mc") {
+        const isJp          = currentSearchLang === "JP";
+        const correctTitle  = isJp ? (song.romaji || song.english || "") : (song.english || song.romaji || "");
+        const allTitles     = new Set();
+
+        globalSearchData.forEach(s => {
+            const title = isJp ? (s.romaji || s.english || "") : (s.english || s.romaji || "");
+            if (title && title !== correctTitle) allTitles.add(title);
+        });
+
+        const optionsArray = Array.from(allTitles).sort(() => Math.random() - 0.5).slice(0, 3);
+        optionsArray.push(correctTitle);
+        optionsArray.sort(() => Math.random() - 0.5);
+
+        for (let i = 1; i <= 4; i++) {
+            const btn = document.getElementById(`quizMcOpt${i}`);
+
+            if (btn) {
+                btn.innerText   = optionsArray[i - 1];
+                btn.disabled    = false;
+            }
+        }
+    }
+
     const anchor        = document.getElementById("quizAudioAnchor");
     anchor.innerHTML    = `<audio id="quizAudioPlayer" src="${song.video_url}" preload="auto"></audio>`;
     quizCurrentAudio    = document.getElementById("quizAudioPlayer");
     quizTimeRemaining   = quizSoundLimit + quizNoSoundLimit;
 
     updateQuizTimerUI(quizTimeRemaining);
+    let isAudioPlaying = false;
 
     if (quizCurrentAudio) {
         quizCurrentAudio.volume = 0.1;
@@ -5455,29 +5501,36 @@ function executeQuizTrack() {
             quizCurrentAudio.currentTime = Math.random() * maxStart;
         });
 
+        quizCurrentAudio.addEventListener('playing', () => {
+            isAudioPlaying = true;
+            if (!quizAudioTimeoutId && !quizReplayActive) {quizAudioTimeoutId = setTimeout(() => {if (quizCurrentAudio && !quizReplayActive) quizCurrentAudio.pause();}, quizSoundLimit * 1000);
+            }
+        });
+
         quizCurrentAudio.play().catch(() => {});
-        quizAudioTimeoutId = setTimeout(() => {if (quizCurrentAudio && !quizReplayActive) quizCurrentAudio.pause();}, quizSoundLimit * 1000);
     }
 
-    inputEl.focus();
+    if (quizCurrentMode === "entry") inputEl.focus();
 
     quizTimerId = setInterval(() => {
         if (quizLeewayActive) return;
         
         if (!quizReplayActive) {
-            quizTimeRemaining -= 1;
+            if (isAudioPlaying) {
+                quizTimeRemaining -= 1;
 
-            if (quizTimeRemaining <= 0) {
-                quizTimeRemaining = 0;
+                if (quizTimeRemaining <= 0) {
+                    quizTimeRemaining = 0;
 
-                updateQuizTimerUI   (0);
-                resolveQuizItem     (false);
+                    updateQuizTimerUI   (0);
+                    resolveQuizItem     (false);
 
-                return;
+                    return;
+                }
+
+                updateQuizTimerUI(quizTimeRemaining);
+                if (quizTimeRemaining <= quizNoSoundLimit && quizCurrentAudio && !quizCurrentAudio.paused) quizCurrentAudio.pause();
             }
-
-            updateQuizTimerUI(quizTimeRemaining);
-            if (quizTimeRemaining <= quizNoSoundLimit && quizCurrentAudio && !quizCurrentAudio.paused) quizCurrentAudio.pause();
         }
 
         else {
@@ -5504,6 +5557,8 @@ function executeQuizTrack() {
 }
 
 function handleQuizInputKeyDown(e) {
+    if (quizCurrentMode === "mc") return;
+
     if (e.key === "Enter") {
         e.preventDefault();
 
@@ -5549,6 +5604,28 @@ function handleQuizSkipClick() {
     }
 }
 
+function handleMcOptionClick(btn) {
+    if (quizReplayActive || quizLeewayActive) return;
+
+    const selectedTitle = btn.innerText;
+    const song          = quizActivePool[quizIndex];
+    const isJp          = currentSearchLang === "JP";
+    const correctTitle  = isJp ? (song.romaji || song.english || "") : (song.english || song.romaji || "");
+
+    resolveQuizItem(selectedTitle === correctTitle);
+}
+
+function handleMcSkipClick() {
+    if (quizReplayActive || quizLeewayActive) {
+        if (quizIsPaused) return; 
+        clearQuizTimers();
+        if (quizCurrentAudio) {quizCurrentAudio.pause(); quizCurrentAudio = null;}
+        executeQuizTrack();
+    } else {
+        resolveQuizItem(false);
+    }
+}
+
 function resolveQuizItem(isCorrect) {
     if (quizAudioTimeoutId)     {clearTimeout(quizAudioTimeoutId);  quizAudioTimeoutId  = null;}
     if (quizLeewayTimeoutId)    {clearTimeout(quizLeewayTimeoutId); quizLeewayTimeoutId = null;}
@@ -5556,11 +5633,23 @@ function resolveQuizItem(isCorrect) {
     const song = quizActivePool[quizIndex];
     if (isCorrect) quizScore++;
 
-    const displayIndex = Math.min(quizIndex + 1, quizActivePool.length);
-    document.getElementById("quizScoreValue").innerText = `${displayIndex}/${quizActivePool.length}: ${quizScore}`;
+    const displayIndex  = Math.min(quizIndex + 1, quizActivePool.length);
+    const scoreNode     = document.getElementById("quizScoreValue");
+
+    if (scoreNode) {
+        scoreNode.innerText     = `${displayIndex}/${quizActivePool.length}: ${quizScore}`;
+        scoreNode.style.color   = isCorrect ? c2 : c0;
+    }
 
     const inputEl = document.getElementById("quizAnimeInput");
     if (inputEl) inputEl.disabled = true;
+
+    if (quizCurrentMode === "mc") {
+        for (let i = 1; i <= 4; i++) {
+            const btn = document.getElementById(`quizMcOpt${i}`);
+            if (btn) btn.disabled = true;
+        }
+    }
 
     let typeMarker  = "";
     const rawType   = (song.type || "").toLowerCase();
