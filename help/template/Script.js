@@ -3211,6 +3211,69 @@ if (document.getElementById('plotlyListChart') && arrowData) {
     renderListChart();
 }
 
+function updatePlayerHelpDropdown() {
+    const dropdown = document.getElementById("playerGuideDropdown");
+    if (!dropdown) return;
+
+    const hasDeltaMetrics = activePlayerHeadersConfig.some(c => ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"].includes(c.name));
+    let configSectionText = "";
+
+    if (hasDeltaMetrics) {
+        configSectionText = `
+            <br><br>
+            Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings<br>
+            • <b>Current:</b> Shows empirical metrics for (OP/ED/IN) GR and UF<br>
+            • <b>Delta:</b> Compares them against their historical baselines
+        `;
+    }
+
+    dropdown.innerHTML = `
+        <p class="font-bold border-b pb-1 mb-1">Guide</p>
+        <p class="mb-1 pt-1 text-xs">
+            Search using <code class="bg-gray-200 px-1 rounded font-mono text-xs">value</code> or <code class="bg-gray-200 px-1 rounded font-mono text-xs">columnname:value</code><br><br>
+            You can replace <code class="bg-gray-200 px-1 rounded font-mono text-xs">:</code> with arithmetic operators (<code class="bg-gray-200 px-1 rounded font-mono text-xs">=, !:, !=, &lt;, &gt;, &lt;=, &gt;=)</code>,<br>
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">uf</code> with 
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">usefulness</code>, 
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">guess rate</code> with 
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">gr</code>, 
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">1/8s</code> with 
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">solos</code>, 
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">2/8s</code> with 
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">doubles</code>, and 
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">7/8s</code> with 
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">sevens</code><br><br>
+            Combine query terms using explicit <code class="bg-gray-200 px-1 rounded font-mono text-xs">and/or</code> keywords<br>
+            Group precedence with <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code><br>
+            Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
+            <code class="bg-gray-200 px-1 rounded font-mono text-xs">elo&lt;90 or (opgr&gt;80 edguessrate&lt;30)</code><br>
+            returns players that either have an Elo below 90 or those who have OP and ED Guess Rates above 80% and below 30%${configSectionText}
+        </p>
+    `;
+}
+
+function updateTierHelpDropdown() {
+    const dropdown = document.getElementById("tierGuideDropdown");
+    if (!dropdown) return;
+
+    dropdown.innerHTML = `
+        <p class="font-bold border-b pb-1 mb-1">Guide</p>
+        <p class="mb-1 pt-1 text-xs">
+            <b class="font-bold">Sort</b><br>
+            • <b>Global:</b> Sorts and ranks all players globally<br>
+            • <b>Tier:</b> Sorts and ranks players within their respective Tiers<br><br>
+            <b class="font-bold">Display</b><br>
+            • <b>Rate:</b> Shows percentages<br>
+            • <b>Count:</b> Shows raw counts<br><br>
+            <b class="font-bold">Chart</b><br>
+            • <b>General:</b> Charts various metrics (Correct, Over-8, (Off) Rig, Chanting)<br>
+            • <b>Contribution:</b> Charts direct contribution to life count (Lives Taken/Saved, Other Correct)<br>
+            • <b>Time:</b> Charts Time aggregate metrics (Minimum, Mean, Median, Maximum, or Standard Deviation)<br><br>
+            Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings<br>
+            Only one chart is visible at any time
+        </p>
+    `;
+}
+
 function updateSongHelpDropdown() {
     const dropdown = document.getElementById("songGuideDropdown");
     if (!dropdown) return;
@@ -3231,6 +3294,8 @@ function updateGuessHelpDropdown() {
     const dropdown = document.getElementById("guessGuideDropdown");
     if (!dropdown) return;
 
+    let gearText = watched ? `<br><br>Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings<br>` : '';
+
     let guideText = `
         <b>Display</b><br>
         Changes the dataset shown on the bubble chart<br>
@@ -3239,8 +3304,7 @@ function updateGuessHelpDropdown() {
         • <b>Rigs Hit:</b> All songs guessed correctly from this player's list<br><br>
         <b>Focus</b><br>
         • <b>On:</b> Scales the axes to fit only the current chart<br>
-        • <b>Off:</b> Uses the shared axis bounds for easy comparison between charts<br><br>
-        Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings<br>
+        • <b>Off:</b> Uses the shared axis bounds for easy comparison between charts${gearText}
     `;
     
     let exampleText = "";
@@ -4348,6 +4412,8 @@ fetch('Search.json')
         sortSearchData                  ();
         renderSearchTable               (globalSearchData);
         renderTierCharts                ();
+        updatePlayerHelpDropdown        ();
+        updateTierHelpDropdown          ();
         updateSongHelpDropdown          ();
         updateGuessHelpDropdown         ();
         updateSearchHelpDropdown        ();
