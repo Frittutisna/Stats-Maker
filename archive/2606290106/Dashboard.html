@@ -37,7 +37,7 @@
                         Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
                         <code class="bg-gray-200 px-1 rounded font-mono text-xs">elo&lt;90 or (opgr&gt;80 edguessrate&lt;30)</code> 
                         returns players that either have an Elo below 90 or those who have OP and ED Guess Rates above 80% and below 30%<br><br>
-                        Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings.<br>
+                        Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings<br>
                         • <b>Current:</b> Shows empirical metrics for (OP/ED/IN) GR and UF<br>
                         • <b>Delta:</b> Compares them against their historical baselines
                     </p>
@@ -45,8 +45,6 @@
                 <div id="tierGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black">
                     <p class="font-bold border-b pb-1 mb-1">Guide</p>
                     <p class="mb-1 pt-1 text-xs">
-                        Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings<br>
-                        Only one chart is visible at any time<br><br>
                         <b class="font-bold">Sort</b><br>
                         • <b>Global:</b> Sorts and ranks all players globally<br>
                         • <b>Tier:</b> Sorts and ranks players within their respective Tiers<br><br>
@@ -56,7 +54,9 @@
                         <b class="font-bold">Chart</b><br>
                         • <b>General:</b> Charts various metrics (Correct, Over-8, (Off) Rig, Chanting)<br>
                         • <b>Contribution:</b> Charts direct contribution to life count (Lives Taken/Saved, Other Correct)<br>
-                        • <b>Time:</b> Charts Time aggregate metrics (Minimum, Mean, Median, Maximum, or Standard Deviation)
+                        • <b>Time:</b> Charts Time aggregate metrics (Minimum, Mean, Median, Maximum, or Standard Deviation)<br><br>
+                        Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings<br>
+                        Only one chart is visible at any time
                     </p>
                 </div>
                 <div id="guessGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
@@ -77,7 +77,7 @@
                     </label>
                     <div id="playerColumnCheckboxContainer" class="flex flex-col gap-0.5 text-xs max-h-[400px] overflow-y-auto"></div>
                 </div>
-                <div id="columnSettingsDropdown" class="bg-white border p-4 w-40 absolute right-0 top-[32px] hidden z-50 shadow-md">
+                <div id="columnSettingsDropdown" class="bg-white border p-4 w-36 absolute right-0 top-[32px] hidden z-50 shadow-md">
                     <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm">
                         <input type="checkbox" id="allColumnsMasterCheckbox" class="rounded accent-black">All
                     </label>
@@ -120,7 +120,7 @@
                             <div class="pl-2 flex flex-col gap-0.5 border-l-2 border-gray-200 ml-1">
                                 <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierTimeRadio" value="MIN" class="accent-black">Minimum</label>
                                 <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierTimeRadio" value="MEAN" class="accent-black">Mean</label>
-                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierTimeRadio" value="MED" checked class="accent-black">Median</label>
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierTimeRadio" value="MED" class="accent-black">Median</label>
                                 <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierTimeRadio" value="MAX" class="accent-black">Maximum</label>
                                 <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierTimeRadio" value="STDEV" class="accent-black">Standard Deviation</label>
                             </div>

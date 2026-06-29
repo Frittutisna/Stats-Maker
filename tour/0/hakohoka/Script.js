@@ -1659,8 +1659,16 @@ function renderTierCharts() {
 
             let totalOffSongs       = stats.totalSeen - stats.totalRigs;
             val                     = mode === "RATE" ? (totalOffSongs > 0 ? (stats.offListHits / totalOffSongs) * 100 : 0) : stats.offListHits;
-            let offListSeenSongs    = stats.allSeenSongs.filter(s => !stats.rigsList.map(r => r.slice(2)).includes(s.slice(2)));
-            hover                   = formatFractionalSample(`${stats.offListHits}/${totalOffSongs}`, offListSeenSongs);
+            
+            if (mode === "RATE") {
+                let sortedOffHits   = formatAndSortSongsList([...stats.offListHitsList], false);
+                hover               = `<b>${stats.offListHits}/${totalOffSongs}</b><br>${sortedOffHits.join('<br>')}`;
+            }
+
+            else {
+                let offListSeenSongs    = stats.allSeenSongs.filter(s => !stats.rigsList.map(r => r.slice(2)).includes(s.slice(2)));
+                hover                   = formatFractionalSample(`${stats.offListHits}/${totalOffSongs}`, offListSeenSongs);
+            }
         }
 
         else if (sub === "CHANT") {
@@ -1883,22 +1891,11 @@ function renderTierCharts() {
             marker              : {
                 color       : c1Data.singleXVals.slice().reverse(),
                 colorscale  : (() => {
-                    if (globalChartMode === "RATE") {
-                        if (c1Sub === "BASE")   return [[0, c0], [0.20, c0], [0.50, c1], [0.80, c2], [1, c2]];
-                        if (c1Sub === "HIT")    return [[0, c0], [0.70, c0], [0.80, c1], [0.90, c2], [1, c2]];
-                    }
-
+                    if (globalChartMode === "RATE" && c1Sub === "HIT") return [[0, c0], [0.70, c0], [0.80, c1], [0.90, c2], [1, c2]];
                     return [[0, c0], [1, c2]];
                 })(),
                 cmin        : 0,
-                cmax        : (() => {
-                    if (globalChartMode === "RATE") {
-                        if (["CHANT", "RIG", "OFF"].includes(c1Sub)) return 50;
-                        return 100;
-                    }
-
-                    return Math.max(...c1Data.singleXVals.filter(v => v !== null)) || 1;
-                })()
+                cmax        : Math.max(...c1Data.singleXVals.filter(v => v !== null)) || 1
             }
         });
     }
@@ -2004,7 +2001,7 @@ function renderTierCharts() {
         newChart1Div.addEventListener('contextmenu', e => e.preventDefault());
 
         newChart1Div.on('plotly_hover', function(data) {
-            if (!data.points || data.points.length === 0) return;
+            if (!data.points || data.points.length === 0 || (globalChartMode === "RATE" && c1Sub === "BASE")) return;
 
             const pt            = data.points[0];
             const tooltipNode   = document.getElementById('customJsTooltip');
@@ -2035,23 +2032,9 @@ function renderTierCharts() {
                             let r, g, b;
 
                             if (globalChartMode === "RATE" && c1Sub === "BASE") {
-                                if (norm <= 0.20) [r, g, b] = rgb0;
-
-                                else if (norm <= 0.50) {
-                                    let t   = (norm - 0.20) / 0.30;
-                                    r       = rgb0[0] + t * (rgb1[0] - rgb0[0]);
-                                    g       = rgb0[1] + t * (rgb1[1] - rgb0[1]);
-                                    b       = rgb0[2] + t * (rgb1[2] - rgb0[2]);
-                                }
-
-                                else if (norm <= 0.80) {
-                                    let t   = (norm - 0.50) / 0.30;
-                                    r       = rgb1[0] + t * (rgb2[0] - rgb1[0]);
-                                    g       = rgb1[1] + t * (rgb2[1] - rgb1[1]);
-                                    b       = rgb1[2] + t * (rgb2[2] - rgb1[2]);
-                                } 
-
-                                else [r, g, b] = rgb2;
+                                r = rgb0[0] + norm * (rgb2[0] - rgb0[0]);
+                                g = rgb0[1] + norm * (rgb2[1] - rgb0[1]);
+                                b = rgb0[2] + norm * (rgb2[2] - rgb0[2]);
                             }
 
                             else if (globalChartMode === "RATE" && c1Sub === "HIT") {
@@ -3233,7 +3216,8 @@ function updateGuessHelpDropdown() {
         • <b>Rigs Hit:</b> All songs guessed correctly from this player's list<br><br>
         <b>Focus</b><br>
         • <b>On:</b> Scales the axes to fit only the current chart<br>
-        • <b>Off:</b> Uses the shared axis bounds for easy comparison between charts
+        • <b>Off:</b> Uses the shared axis bounds for easy comparison between charts<br><br>
+        Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings<br>
     `;
     
     let exampleText = "";
@@ -3285,7 +3269,8 @@ function updateSearchHelpDropdown() {
             Group precedence with <code class="bg-gray-200 px-1 rounded font-mono text-xs">(brackets)</code><br>
             Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
             <code class="bg-gray-200 px-1 rounded font-mono text-xs">(artist="aoi koga" or artist:"tomori kusunoki") and difficulty>20</code><br>
-            returns songs by Aoi Koga or Tomori Kusunoki with difficulties above 20
+            returns songs by Aoi Koga or Tomori Kusunoki with difficulties above 20<br><br>
+            Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings<br>
         </p>
         <div class="grid grid-cols-2 gap-2 pt-1 border-t text-xs">
             <div>
