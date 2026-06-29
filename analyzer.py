@@ -48,6 +48,8 @@ class TourAnalyzer:
         self.p_l_vint                   = defaultdict(list)
         self.p_c_vint                   = defaultdict(list)
         self.p_l_corr                   = defaultdict(list)
+        self.p_lh_vint                  = defaultdict(list)
+        self.p_lh_corr                  = defaultdict(list)
         self.p_m_erigs                  = defaultdict(int)
         self.p_l_solos                  = defaultdict(int)
         self.p_hit_diff                 = defaultdict(list)
@@ -840,9 +842,12 @@ class TourAnalyzer:
                         n = p["name"]
                         self.p_rigs[n] += 1
 
-                        if n in correct     : self.p_rigs_h [n] += 1
-                        if yr is not None   : self.p_l_vint [n].append(yr)
+                        if n in correct: 
+                            self.p_rigs_h[n] += 1
+                            self.p_lh_corr[n].append(len(correct))
+                            if yr is not None: self.p_lh_vint[n].append(yr)
 
+                        if yr is not None: self.p_l_vint[n].append(yr)
                         self.p_l_corr[n].append(len(correct))
 
         if "Eru" in self.tour_label and self.use_teams:
@@ -2716,19 +2721,25 @@ class TourAnalyzer:
 
                 scatter_list.append(base_node)
 
-                if self.p_l_corr[name] and pd.notnull(yl) and pd.notnull(yg): arrow_list.append({
-                    "acronym"                   : base_node["acronym"],
-                    "name"                      : name,
-                    "x_start"                   : float(round(np.mean(self.p_l_corr[name]), 2)),
-                    "y_start"                   : float(round(r_vint_med,                   2)),
-                    "seasonal_vintage_start"    : r_seas,
-                    "x_end"                     : base_node["over8"],
-                    "y_end"                     : base_node["vintage"],
-                    "seasonal_vintage_end"      : p_seas,
-                    "rig_gr"                    : base_node["rig_gr"],
-                    "gr"                        : base_node["gr"],
-                    "rig_rate"                  : base_node["rig_rate"]
-                })
+                if self.p_l_corr[name] and pd.notnull(yl) and pd.notnull(yg): 
+                    hit_over8   = np.mean   (self.p_lh_corr[name]) if self.p_lh_corr[name] else base_node["over8"]
+                    hit_vint    = np.median (self.p_lh_vint[name]) if self.p_lh_vint[name] else base_node["vintage"]
+
+                    arrow_list.append({
+                        "acronym"                   : base_node["acronym"],
+                        "name"                      : name,
+                        "x_start"                   : float(round(np.mean(self.p_l_corr[name]), 2)),
+                        "y_start"                   : float(round(r_vint_med,                   2)),
+                        "seasonal_vintage_start"    : r_seas,
+                        "x_end"                     : base_node["over8"],
+                        "y_end"                     : base_node["vintage"],
+                        "x_hit"                     : float(round(hit_over8,                    2)),
+                        "y_hit"                     : float(round(hit_vint,                     2)),
+                        "seasonal_vintage_end"      : p_seas,
+                        "rig_gr"                    : base_node["rig_gr"],
+                        "gr"                        : base_node["gr"],
+                        "rig_rate"                  : base_node["rig_rate"]
+                    })
 
         return scatter_list, arrow_list
 

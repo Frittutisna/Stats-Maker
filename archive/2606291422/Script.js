@@ -3201,11 +3201,11 @@ if (document.getElementById('plotlyListChart') && arrowData) {
         "HIT": arrowData.map(d => ({
             acronym     : d.acronym,
             name        : d.name,
-            x           : d.x_end, 
-            y           : d.y_end,
+            x           : d.x_hit, 
+            y           : d.y_hit,
             size        : d.rig_rate, 
             color       : d.grid_grs || d.rig_gr, 
-            hoverText   : `<b>${d.name}</b><br>Hit Rig Over-8: ${d.x_end.toFixed(2)}<br>Hit Rig Vintage: ${d.seasonal_vintage || d.seasonal_vintage_end}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig GR: ${d.rig_gr.toFixed(2)}<extra></extra>`
+            hoverText   : `<b>${d.name}</b><br>Hit Rig Over-8: ${(d.x_hit !== undefined ? d.x_hit : d.x_end).toFixed(2)}<br>Hit Rig Vintage: ${d.seasonal_vintage || d.seasonal_vintage_end}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig GR: ${d.rig_gr.toFixed(2)}<extra></extra>`
         }))
     };
 
@@ -3488,32 +3488,6 @@ function renderListChart() {
             }
         });
     }
-}
-
-if (document.getElementById('plotlyListChart') && arrowData) {
-    window.listDataPool = {
-        "ALL": arrowData.map(d => ({
-            acronym     : d.acronym,
-            name        : d.name,
-            x           : d.x_start,
-            y           : d.y_start,
-            size        : d.rig_rate,
-            color       : d.grid_grs || d.rig_gr, 
-            hoverText   : `<b>${d.name}</b><br>Rig Over-8: ${d.x_start.toFixed(2)}<br>Rig Vintage: ${d.seasonal_vintage_start}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig GR: ${d.rig_gr.toFixed(2)}<extra></extra>`
-        })),
-
-        "HIT": arrowData.map(d => ({
-            acronym     : d.acronym,
-            name        : d.name,
-            x           : d.x_end, 
-            y           : d.y_end,
-            size        : d.rig_rate, 
-            color       : d.grid_grs || d.rig_gr, 
-            hoverText   : `<b>${d.name}</b><br>Hit Rig Over-8: ${d.x_end.toFixed(2)}<br>Hit Rig Vintage: ${d.seasonal_vintage || d.seasonal_vintage_end}<br>Rig Rate: ${(d.grid_rate !== undefined ? d.grid_rate : d.rig_rate).toFixed(2)}<br>Rig GR: ${d.rig_gr.toFixed(2)}<extra></extra>`
-        }))
-    };
-
-    renderListChart();
 }
 
 let globalSortState     = {columnName: "Anime", ascending: true};
