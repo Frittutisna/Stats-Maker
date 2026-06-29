@@ -1589,7 +1589,7 @@ class TourAnalyzer:
         else                        : df_png = df.drop(columns = ["_tid", "_history"])
 
         if "Win Record" in df_png.columns:
-            if (df_png["Win Record"].astype(str) == "0-0-0").all(): df_png = df_png.drop(columns = ["Win Record"])
+            if (df_png["Win Record"].astype(str) == "0-0-0" or df_png["Win Record"].astype(str) == "0-0").all(): df_png = df_png.drop(columns = ["Win Record"])
 
         watched_valid = self.missing_list_count <= THRESH_WTCH
 
