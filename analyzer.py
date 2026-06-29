@@ -3072,7 +3072,9 @@ class TourAnalyzer:
                         try:
                             parts = [int(x) for x in str(val).split("-")]
                             total = sum(parts)
-                            return ((parts[0] + 0.5 * parts[2]) / total) if total > 0 else -1.0
+                            ties  = parts[2] if len(parts) > 2 else 0
+
+                            return ((parts[0] + 0.5 * ties) / total) if total > 0 else -1.0
 
                         except: return -1.0
 
