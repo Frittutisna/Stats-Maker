@@ -7,7 +7,7 @@
         <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     </head>
-    <body class="p-5">
+    <body class="p-5 select-none">
         <div id="customJsTooltip"></div>
         <h2 id="dashboardTitle" class="text-4xl text-center font-bold">Tour Dashboard</h2>
         <p id="lastUpdatedSubtitle" class="text-xl text-center font-bold mb-1">Last updated: Some time ago</p>
@@ -22,9 +22,14 @@
                 <div id="guessGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
                 <div id="songGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
                 <div id="searchGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
+                <div id="quizGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
             </div>
             <div id="globalGearWrapper" class="relative">
                 <button class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleGlobalGear(event)">⚙</button>
+                <div class="absolute left-[40px] top-0 flex gap-0">
+                    <button id="globalQuizPauseBtn" class="tab-btn hidden" style="width: 40px; background-color: black; color: white;" onclick="toggleQuizPause()">❚❚</button>
+                    <button id="globalQuizReturnBtn" class="tab-btn hidden" style="width: 40px; background-color: black; color: white;" onclick="exitQuizEngine()">◀</button>
+                </div>
                 <div id="playerColumnSettingsDropdown" class="bg-white border p-4 min-w-44 absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black flex flex-col gap-1">
                     <div id="playerMetricModeSection" class="hidden">
                         <p class="font-bold pb-1 mb-1">Display</p>
@@ -37,7 +42,7 @@
                     </label>
                     <div id="playerColumnCheckboxContainer" class="flex flex-col gap-0.5 text-xs max-h-[400px] overflow-y-auto"></div>
                 </div>
-                <div id="columnSettingsDropdown" class="bg-white border p-4 w-36 absolute right-0 top-[32px] hidden z-50 shadow-md">
+                <div id="columnSettingsDropdown" class="bg-white border p-4 min-w-36 absolute right-0 top-[32px] hidden z-50 shadow-md">
                     <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm">
                         <input type="checkbox" id="allColumnsMasterCheckbox" class="rounded accent-black">All
                     </label>
@@ -99,6 +104,12 @@
                         <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="guessFocusRadio" value="ON" class="accent-black">On</label>
                         <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="guessFocusRadio" value="OFF" checked class="accent-black">Off</label>
                     </div>
+                </div>
+                <div id="quizSettingsDropdown" class="bg-white border p-4 min-w-36 max-w-xs absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black flex flex-col gap-1">
+                    <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm">
+                        <input type="checkbox" id="quizColumnsMasterCheckbox" checked class="rounded accent-black">All
+                    </label>
+                    <div id="quizColumnCheckboxContainer" class="flex flex-col gap-0.5 text-xs max-h-[400px] overflow-y-auto"></div>
                 </div>
             </div>
         </div>
@@ -166,6 +177,34 @@
                 </div>
                 <div class="w-full overflow-x-auto block">
                     <table class="main-table" id="searchSongsTable"></table>
+                </div>
+            </div>
+            <div id="quiz-tab" class="tab-content">
+                <div class="max-w-[1000px] mx-auto text-black text-sm font-normal">
+                    <div id="quizSetupScreen" class="flex flex-col gap-0.5 max-w-[200px] mx-auto">
+                        <div class="grid grid-cols-3 gap-1 text-center font-bold text-[20px] select-none">
+                            <div>Song</div>
+                            <div class="col-span-2">Time</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1 items-center">
+                            <input type="number" id="quizSongCountInput" min="5" value="20" class="w-full h-[25px] px-1 border text-center font-mono text-base">
+                            <input type="number" id="quizSoundTimeInput" min="1" max="60" value="20" class="w-full h-[25px] px-1 border text-center font-mono text-base">
+                            <input type="number" id="quizExtraTimeInput" min="0" max="60" value="0" class="w-full h-[25px] px-1 border text-center font-mono text-base">
+                        </div>
+                        <button id="quizStartBtn" onclick="startQuizEngine()" class="w-full h-7 bg-black text-white font-bold text-base uppercase tracking-wider mt-0.5 cursor-pointer">Start</button>
+                    </div>
+                    <div id="quizActiveScreen" class="hidden flex flex-col gap-1 max-w-xl mx-auto">
+                        <div class="flex items-center font-bold text-xl py-0 select-none">
+                            <div id="quizScoreValue" class="shrink-0 text-left font-bold" style="font-family: 'Segoe UI', system-ui, sans-serif;">1/20: 0</div>
+                            <div id="quizResolutionLabel" class="flex-1 text-center text-xl whitespace-normal break-words font-bold px-4" style="font-family: 'Segoe UI', system-ui, sans-serif;"></div>
+                            <div id="quizTimerValue" class="shrink-0 text-right font-bold" style="font-family: 'Segoe UI', system-ui, sans-serif;">0</div>
+                        </div>
+                        <div id="quizInterfaceBody" class="flex gap-1 items-stretch">
+                            <button id="quizSkipBtn" onclick="handleQuizSkipClick()" class="w-14 bg-black text-white text-xs font-bold hover:bg-gray-800 transition-all uppercase tracking-wider shrink-0 flex items-center justify-center rounded-none">Skip</button>
+                            <input type="text" id="quizAnimeInput" autocomplete="off" class="flex-1 h-8 px-3 border text-sm focus:outline-black rounded-none">
+                        </div>
+                    </div>
+                    <div id="quizAudioAnchor"></div>
                 </div>
             </div>
         </div>

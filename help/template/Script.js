@@ -4002,86 +4002,6 @@ function initColumnSettingsCheckboxes() {
         container.appendChild(colWrapper);
     });
 
-    const separator     = document.createElement("div");
-    separator.className = "border-b my-1.5";
-
-    container.appendChild(separator);
-
-    const matrices = [{key: "seen", name: "Seen"}, {key: "correct", name: "Correct"}, {key: "list", name: "List"}];
-
-    if (window.searchMatrixStates === undefined) {window.searchMatrixStates = {seen: {}, correct: {}, list: {}};}
-    if (window.searchMatrixStates._sectionEnabled === undefined) {window.searchMatrixStates._sectionEnabled = {seen: true, correct: true, list: true};}
-
-    masterChk.addEventListener("change", () => {
-        const isChecked = masterChk.checked;
-
-        matrices.forEach(m => {
-            window.searchMatrixStates._sectionEnabled[m.key] = isChecked;
-            for (let p in window.searchMatrixStates[m.key]) window.searchMatrixStates[m.key][p] = isChecked;
-        });
-    });
-
-    matrices.forEach(m => {
-        const groupWrapper      = document.createElement("div");
-        groupWrapper.className  = "flex flex-col select-none";
-
-        const headerLabel       = document.createElement("label");
-        headerLabel.className   = "flex items-center gap-1.5 font-bold text-black block text-xs cursor-pointer mt-0.5";
-
-        const sectionToggle     = document.createElement("input");
-        sectionToggle.type      = "checkbox";
-        sectionToggle.className = "rounded accent-black";
-        sectionToggle.checked   = window.searchMatrixStates._sectionEnabled[m.key];
-
-        headerLabel     .appendChild(sectionToggle);
-        headerLabel     .appendChild(document.createTextNode(m.name));
-        groupWrapper    .appendChild(headerLabel);
-
-        const subContainer      = document.createElement("div");
-        subContainer.className  = "pl-4 flex flex-col gap-0.5 text-xs w-full";
-
-        const updateSubContainerOpacity = () => {
-            subContainer.style.opacity          = window.searchMatrixStates._sectionEnabled[m.key] ? "1"     : "0.5";
-            subContainer.style.pointerEvents    = window.searchMatrixStates._sectionEnabled[m.key] ? "auto"  : "none";
-        };
-
-        sectionToggle.addEventListener("change", () => {
-            window.searchMatrixStates._sectionEnabled[m.key] = sectionToggle.checked;
-
-            updateSubContainerOpacity   ();
-            triggerTableRefresh         ();
-        });
-
-        players.forEach(pRow => {
-            const rawPlayer = pRow["Player"];
-            const pName     = typeof rawPlayer === 'object' ? String(rawPlayer.count || "") : String(rawPlayer);
-
-            if (window.searchMatrixStates[m.key][pName] === undefined) window.searchMatrixStates[m.key][pName] = false;
-
-            const subLabel      = document.createElement("label");
-            subLabel.className  = "flex items-center gap-1 cursor-pointer text-gray-700 hover:text-black py-0.5 pr-6 w-full min-w-max";
-
-            const subChk        = document.createElement("input");
-            subChk.type         = "checkbox";
-            subChk.className    = "rounded accent-black scale-90";
-            subChk.checked      = window.searchMatrixStates[m.key][pName];
-
-            subChk.addEventListener("change", () => {
-                window.searchMatrixStates[m.key][pName] = subChk.checked;
-                triggerTableRefresh();
-            });
-
-            subLabel        .appendChild(subChk);
-            subLabel        .appendChild(document.createTextNode(pName));
-            subContainer    .appendChild(subLabel);
-        });
-
-        updateSubContainerOpacity();
-
-        groupWrapper    .appendChild(subContainer);
-        container       .appendChild(groupWrapper);
-    });
-
     updateMasterCheckboxState();
 }
 
@@ -5365,7 +5285,7 @@ function executeQuizTrack() {
     quizRevealTimeElapsed   = 0;
 
     if (quizIndex >= quizActivePool.length) {
-        finishQuizEngine();
+        exitQuizEngine();
         return;
     }
 
@@ -5427,8 +5347,12 @@ function executeQuizTrack() {
             updateQuizTimerUI(displayCountdown);
 
             if (displayCountdown <= 0) {
-                if (quizIsPaused)   quizLeewayActive = true;
-                else                executeQuizTrack();
+                if (quizIsPaused) quizLeewayActive = true;
+
+                else {
+                    if (quizIndex >= quizActivePool.length) exitQuizEngine      ();
+                    else                                    executeQuizTrack    ();
+                }
             }
         }
     }, 1000);
@@ -5449,7 +5373,11 @@ function handleQuizInputKeyDown(e) {
             const normAnimeAns  = normalizeQuizString(animeAns);
             const normRomaji    = normalizeQuizString(song.romaji);
             const normEnglish   = normalizeQuizString(song.english);
-            const isCorrect     = normAnimeAns.length > 0 && (normRomaji === normAnimeAns || normEnglish === normAnimeAns);
+            const isCorrect     = normAnimeAns.length > 0 && (
+                normRomaji  === normAnimeAns || 
+                normEnglish === normAnimeAns || 
+                (song.alts && song.alts.some(alt => normalizeQuizString(alt) === normAnimeAns))
+            );
 
             resolveQuizItem(isCorrect);
         }
@@ -5471,7 +5399,11 @@ function handleQuizSkipClick() {
         const normAnimeAns  = normalizeQuizString(animeAns);
         const normRomaji    = normalizeQuizString(song.romaji);
         const normEnglish   = normalizeQuizString(song.english);
-        const isCorrect     = normAnimeAns.length > 0 && (normRomaji === normAnimeAns || normEnglish === normAnimeAns);
+        const isCorrect     = normAnimeAns.length > 0 && (
+            normRomaji === normAnimeAns     || 
+            normEnglish === normAnimeAns || 
+            (song.alts && song.alts.some(alt => normalizeQuizString(alt) === normAnimeAns))
+        );
 
         resolveQuizItem(isCorrect);
     }
@@ -5524,9 +5456,7 @@ function resolveQuizItem(isCorrect) {
     updateQuizTimerUI(quizSoundLimit);
 
     if (quizCurrentAudio) {
-        quizCurrentAudio.currentTime    = 0;
-        quizCurrentAudio.loop           = true;
-
+        quizCurrentAudio.loop = true;
         quizCurrentAudio.play().catch(() => {});
     }
 

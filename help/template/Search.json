@@ -52,7 +52,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "A-Channel",
@@ -114,7 +115,8 @@
         "correct_teams_flat": [
             3,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "A.I.C.O.: Incarnation",
@@ -175,7 +177,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Acro Trip",
@@ -242,14 +245,15 @@
             "redeyes"
         ],
         "lives_taken_flat": [
-            "cipherkai",
-            "hakohoka"
+            "hakohoka",
+            "cipherkai"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4,
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Aikatsu Friends!",
@@ -315,7 +319,8 @@
         "correct_teams_flat": [
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Aikatsu on Parade!",
@@ -371,14 +376,15 @@
             "jaimeywea"
         ],
         "lives_taken_flat": [
-            "cipherkai",
-            "dking20"
+            "dking20",
+            "cipherkai"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4,
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Aikatsu Stars!",
@@ -451,7 +457,8 @@
             1,
             3,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Aikatsu!",
@@ -526,6 +533,9 @@
             1,
             3,
             1
+        ],
+        "alts": [
+            "Aikatsu! Akari Generation"
         ]
     },
     {
@@ -598,7 +608,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Aikatsu! 10th Story: Mirai e no Starway",
@@ -655,7 +666,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Akujiki Reijou to Kyouketsu Koushaku",
@@ -721,7 +733,8 @@
         "correct_teams_flat": [
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Akuyaku Reijou Level 99: Watashi wa Ura-Boss desu ga Maou de wa Arimasen",
@@ -812,7 +825,8 @@
             2,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Akuyaku Reijou nanode Last Boss o Katte Mimashita",
@@ -887,15 +901,18 @@
             "jaimeywea"
         ],
         "lives_taken_flat": [
-            "cipherkai",
             "dking20",
-            "i_dont_like_loli"
+            "i_dont_like_loli",
+            "cipherkai"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4,
             4,
             4
+        ],
+        "alts": [
+            "AkuLas"
         ]
     },
     {
@@ -970,7 +987,8 @@
             2,
             1,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Amagami SS",
@@ -1033,7 +1051,8 @@
         "correct_teams_flat": [
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Amagi Brilliant Park",
@@ -1109,7 +1128,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Ame-con!!",
@@ -1174,7 +1194,8 @@
         "correct_teams_flat": [
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Anne Happy♪",
@@ -1234,7 +1255,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Antique Heart",
@@ -1293,7 +1315,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Araburu Kisetsu no Otome-domo yo.",
@@ -1369,7 +1392,8 @@
             4,
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Aria the Crepuscolo",
@@ -1434,7 +1458,8 @@
             2,
             4,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Aria the Origination",
@@ -1504,7 +1529,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Azur Lane: Queen's Orders",
@@ -1566,7 +1592,8 @@
         "correct_teams_flat": [
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Azusa, Otetsudai Shimasu!",
@@ -1633,7 +1660,8 @@
             2,
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Baki Hanma vs. Kengan Ashura",
@@ -1697,7 +1725,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "BanG Dream! Asonjatta!",
@@ -1767,7 +1796,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Bayonetta: Bloody Fate",
@@ -1838,7 +1868,8 @@
         "correct_teams_flat": [
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Beastars",
@@ -1924,7 +1955,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Berserk",
@@ -2006,7 +2038,8 @@
         "correct_teams_flat": [
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Binan Koukou Chikyuu Bouei-bu Haikara!",
@@ -2081,7 +2114,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Bishoujo Senshi Sailor Moon SuperS: Sailor 9 Senshi Shuuketsu! Black Dream Hole no Kiseki",
@@ -2146,7 +2180,8 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [],
-        "correct_teams_flat": []
+        "correct_teams_flat": [],
+        "alts": []
     },
     {
         "romaji": "Black Clover",
@@ -2236,7 +2271,8 @@
         "correct_teams_flat": [
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Bleach",
@@ -2309,7 +2345,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Bocchi the Rock!",
@@ -2395,6 +2432,11 @@
             1,
             1,
             1
+        ],
+        "alts": [
+            "Bocchi the Rock! Recaps",
+            "Steins;Gate 0",
+            "Gekijou Soushuuhen Bocchi the Rock!"
         ]
     },
     {
@@ -2471,7 +2513,8 @@
             2,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Boku no Hero Academia The Movie: Futari no Hero",
@@ -2549,7 +2592,8 @@
             4,
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Boku no Kanojo ga Majimesugiru Sho-bitch na Ken",
@@ -2613,7 +2657,8 @@
         "correct_teams_flat": [
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Boku wa Tomodachi ga Sukunai",
@@ -2687,7 +2732,8 @@
             2,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Boruto: Naruto Next Generations",
@@ -2753,7 +2799,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Botsuraku Yotei no Kizoku dakedo, Hima Datta kara Mahou o Kiwamete Mita",
@@ -2822,7 +2869,8 @@
         "correct_teams_flat": [
             4,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Buddy Complex",
@@ -2889,6 +2937,10 @@
         "correct_teams_flat": [
             3,
             1
+        ],
+        "alts": [
+            "Buddy Complex: Into the Skies of Tomorrow",
+            "Buddy Complex: Kanketsu-hen - Ano Sora ni Kaeru Mirai de"
         ]
     },
     {
@@ -2955,7 +3007,8 @@
             4,
             4,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Bâan: Otona no Kyoukai",
@@ -3022,7 +3075,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Cardfight!! Vanguard G",
@@ -3081,7 +3135,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Cardfight!! Vanguard: Shinemon-hen",
@@ -3140,7 +3195,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Charlotte",
@@ -3223,7 +3279,8 @@
             1,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Choujigen Kakumei Anime: Dimension High School",
@@ -3284,7 +3341,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Choujikuu Yousai Macross",
@@ -3366,6 +3424,9 @@
             2,
             3,
             3
+        ],
+        "alts": [
+            "Macross"
         ]
     },
     {
@@ -3438,6 +3499,11 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
+        ],
+        "alts": [
+            "Macross Flash Back 2012",
+            "The Super Dimension Fortress Macross: Flash Back 2012",
+            "Macross: Do You Remember Love?"
         ]
     },
     {
@@ -3519,7 +3585,8 @@
             2,
             1,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Clevatess: Majuu no Ou to Akago to Shikabane no Yuusha",
@@ -3604,7 +3671,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Comic Girls",
@@ -3675,7 +3743,8 @@
             4,
             4,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Copihan",
@@ -3733,7 +3802,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Damekko Doubutsu",
@@ -3794,7 +3864,8 @@
             2,
             4,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Danjo no Yuujou wa Seiritsu Suru? (Iya, Shinai!!)",
@@ -3862,7 +3933,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Date A Bullet",
@@ -3928,7 +4000,8 @@
             4,
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Deatte 5-byou de Battle",
@@ -4001,7 +4074,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Dekisokonai to Yobareta Moto Eiyuu wa Jikka kara Tsuihou sareta node Sukikatte ni Ikiru Koto ni Shita",
@@ -4069,7 +4143,8 @@
             2,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Devils' Line",
@@ -4132,7 +4207,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Di Gi Charat Summer Special",
@@ -4197,7 +4273,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Dragon Ball Z: Super Saiyajin da Son Goku",
@@ -4260,7 +4337,8 @@
         "correct_teams_flat": [
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Dragon Ball Z: Tatta Hitori no Saishuu Kessen - Freezer ni Idonda Z Senshi Son Goku no Chichi",
@@ -4323,7 +4401,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Eiga Black Clover: Mahou Tei no Ken",
@@ -4385,14 +4464,15 @@
             "yonyon"
         ],
         "lives_taken_flat": [
-            "caramel36",
-            "2skr"
+            "2skr",
+            "caramel36"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Eiga Doraemon: Nobita no Nankai Daibouken",
@@ -4444,14 +4524,15 @@
             "yonyon"
         ],
         "lives_taken_flat": [
-            "i_dont_like_loli",
-            "hakohoka"
+            "hakohoka",
+            "i_dont_like_loli"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4,
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Eiga Doraemon: Nobita to Tetsujin Heidan",
@@ -4511,7 +4592,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Eiga Doraemon: Shin Nobita no Uchuu Kaitakushi",
@@ -4568,7 +4650,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Eiga Gotoubun no Hanayome",
@@ -4643,7 +4726,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Eiga K-On!",
@@ -4724,7 +4808,8 @@
             4,
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Eiga Love Live! Nijigasaki Gakuen School Idol Doukoukai: Kanketsu-hen Dai 1 Shou",
@@ -4792,7 +4877,8 @@
             4,
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Eiga Soreike! Anpanman: Ringo Bouya to Minna no Negai",
@@ -4846,14 +4932,15 @@
             "yonyon"
         ],
         "lives_taken_flat": [
-            "annayanami",
-            "bamboo"
+            "bamboo",
+            "annayanami"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Etotama: Nyankyaku Banrai",
@@ -4913,7 +5000,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Fairy Tail",
@@ -4989,7 +5077,8 @@
             1,
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Fate/stay night",
@@ -5062,7 +5151,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Fate/stay night: Heaven's Feel I. Presage Flower",
@@ -5149,7 +5239,8 @@
             1,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Future Kid Takara",
@@ -5203,7 +5294,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Gal-gaku.: Sei Girls Square Gakuin",
@@ -5264,7 +5356,8 @@
         "correct_teams_flat": [
             3,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Galaxy Angel",
@@ -5330,7 +5423,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Ganbare Douki-chan",
@@ -5401,7 +5495,8 @@
             4,
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Ganbare! Nakamura-kun!!",
@@ -5459,7 +5554,8 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [],
-        "correct_teams_flat": []
+        "correct_teams_flat": [],
+        "alts": []
     },
     {
         "romaji": "Gekijouban IDOLiSH7 LIVE 4bit BEYOND THE PERiOD",
@@ -5522,7 +5618,8 @@
             4,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Gekijouban Jujutsu Kaisen 0",
@@ -5606,7 +5703,8 @@
             1,
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Gekijouban Mahou Shoujo Madoka★Magica Kouhen: Eien no Monogatari",
@@ -5682,6 +5780,10 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
+        ],
+        "alts": [
+            "Gekijouban Mahou Shoujo Madoka★Magica Zenpen: Hajimari no Monogatari",
+            "Puella Magi Madoka Magica the Movie Part 1: Beginnings"
         ]
     },
     {
@@ -5758,7 +5860,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Gekijouban Naruto Shippuuden: Blood Prison",
@@ -5825,6 +5928,9 @@
             2,
             2,
             1
+        ],
+        "alts": [
+            "Naruto Shippuuden"
         ]
     },
     {
@@ -5885,7 +5991,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Gekijouban Yu-Gi-Oh!: Chou Yuugou! Toki o Koeta Kizuna",
@@ -5951,7 +6058,8 @@
         "correct_teams_flat": [
             3,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Gekijouban Yu-Gi-Oh!: Chou Yuugou! Toki o Koeta Kizuna",
@@ -6009,14 +6117,15 @@
             "redeyes"
         ],
         "lives_taken_flat": [
-            "redeyes",
-            "2skr"
+            "2skr",
+            "redeyes"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Generation of Chaos III: Toki no Fuuin",
@@ -6075,7 +6184,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Genjitsu Shugi Yuusha no Oukoku Saikenki",
@@ -6143,15 +6253,18 @@
             "yonyon"
         ],
         "lives_taken_flat": [
-            "cipherkai",
             "dking20",
-            "i_dont_like_loli"
+            "i_dont_like_loli",
+            "cipherkai"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4,
             4,
             4
+        ],
+        "alts": [
+            "Genkoku"
         ]
     },
     {
@@ -6212,7 +6325,8 @@
         "correct_teams_flat": [
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Girls und Panzer das Finale",
@@ -6277,7 +6391,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Godzilla: Hoshi o Kuu Mono",
@@ -6345,7 +6460,8 @@
         "correct_teams_flat": [
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Good Night World",
@@ -6412,14 +6528,15 @@
             "redeyes"
         ],
         "lives_taken_flat": [
-            "floth",
-            "2skr"
+            "2skr",
+            "floth"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Gotoubun no Hanayome",
@@ -6500,7 +6617,8 @@
             3,
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Great Teacher Onizuka",
@@ -6576,7 +6694,8 @@
         "correct_teams_flat": [
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Gyakuten Saiban: Sono \"Shinjitsu\", Igi Ari! Season 2",
@@ -6644,7 +6763,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Hacka Doll the Animation",
@@ -6707,7 +6827,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Hajimete no Gal",
@@ -6784,7 +6905,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Hakuouki: Hekketsuroku",
@@ -6849,7 +6971,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Hamatora",
@@ -6917,6 +7040,10 @@
             2,
             1,
             1
+        ],
+        "alts": [
+            "Re:␣Hamatora",
+            "Re: Hamatora"
         ]
     },
     {
@@ -6970,7 +7097,8 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [],
-        "correct_teams_flat": []
+        "correct_teams_flat": [],
+        "alts": []
     },
     {
         "romaji": "Hazure Skill \"Kinomi Master\": Skill no Mi (Tabetara Shinu) o Mugen ni Taberareru You ni Natta Ken ni Tsuite",
@@ -7039,7 +7167,8 @@
             4,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Heroman",
@@ -7100,7 +7229,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Higurashi no Naku Koro ni Kaku: Outbreak",
@@ -7169,7 +7299,8 @@
             1,
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Hit o Nerae!",
@@ -7228,7 +7359,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Hitoribocchi no Isekai Kouryaku",
@@ -7294,7 +7426,8 @@
         "correct_teams_flat": [
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Hotarubi no Mori e",
@@ -7368,7 +7501,8 @@
             2,
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Hourou Musuko",
@@ -7441,7 +7575,8 @@
             2,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Howl no Ugoku Shiro",
@@ -7521,7 +7656,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Hyakko",
@@ -7583,7 +7719,8 @@
             2,
             4,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "IDOLiSH7 Third Beat!",
@@ -7660,7 +7797,8 @@
             4,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "IDOLiSH7 Vibrato",
@@ -7737,6 +7875,9 @@
             1,
             1,
             1
+        ],
+        "alts": [
+            "IDOLiSH7 Second Beat!"
         ]
     },
     {
@@ -7809,8 +7950,8 @@
             "yonyon"
         ],
         "lives_taken_flat": [
-            "yonyon",
             "anonimus_opinion",
+            "yonyon",
             "foopypoopy"
         ],
         "lives_saved_flat": [],
@@ -7818,7 +7959,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Imouto sae Ireba Ii.",
@@ -7890,7 +8032,8 @@
             1,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Install",
@@ -7944,7 +8087,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Isekai Quartet 3",
@@ -8012,7 +8156,8 @@
         "correct_teams_flat": [
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Isekai Shikkaku",
@@ -8088,7 +8233,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Isekai Yururi Kikou: Kosodate Shinagara Boukensha Shimasu",
@@ -8162,7 +8308,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Itai no wa Iya nanode Bougyoryoku ni Kyokufuri Shitai to Omoimasu.",
@@ -8239,7 +8386,8 @@
             1,
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Itai no wa Iya nanode Bougyoryoku ni Kyokufuri Shitai to Omoimasu. 2",
@@ -8322,7 +8470,8 @@
             4,
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "JoJo no Kimyou na Bouken",
@@ -8407,7 +8556,8 @@
             2,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Jormungand",
@@ -8483,7 +8633,8 @@
             2,
             4,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Jujutsu Kaisen",
@@ -8568,6 +8719,10 @@
             2,
             3,
             3
+        ],
+        "alts": [
+            "Jujutsu Kaisen: Shimetsu Kaiyuu - Zenpen",
+            "Jujutsu Kaisen Season 3"
         ]
     },
     {
@@ -8660,7 +8815,8 @@
             4,
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kagerou Daze: In a Day's",
@@ -8726,7 +8882,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kaiko sareta Ankoku Heishi (30-dai) no Slow na Second Life",
@@ -8799,7 +8956,8 @@
             2,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kami-tachi ni Hirowareta Otoko",
@@ -8871,7 +9029,8 @@
             4,
             4,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kamiari Algorithm",
@@ -8942,7 +9101,8 @@
             4,
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kanata no Astra",
@@ -9021,7 +9181,8 @@
             2,
             4,
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kanojo, Okarishimasu",
@@ -9095,7 +9256,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kanojo, Okarishimasu",
@@ -9171,7 +9333,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Katsugeki Shoujo Tanteidan",
@@ -9237,7 +9400,8 @@
         "correct_teams_flat": [
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kekkai Sensen",
@@ -9316,7 +9480,8 @@
             4,
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kenka Dokugaku",
@@ -9373,7 +9538,8 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [],
-        "correct_teams_flat": []
+        "correct_teams_flat": [],
+        "alts": []
     },
     {
         "romaji": "Kiddy Grade: Maelstrom",
@@ -9434,7 +9600,8 @@
         "correct_teams_flat": [
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kidou Senshi Gundam UC RE:0096",
@@ -9501,6 +9668,10 @@
             4,
             1,
             1
+        ],
+        "alts": [
+            "Kidou Senshi Gundam UC",
+            "Mobile Suit Gundam Unicorn"
         ]
     },
     {
@@ -9573,6 +9744,9 @@
             4,
             3,
             3
+        ],
+        "alts": [
+            "Machine-Doll wa Kizutsukanai"
         ]
     },
     {
@@ -9646,7 +9820,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kimi wa Houkago Insomnia",
@@ -9719,7 +9894,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "King of Prism: Your Endless Call - Mi~nna Kirameki! Prism☆Tours",
@@ -9776,7 +9952,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kirara",
@@ -9844,7 +10021,8 @@
         "correct_teams_flat": [
             4,
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kodomo no Jikan",
@@ -9919,7 +10097,8 @@
         "correct_teams_flat": [
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kodomo no Jikan",
@@ -9988,8 +10167,8 @@
             "yonyon"
         ],
         "lives_taken_flat": [
-            "yonyon",
             "anonimus_opinion",
+            "yonyon",
             "foopypoopy"
         ],
         "lives_saved_flat": [],
@@ -9997,7 +10176,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Koharu Biyori",
@@ -10060,7 +10240,8 @@
         "correct_teams_flat": [
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Koharu Biyori",
@@ -10115,14 +10296,15 @@
             "jaimeywea"
         ],
         "lives_taken_flat": [
-            "annayanami",
-            "bamboo"
+            "bamboo",
+            "annayanami"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kono Subarashii Sekai ni Bakuen o!",
@@ -10198,7 +10380,8 @@
             4,
             4,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kore wa Zombie desu ka?",
@@ -10283,6 +10466,10 @@
             2,
             1,
             1
+        ],
+        "alts": [
+            "Is This a Zombie? of the Dead",
+            "Kore wa Zombie desu ka? of the Dead"
         ]
     },
     {
@@ -10340,14 +10527,15 @@
             "yonyon"
         ],
         "lives_taken_flat": [
-            "cipherkai",
-            "i_dont_like_loli"
+            "i_dont_like_loli",
+            "cipherkai"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4,
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kuma Kuma Kuma Bear: Punch!",
@@ -10411,7 +10599,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kumichou Musume to Sewagakari",
@@ -10485,7 +10674,8 @@
             1,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Kyou no 5 no 2",
@@ -10544,7 +10734,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Little Busters! Refrain",
@@ -10617,7 +10808,8 @@
             1,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Little Busters! Refrain",
@@ -10691,7 +10883,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Love Live! School Idol Project Nijigasaki Gakuen School Idol Doukoukai",
@@ -10757,7 +10950,8 @@
             1,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Love Live! School Idol Project Nijigasaki Gakuen School Idol Doukoukai",
@@ -10820,7 +11014,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Love Live! Superstar!!",
@@ -10887,7 +11082,8 @@
             4,
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Made in Abyss: Retsujitsu no Ougonkyou",
@@ -10944,7 +11140,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Magia Record: Mahou Shoujo Madoka☆Magica Gaiden 2nd Season - Kakusei Zenya",
@@ -11013,6 +11210,10 @@
             4,
             2,
             2
+        ],
+        "alts": [
+            "Magia Record: Puella Magi Madoka Magica Side Story Final Season - The Dawn of the Ephemeral Dream",
+            "Magia Record: Mahou Shoujo Madoka☆Magica Gaiden Final Season - Asaki Yume no Akatsuki"
         ]
     },
     {
@@ -11102,7 +11303,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Mairimashita! Iruma-kun",
@@ -11179,7 +11381,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Mairimashita! Iruma-kun Dai 4 Series",
@@ -11249,7 +11452,8 @@
             1,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Mamotte Shugogetten!",
@@ -11305,14 +11509,15 @@
             "redeyes"
         ],
         "lives_taken_flat": [
-            "annayanami",
-            "bamboo"
+            "bamboo",
+            "annayanami"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Maou Gakuin no Futekigousha",
@@ -11393,7 +11598,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Maou Gakuin no Futekigousha II",
@@ -11465,7 +11671,8 @@
             4,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Maou no Ore ga Dorei Elf o Yome ni Shitanda ga, Dou Medereba Ii?",
@@ -11535,6 +11742,9 @@
         "correct_teams_flat": [
             4,
             1
+        ],
+        "alts": [
+            "Madome"
         ]
     },
     {
@@ -11615,7 +11825,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Medalist",
@@ -11684,7 +11895,8 @@
         "correct_teams_flat": [
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Megane na Kanojo",
@@ -11746,7 +11958,8 @@
             4,
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Meitantei Conan",
@@ -11815,7 +12028,10 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [],
-        "correct_teams_flat": []
+        "correct_teams_flat": [],
+        "alts": [
+            "Case Closed"
+        ]
     },
     {
         "romaji": "Mekakucity Actors",
@@ -11895,7 +12111,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Memories Off",
@@ -11959,7 +12176,8 @@
             4,
             4,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Miru Tights",
@@ -12029,7 +12247,8 @@
             1,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "MM!",
@@ -12097,7 +12316,8 @@
             2,
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Mnemosyne: Mnemosyne no Musume-tachi",
@@ -12177,7 +12397,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Mob Psycho 100 II",
@@ -12259,7 +12480,8 @@
             1,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Moshidora",
@@ -12319,6 +12541,9 @@
         "correct_teams_flat": [
             3,
             1
+        ],
+        "alts": [
+            "Moshi Koukou Yakyuu no Joshi Manager ga Drucker no \"Management\" o Yondara"
         ]
     },
     {
@@ -12377,7 +12602,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Mugyutto! Black Clover",
@@ -12443,7 +12669,8 @@
             1,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Mushoku no Eiyuu: Betsu ni Skill Nanka Iranakattan da ga",
@@ -12501,7 +12728,8 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [],
-        "correct_teams_flat": []
+        "correct_teams_flat": [],
+        "alts": []
     },
     {
         "romaji": "Nabari no Ou",
@@ -12566,7 +12794,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Namiuchigiwa no Muromi-san",
@@ -12630,14 +12859,15 @@
             "jaimeywea"
         ],
         "lives_taken_flat": [
-            "annayanami",
-            "bamboo"
+            "bamboo",
+            "annayanami"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Nana",
@@ -12714,7 +12944,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Nanatsu no Taizai",
@@ -12795,7 +13026,8 @@
             4,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Nanatsu no Taizai: Imashime no Fukkatsu",
@@ -12873,7 +13105,8 @@
             4,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Naruto",
@@ -12961,7 +13194,8 @@
             2,
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "New Panty & Stocking with Garterbelt",
@@ -13041,7 +13275,8 @@
         "correct_teams_flat": [
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Nihon Animator Mihonichi",
@@ -13130,6 +13365,10 @@
             1,
             3,
             1
+        ],
+        "alts": [
+            "SSSS.GRIDMAN",
+            "Japan Anima(tor)'s Exhibition"
         ]
     },
     {
@@ -13207,7 +13446,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Nisekoi:",
@@ -13280,7 +13520,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Nisekoi:",
@@ -13353,7 +13594,8 @@
             4,
             4,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Nobunaga-sensei no Osanazuma",
@@ -13426,7 +13668,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Okiraku Ryoushu no Tanoshii Ryouchi Bouei: Seisan-kei Majutsu de Na mo Naki Mura wo Saikyou no Jousai Toshi ni",
@@ -13494,7 +13737,8 @@
             2,
             1,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Okusama ga Seitokaichou!",
@@ -13562,7 +13806,8 @@
             4,
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "One Piece",
@@ -13681,7 +13926,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "One Piece Film: Z",
@@ -13748,7 +13994,8 @@
             4,
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "One Punch Man",
@@ -13830,7 +14077,8 @@
             1,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "One Room",
@@ -13900,7 +14148,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Onyankopon",
@@ -13966,7 +14215,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Ore dake Level Up na Ken",
@@ -14049,7 +14299,8 @@
             1,
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Ore dake Level Up na Ken: Arise from the Shadow",
@@ -14124,7 +14375,8 @@
             2,
             4,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Ore no Imouto ga Konnani Kawaii Wake ga Nai",
@@ -14196,7 +14448,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Ore wa Subete o \"Parry\" Suru: Gyaku Kanchigai no Sekai Saikyou wa Boukensha ni Naritai",
@@ -14265,7 +14518,8 @@
         "correct_teams_flat": [
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Otome Game no Hametsu Flag Shika Nai Akuyaku Reijou ni Tensei Shiteshimatta... X",
@@ -14359,6 +14613,9 @@
             2,
             1,
             1
+        ],
+        "alts": [
+            "Hamefura X"
         ]
     },
     {
@@ -14423,7 +14680,8 @@
         "correct_teams_flat": [
             4,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Outbreak Company",
@@ -14496,7 +14754,8 @@
         "correct_teams_flat": [
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Overlord",
@@ -14580,6 +14839,13 @@
             2,
             3,
             3
+        ],
+        "alts": [
+            "Gekijouban Overlord: Shikkoku no Eiyuu",
+            "Overlord II",
+            "Overlord: The Undead King",
+            "Overlord: The Dark Warrior",
+            "Gekijouban Overlord: Fushisha no Ou"
         ]
     },
     {
@@ -14656,13 +14922,20 @@
             "jaimeywea"
         ],
         "lives_taken_flat": [
-            "cipherkai",
-            "dking20"
+            "dking20",
+            "cipherkai"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4,
             4
+        ],
+        "alts": [
+            "Gekijouban Overlord: Shikkoku no Eiyuu",
+            "Overlord: The Undead King",
+            "Overlord: The Dark Warrior",
+            "Gekijouban Overlord: Fushisha no Ou",
+            "Overlord III"
         ]
     },
     {
@@ -14745,7 +15018,8 @@
             1,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Princess Lover!",
@@ -14814,7 +15088,8 @@
             3,
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Princession Orchestra",
@@ -14897,7 +15172,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "PriPara",
@@ -14980,7 +15256,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Rakka-sei",
@@ -15044,7 +15321,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Rakudai Majo: Fuuka to Yami no Majo",
@@ -15097,7 +15375,8 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [],
-        "correct_teams_flat": []
+        "correct_teams_flat": [],
+        "alts": []
     },
     {
         "romaji": "Re:Zero kara Hajimeru Isekai Seikatsu: Memory Snow",
@@ -15175,7 +15454,8 @@
             1,
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Redline",
@@ -15250,7 +15530,8 @@
             1,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Rekishi ni Nokoru Akujo ni Naru zo",
@@ -15323,7 +15604,8 @@
             2,
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Renai Boukun",
@@ -15401,7 +15683,8 @@
             2,
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Rokka no Yuusha",
@@ -15471,7 +15754,8 @@
         "correct_teams_flat": [
             4,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Rokujouma no Shinryakusha!?",
@@ -15537,7 +15821,8 @@
         "correct_teams_flat": [
             4,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Rougo ni Sonaete Isekai de 8-manmai no Kinka o Tamemasu",
@@ -15604,6 +15889,9 @@
             3,
             1,
             3
+        ],
+        "alts": [
+            "RouKin8"
         ]
     },
     {
@@ -15666,7 +15954,8 @@
         "correct_teams_flat": [
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Saenai Heroine no Sodatekata Fine",
@@ -15733,7 +16022,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Sakamoto desu ga?",
@@ -15805,7 +16095,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Sakasama no Patema",
@@ -15872,7 +16163,8 @@
             2,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Sakura no Chikai: Marronni☆Yell Higashi no Hichou Shimotsuke-shi o Yell!",
@@ -15931,7 +16223,8 @@
         "correct_teams_flat": [
             2,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Samurai Flamenco",
@@ -16007,6 +16300,9 @@
         "correct_teams_flat": [
             2,
             1
+        ],
+        "alts": [
+            "Samumenco"
         ]
     },
     {
@@ -16071,14 +16367,15 @@
             "redeyes"
         ],
         "lives_taken_flat": [
-            "annayanami",
-            "bamboo"
+            "bamboo",
+            "annayanami"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "School Rumble: Ni Gakki",
@@ -16138,14 +16435,15 @@
             "redeyes"
         ],
         "lives_taken_flat": [
-            "redeyes",
-            "2skr"
+            "2skr",
+            "redeyes"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Seishun Buta Yarou wa Santa Claus no Yume o Minai",
@@ -16213,7 +16511,8 @@
         "correct_teams_flat": [
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Seitokai no Ichizon",
@@ -16281,7 +16580,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Sentouin, Hakenshimasu!",
@@ -16363,7 +16663,8 @@
             3,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Shake-chan",
@@ -16428,7 +16729,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Shin Kyuuseishu Densetsu Hokuto no Ken: Raoh-den Gekitou no Shou",
@@ -16488,7 +16790,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Shingeki no Kyojin",
@@ -16585,7 +16888,8 @@
             1,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Shinkai no Survival!",
@@ -16639,14 +16943,15 @@
             "redeyes"
         ],
         "lives_taken_flat": [
-            "annayanami",
-            "bamboo"
+            "bamboo",
+            "annayanami"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Shuumatsu no Walküre III",
@@ -16715,7 +17020,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Shy",
@@ -16776,7 +17082,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Slam Dunk",
@@ -16845,6 +17152,9 @@
             2,
             3,
             3
+        ],
+        "alts": [
+            "Slam Dunk: Hoero Basketman Tamashii! Hanamichi to Rukawa no Atsuki Natsu"
         ]
     },
     {
@@ -16910,7 +17220,8 @@
         "correct_teams_flat": [
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "SoniAni: Super Sonico the Animation",
@@ -16972,7 +17283,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Sora yori mo Tooi Basho",
@@ -17050,6 +17362,9 @@
             4,
             4,
             2
+        ],
+        "alts": [
+            "Yorimoi"
         ]
     },
     {
@@ -17108,6 +17423,11 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
+        ],
+        "alts": [
+            "Soreike! Anpanman: Gomira no Hoshi",
+            "Soreike! Anpanman: Ruby no Negai",
+            "Eiga Soreike! Anpanman: Roboly to Pokapoka Present"
         ]
     },
     {
@@ -17168,6 +17488,9 @@
             2,
             2,
             3
+        ],
+        "alts": [
+            "Soreike! Anpanman: Dokin-chan no Dokidoki Calendar"
         ]
     },
     {
@@ -17226,7 +17549,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Spy Kyoushitsu",
@@ -17295,7 +17619,8 @@
             4,
             4,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Starship Operators",
@@ -17359,7 +17684,8 @@
             2,
             1,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Summertime Render",
@@ -17443,14 +17769,15 @@
             "yonyon"
         ],
         "lives_taken_flat": [
-            "caramel36",
-            "2skr"
+            "2skr",
+            "caramel36"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Super Real Mahjong: Miki Kasumi Shouko no Hajimemashite",
@@ -17511,7 +17838,8 @@
         "correct_teams_flat": [
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Sword Art Online: Alicization",
@@ -17589,7 +17917,8 @@
             4,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Sword Art Online: Alicization - War of Underworld",
@@ -17668,6 +17997,9 @@
             4,
             4,
             1
+        ],
+        "alts": [
+            "Sword Art Online: Alicization"
         ]
     },
     {
@@ -17746,7 +18078,8 @@
             4,
             4,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Takt Op.Destiny",
@@ -17819,7 +18152,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Tamako Love Story",
@@ -17884,7 +18218,8 @@
             2,
             4,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Tamako Market",
@@ -17956,7 +18291,8 @@
             4,
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Tantei Opera Milky Holmes Dai 2 Maku",
@@ -18022,7 +18358,8 @@
             4,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Tantei Opera Milky Holmes: Psycho no Aisatsu",
@@ -18081,7 +18418,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Tate no Yuusha no Nariagari",
@@ -18177,7 +18515,8 @@
             1,
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Tate no Yuusha no Nariagari Season 2",
@@ -18255,7 +18594,8 @@
             2,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Tate no Yuusha no Nariagari Season 3",
@@ -18332,7 +18672,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Tensei shitara Dainana Ouji Datta node, Kimama ni Majutsu o Kiwamemasu 2nd Season",
@@ -18412,7 +18753,8 @@
             1,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Tensei shitara Dainana Ouji Datta node, Kimama ni Majutsu o Kiwamemasu 2nd Season",
@@ -18491,7 +18833,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Tensei shitara Slime Datta Ken",
@@ -18575,6 +18918,9 @@
             2,
             3,
             3
+        ],
+        "alts": [
+            "Tensura"
         ]
     },
     {
@@ -18648,6 +18994,9 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
+        ],
+        "alts": [
+            "Tensura Dai 4 Ki"
         ]
     },
     {
@@ -18725,6 +19074,9 @@
             2,
             3,
             3
+        ],
+        "alts": [
+            "Tensura Dai 4 Ki"
         ]
     },
     {
@@ -18786,7 +19138,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "The iDOLM@STER",
@@ -18855,7 +19208,8 @@
             2,
             4,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "The iDOLM@STER Cinderella Girls U149",
@@ -18912,7 +19266,8 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [],
-        "correct_teams_flat": []
+        "correct_teams_flat": [],
+        "alts": []
     },
     {
         "romaji": "To Be Hero X",
@@ -19001,7 +19356,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "To Heart 2 OVA",
@@ -19063,7 +19419,8 @@
         "correct_teams_flat": [
             4,
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "To Heart: Remember My Memories",
@@ -19126,7 +19483,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Toaru Kagaku no Railgun",
@@ -19206,7 +19564,8 @@
             1,
             1,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Toaru Kagaku no Railgun",
@@ -19284,7 +19643,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Toaru Majutsu no Index II",
@@ -19357,7 +19717,8 @@
             4,
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Tokyo Ravens",
@@ -19426,7 +19787,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Tonikaku Kawaii",
@@ -19490,7 +19852,8 @@
             2,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Trinity Seven",
@@ -19574,7 +19937,8 @@
             3,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Turkey!",
@@ -19640,7 +20004,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Twin Bee Paradise",
@@ -19690,7 +20055,8 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [],
-        "correct_teams_flat": []
+        "correct_teams_flat": [],
+        "alts": []
     },
     {
         "romaji": "Two Car",
@@ -19755,7 +20121,8 @@
         "correct_teams_flat": [
             4,
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Uma Musume: Pretty Derby - BNW no Chikai",
@@ -19825,7 +20192,8 @@
             3,
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Uma Musume: Pretty Derby - Shinjidai no Tobira",
@@ -19899,7 +20267,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Urusei Yatsura",
@@ -19981,7 +20350,8 @@
             3,
             3,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Watashi ni Tenshi ga Maiorita! Precious Friends",
@@ -20047,7 +20417,8 @@
             4,
             3,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Watashi o Tabetai, Hitodenashi",
@@ -20128,7 +20499,8 @@
             2,
             4,
             4
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Witchblade",
@@ -20192,7 +20564,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Wonder Momo",
@@ -20261,7 +20634,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Yami no Purple Eye",
@@ -20327,7 +20701,8 @@
         "correct_teams_flat": [
             3,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Yami Shibai",
@@ -20388,7 +20763,8 @@
         "correct_teams_flat": [
             3,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Yami Shibai",
@@ -20441,14 +20817,15 @@
             "redeyes"
         ],
         "lives_taken_flat": [
-            "floth",
-            "2skr"
+            "2skr",
+            "floth"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Yoshinaga-san Chi no Gargoyle",
@@ -20505,7 +20882,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Youjo Senki",
@@ -20585,10 +20963,10 @@
             "yonyon"
         ],
         "lives_taken_flat": [
-            "cipherkai",
             "dking20",
-            "i_dont_like_loli",
-            "hakohoka"
+            "hakohoka",
+            "cipherkai",
+            "i_dont_like_loli"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -20596,6 +20974,11 @@
             4,
             4,
             4
+        ],
+        "alts": [
+            "Isekai Quartet",
+            "Gekijouban Youjo Senki",
+            "Saga of Tanya the Evil: The Movie"
         ]
     },
     {
@@ -20653,7 +21036,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             2
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 3rd Season",
@@ -20744,7 +21128,8 @@
             1,
             1,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Yu-Gi-Oh! Sevens",
@@ -20805,7 +21190,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Yu-Gi-Oh! Sevens",
@@ -20862,14 +21248,15 @@
             "redeyes"
         ],
         "lives_taken_flat": [
-            "redeyes",
-            "2skr"
+            "2skr",
+            "redeyes"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Yuuki Yuuna wa Yuusha de Aru",
@@ -20959,7 +21346,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Yuuki Yuuna wa Yuusha de Aru: Yuusha no Shou",
@@ -21046,7 +21434,8 @@
             4,
             4,
             3
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Yuusha Party ni Kawaii Ko ga Ita node, Kokuhaku shitemita.",
@@ -21115,6 +21504,9 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [
             4
+        ],
+        "alts": [
+            "YuuKawa"
         ]
     },
     {
@@ -21177,7 +21569,8 @@
             2,
             2,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Zankyou no Terror",
@@ -21241,7 +21634,8 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [],
-        "correct_teams_flat": []
+        "correct_teams_flat": [],
+        "alts": []
     },
     {
         "romaji": "Zombie Land Saga",
@@ -21320,7 +21714,8 @@
             1,
             3,
             1
-        ]
+        ],
+        "alts": []
     },
     {
         "romaji": "Zombie Land Saga Revenge",
@@ -21395,6 +21790,7 @@
             2,
             1,
             1
-        ]
+        ],
+        "alts": []
     }
 ]
