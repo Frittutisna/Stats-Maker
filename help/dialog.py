@@ -193,15 +193,15 @@ class TourMetadataDialog(UnifiedDialog):
 
         ttk.Label(left_frame, text = "What tour is this?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
-        if      "Watched"   in init_label or init_label in ["Brute-force", "Masquerade", "Other Random", "Other Watched"]   : starting_lbl = init_label
-        elif    "Random"    in init_label                                                                                   : starting_lbl = init_label
-        elif    init_label == "Usual"                                                                                       : starting_lbl = "Usual"
-        else                                                                                                                : starting_lbl = "Others"
+        if      "Watched"   in init_label   : starting_lbl = init_label
+        elif    "Random"    in init_label   : starting_lbl = init_label
+        elif    init_label == "Usual"       : starting_lbl = "Usual"
+        else                                : starting_lbl = "Others"
 
         self.lbl_var = tk.StringVar(value=starting_lbl if starting_lbl in ["Watched", "Usual"] else "Others")
         self.lbl_boxes = {}
 
-        for opt in ["Random", "Watched", "Others"]:
+        for opt in ["Usual", "Watched", "Others"]:
             f_opt = ttk.Frame(left_frame)
             f_opt.pack(anchor = "w", pady = 1)
 

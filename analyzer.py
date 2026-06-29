@@ -391,7 +391,7 @@ class TourAnalyzer:
                 print("[?] Continuing structural pipeline execution, ignoring baseline fetching")
 
         dry_mode_mapping    = {
-            "Random"                : "1",
+            "Usual"                 : "1",
             "Watched"               : "2",
             "Watched OP"            : "3",
             "Watched ED"            : "4",
