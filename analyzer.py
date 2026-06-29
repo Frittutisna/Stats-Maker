@@ -891,7 +891,7 @@ class TourAnalyzer:
 
         if self.assignments:
             tasks.append((self._create_tier_png, (self.assignments, out_path, any(self.p_chan_s.values()))))
-            if watched_valid: tasks.append((self._create_team_png, (self.assignments, self.t1_lookup, out_path)))
+            tasks.append((self._create_team_png, (self.assignments, self.t1_lookup, out_path)))
 
         if watched_valid: tasks.append((self._create_scatter_png, (out_path, True, self.elo_map)))
 
@@ -1591,7 +1591,14 @@ class TourAnalyzer:
         if "Win Record" in df_png.columns:
             if (df_png["Win Record"].astype(str) == "0-0-0").all(): df_png = df_png.drop(columns = ["Win Record"])
 
-        num_cols = ["Mean Elo", "Mean GR", "Mean Over-8", "Rig Synergy", "Off Synergy", "Shared Rigs"]
+        watched_valid = self.missing_list_count <= THRESH_WTCH
+
+        if not watched_valid:
+            df_png = df_png.drop(columns = ["Rig Synergy", "Off Synergy", "Shared Rigs"], errors = "ignore")
+            num_cols = ["Mean Elo", "Mean GR", "Mean Over-8"]
+
+        else: num_cols = ["Mean Elo", "Mean GR", "Mean Over-8", "Rig Synergy", "Off Synergy", "Shared Rigs"]
+
         for c in num_cols: df_png[c] = pd.to_numeric(df_png[c], errors = 'coerce').map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
         self._export_png(df_png, path, "Team.png", "Team Statistics")

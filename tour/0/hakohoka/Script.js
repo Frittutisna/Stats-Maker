@@ -1121,13 +1121,18 @@ function renderTeamTable() {
 
     if (!table) return;
 
-    if (!use_teams || !watched || !teamStats || !teamStats.length) {
+    if (!use_teams || !teamStats || !teamStats.length) {
         table.innerHTML                     = "";
         if (spacer) spacer.style.display    = "none";
         return;
     }
 
     let headers = Object.keys(teamStats[0]);
+    
+    if (!watched) {
+        const skipped = new Set(["Rig Synergy", "Off Synergy", "Shared Rigs"]);
+        headers = headers.filter(h => !skipped.has(h));
+    }
 
     let thead = "<thead><tr>" + headers.map(h => {
         let classes = [];
