@@ -1614,8 +1614,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "dav1d",
-            "tapumomo_"
+            "tapumomo_",
+            "dav1d"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -1736,8 +1736,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "dav1d",
-            "tapumomo_"
+            "tapumomo_",
+            "dav1d"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -3402,8 +3402,8 @@
         ],
         "lives_taken_flat": [
             "2486",
-            "dav1d",
-            "tapumomo_"
+            "tapumomo_",
+            "dav1d"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -3682,8 +3682,8 @@
             "provenance"
         ],
         "lives_taken_flat": [
-            "provenance",
             "konomi",
+            "provenance",
             "sabetin"
         ],
         "lives_saved_flat": [],
@@ -4120,8 +4120,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "emdiel",
-            "porte"
+            "porte",
+            "emdiel"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -4322,8 +4322,8 @@
             "hubcioskubcio"
         ],
         "lives_taken_flat": [
-            "bigsmo",
-            "haruurara"
+            "haruurara",
+            "bigsmo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -4682,8 +4682,8 @@
             "provenance"
         ],
         "lives_taken_flat": [
-            "2486",
-            "tapumomo_"
+            "tapumomo_",
+            "2486"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -4977,8 +4977,8 @@
             "provenance"
         ],
         "lives_taken_flat": [
-            "provenance",
             "konomi",
+            "provenance",
             "sabetin"
         ],
         "lives_saved_flat": [],
@@ -5334,8 +5334,8 @@
             "provenance"
         ],
         "lives_taken_flat": [
-            "kaorimaeda",
-            "haruurara"
+            "haruurara",
+            "kaorimaeda"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -6952,8 +6952,8 @@
             "provenance"
         ],
         "lives_taken_flat": [
-            "bigsmo",
-            "haruurara"
+            "haruurara",
+            "bigsmo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -8254,9 +8254,9 @@
             "hubcioskubcio"
         ],
         "lives_taken_flat": [
-            "kaorimaeda",
             "maikasasaki",
-            "bigsmo"
+            "bigsmo",
+            "kaorimaeda"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -10806,8 +10806,8 @@
             "provenance"
         ],
         "lives_taken_flat": [
-            "dav1d",
-            "tapumomo_"
+            "tapumomo_",
+            "dav1d"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -11130,8 +11130,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "provenance",
-            "konomi"
+            "konomi",
+            "provenance"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -11621,8 +11621,8 @@
             "hubcioskubcio"
         ],
         "lives_taken_flat": [
-            "kaorimaeda",
-            "maikasasaki"
+            "maikasasaki",
+            "kaorimaeda"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12124,8 +12124,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "kaededayo",
-            "zomg"
+            "zomg",
+            "kaededayo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12923,8 +12923,8 @@
             "provenance"
         ],
         "lives_taken_flat": [
-            "kaorimaeda",
-            "bigsmo"
+            "bigsmo",
+            "kaorimaeda"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12984,9 +12984,9 @@
             "provenance"
         ],
         "lives_taken_flat": [
+            "tapumomo_",
             "2486",
-            "dav1d",
-            "tapumomo_"
+            "dav1d"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -13124,9 +13124,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
+            "porte",
             "emdiel",
-            "kaededayo",
-            "porte"
+            "kaededayo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -13497,8 +13497,8 @@
             "hubcioskubcio"
         ],
         "lives_taken_flat": [
-            "kaorimaeda",
-            "maikasasaki"
+            "maikasasaki",
+            "kaorimaeda"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [

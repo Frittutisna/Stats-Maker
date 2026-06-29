@@ -1536,7 +1536,7 @@ class TourAnalyzer:
                         ties_history[opp_name].append(score_str)
 
             h_payload = {
-                "summary"       : f"{w_count}-{l_count}-{t_count}",
+                "summary"       : f"{w_count}-{l_count}" if t_count == 0 else f"{w_count}-{l_count}-{t_count}",
                 "wins"          : dict(wins_history),
                 "losses"        : dict(losses_history),
                 "ties"          : dict(ties_history),
@@ -1572,7 +1572,7 @@ class TourAnalyzer:
             }
 
             if getattr(self, 'text_var_wlt', 'No') == 'Yes' or h_payload["total_matches"] > 0:
-                row["Win Record"]   = h_payload["summary"]
+                row["Win Record"]   = f"{w_count}-{l_count}" if t_count == 0 else h_payload["summary"]
                 tot                 = w_count + l_count + t_count
                 row["_win_pct"]     = (w_count / tot) if tot > 0 else -1.0
 
@@ -2492,7 +2492,8 @@ class TourAnalyzer:
 
             summary_parts   = [int(x) for x in h["summary"].split("-")]
             tot_m           = sum(summary_parts)
-            win_rate_val    = ((summary_parts[0] + 0.5 * summary_parts[2]) / tot_m * 100) if tot_m > 0 else np.nan
+            tie_val         = summary_parts[2] if len(summary_parts) > 2 else 0
+            win_rate_val    = ((summary_parts[0] + 0.5 * tie_val) / tot_m * 100) if tot_m > 0 else np.nan
 
             item_payload = {
                 "Team Leader"   : row_data["Team Leader"],
