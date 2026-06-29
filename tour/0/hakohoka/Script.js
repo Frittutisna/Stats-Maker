@@ -1220,8 +1220,20 @@ function syncTierDropdownDOMState() {
 
     const hitLabel = document.getElementById("label_opt_c1_hit");
     const offLabel = document.getElementById("label_opt_c1_off");
+    const rigLabel = document.getElementById("opt_c1_rig")?.closest('label');
 
-    if (isCount) {
+    if (!watched) {
+        if (hitLabel) hitLabel.classList.add("hidden");
+        if (offLabel) offLabel.classList.add("hidden");
+        if (rigLabel) rigLabel.classList.add("hidden");
+
+        if (c1Sub === "RIG" || c1Sub === "HIT" || c1Sub === "OFF") {
+            c1Sub = "BASE";
+            document.querySelector('input[name="tierSubMetricsRadio"][value="BASE"]').checked = true;
+        }
+    }
+
+    else if (isCount) {
         if (hitLabel) hitLabel.classList.add("hidden");
         if (offLabel) offLabel.classList.add("hidden");
 
@@ -1623,13 +1635,19 @@ function renderTierCharts() {
             }
 
             else {
-                val                 = [stats.rigHits, stats.offListHits];
-                traceData           = val;
-                let rigsSection     = `<b>Rigs Hit Context:</b><br>${formatSampleTextList(stats.rigHitsList)}`;
-                let offRigsSection  = `<b>Off Rigs Hit Context:</b><br>${formatSampleTextList(stats.offListHitsList)}`;
-                hover               = `${rigsSection}<br><br>${offRigsSection}`;
-            }
+                if (watched) {
+                    val                 = [stats.rigHits, stats.offListHits];
+                    traceData           = val;
+                    let rigsSection     = `<b>Rigs Hit Context:</b><br>${formatSampleTextList(stats.rigHitsList)}`;
+                    let offRigsSection  = `<b>Off Rigs Hit Context:</b><br>${formatSampleTextList(stats.offListHitsList)}`;
+                    hover               = `${rigsSection}<br><br>${offRigsSection}`;
+                }
 
+                else {
+                    val     = stats.totalCorrect;
+                    hover   = "";
+                }
+            }
         }
 
         else if (sub === "OVER-8") {
@@ -1769,7 +1787,7 @@ function renderTierCharts() {
         let va              = extractedA.val;
         let vb              = extractedB.val;
 
-        if (globalChartMode === "COUNT" && c1Sub === "BASE") {
+        if (globalChartMode === "COUNT" && c1Sub === "BASE" && watched) {
             let names   = ["Rigs Hit", "Off Rigs Hit"];
             let sa      = 0;
             let sb      = 0;
@@ -1802,11 +1820,11 @@ function renderTierCharts() {
         return vb - va;
     };
     
-    let c1LayoutSubMode = (globalChartMode === "COUNT" && c1Sub === "BASE") ? "COUNT_BASE" : (c1Sub === "OVER-8" ? "X8" : null);
+    let c1LayoutSubMode = (globalChartMode === "COUNT" && c1Sub === "BASE" && watched) ? "COUNT_BASE" : (c1Sub === "OVER-8" ? "X8" : null);
     let c1Data          = buildChartData(currentTierChartMode, c1Sort, (p) => getC1ValueAndHover(p, globalChartMode, c1Sub), c1LayoutSubMode);
     let c1Traces        = [];
 
-    if (globalChartMode === "COUNT" && c1Sub === "BASE") {
+    if (globalChartMode === "COUNT" && c1Sub === "BASE" && watched) {
         const c1BaseColors  = [c2, c0];
         const baseNames     = ["Rigs Hit", "Off Rigs Hit"];
 
