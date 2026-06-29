@@ -2184,9 +2184,9 @@ class TourAnalyzer:
 
                 row.update({
                     "GR"            : {"count": float(row_data["GR"] * 100), "details": [f"{cor}/{tot}"] + self.player_song_details[name]["Overall"]},
-                    "GR Δ"          : f"{float(row_data['GR Δ']):.2f}"  if pd.notnull(row_data.get("GR Δ"))     else np.nan,
+                    "GR Δ"          : float (row_data['GR Δ'])          if pd.notnull(row_data.get("GR Δ"))     else np.nan,
                     "UF"            : float (row_data["UF"])            if "UF"     in row_data                 else np.nan,
-                    "UF Δ"          : f"{float(row_data['UF Δ']):.2f}"  if pd.notnull(row_data.get("UF Δ"))     else np.nan,
+                    "UF Δ"          : float (row_data['UF Δ'])          if pd.notnull(row_data.get("UF Δ"))     else np.nan,
                     "Score"         : float (row_data["Score"])         if "Score"  in row_data                 else np.nan,
                     "1/8s"          : int   (row_data["1/8s"]),
                     "2/8s"          : int   (row_data["2/8s"]),
@@ -2207,7 +2207,7 @@ class TourAnalyzer:
                         "details"   : [f"{succ}/{seen}"] + self.player_song_details[name][f"Type {tid}"]
                     } if pd.notnull(row_data[t_labels[tid]]) else np.nan
 
-                    row[delta_key] = f"{float(row_data[delta_key]):.2f}" if pd.notnull(row_data.get(delta_key)) else np.nan
+                    row[delta_key] = float(row_data[delta_key]) if pd.notnull(row_data.get(delta_key)) else np.nan
 
                 if watched:
                     succ_rig    = self.p_rigs_h [name]
@@ -2376,7 +2376,8 @@ class TourAnalyzer:
                 if col in int_cols or col in rate_cols or col in dict_cols  : num = df_players[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
                 else                                                        : num = df_players[col]
 
-                el_num = num[mask_series].dropna() if col in int_cols else num.dropna()
+                num     = pd.to_numeric(num, errors = 'coerce')
+                el_num  = num[mask_series].dropna() if col in int_cols else num.dropna()
 
                 if not num.dropna().empty:
                     if col in desc_cols:
