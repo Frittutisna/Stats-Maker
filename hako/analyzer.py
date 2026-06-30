@@ -881,24 +881,28 @@ class TourAnalyzer:
         else                                    : stage = f"R{self.base_exp}"
 
         prefix      = f"{self.tour_label.strip()} Tour, " 
-        out_path    = self.tour_dir / DIR_OUT
+        png_path    = self.tour_dir / "png"
+        web_path    = self.tour_dir / "site"
 
-        out_path.mkdir(parents = True, exist_ok = True)
-        for item in out_path.iterdir(): item.unlink()
+        for path in [png_path, web_path]:
+            path.mkdir(parents = True, exist_ok = True)
+
+            for item in path.iterdir():
+                if item.is_file(): item.unlink()
 
         tasks = []
 
-        tasks.append((self._create_player_png,      (self.elo_map, watched_valid, stage, out_path, self.apps, prefix, self.exp_map, self.base_exp, self.new_players, self.val_str)))
-        tasks.append((self._create_tour_png,        (self.use_teams, watched_valid, out_path)))
-        tasks.append((self._create_scatter_png,     (out_path, False, self.elo_map)))
-        tasks.append((self._create_song_png,        (out_path, )))
-        tasks.append((self._create_dashboard_html,  (out_path, self.use_teams, watched_valid)))
+        tasks.append((self._create_player_png,      (self.elo_map, watched_valid, stage, png_path, self.apps, prefix, self.exp_map, self.base_exp, self.new_players, self.val_str)))
+        tasks.append((self._create_tour_png,        (self.use_teams, watched_valid, png_path)))
+        tasks.append((self._create_scatter_png,     (png_path, False, self.elo_map)))
+        tasks.append((self._create_song_png,        (png_path, )))
+        tasks.append((self._create_dashboard_html,  (web_path, self.use_teams, watched_valid)))
 
         if self.assignments:
-            tasks.append((self._create_tier_png, (self.assignments, out_path, any(self.p_chan_s.values()))))
-            tasks.append((self._create_team_png, (self.assignments, self.t1_lookup, out_path)))
+            tasks.append((self._create_tier_png, (self.assignments, png_path, any(self.p_chan_s.values()))))
+            tasks.append((self._create_team_png, (self.assignments, self.t1_lookup, png_path)))
 
-        if watched_valid: tasks.append((self._create_scatter_png, (out_path, True, self.elo_map)))
+        if watched_valid: tasks.append((self._create_scatter_png, (png_path, True, self.elo_map)))
 
         with fut.ProcessPoolExecutor() as executor:
             task = {executor.submit(func, *args): func.__name__ for func, args in tasks}
@@ -909,10 +913,10 @@ class TourAnalyzer:
                 try                     : future.result()
                 except Exception as e   : print(f"Task {task_name} failed: {e}")
 
-        self._fuse(out_path)
+        self._fuse(png_path)
         allowed_files = {"General.png", "Player.png", "Extra.png", "Plots.png"}
 
-        for file_path in out_path.glob("*.png"):
+        for file_path in png_path.glob("*.png"):
             if file_path.name not in allowed_files:
                 try                 : file_path.unlink()
                 except Exception    : pass
@@ -970,8 +974,8 @@ class TourAnalyzer:
 
                 if self.dry_choice == "Yes, and push it to the database":
                     timestamp           = datetime.datetime.now().strftime("%y%m%d%H%M")
-                    archive_dir         = self.script_dir.parent    / "hako" / "archive" / timestamp
-                    hako_dir            = self.tour_dir             / "hako"
+                    archive_dir         = self.script_dir.parent / "hako" / "archive" / timestamp
+                    hako_dir            = web_path 
                     files_to_archive    = ["index.html", "Script.js", "Styles.css", "Data.json", "Search.json"]
 
                     print(f"[?] Copying website components to archive/{timestamp}")
@@ -979,6 +983,7 @@ class TourAnalyzer:
 
                     for file_name in files_to_archive:
                         src_file = hako_dir / file_name
+
                         if src_file.exists():
                             shutil.copy(src_file, archive_dir / file_name)
                             print(f"[✓] Copied {file_name}")
