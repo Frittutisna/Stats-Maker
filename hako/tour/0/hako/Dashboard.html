@@ -225,10 +225,10 @@
                     </div>
                 </div>
                 <div id="quizActiveScreen" class="hidden flex flex-col gap-1 max-w-xl mx-auto">
-                        <div class="flex items-center font-bold text-xl py-0 select-none">
-                            <div id="quizScoreValue" class="shrink-0 text-left font-bold" style="font-family: 'Segoe UI', system-ui, sans-serif;">1/20: 0</div>
-                            <div id="quizResolutionLabel" class="flex-1 text-center text-xl whitespace-normal break-words font-bold px-4" style="font-family: 'Segoe UI', system-ui, sans-serif;"></div>
-                            <div id="quizTimerValue" class="shrink-0 text-right font-bold" style="font-family: 'Segoe UI', system-ui, sans-serif;">0</div>
+                        <div class="grid items-center font-bold text-xl py-0 select-none w-full" style="grid-template-columns: minmax(8rem, 1fr) minmax(0, auto) minmax(2.5rem, 1fr);">
+                            <div id="quizScoreValue" class="text-left font-bold" style="font-family: 'Segoe UI', system-ui, sans-serif;">1/20: 0</div>
+                            <div id="quizResolutionLabel" class="min-w-0 px-2 text-center text-xl whitespace-nowrap overflow-hidden text-ellipsis font-bold" style="font-family: 'Segoe UI', system-ui, sans-serif;"></div>
+                            <div id="quizTimerValue" class="text-right font-bold" style="font-family: 'Segoe UI', system-ui, sans-serif;">0</div>
                         </div>
                         <div id="quizInterfaceBody" class="flex gap-1 items-stretch">
                             <button id="quizSkipBtn" onclick="handleQuizSkipClick()" class="w-10 bg-black text-white text-xs font-bold hover:bg-gray-800 transition-all uppercase tracking-wider shrink-0 flex items-center justify-center rounded-none">Skip</button>
