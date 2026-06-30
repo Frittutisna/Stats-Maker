@@ -279,8 +279,14 @@ populateArchiveDropdown();
 
 document.addEventListener("click", () => {
     document.querySelectorAll('#globalGearWrapper > div, #globalHelpWrapper > div').forEach(el => {if (el.id.includes('Dropdown')) el.classList.add('hidden');});
-    const archiveMenu = document.getElementById('archiveDropdown');
-    if (archiveMenu) archiveMenu.classList.add('hidden');
+
+    const archiveMenu       = document.getElementById('archiveDropdown');
+    const quizSampleDrop    = document.getElementById('quizSampleDropdown');
+    const quizModeDrop      = document.getElementById('quizModeDropdown');
+
+    if (archiveMenu)    archiveMenu     .classList.add('hidden');
+    if (quizSampleDrop) quizSampleDrop  .classList.add('hidden');
+    if (quizModeDrop)   quizModeDrop    .classList.add('hidden');
 });
 
 const stopProp = (e) => e.stopPropagation();
@@ -5411,14 +5417,33 @@ function evaluateMatrixConditions(song) {
 let quizCurrentMode = "entry";
 let quizSampleMode  = "actual";
 
+window.toggleQuizDropdown = function(event, dropdownId) {
+    event.stopPropagation();
+
+    if (dropdownId === 'quizSampleDropdown') document.getElementById('quizModeDropdown').classList.add('hidden');
+    if (dropdownId === 'quizModeDropdown') document.getElementById('quizSampleDropdown').classList.add('hidden');
+
+    document.getElementById(dropdownId).classList.toggle('hidden');
+};
+
+window.selectQuizDropdownOption = function(btnId, textId, value, label, dropdownId, event) {
+    event.stopPropagation();
+
+    const btn = document.getElementById(btnId);
+    btn.setAttribute('data-value', value);
+    document.getElementById(textId).innerText = label;
+    
+    document.getElementById(dropdownId).classList.add('hidden');
+};
+
 function startQuizEngine() {
     enforceQuizInputBounds();
 
     quizSoundLimit      = parseInt(document .getElementById("quizSoundTimeInput")   .value);
     quizNoSoundLimit    = parseInt(document .getElementById("quizExtraTimeInput")   .value);
     const count         = parseInt(document .getElementById("quizSongCountInput")   .value);
-    quizCurrentMode     = document          .getElementById("quizModeSelect")       .value;
-    quizSampleMode      = document          .getElementById("quizSampleSelect")     .value;
+    quizCurrentMode     = document          .getElementById("quizModeSelect")       .getAttribute("data-value");
+    quizSampleMode      = document          .getElementById("quizSampleSelect")     .getAttribute("data-value");
 
     const pool = globalSearchData.filter(song => {
         if (!song.video_url) return false;

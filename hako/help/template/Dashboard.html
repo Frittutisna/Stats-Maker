@@ -191,7 +191,7 @@
                             <div>Song</div>
                             <div class="col-span-2">Time</div>
                         </div>
-                        <div class="grid grid-cols-3 gap-1 items-center mb-1">
+                        <div class="grid grid-cols-3 gap-1 items-center">
                             <input type="number" id="quizSongCountInput" min="5" value="35" class="w-full h-[25px] px-1 border text-center font-mono text-base">
                             <input type="number" id="quizSoundTimeInput" min="1" max="60" value="20" class="w-full h-[25px] px-1 border text-center font-mono text-base">
                             <input type="number" id="quizExtraTimeInput" min="0" max="60" value="0" class="w-full h-[25px] px-1 border text-center font-mono text-base">
@@ -200,17 +200,27 @@
                             <div>Sample</div>
                             <div class="col-span-2">Mode</div>
                         </div>
-                        <div class="grid grid-cols-3 gap-1 items-center mb-1">
-                            <select id="quizSampleSelect" class="quiz-dropdown-custom w-full h-[25px] border bg-white focus:outline-black cursor-pointer">
-                                <option value="start">Start</option>
-                                <option value="actual" selected>Actual</option>
-                                <option value="random">Random</option>
-                                <option value="end">End</option>
-                            </select>
-                            <select id="quizModeSelect" class="quiz-dropdown-custom col-span-2 w-full h-[25px] border bg-white focus:outline-black cursor-pointer">
-                                <option value="entry">Entry</option>
-                                <option value="mc">Multiple Choice</option>
-                            </select>
+                        <div class="grid grid-cols-3 gap-1 items-center">
+                        <div class="relative w-full">
+                            <button id="quizSampleSelect" data-value="actual" class="w-full h-[25px] border bg-white focus:outline-black cursor-pointer hover:bg-black hover:text-white flex items-center justify-center gap-1" onclick="toggleQuizDropdown(event, 'quizSampleDropdown')">
+                                <span id="quizSampleText">Actual</span><span class="text-[10px]">▼</span>
+                            </button>
+                            <div id="quizSampleDropdown" class="absolute left-0 top-[25px] w-full bg-white border shadow-md flex flex-col hidden z-50 text-sm">
+                                <button class="w-full text-center px-2 py-1 hover:bg-black hover:text-white border-b cursor-pointer" onclick="selectQuizDropdownOption('quizSampleSelect', 'quizSampleText', 'start', 'Start', 'quizSampleDropdown', event)">Start</button>
+                                <button class="w-full text-center px-2 py-1 hover:bg-black hover:text-white border-b cursor-pointer" onclick="selectQuizDropdownOption('quizSampleSelect', 'quizSampleText', 'actual', 'Actual', 'quizSampleDropdown', event)">Actual</button>
+                                <button class="w-full text-center px-2 py-1 hover:bg-black hover:text-white border-b cursor-pointer" onclick="selectQuizDropdownOption('quizSampleSelect', 'quizSampleText', 'random', 'Random', 'quizSampleDropdown', event)">Random</button>
+                                <button class="w-full text-center px-2 py-1 hover:bg-black hover:text-white cursor-pointer" onclick="selectQuizDropdownOption('quizSampleSelect', 'quizSampleText', 'end', 'End', 'quizSampleDropdown', event)">End</button>
+                            </div>
+                        </div>
+                        <div class="relative col-span-2 w-full">
+                            <button id="quizModeSelect" data-value="entry" class="w-full h-[25px] border bg-white focus:outline-black cursor-pointer hover:bg-black hover:text-white flex items-center justify-center gap-1" onclick="toggleQuizDropdown(event, 'quizModeDropdown')">
+                                <span id="quizModeText">Entry</span><span class="text-[10px]">▼</span>
+                            </button>
+                            <div id="quizModeDropdown" class="absolute left-0 top-[25px] w-full bg-white border shadow-md flex flex-col hidden z-50 text-sm">
+                                <button class="w-full text-center px-2 py-1 hover:bg-black hover:text-white border-b cursor-pointer" onclick="selectQuizDropdownOption('quizModeSelect', 'quizModeText', 'entry', 'Entry', 'quizModeDropdown', event)">Entry</button>
+                                <button class="w-full text-center px-2 py-1 hover:bg-black hover:text-white cursor-pointer" onclick="selectQuizDropdownOption('quizModeSelect', 'quizModeText', 'mc', 'Multiple Choice', 'quizModeDropdown', event)">Multiple Choice</button>
+                            </div>
+                        </div>
                         <button id="quizStartBtn" onclick="startQuizEngine()" class="col-span-3 w-full h-7 bg-black text-white font-bold text-base uppercase tracking-wider mt-0.5 cursor-pointer">Start</button>
                     </div>
                 </div>

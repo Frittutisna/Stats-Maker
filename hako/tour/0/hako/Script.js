@@ -247,23 +247,8 @@ async function populateArchiveDropdown() {
             .filter(item => item.type === "dir" && timestampPattern.test(item.name))
 
             .map(item => {
-                const name = item.name;
-
-                const yr = parseInt("20" + name.substring(0, 2), 10);
-                const mo = parseInt(name.substring(2, 4), 10) - 1; // JS Date months are 0-indexed
-                const dy = parseInt(name.substring(4, 6), 10);
-                const hr = parseInt(name.substring(6, 8), 10);
-                const mn = parseInt(name.substring(8, 10), 10);
-
-                const jstDateString = `${yr}-${String(mo + 1).padStart(2, '0')}-${String(dy).padStart(2, '0')}T${String(hr).padStart(2, '0')}:${String(mn).padStart(2, '0')}:00+09:00`;
-                const dateObj       = new Date(jstDateString);
-                const tzAbbr        = dateObj.toLocaleDateString(undefined, {day: 'numeric', timeZoneName: 'short'}).split(' ').pop();
-
-                const formattedLabel = dateObj.getFullYear() + '/' +
-                    String(dateObj.getMonth() + 1)  .padStart(2, '0') + '/' +
-                    String(dateObj.getDate())       .padStart(2, '0') + ' ' +
-                    String(dateObj.getHours())      .padStart(2, '0') + ':' +
-                    String(dateObj.getMinutes())    .padStart(2, '0') + ' ' + tzAbbr;
+                const name              = item.name;
+                const formattedLabel    = `20${name.substring(0, 2)}/${name.substring(2, 4)}/${name.substring(4, 6)} ${name.substring(6, 8)}:${name.substring(8, 10)} JST`;
 
                 return {id: name, label: formattedLabel};
             })
@@ -294,8 +279,14 @@ populateArchiveDropdown();
 
 document.addEventListener("click", () => {
     document.querySelectorAll('#globalGearWrapper > div, #globalHelpWrapper > div').forEach(el => {if (el.id.includes('Dropdown')) el.classList.add('hidden');});
-    const archiveMenu = document.getElementById('archiveDropdown');
-    if (archiveMenu) archiveMenu.classList.add('hidden');
+
+    const archiveMenu       = document.getElementById('archiveDropdown');
+    const quizSampleDrop    = document.getElementById('quizSampleDropdown');
+    const quizModeDrop      = document.getElementById('quizModeDropdown');
+
+    if (archiveMenu)    archiveMenu     .classList.add('hidden');
+    if (quizSampleDrop) quizSampleDrop  .classList.add('hidden');
+    if (quizModeDrop)   quizModeDrop    .classList.add('hidden');
 });
 
 const stopProp = (e) => e.stopPropagation();
@@ -5426,14 +5417,33 @@ function evaluateMatrixConditions(song) {
 let quizCurrentMode = "entry";
 let quizSampleMode  = "actual";
 
+window.toggleQuizDropdown = function(event, dropdownId) {
+    event.stopPropagation();
+
+    if (dropdownId === 'quizSampleDropdown') document.getElementById('quizModeDropdown').classList.add('hidden');
+    if (dropdownId === 'quizModeDropdown') document.getElementById('quizSampleDropdown').classList.add('hidden');
+
+    document.getElementById(dropdownId).classList.toggle('hidden');
+};
+
+window.selectQuizDropdownOption = function(btnId, textId, value, label, dropdownId, event) {
+    event.stopPropagation();
+
+    const btn = document.getElementById(btnId);
+    btn.setAttribute('data-value', value);
+    document.getElementById(textId).innerText = label;
+    
+    document.getElementById(dropdownId).classList.add('hidden');
+};
+
 function startQuizEngine() {
     enforceQuizInputBounds();
 
     quizSoundLimit      = parseInt(document .getElementById("quizSoundTimeInput")   .value);
     quizNoSoundLimit    = parseInt(document .getElementById("quizExtraTimeInput")   .value);
     const count         = parseInt(document .getElementById("quizSongCountInput")   .value);
-    quizCurrentMode     = document          .getElementById("quizModeSelect")       .value;
-    quizSampleMode      = document          .getElementById("quizSampleSelect")     .value;
+    quizCurrentMode     = document          .getElementById("quizModeSelect")       .getAttribute("data-value");
+    quizSampleMode      = document          .getElementById("quizSampleSelect")     .getAttribute("data-value");
 
     const pool = globalSearchData.filter(song => {
         if (!song.video_url) return false;
