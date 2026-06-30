@@ -433,6 +433,7 @@ class TourAnalyzer:
         self.base_exp           = meta_res["base_exp"]
         self.new_players        = meta_res["selected_new"]
         self.dry_choice         = meta_res.get("dry_choice", "No")
+        self.share_choice       = meta_res.get("share_choice", "No, I'll upload the site folder to Netlify Drop post-tour")
         self.exp_map            = {name: self.base_exp for name in all_known}
         self.dry_mapped_index   = dry_mode_mapping.get(self.tour_label, "15")
 
@@ -972,37 +973,37 @@ class TourAnalyzer:
 
                     else: print(f"[X] {src_name} not found in Dry's workspace")
 
-                if self.dry_choice == "Yes, and push it to the database":
-                    timestamp           = datetime.datetime.now().strftime("%y%m%d%H%M")
-                    archive_dir         = self.script_dir.parent / "hako" / "archive" / timestamp
-                    hako_dir            = web_path 
-                    files_to_archive    = ["index.html", "Script.js", "Styles.css", "Data.json", "Search.json"]
-
-                    print(f"[?] Copying website components to archive/{timestamp}")
-                    archive_dir.mkdir(parents = True, exist_ok = True)
-
-                    for file_name in files_to_archive:
-                        src_file = hako_dir / file_name
-
-                        if src_file.exists():
-                            shutil.copy(src_file, archive_dir / file_name)
-                            print(f"[✓] Copied {file_name}")
-
-                        else: print(f"[X] {file_name} not found in {hako_dir} to copy")
-                            
-                    dashboard_url = f"https://frittutisna.github.io/Stats-Maker/hako/archive/{timestamp}/index.html?update=1"
-                    print(f"[?] Pushing to GitHub")
-
-                    try:
-                        subprocess.run(["git", "add", "."],                     check = True)
-                        subprocess.run(["git", "commit", "-m", "Updated tour"], check = True)
-                        subprocess.run(["git", "push"],                         check = True)
-
-                        print(f"[✓] Deployment completed, dashboard link: {dashboard_url}")
-
-                    except subprocess.CalledProcessError as git_error: print(f"[X] Failed to push to GitHub: {git_error}")
-                
             except subprocess.CalledProcessError as e: (f"[X] Failed to run Dry's script: {e}")
+
+        if self.share_choice == "Yes, push it to the archive":
+            timestamp           = datetime.datetime.now().strftime("%y%m%d%H%M")
+            archive_dir         = self.script_dir.parent / "hako" / "archive" / timestamp
+            hako_dir            = web_path 
+            files_to_archive    = ["index.html", "Script.js", "Styles.css", "Data.json", "Search.json"]
+
+            print(f"[?] Copying website components to archive/{timestamp}")
+            archive_dir.mkdir(parents = True, exist_ok = True)
+
+            for file_name in files_to_archive:
+                src_file = hako_dir / file_name
+
+                if src_file.exists():
+                    shutil.copy(src_file, archive_dir / file_name)
+                    print(f"[✓] Copied {file_name}")
+
+                else: print(f"[X] {file_name} not found in {hako_dir} to copy")
+  
+            dashboard_url = f"https://frittutisna.github.io/Stats-Maker/hako/archive/{timestamp}/index.html?update=1"
+            print(f"[?] Pushing to GitHub")
+
+            try:
+                subprocess.run(["git", "add", "."],                     check = True)
+                subprocess.run(["git", "commit", "-m", "Updated tour"], check = True)
+                subprocess.run(["git", "push"],                         check = True)
+
+                print(f"[✓] Deployment completed, dashboard link: {dashboard_url}")
+
+            except subprocess.CalledProcessError as git_error: print(f"[X] Failed to push to GitHub: {git_error}")
 
     def _scan_players(self, paths):
         players = set           ()

@@ -261,7 +261,7 @@ async function populateArchiveDropdown() {
         }
 
         dropdown.innerHTML = pastToursArchive.map(tour => `
-            <a href="https://frittutisna.github.io/Stats-Maker/hako/archive/${tour.id}/Dashboard.html?update=1" 
+            <a href="https://frittutisna.github.io/Stats-Maker/hako/archive/${tour.id}/index.html?update=1" 
                class="px-2 py-1 text-black border-b last:border-0 block text-center font-bold no-underline transition-colors">
                ${tour.label}
             </a>

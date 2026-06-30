@@ -2047,8 +2047,8 @@
             1
         ],
         "alts": [
-            "Steins;Gate 0",
             "Gekijou Soushuuhen Bocchi the Rock!",
+            "Steins;Gate 0",
             "Bocchi the Rock! Recaps"
         ],
         "start_sample": 43
@@ -2169,8 +2169,8 @@
             "neoburnz"
         ],
         "lives_taken_flat": [
-            "atsui_",
             "neoburnz",
+            "atsui_",
             "lakumix"
         ],
         "lives_saved_flat": [],
@@ -3972,8 +3972,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "alkios",
-            "mami"
+            "mami",
+            "alkios"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -4401,12 +4401,12 @@
             2
         ],
         "alts": [
-            "Di Gi Charat Summer Vacation Special",
-            "Di Gi Charat Tsuyu Special",
-            "Di Gi Charat Rainy Season Special",
             "Di Gi Charat Ohanami Special",
+            "Di Gi Charat Rainy Season Special",
             "Di Gi Charat Natsuyasumi Special",
-            "Di Gi Charat Flower Viewing Special"
+            "Di Gi Charat Flower Viewing Special",
+            "Di Gi Charat Tsuyu Special",
+            "Di Gi Charat Summer Vacation Special"
         ],
         "start_sample": 34
     },
@@ -4627,15 +4627,15 @@
             2
         ],
         "alts": [
+            "Tsurupika Hagemaru-kun",
             "Obake no Q-Tarou",
             "Uchuusen Sagittarius",
-            "Ninja Hattori",
             "Kaibutsu-kun",
             "ESPer Mami",
-            "Oyo Neko Bunyan",
             "Perman",
-            "Tsurupika Hagemaru-kun",
-            "Ninja Hattori-kun"
+            "Ninja Hattori-kun",
+            "Ninja Hattori",
+            "Oyo Neko Bunyan"
         ],
         "start_sample": 15
     },
@@ -4691,8 +4691,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "hakohoka",
-            "kaededayo"
+            "kaededayo",
+            "hakohoka"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -7136,8 +7136,8 @@
             "mahzrunner"
         ],
         "lives_taken_flat": [
-            "alkios",
-            "mami"
+            "mami",
+            "alkios"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -8801,8 +8801,8 @@
             "zental"
         ],
         "lives_taken_flat": [
-            "aitsukinakuru",
-            "zental"
+            "zental",
+            "aitsukinakuru"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -9232,9 +9232,9 @@
         ],
         "alts": [
             "Eden of the East: Air Communication",
+            "Higashi no Eden Gekijouban II: Paradise Lost",
             "Higashi no Eden Soushuuhen: Air Communication",
-            "Eden of the East: Paradise Lost",
-            "Higashi no Eden Gekijouban II: Paradise Lost"
+            "Eden of the East: Paradise Lost"
         ],
         "start_sample": 217
     },
@@ -9383,9 +9383,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "tbdhater",
             "kyuuuu",
-            "zental"
+            "zental",
+            "tbdhater"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -11156,9 +11156,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
+            "mami",
             "mahzrunner",
-            "alkios",
-            "mami"
+            "alkios"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -11488,10 +11488,10 @@
             2
         ],
         "alts": [
-            "Kimisen",
-            "Kimisen Season II",
             "Our Last Crusade or the Rise of a New World Season 2",
-            "Kimi to Boku no Saigo no Senjou, Arui wa Sekai ga Hajimaru Seisen Season II"
+            "Kimi to Boku no Saigo no Senjou, Arui wa Sekai ga Hajimaru Seisen Season II",
+            "Kimisen Season II",
+            "Kimisen"
         ],
         "start_sample": 26
     },
@@ -11632,8 +11632,8 @@
         ],
         "lives_taken_flat": [
             "konomi",
-            "oolli",
-            "spitzell"
+            "spitzell",
+            "oolli"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12477,9 +12477,9 @@
             "jaimeywea"
         ],
         "lives_taken_flat": [
+            "orfey",
             "bamboo",
-            "jaimeywea",
-            "orfey"
+            "jaimeywea"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12816,10 +12816,10 @@
             5
         ],
         "alts": [
-            "Gekijouban Mahou Shoujo Madoka★Magica Kouhen: Eien no Monogatari",
+            "Puella Magi Madoka Magica the Movie Part 2: Eternal",
             "Gekijouban Mahou Shoujo Madoka★Magica Zenpen: Hajimari no Monogatari",
-            "Puella Magi Madoka Magica the Movie Part 1: Beginnings",
-            "Puella Magi Madoka Magica the Movie Part 2: Eternal"
+            "Gekijouban Mahou Shoujo Madoka★Magica Kouhen: Eien no Monogatari",
+            "Puella Magi Madoka Magica the Movie Part 1: Beginnings"
         ],
         "start_sample": 19
     },
@@ -15061,10 +15061,10 @@
             4
         ],
         "alts": [
-            "Overlord: The Undead King",
-            "Overlord II",
-            "Overlord: The Dark Warrior",
             "Gekijouban Overlord: Fushisha no Ou",
+            "Overlord: The Undead King",
+            "Overlord: The Dark Warrior",
+            "Overlord II",
             "Gekijouban Overlord: Shikkoku no Eiyuu"
         ],
         "start_sample": 57
@@ -15943,8 +15943,8 @@
             "zental"
         ],
         "lives_taken_flat": [
-            "tbdhater",
-            "kyuuuu"
+            "kyuuuu",
+            "tbdhater"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -16173,8 +16173,8 @@
         ],
         "lives_taken_flat": [
             "kyuuuu",
-            "aitsukinakuru",
-            "zental"
+            "zental",
+            "aitsukinakuru"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -16183,8 +16183,8 @@
             5
         ],
         "alts": [
-            "Rosario to Vampire Capu2",
-            "Rosario + Vampire Capu2"
+            "Rosario + Vampire Capu2",
+            "Rosario to Vampire Capu2"
         ],
         "start_sample": 0
     },
@@ -16411,8 +16411,8 @@
             2
         ],
         "alts": [
-            "Touring After the Apocalypse",
-            "Shuumatsu Touring"
+            "Shuumatsu Touring",
+            "Touring After the Apocalypse"
         ],
         "start_sample": 13
     },
@@ -17574,8 +17574,8 @@
         ],
         "lives_taken_flat": [
             "kyuuuu",
-            "aitsukinakuru",
-            "zental"
+            "zental",
+            "aitsukinakuru"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -17841,9 +17841,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
+            "mami",
             "mahzrunner",
-            "alkios",
-            "mami"
+            "alkios"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -19579,8 +19579,8 @@
             3
         ],
         "alts": [
-            "Strike the Blood: Kieta Seisou-hen",
-            "Strike the Blood IV"
+            "Strike the Blood IV",
+            "Strike the Blood: Kieta Seisou-hen"
         ],
         "start_sample": 58
     },
@@ -19643,8 +19643,8 @@
             "zental"
         ],
         "lives_taken_flat": [
-            "aitsukinakuru",
-            "zental"
+            "zental",
+            "aitsukinakuru"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -20280,9 +20280,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "lakumix",
+            "justaweirdo",
             "neoburnz",
-            "justaweirdo"
+            "lakumix"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -20488,8 +20488,8 @@
             "zental"
         ],
         "lives_taken_flat": [
-            "tbdhater",
-            "kyuuuu"
+            "kyuuuu",
+            "tbdhater"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [

@@ -408,6 +408,33 @@ class TourMetadataDialog(UnifiedDialog):
             
             for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_dry_opt(o))
 
+        ttk.Label(right_frame, text = "Are you Hako, and would you like to share the site?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+
+        self.share_var    = tk.StringVar(value = "No, I'll upload the site folder to Netlify Drop post-tour")
+        self.share_boxes  = {}
+
+        share_options = [
+            "No, I'll upload the site folder to Netlify Drop post-tour",
+            "Yes, but don't push it to the archive yet",
+            "Yes, push it to the archive"
+        ]
+
+        for opt in share_options:
+            f_share = ttk.Frame(right_frame)
+            f_share.pack(anchor = "w", pady = 1)
+
+            is_sel      = (self.share_var.get() == opt)
+            bg_color    = self.fill_color if is_sel else "white"
+
+            box = tk.Canvas(f_share, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
+            box.pack(side = tk.LEFT, padx = (0, 4))
+            self.share_boxes[opt] = box
+
+            lbl = ttk.Label(f_share, text = opt, font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+
+            for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_share_opt(o))
+
         ttk.Label(right_frame, text = "What are the comma-separated guess rate threshold values?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         self.th_var     = tk.StringVar(value = "default")
@@ -516,6 +543,10 @@ class TourMetadataDialog(UnifiedDialog):
         self.dry_var.set(opt)
         for k, box in self.dry_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
 
+    def _select_share_opt(self, opt):
+        self.share_var.set(opt)
+        for k, box in self.share_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
+
     def _select_th_opt(self, opt):
         self.th_var.set(opt)
         for k, box in self.th_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
@@ -596,7 +627,8 @@ class TourMetadataDialog(UnifiedDialog):
             "sub_results"       : sub_results, 
             "dry_choice"        : dry_choice,
             "delta_choice"      : delta_choice,
-            "challonge_choice"  : self.challonge_var.get()
+            "share_choice"      : self.share_var        .get(),
+            "challonge_choice"  : self.challonge_var    .get()
         }
 
         if self.tour_dir and sub_results:
