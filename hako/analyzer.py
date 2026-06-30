@@ -972,7 +972,7 @@ class TourAnalyzer:
                     timestamp           = datetime.datetime.now().strftime("%y%m%d%H%M")
                     archive_dir         = self.script_dir.parent    / "hako" / "archive" / timestamp
                     hako_dir            = self.tour_dir             / "hako"
-                    files_to_archive    = ["Dashboard.html", "Script.js", "Styles.css", "Data.json", "Search.json"]
+                    files_to_archive    = ["index.html", "Script.js", "Styles.css", "Data.json", "Search.json"]
 
                     print(f"[?] Copying website components to archive/{timestamp}")
                     archive_dir.mkdir(parents = True, exist_ok = True)
@@ -985,7 +985,7 @@ class TourAnalyzer:
 
                         else: print(f"[X] {file_name} not found in {hako_dir} to copy")
                             
-                    dashboard_url = f"https://frittutisna.github.io/Stats-Maker/hako/archive/{timestamp}/Dashboard.html?update=1"
+                    dashboard_url = f"https://frittutisna.github.io/Stats-Maker/hako/archive/{timestamp}/index.html?update=1"
                     print(f"[?] Pushing to GitHub")
 
                     try:
@@ -3027,9 +3027,9 @@ class TourAnalyzer:
 
         template_dir = self.script_dir / "help" / "template"
 
-        shutil.copy(template_dir / "Dashboard.html",    path / "Dashboard.html")
-        shutil.copy(template_dir / "Styles.css",        path / "Styles.css")
-        shutil.copy(template_dir / "Script.js",         path / "Script.js")
+        shutil.copy(template_dir / "index.html",    path / "index.html")
+        shutil.copy(template_dir / "Styles.css",    path / "Styles.css")
+        shutil.copy(template_dir / "Script.js",     path / "Script.js")
 
     def _export_png(self, df, path, fname, title, mask = None, val_str = "default"):
         if not self.browser_path: return
