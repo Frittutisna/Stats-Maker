@@ -5549,7 +5549,7 @@ function executeQuizTrack() {
 
         else {
             quizRevealTimeElapsed   +=  1;
-            let displayCountdown    =   Math.max(0, quizSoundLimit - quizRevealTimeElapsed);
+            let displayCountdown    =   Math.max(0, (quizSoundLimit + quizNoSoundLimit) - quizRevealTimeElapsed);
 
             updateQuizTimerUI(displayCountdown);
 
@@ -5715,7 +5715,7 @@ function resolveQuizItem(isCorrect) {
     quizReplayActive        = true;
     quizRevealTimeElapsed   = 0;
 
-    updateQuizTimerUI(quizSoundLimit);
+    updateQuizTimerUI(quizSoundLimit + quizNoSoundLimit);
 
     if (quizCurrentAudio) {
         quizCurrentAudio.loop = true;
