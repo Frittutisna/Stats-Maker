@@ -5480,8 +5480,13 @@ function executeQuizTrack() {
             const btn = document.getElementById(`quizMcOpt${i}`);
 
             if (btn) {
-                btn.innerText   = optionsArray[i - 1];
-                btn.disabled    = false;
+                btn.innerText               = optionsArray[i - 1];
+                btn.disabled                = false;
+                btn.style.backgroundColor   = "";
+                btn.style.color             = "";
+                btn.style.fontWeight        = "";
+
+                btn.removeAttribute("data-selected");
             }
         }
     }
@@ -5621,6 +5626,7 @@ function handleMcOptionClick(btn) {
     const isJp          = currentSearchLang === "JP";
     const correctTitle  = isJp ? (song.romaji || song.english || "") : (song.english || song.romaji || "");
 
+    btn.setAttribute("data-selected", "true");
     resolveQuizItem(selectedTitle === correctTitle);
 }
 
@@ -5654,9 +5660,27 @@ function resolveQuizItem(isCorrect) {
     if (inputEl) inputEl.disabled = true;
 
     if (quizCurrentMode === "mc") {
+        const isJp          = currentSearchLang === "JP";
+        const correctTitle  = isJp ? (song.romaji || song.english || "") : (song.english || song.romaji || "");
+
         for (let i = 1; i <= 4; i++) {
             const btn = document.getElementById(`quizMcOpt${i}`);
-            if (btn) btn.disabled = true;
+
+            if (btn) {
+                btn.disabled = true;
+
+                if (btn.innerText === correctTitle) {
+                    btn.style.backgroundColor   = c2;
+                    btn.style.color             = "white";
+                    btn.style.fontWeight        = "bold";
+                }
+
+                else if (btn.getAttribute("data-selected") === "true") {
+                    btn.style.backgroundColor   = c0;
+                    btn.style.color             = "white";
+                    btn.style.fontWeight        = "bold";
+                }
+            }
         }
     }
 
