@@ -917,22 +917,19 @@ class TourAnalyzer:
                 try                 : file_path.unlink()
                 except Exception    : pass
 
-        print(f"Push to GitHub to update the online Dashboard: https://frittutisna.github.io/Stats-Maker/tour/{self.tour_id}/hakohoka/Dashboard.html?update=1")
-
         if self.dry_choice != "No":            
-            public_repo_dir     = self.script_dir   / "dry"
-            target_jsons_dir    = public_repo_dir   / "jsons"
-            target_codes_file   = public_repo_dir   / "codes.txt"
+            target_jsons_dir    = self.script_dir   / "jsons"
+            target_codes_file   = self.script_dir   / "codes.txt"
             source_jsons_dir    = self.tour_dir     / "json"
             source_codes_file   = self.tour_dir     / "code.txt"
-            script_name         = "local.py" if "don't push" in self.dry_choice else "public.py"
-            target_script       = public_repo_dir   / script_name
+            script_name         = "ngm_local.py" if "don't push" in self.dry_choice else "ngm_stats.py"
+            target_script       = self.script_dir   / script_name
 
             print(f"[?] Processing Tour {self.tour_id} using Dry's script")
 
-            for file in public_repo_dir     .glob("*.png")  : file.unlink()
+            for file in self.script_dir     .glob("*.png")  : file.unlink()
             for file in target_jsons_dir    .glob("*.json") : file.unlink()
-            
+
             if source_jsons_dir.exists():
                 for file in source_jsons_dir.glob("*.json"): shutil.copy(file, target_jsons_dir / file.name)
 
@@ -945,7 +942,7 @@ class TourAnalyzer:
             print(f"[?] Running Dry's script")
 
             try:
-                subprocess.run([sys.executable, str(target_script)], cwd = str(public_repo_dir), check = True)
+                subprocess.run([sys.executable, str(target_script)], cwd = str(self.script_dir), check = True)
                 print(f"[✓] Ran Dry's script successfully")
 
                 output_dir = self.tour_dir / "dry"
@@ -962,7 +959,7 @@ class TourAnalyzer:
                 print("[?] Copying Dry's PNGs back")
 
                 for src_name, dest_name in files_to_copy.items():
-                    src_file    = public_repo_dir   / src_name
+                    src_file    = self.script_dir   / src_name
                     dest_file   = output_dir        / dest_name
 
                     if src_file.exists():
@@ -988,7 +985,17 @@ class TourAnalyzer:
 
                         else: print(f"[X] {file_name} not found in hakohoka to copy")
                             
-                    print(f"Push to GitHub to update the archived Dashboard: https://frittutisna.github.io/Stats-Maker/archive/{timestamp}/Dashboard.html?update=1")
+                    dashboard_url = f"https://frittutisna.github.io/Stats-Maker/archive/{timestamp}/Dashboard.html?update=1"
+                    print(f"[?] Pushing to GitHub")
+
+                    try:
+                        subprocess.run(["git", "add", "."],                     check = True)
+                        subprocess.run(["git", "commit", "-m", "Updated tour"], check = True)
+                        subprocess.run(["git", "push"],                         check = True)
+
+                        print(f"[✓] Deployment completed, dashboard link: {dashboard_url}")
+
+                    except subprocess.CalledProcessError as git_error: print(f"[X] Failed to push to GitHub: {git_error}")
                 
             except subprocess.CalledProcessError as e: (f"[X] Failed to run Dry's script: {e}")
 
