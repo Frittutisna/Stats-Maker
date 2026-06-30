@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Tour Dashboard</title>
+        <link rel="stylesheet" href="Styles.css">
+        <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    </head>
+    <body class="p-5 select-none">
+        <div id="customJsTooltip"></div>
+        <h2 id="dashboardTitle" class="text-4xl text-center font-bold">Tour Dashboard</h2>
+        <div class="relative flex justify-center mb-1 z-50">
+            <button id="archiveDropdownToggle" class="text-xl text-center font-bold cursor-pointer select-none" onclick="toggleArchiveDropdown(event)">
+                <span id="lastUpdatedSubtitleText">Last updated: Some time ago</span> <span class="text-[15px] align-middle">▼</span>
+            </button>
+            <div id="archiveDropdown" class="absolute top-full mt-1 bg-white border shadow-md flex-col hidden max-h-[300px] overflow-y-auto text-sm min-w-[100px]"></div>
+        </div>
+        <div id="tabContainer" class="border-b flex justify-center mb-1">
+            <button id="langToggleBtn" class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleSearchLanguage()">JP</button>
+            <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>
+            <button id="tourTabBtn" class="tab-btn" onclick="switchDashboardTab(event, 'tour-tab')">Tour</button>
+            <div id="globalHelpWrapper" class="relative">
+                <button class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleGlobalHelp(event)">?</button>
+                <div id="playerGuideDropdown" class="bg-white border p-4 w-[500px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
+                <div id="tierGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
+                <div id="guessGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
+                <div id="songGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
+                <div id="searchGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
+                <div id="quizGuideDropdown" class="bg-white border p-4 w-[450px] absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black"></div>
+            </div>
+            <div id="globalGearWrapper" class="relative">
+                <button class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleGlobalGear(event)">⚙</button>
+                <div class="absolute left-[40px] top-0 flex gap-0">
+                    <button id="globalQuizPauseBtn" class="tab-btn hidden" style="width: 40px; background-color: black; color: white;" onclick="toggleQuizPause()">❚❚</button>
+                    <button id="globalQuizReturnBtn" class="tab-btn hidden" style="width: 40px; background-color: black; color: white;" onclick="exitQuizEngine()">◀</button>
+                </div>
+                <div id="playerColumnSettingsDropdown" class="bg-white border p-4 min-w-44 absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black flex flex-col gap-1">
+                    <div id="playerMetricModeSection" class="hidden">
+                        <p class="font-bold pb-1 mb-1">Display</p>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="playerMetricModeRadio" value="%" checked class="accent-black">Current</label>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="playerMetricModeRadio" value="Δ" class="accent-black">Delta</label>
+                        <div class="border-b my-1.5"></div>
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer font-bold text-sm text-black">
+                        <input type="checkbox" id="playerAllColumnsMasterCheckbox" class="rounded accent-black">All
+                    </label>
+                    <div id="playerColumnCheckboxContainer" class="flex flex-col gap-0.5 text-xs max-h-[400px] overflow-y-auto"></div>
+                </div>
+                <div id="columnSettingsDropdown" class="bg-white border p-4 min-w-36 absolute right-0 top-[32px] hidden z-50 shadow-md">
+                    <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm">
+                        <input type="checkbox" id="allColumnsMasterCheckbox" class="rounded accent-black">All
+                    </label>
+                    <div id="columnCheckboxContainer" class="flex flex-col gap-0.5 text-sm max-h-[400px] overflow-y-auto"></div>
+                </div>
+                <div id="tierSettingsDropdown" class="bg-white border p-4 w-44 absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black flex flex-col gap-1">
+                    <div>
+                        <p class="font-bold border-b pb-1 mb-1">Sort</p>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="tierSortRadio" value="ALL" class="accent-black">Global</label>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="tierSortRadio" value="TIER" checked class="accent-black">Tier</label>
+                    </div>
+                    <div>
+                        <p class="font-bold border-b pb-1 mb-1">Display</p>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="tierDisplayRadio" value="COUNT" class="accent-black">Count</label>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="tierDisplayRadio" value="RATE" checked class="accent-black">Rate</label>
+                    </div>
+                    <div>
+                        <p class="font-bold border-b pb-1 mb-1">Chart</p>
+                        <div class="flex flex-col gap-1">
+                            <label class="flex items-center gap-1 cursor-pointer font-bold mt-1">
+                                <input type="radio" name="tierChartGroupRadio" value="C1" checked class="accent-black">
+                                <span id="label_group_c1">General</span>
+                            </label>
+                            <div class="pl-2 flex flex-col gap-0.5 border-l-2 border-gray-200 ml-1">
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierSubMetricsRadio" value="BASE" checked class="accent-black"><span id="opt_c1_base">Guess Rate</span></label>
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierSubMetricsRadio" value="OVER-8" class="accent-black"><span id="opt_c1_over8">Over-8 Distribution</span></label>
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierSubMetricsRadio" value="RIG" class="accent-black"><span id="opt_c1_rig">Rig Rate</span></label>
+                                <label id="label_opt_c1_hit" class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierSubMetricsRadio" value="HIT" class="accent-black">Rig Guess Rate</label>
+                                <label id="label_opt_c1_off" class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierSubMetricsRadio" value="OFF" class="accent-black">Off Rig Guess Rate</label>
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierSubMetricsRadio" value="CHANT" class="accent-black"><span id="opt_c1_chant">Chanting Guess Rate</span></label>
+                            </div>
+                            <label class="flex items-center gap-1 cursor-pointer font-bold">
+                                <input type="radio" name="tierChartGroupRadio" value="C2" class="accent-black">
+                                <span id="label_group_c2">Contribution</span>
+                            </label>
+                            <label class="flex items-center gap-1 cursor-pointer font-bold">
+                                <input type="radio" name="tierChartGroupRadio" value="C3" class="accent-black">
+                                Time
+                            </label>
+                            <div class="pl-2 flex flex-col gap-0.5 border-l-2 border-gray-200 ml-1">
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierTimeRadio" value="MIN" class="accent-black">Minimum</label>
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierTimeRadio" value="MEAN" class="accent-black">Mean</label>
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierTimeRadio" value="MED" class="accent-black">Median</label>
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierTimeRadio" value="MAX" class="accent-black">Maximum</label>
+                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="tierTimeRadio" value="STDEV" class="accent-black">Standard Deviation</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="guessSettingsDropdown" class="bg-white border p-4 w-44 absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black flex flex-col gap-1">
+                    <div>
+                        <p class="font-bold border-b pb-1 mb-1">Display</p>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="guessDisplayRadio" value="ALL" checked class="accent-black">Corrects</label>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="guessDisplayRadio" value="RIG" class="accent-black">Rigs</label>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="guessDisplayRadio" value="HIT" class="accent-black">Rigs Hit</label>
+                    </div>
+                    <div class="mt-1">
+                        <p class="font-bold border-b pb-1 mb-1">Focus</p>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="guessFocusRadio" value="ON" class="accent-black">On</label>
+                        <label class="flex items-center gap-1 cursor-pointer py-0.5"><input type="radio" name="guessFocusRadio" value="OFF" checked class="accent-black">Off</label>
+                    </div>
+                </div>
+                <div id="quizSettingsDropdown" class="bg-white border p-4 min-w-36 max-w-xs absolute right-0 top-[32px] hidden z-50 shadow-md text-left text-xs text-black flex flex-col gap-1">
+                    <label class="flex items-center gap-2 cursor-pointer border-b pb-2 mb-2 font-bold text-sm">
+                        <input type="checkbox" id="quizColumnsMasterCheckbox" checked class="rounded accent-black">All
+                    </label>
+                    <div id="quizColumnCheckboxContainer" class="flex flex-col gap-0.5 text-xs max-h-[400px] overflow-y-auto"></div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div id="player-tab" class="tab-content active-content">
+                <div class="w-full flex justify-center mb-1">
+                    <div class="mx-auto w-full max-w-xl flex items-center justify-center gap-1">
+                        <input type="text" id="playerSearchInput" placeholder="guessrate<40 or score>50" class="w-full h-[30px] px-2 border text-sm">
+                        <div id="playerSearchCounter" class="w-[75px] h-[30px] font-bold bg-black text-white flex items-center justify-center text-sm select-none shrink-0">
+                            0/0
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full overflow-x-auto block">
+                    <table class="main-table" id="playerStandingsTable"></table>
+                </div>
+            </div>
+            <div id="tour-tab" class="tab-content">
+                <div class="table-center-wrapper">
+                    <table class="main-table" id="tourStatsTable"></table>
+                    <div id="teamTableSpacer" class="my-1"></div>
+                    <table class="main-table" id="teamStatsTable"></table>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-[2000px] mx-auto"> 
+            <div id="tier-tab" class="tab-content">
+                <div class="max-w-[1000px] mx-auto">
+                    <div id="container_tierChart_MainMetrics">
+                        <div id="tierChart_MainMetrics"></div>
+                    </div>
+                    <div id="container_tierChart_LivesMetrics" class="hidden">
+                        <div id="tierChart_LivesMetrics"></div>
+                    </div>
+                    <div id="container_tierChart_TimeMetrics" class="hidden">
+                        <div id="tierChart_TimeMetrics"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="song-tab" class="tab-content">
+                <div class="max-w-[800px] mx-auto">
+                    <div id="plotlySongChart" style="width:800px; height:800px;"></div>
+                </div>
+            </div>
+            <div id="guess-tab" class="tab-content">
+                <div class="max-w-[800px] mx-auto pt-2">
+                    <div>
+                        <div id="guessChartContainer">
+                            <div id="plotlyGuessChart" style="width:800px; height:800px;"></div>
+                        </div>
+                        <div id="listChartContainer" class="hidden">
+                            <div id="plotlyListChart" style="width:800px; height:800px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="search-tab" class="tab-content">
+                <div class="w-full flex justify-center mb-1">
+                    <div class="mx-auto w-full max-w-xl flex items-center justify-center gap-1">
+                        <input type="text" id="songSearchInput" placeholder="anime:chobits songtype:ed" class="w-full h-[30px] px-2 border text-sm">
+                        <div id="searchCounter" class="w-[75px] h-[30px] font-bold bg-black text-white flex items-center justify-center shrink-0 text-sm">
+                            0/0
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full overflow-x-auto block">
+                    <table class="main-table" id="searchSongsTable"></table>
+                </div>
+            </div>
+            <div id="quiz-tab" class="tab-content">
+                <div class="max-w-[1000px] mx-auto text-black text-sm font-normal">
+                    <div id="quizSetupScreen" class="flex flex-col gap-0.5 max-w-[250px] mx-auto">
+                        <div class="grid grid-cols-3 gap-1 text-center font-bold text-[20px] select-none">
+                            <div>Song</div>
+                            <div class="col-span-2">Time</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1 items-center">
+                            <input type="number" id="quizSongCountInput" min="5" value="35" class="w-full h-[25px] px-1 border text-center font-mono text-base">
+                            <input type="number" id="quizSoundTimeInput" min="1" max="60" value="20" class="w-full h-[25px] px-1 border text-center font-mono text-base">
+                            <input type="number" id="quizExtraTimeInput" min="0" max="60" value="0" class="w-full h-[25px] px-1 border text-center font-mono text-base">
+                        </div>
+                        <div class="grid grid-cols-3 gap-1 text-center font-bold text-[20px] select-none">
+                            <div>Sample</div>
+                            <div class="col-span-2">Mode</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1 items-center">
+                        <div class="relative w-full">
+                            <button id="quizSampleSelect" data-value="actual" class="w-full h-[25px] border bg-white focus:outline-black cursor-pointer hover:bg-black hover:text-white flex items-center justify-center gap-1" onclick="toggleQuizDropdown(event, 'quizSampleDropdown')">
+                                <span id="quizSampleText">Actual</span><span class="text-[10px]">▼</span>
+                            </button>
+                            <div id="quizSampleDropdown" class="absolute left-0 top-[25px] w-full bg-white border shadow-md flex flex-col hidden z-50 text-sm">
+                                <button class="w-full text-center px-2 py-1 hover:bg-black hover:text-white border-b cursor-pointer" onclick="selectQuizDropdownOption('quizSampleSelect', 'quizSampleText', 'start', 'Start', 'quizSampleDropdown', event)">Start</button>
+                                <button class="w-full text-center px-2 py-1 hover:bg-black hover:text-white border-b cursor-pointer" onclick="selectQuizDropdownOption('quizSampleSelect', 'quizSampleText', 'actual', 'Actual', 'quizSampleDropdown', event)">Actual</button>
+                                <button class="w-full text-center px-2 py-1 hover:bg-black hover:text-white border-b cursor-pointer" onclick="selectQuizDropdownOption('quizSampleSelect', 'quizSampleText', 'random', 'Random', 'quizSampleDropdown', event)">Random</button>
+                                <button class="w-full text-center px-2 py-1 hover:bg-black hover:text-white cursor-pointer" onclick="selectQuizDropdownOption('quizSampleSelect', 'quizSampleText', 'end', 'End', 'quizSampleDropdown', event)">End</button>
+                            </div>
+                        </div>
+                        <div class="relative col-span-2 w-full">
+                            <button id="quizModeSelect" data-value="entry" class="w-full h-[25px] border bg-white focus:outline-black cursor-pointer hover:bg-black hover:text-white flex items-center justify-center gap-1" onclick="toggleQuizDropdown(event, 'quizModeDropdown')">
+                                <span id="quizModeText">Entry</span><span class="text-[10px]">▼</span>
+                            </button>
+                            <div id="quizModeDropdown" class="absolute left-0 top-[25px] w-full bg-white border shadow-md flex flex-col hidden z-50 text-sm">
+                                <button class="w-full text-center px-2 py-1 hover:bg-black hover:text-white border-b cursor-pointer" onclick="selectQuizDropdownOption('quizModeSelect', 'quizModeText', 'entry', 'Entry', 'quizModeDropdown', event)">Entry</button>
+                                <button class="w-full text-center px-2 py-1 hover:bg-black hover:text-white cursor-pointer" onclick="selectQuizDropdownOption('quizModeSelect', 'quizModeText', 'mc', 'Multiple Choice', 'quizModeDropdown', event)">Multiple Choice</button>
+                            </div>
+                        </div>
+                        <button id="quizStartBtn" onclick="startQuizEngine()" class="col-span-3 w-full h-7 bg-black text-white font-bold text-base uppercase tracking-wider mt-0.5 cursor-pointer">Start</button>
+                    </div>
+                </div>
+                <div id="quizActiveScreen" class="hidden flex flex-col gap-1 max-w-xl mx-auto">
+                        <div class="flex items-center font-bold text-xl py-0 select-none">
+                            <div id="quizScoreValue" class="shrink-0 text-left font-bold" style="font-family: 'Segoe UI', system-ui, sans-serif;">1/20: 0</div>
+                            <div id="quizResolutionLabel" class="flex-1 text-center text-xl whitespace-normal break-words font-bold px-4" style="font-family: 'Segoe UI', system-ui, sans-serif;"></div>
+                            <div id="quizTimerValue" class="shrink-0 text-right font-bold" style="font-family: 'Segoe UI', system-ui, sans-serif;">0</div>
+                        </div>
+                        <div id="quizInterfaceBody" class="flex gap-1 items-stretch">
+                            <button id="quizSkipBtn" onclick="handleQuizSkipClick()" class="w-10 bg-black text-white text-xs font-bold hover:bg-gray-800 transition-all uppercase tracking-wider shrink-0 flex items-center justify-center rounded-none">Skip</button>
+                            <input type="text" id="quizAnimeInput" autocomplete="off" class="flex-1 h-8 px-3 border text-sm focus:outline-black rounded-none">
+                        </div>
+                        <div id="quizMcInterfaceBody" class="hidden flex gap-1 items-stretch w-full">
+                            <button id="quizMcSkipBtn" onclick="handleMcSkipClick()" class="w-10 bg-black text-white text-xs font-bold hover:bg-gray-800 transition-all uppercase tracking-wider shrink-0 flex items-center justify-center rounded-none">Skip</button>
+                            <div class="flex flex-col gap-1 flex-1 min-w-0 w-0">
+                                <button id="quizMcOpt1" onclick="handleMcOptionClick(this)" class="w-full h-8 px-2 border text-sm font-medium border-gray-300 hover:bg-gray-100 whitespace-nowrap overflow-hidden text-ellipsis rounded-none text-left bg-white text-black cursor-pointer"></button>
+                                <button id="quizMcOpt2" onclick="handleMcOptionClick(this)" class="w-full h-8 px-2 border text-sm font-medium border-gray-300 hover:bg-gray-100 whitespace-nowrap overflow-hidden text-ellipsis rounded-none text-left bg-white text-black cursor-pointer"></button>
+                                <button id="quizMcOpt3" onclick="handleMcOptionClick(this)" class="w-full h-8 px-2 border text-sm font-medium border-gray-300 hover:bg-gray-100 whitespace-nowrap overflow-hidden text-ellipsis rounded-none text-left bg-white text-black cursor-pointer"></button>
+                                <button id="quizMcOpt4" onclick="handleMcOptionClick(this)" class="w-full h-8 px-2 border text-sm font-medium border-gray-300 hover:bg-gray-100 whitespace-nowrap overflow-hidden text-ellipsis rounded-none text-left bg-white text-black cursor-pointer"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="quizAudioAnchor"></div>
+                </div>
+            </div>
+        </div>
+        <script>fetch('Data.json')
+            .then(response => response.json())
+            .then(data => {
+                window.dashboardData = data;
+                const script = document.createElement('script');
+                script.src = "Script.js";
+                document.body.appendChild(script);
+            })
+            .catch(err => console.error("Could not trace configuration database mapping initialization payload :", err));
+        </script>
+    </body>
+</html>
