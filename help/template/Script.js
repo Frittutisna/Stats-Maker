@@ -5352,14 +5352,16 @@ function evaluateMatrixConditions(song) {
 }
 
 let quizCurrentMode = "entry";
+let quizSampleMode  = "actual";
 
 function startQuizEngine() {
     enforceQuizInputBounds();
 
-    quizSoundLimit      = parseInt(document.getElementById("quizSoundTimeInput").value);
-    quizNoSoundLimit    = parseInt(document.getElementById("quizExtraTimeInput").value);
-    const count         = parseInt(document.getElementById("quizSongCountInput").value);
-    quizCurrentMode     = document.getElementById("quizModeSelect").value;
+    quizSoundLimit      = parseInt(document .getElementById("quizSoundTimeInput")   .value);
+    quizNoSoundLimit    = parseInt(document .getElementById("quizExtraTimeInput")   .value);
+    const count         = parseInt(document .getElementById("quizSongCountInput")   .value);
+    quizCurrentMode     = document          .getElementById("quizModeSelect")       .value;
+    quizSampleMode      = document          .getElementById("quizSampleSelect")     .value;
 
     const pool = globalSearchData.filter(song => {
         if (!song.video_url) return false;
@@ -5498,7 +5500,14 @@ function executeQuizTrack() {
 
         quizCurrentAudio.addEventListener('loadedmetadata', () => {
             const maxStart = Math.max(0, quizCurrentAudio.duration - quizSoundLimit);
-            quizCurrentAudio.currentTime = Math.random() * maxStart;
+            let startPos = 0;
+
+            if      (quizSampleMode === "start")  startPos = 0;
+            else if (quizSampleMode === "actual") startPos = Math.min(song.start_sample || 0, maxStart);
+            else if (quizSampleMode === "random") startPos = Math.random() * maxStart;
+            else if (quizSampleMode === "end")    startPos = maxStart;
+
+            quizCurrentAudio.currentTime = startPos;
         });
 
         quizCurrentAudio.addEventListener('playing', () => {

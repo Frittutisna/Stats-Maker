@@ -945,14 +945,7 @@ class TourAnalyzer:
             print(f"[?] Running Dry's script")
 
             try:
-                subprocess.run(
-                    [sys.executable, str(target_script)], 
-                    cwd     = str(public_repo_dir), 
-                    input   = f"{self.dry_mapped_index}\n\n", 
-                    text    = True,
-                    check   = True
-                )
-
+                subprocess.run([sys.executable, str(target_script)], cwd = str(public_repo_dir), check = True)
                 print(f"[✓] Ran Dry's script successfully")
 
                 output_dir = self.tour_dir / "dry"
@@ -993,11 +986,11 @@ class TourAnalyzer:
                             shutil.copy(src_file, archive_dir / file_name)
                             print(f"[✓] Copied {file_name}")
 
-                        else: print(f"[X] {file_name} not found in hakohoka for archiving")
+                        else: print(f"[X] {file_name} not found in hakohoka to copy")
                             
                     print(f"Push to GitHub to update the archived Dashboard: https://frittutisna.github.io/Stats-Maker/archive/{timestamp}/Dashboard.html?update=1")
                 
-            except subprocess.CalledProcessError as e: (f"[X] Subsumed Dry workflow script execution failed: {e}")
+            except subprocess.CalledProcessError as e: (f"[X] Failed to run Dry's script: {e}")
 
     def _scan_players(self, paths):
         players = set           ()
@@ -3016,7 +3009,8 @@ class TourAnalyzer:
                     "lives_taken_flat"      : lives_taken_players,
                     "lives_saved_flat"      : lives_saved_players,
                     "correct_teams_flat"    : [self.assignments[p.lower()][0] for p in guessers_flat if p.lower() in self.assignments],
-                    "alts"                  : combined_alts
+                    "alts"                  : combined_alts,
+                    "start_sample"          : song.get("startPoint", 0)
                 })
 
         search_songs_list.sort(key = lambda x: x["romaji"].lower())

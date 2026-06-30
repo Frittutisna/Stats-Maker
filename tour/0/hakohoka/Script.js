@@ -3383,7 +3383,15 @@ function updateSearchHelpDropdown() {
             Wrap multi-word values in <code class="bg-gray-200 px-1 rounded font-mono text-xs">"double-quotes"</code><br><br>
             <code class="bg-gray-200 px-1 rounded font-mono text-xs">(artist="aoi koga" or artist:"tomori kusunoki") and difficulty>20</code><br>
             returns songs by Aoi Koga or Tomori Kusunoki with difficulties above 20<br><br>
-            Click the <b class="bg-black text-white px-1 rounded">⚙</b> button to configure your view settings<br>
+            Click the <b class="bg-black text-white px-1 w-4 h-4 rounded">⚙</b> button to configure your view settings<br>
+        </p>
+        <p class="font-bold border-b pb-1 mb-1 mt-3">Filter</p>
+        <p class="mb-2 text-xs">
+            Configure <b>Seen</b>, <b>Correct</b>, and <b>List</b> player matrix filters as follows:<br>
+            • <b class="bg-white text-black border border-gray-400 px-1 rounded inline-block w-4 h-4 text-center">&nbsp;</b>&nbsp;Ignore this player<br>
+            • <b class="bg-black text-white px-1 rounded inline-block w-4 h-4 text-center">+</b>&nbsp;Force this player<br>
+            • <b class="bg-black text-white px-1 rounded inline-block w-4 h-4 text-center">~</b>&nbsp;Find at least one player that match<br>
+            • <b class="bg-black text-white px-1 rounded inline-block w-4 h-4 text-center">-</b>&nbsp;Force against this player<br>
         </p>
         <div class="grid grid-cols-2 gap-2 pt-1 border-t text-xs">
             <div>
@@ -3517,6 +3525,7 @@ function renderListChart() {
 
 let globalSortState     = {columnName: "Anime", ascending: true};
 let currentSearchLang   = "JP";
+let searchMatrixStates  = {seen: {}, correct: {}, list: {}};
 
 const searchHeadersConfig = [
     {
@@ -4002,6 +4011,91 @@ function initColumnSettingsCheckboxes() {
         container.appendChild(colWrapper);
     });
 
+    const separator     = document.createElement("div");
+    separator.className = "border-b my-1.5";
+    container.appendChild(separator);
+
+    const matrices = [{key: "seen", name: "Seen"}, {key: "correct", name: "Correct"}, {key: "list", name: "List"}];
+    if (searchMatrixStates._sectionEnabled === undefined) {searchMatrixStates._sectionEnabled = {seen: true, correct: true, list: true};}
+
+    matrices.forEach(m => {
+        const groupWrapper      = document.createElement("div");
+        groupWrapper.className  = "flex flex-col select-none";
+
+        const headerLabel       = document.createElement("label");
+        headerLabel.className   = "flex items-center gap-1.5 font-bold text-black block text-xs cursor-pointer mt-0.5";
+
+        const sectionToggle     = document.createElement("input");
+        sectionToggle.type      = "checkbox";
+        sectionToggle.className = "rounded accent-black";
+        sectionToggle.checked   = searchMatrixStates._sectionEnabled[m.key];
+
+        headerLabel     .appendChild(sectionToggle);
+        headerLabel     .appendChild(document.createTextNode(m.name));
+        groupWrapper    .appendChild(headerLabel);
+
+        const subContainer      = document.createElement("div");
+        subContainer.className  = "pl-4 flex flex-col gap-0.5 text-xs w-full";
+
+        const updateSubContainerOpacity = () => {
+            subContainer.style.opacity          = searchMatrixStates._sectionEnabled[m.key] ? "1"     : "0.5";
+            subContainer.style.pointerEvents    = searchMatrixStates._sectionEnabled[m.key] ? "auto"  : "none";
+        };
+
+        sectionToggle.addEventListener("change", () => {
+            searchMatrixStates._sectionEnabled[m.key] = sectionToggle.checked;
+            updateSubContainerOpacity();
+            triggerTableRefresh(); 
+        });
+
+        players.forEach(pRow => {
+            const rawPlayer = pRow["Player"];
+            const pName     = typeof rawPlayer === 'object' ? String(rawPlayer.count || "") : String(rawPlayer);
+
+            if (searchMatrixStates[m.key][pName] === undefined) searchMatrixStates[m.key][pName] = " ";
+
+            const subLabel              = document.createElement("label");
+            subLabel.className          = "flex items-center gap-1 cursor-pointer text-gray-700 hover:text-black py-0.5 pr-6 w-full min-w-max";
+            const indicator             = document.createElement("span");
+            const isBlank               = searchMatrixStates[m.key][pName] === " ";
+            indicator.className         = `font-mono font-bold text-center border inline-flex items-center justify-center w-3.5 h-3.5 bg-white text-black border-gray-400 align-middle select-none shrink-0 p-0 text-sm self-center scale-90 ${isBlank ? "bg-white text-black border-gray-400" : "bg-black text-white border-black"}`;
+            indicator.innerText         = searchMatrixStates[m.key][pName];
+            indicator.style.lineHeight  = "1";
+
+            subLabel.appendChild(indicator);
+            subLabel.appendChild(document.createTextNode(pName));
+
+            subLabel.addEventListener("click", (e) => {
+                e.preventDefault    ();
+                e.stopPropagation   ();
+
+                const currentState          = searchMatrixStates[m.key][pName];
+                const currentActiveCount    = Object.keys(searchMatrixStates[m.key]).filter(k => searchMatrixStates[m.key][k] !== " ").length;
+
+                if (currentState === " " && currentActiveCount >= 2) {
+                    alert(`You can only configure ${m.name} filters for up to 2 players`);
+                    return;
+                }
+
+                const nextState                 = getNextQuizCycleState(currentState);
+                searchMatrixStates[m.key][pName]  = nextState;
+                indicator.innerText             = nextState;
+
+                if (nextState === " ")  indicator.className = "font-mono font-bold text-center border inline-flex items-center justify-center w-3.5 h-3.5 bg-white text-black border-gray-400 align-middle select-none shrink-0 p-0 text-sm self-center scale-90";
+                else                    indicator.className = "font-mono font-bold text-center border inline-flex items-center justify-center w-3.5 h-3.5 bg-black text-white border-black align-middle select-none shrink-0 p-0 text-sm font-bold self-center scale-90";
+                
+                triggerTableRefresh(); 
+            });
+
+            subContainer.appendChild(subLabel);
+        });
+
+        updateSubContainerOpacity();
+
+        groupWrapper    .appendChild(subContainer);
+        container       .appendChild(groupWrapper);
+    });
+
     updateMasterCheckboxState();
 }
 
@@ -4162,6 +4256,51 @@ function evaluateQuery(song, key, operator, value) {
     return false;
 }
 
+function evaluateSearchMatrixConditions(song) {
+    const matrices = ["seen", "correct", "list"];
+
+    for (let mKey of matrices) {
+        if (searchMatrixStates._sectionEnabled && searchMatrixStates._sectionEnabled[mKey] === false) continue;
+
+        let hasMust         = false;
+        let mustMatched     = false;
+        let activeOrCount   = 0;
+
+        for (let pName in searchMatrixStates[mKey]) if (searchMatrixStates[mKey][pName] === "~") activeOrCount++;
+
+        let hasOr       = activeOrCount > 1;
+        let orMatched   = false;
+
+        for (let pName in searchMatrixStates[mKey]) {
+            const state = searchMatrixStates[mKey][pName];
+            if (state === " ") continue;
+
+            const pClean        = pName.replace(/[★▲▼]/g, "").trim().toLowerCase();
+            const roomPlayers   = (song.room_players    || []).map(p => p.toLowerCase());
+            const guessers      = (song.guessers_flat   || []).map(p => p.toLowerCase());
+            const listers       = (song.listers_flat    || []).map(p => p.toLowerCase());
+            let isTrue          = false;
+
+            if      (mKey === "seen")       isTrue = roomPlayers    .includes(pClean);
+            else if (mKey === "correct")    isTrue = guessers       .includes(pClean);
+            else if (mKey === "list")       isTrue = listers        .includes(pClean);
+
+            if (state === "+") {
+                hasMust = true;
+                if (!isTrue) return false; 
+                mustMatched = true;
+            }
+
+            else if (state === "-" && isTrue)           return false;
+            else if (state === "~" && isTrue && hasOr)  orMatched = true;
+        }
+
+        if (hasOr && !orMatched) return false;
+    }
+
+    return true;
+}
+
 function renderSearchTable(filteredSongs) {
     let runtimeFilteredList = filteredSongs.filter(song => {
         for (let col of searchHeadersConfig) {
@@ -4194,7 +4333,8 @@ function renderSearchTable(filteredSongs) {
                 if (isNaN(targetNum) || targetNum < col.currentMin || targetNum > col.currentMax) return false;
             }
         }
-        return true;
+
+        return evaluateSearchMatrixConditions(song);
     });
 
     const table         = document.getElementById('searchSongsTable');
@@ -5003,21 +5143,21 @@ function updateQuizHelpDropdown() {
     if (!dropdown) return;
 
     let guideText = `
-        Click the <b class="bg-black text-white px-1 rounded font-normal inline-block w-5 text-center">⚙</b> 
+        Click the <b class="bg-black text-white px-1 rounded font-normal inline-block w-5 h-4 text-center">⚙</b> 
         button to configure your quiz song pool<br>
     `;
 
     let filterText = `
         Configure <b>Seen</b>, <b>Correct</b>, and <b>List</b> player filters as follows<br>
-        • <b class="bg-white text-black border border-gray-400 px-1 rounded inline-block w-4 text-center">&nbsp;</b>&nbsp;Ignore this player<br>
-        • <b class="bg-black text-white px-1 rounded inline-block w-4 text-center">+</b>&nbsp;Force this player<br>
-        • <b class="bg-black text-white px-1 rounded inline-block w-4 text-center">~</b>&nbsp;Find at least one player that match<br>
-        • <b class="bg-black text-white px-1 rounded inline-block w-4 text-center">-</b>&nbsp;Force against this player<br>
+        • <b class="bg-white text-black border border-gray-400 px-1 rounded inline-block w-4 h-4 text-center">&nbsp;</b>&nbsp;Ignore this player<br>
+        • <b class="bg-black text-white px-1 rounded inline-block w-4 h-4 text-center">+</b>&nbsp;Force this player<br>
+        • <b class="bg-black text-white px-1 rounded inline-block w-4 h-4 text-center">~</b>&nbsp;Find at least one player that match<br>
+        • <b class="bg-black text-white px-1 rounded inline-block w-4 h-4 text-center">-</b>&nbsp;Force against this player<br>
     `;
 
     let exampleText = `
-        Setting <b>HakoHoka</b> to <b class="bg-black text-white px-1 rounded inline-block w-4 text-center">+</b> 
-        and <b>florenz</b> to <b class="bg-black text-white px-1 rounded inline-block w-4 text-center">-</b> under <b>Correct</b> means:<br>
+        Setting <b>HakoHoka</b> to <b class="bg-black text-white px-1 rounded inline-block w-4 h-4 text-center">+</b> 
+        and <b>florenz</b> to <b class="bg-black text-white px-1 rounded inline-block w-4 h-4 text-center">-</b> under <b>Correct</b> means:<br>
         • The quiz pool will only draw songs that <b>HakoHoka</b> guessed correctly, and<br>
         • Completely skip any songs that <b>florenz</b> got right<br>
         You may only set filters for up to two players within each category
@@ -5211,12 +5351,17 @@ function evaluateMatrixConditions(song) {
     return true;
 }
 
+let quizCurrentMode = "entry";
+let quizSampleMode  = "actual";
+
 function startQuizEngine() {
     enforceQuizInputBounds();
 
-    quizSoundLimit      = parseInt(document.getElementById("quizSoundTimeInput").value);
-    quizNoSoundLimit    = parseInt(document.getElementById("quizExtraTimeInput").value);
-    const count         = parseInt(document.getElementById("quizSongCountInput").value);
+    quizSoundLimit      = parseInt(document .getElementById("quizSoundTimeInput")   .value);
+    quizNoSoundLimit    = parseInt(document .getElementById("quizExtraTimeInput")   .value);
+    const count         = parseInt(document .getElementById("quizSongCountInput")   .value);
+    quizCurrentMode     = document          .getElementById("quizModeSelect")       .value;
+    quizSampleMode      = document          .getElementById("quizSampleSelect")     .value;
 
     const pool = globalSearchData.filter(song => {
         if (!song.video_url) return false;
@@ -5274,6 +5419,16 @@ function startQuizEngine() {
     document.getElementById("globalQuizPauseBtn")   .innerText = "❚❚";
     document.getElementById("quizScoreValue")       .innerText = `1/${quizActivePool.length}: 0`;
 
+    if (quizCurrentMode === "mc") {
+        document.getElementById("quizInterfaceBody")    .classList.add("hidden");
+        document.getElementById("quizMcInterfaceBody")  .classList.remove("hidden");
+    }
+
+    else {
+        document.getElementById("quizMcInterfaceBody")  .classList.add("hidden");
+        document.getElementById("quizInterfaceBody")    .classList.remove("hidden");
+    }
+
     executeQuizTrack();
 }
 
@@ -5289,6 +5444,13 @@ function executeQuizTrack() {
         return;
     }
 
+    const scoreNode = document.getElementById("quizScoreValue");
+
+    if (scoreNode) {
+        scoreNode.innerText     = `${quizIndex + 1}/${quizActivePool.length}: ${quizScore}`;
+        scoreNode.style.color   = "";
+    }
+
     document.getElementById("quizScoreValue").innerText = `${quizIndex + 1}/${quizActivePool.length}: ${quizScore}`;
 
     const label     = document.getElementById("quizResolutionLabel");
@@ -5298,13 +5460,39 @@ function executeQuizTrack() {
     const inputEl = document.getElementById("quizAnimeInput");
     if (inputEl) {inputEl.value = ""; inputEl.disabled = false;}
 
-    const song          = quizActivePool[quizIndex];
+    const song = quizActivePool[quizIndex];
+
+    if (quizCurrentMode === "mc") {
+        const isJp          = currentSearchLang === "JP";
+        const correctTitle  = isJp ? (song.romaji || song.english || "") : (song.english || song.romaji || "");
+        const allTitles     = new Set();
+
+        globalSearchData.forEach(s => {
+            const title = isJp ? (s.romaji || s.english || "") : (s.english || s.romaji || "");
+            if (title && title !== correctTitle) allTitles.add(title);
+        });
+
+        const optionsArray = Array.from(allTitles).sort(() => Math.random() - 0.5).slice(0, 3);
+        optionsArray.push(correctTitle);
+        optionsArray.sort(() => Math.random() - 0.5);
+
+        for (let i = 1; i <= 4; i++) {
+            const btn = document.getElementById(`quizMcOpt${i}`);
+
+            if (btn) {
+                btn.innerText   = optionsArray[i - 1];
+                btn.disabled    = false;
+            }
+        }
+    }
+
     const anchor        = document.getElementById("quizAudioAnchor");
     anchor.innerHTML    = `<audio id="quizAudioPlayer" src="${song.video_url}" preload="auto"></audio>`;
     quizCurrentAudio    = document.getElementById("quizAudioPlayer");
     quizTimeRemaining   = quizSoundLimit + quizNoSoundLimit;
 
     updateQuizTimerUI(quizTimeRemaining);
+    let isAudioPlaying = false;
 
     if (quizCurrentAudio) {
         quizCurrentAudio.volume = 0.1;
@@ -5312,32 +5500,46 @@ function executeQuizTrack() {
 
         quizCurrentAudio.addEventListener('loadedmetadata', () => {
             const maxStart = Math.max(0, quizCurrentAudio.duration - quizSoundLimit);
-            quizCurrentAudio.currentTime = Math.random() * maxStart;
+            let startPos = 0;
+
+            if      (quizSampleMode === "start")  startPos = 0;
+            else if (quizSampleMode === "actual") startPos = Math.min(song.start_sample || 0, maxStart);
+            else if (quizSampleMode === "random") startPos = Math.random() * maxStart;
+            else if (quizSampleMode === "end")    startPos = maxStart;
+
+            quizCurrentAudio.currentTime = startPos;
+        });
+
+        quizCurrentAudio.addEventListener('playing', () => {
+            isAudioPlaying = true;
+            if (!quizAudioTimeoutId && !quizReplayActive) {quizAudioTimeoutId = setTimeout(() => {if (quizCurrentAudio && !quizReplayActive) quizCurrentAudio.pause();}, quizSoundLimit * 1000);
+            }
         });
 
         quizCurrentAudio.play().catch(() => {});
-        quizAudioTimeoutId = setTimeout(() => {if (quizCurrentAudio && !quizReplayActive) quizCurrentAudio.pause();}, quizSoundLimit * 1000);
     }
 
-    inputEl.focus();
+    if (quizCurrentMode === "entry") inputEl.focus();
 
     quizTimerId = setInterval(() => {
         if (quizLeewayActive) return;
         
         if (!quizReplayActive) {
-            quizTimeRemaining -= 1;
+            if (isAudioPlaying) {
+                quizTimeRemaining -= 1;
 
-            if (quizTimeRemaining <= 0) {
-                quizTimeRemaining = 0;
+                if (quizTimeRemaining <= 0) {
+                    quizTimeRemaining = 0;
 
-                updateQuizTimerUI   (0);
-                resolveQuizItem     (false);
+                    updateQuizTimerUI   (0);
+                    resolveQuizItem     (false);
 
-                return;
+                    return;
+                }
+
+                updateQuizTimerUI(quizTimeRemaining);
+                if (quizTimeRemaining <= quizNoSoundLimit && quizCurrentAudio && !quizCurrentAudio.paused) quizCurrentAudio.pause();
             }
-
-            updateQuizTimerUI(quizTimeRemaining);
-            if (quizTimeRemaining <= quizNoSoundLimit && quizCurrentAudio && !quizCurrentAudio.paused) quizCurrentAudio.pause();
         }
 
         else {
@@ -5364,6 +5566,8 @@ function executeQuizTrack() {
 }
 
 function handleQuizInputKeyDown(e) {
+    if (quizCurrentMode === "mc") return;
+
     if (e.key === "Enter") {
         e.preventDefault();
 
@@ -5409,6 +5613,28 @@ function handleQuizSkipClick() {
     }
 }
 
+function handleMcOptionClick(btn) {
+    if (quizReplayActive || quizLeewayActive) return;
+
+    const selectedTitle = btn.innerText;
+    const song          = quizActivePool[quizIndex];
+    const isJp          = currentSearchLang === "JP";
+    const correctTitle  = isJp ? (song.romaji || song.english || "") : (song.english || song.romaji || "");
+
+    resolveQuizItem(selectedTitle === correctTitle);
+}
+
+function handleMcSkipClick() {
+    if (quizReplayActive || quizLeewayActive) {
+        if (quizIsPaused) return; 
+        clearQuizTimers();
+        if (quizCurrentAudio) {quizCurrentAudio.pause(); quizCurrentAudio = null;}
+        executeQuizTrack();
+    } else {
+        resolveQuizItem(false);
+    }
+}
+
 function resolveQuizItem(isCorrect) {
     if (quizAudioTimeoutId)     {clearTimeout(quizAudioTimeoutId);  quizAudioTimeoutId  = null;}
     if (quizLeewayTimeoutId)    {clearTimeout(quizLeewayTimeoutId); quizLeewayTimeoutId = null;}
@@ -5416,11 +5642,23 @@ function resolveQuizItem(isCorrect) {
     const song = quizActivePool[quizIndex];
     if (isCorrect) quizScore++;
 
-    const displayIndex = Math.min(quizIndex + 1, quizActivePool.length);
-    document.getElementById("quizScoreValue").innerText = `${displayIndex}/${quizActivePool.length}: ${quizScore}`;
+    const displayIndex  = Math.min(quizIndex + 1, quizActivePool.length);
+    const scoreNode     = document.getElementById("quizScoreValue");
+
+    if (scoreNode) {
+        scoreNode.innerText     = `${displayIndex}/${quizActivePool.length}: ${quizScore}`;
+        scoreNode.style.color   = isCorrect ? c2 : c0;
+    }
 
     const inputEl = document.getElementById("quizAnimeInput");
     if (inputEl) inputEl.disabled = true;
+
+    if (quizCurrentMode === "mc") {
+        for (let i = 1; i <= 4; i++) {
+            const btn = document.getElementById(`quizMcOpt${i}`);
+            if (btn) btn.disabled = true;
+        }
+    }
 
     let typeMarker  = "";
     const rawType   = (song.type || "").toLowerCase();

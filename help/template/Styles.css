@@ -228,6 +228,20 @@ input[type=number] {
     -appearance: textfield;
 }
 
+.quiz-dropdown-custom {
+    appearance          : none;
+    -webkit-appearance  : none;
+    -moz-appearance     : none;
+}
+
+#quizSampleSelect,
+#quizModeSelect,
+#quizSampleSelect   option,
+#quizModeSelect     option {
+    text-align      : center;
+    text-align-last : center;
+}
+
 .quiz-mc-btn { 
     width           : 100%      !important;
     max-width       : 300px     !important;
