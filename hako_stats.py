@@ -1,14 +1,14 @@
-import gspread, os, sys
+import gspread, os, shutil, sys
 import tkinter as tk
 
-from analyzer       import TourAnalyzer
-from help.config    import DIR_CREDS, DIR_TOURS, FILE_CHANT
-from help.dialog    import TourSelectionDialog
-from pathlib        import Path
+from hako.analyzer       import TourAnalyzer
+from hako.help.config    import DIR_CREDS, DIR_TOURS, FILE_CHANT
+from hako.help.dialog    import TourSelectionDialog
+from pathlib             import Path
 
 def sync_chanting(tour_dir_path):
-    cred_file   = os.path.join("help", DIR_CREDS, "credentials.json")
-    auth_file   = os.path.join("help", DIR_CREDS, "authorized_user.json")
+    cred_file   = os.path.join("hako", "help", DIR_CREDS, "credentials.json")
+    auth_file   = os.path.join("hako", "help", DIR_CREDS, "authorized_user.json")
     sheet_name  = "NGM Stats Export v2"
 
     try:
@@ -33,8 +33,36 @@ if __name__ == "__main__":
     root.withdraw()
 
     script_directory    = Path(__file__).parent.absolute()
-    tour_folder_path    = script_directory / DIR_TOURS
+    tour_folder_path    = script_directory / "hako" / DIR_TOURS
     chant_txt_file      = tour_folder_path / FILE_CHANT    
+    has_valid_tour      = False
+
+    for json_dir in tour_folder_path.glob("*/json"):
+        if any(json_dir.glob("*.json")):
+            has_valid_tour = True
+            break
+
+    if not has_valid_tour:
+        root_jsons = script_directory / "jsons"
+
+        if not root_jsons.exists() or not any(root_jsons.glob("*.json")):
+            print("[X] Error: No JSON files found in hako/tour/*/json or root/jsons")
+            sys.exit(1)
+
+        print("[?] No valid tours found, initializing Tour 0 with root/jsons")
+
+        target_json_dir = tour_folder_path / "0" / "json"
+        target_json_dir.mkdir(parents = True, exist_ok = True)
+
+        for j_file in root_jsons.glob("*.json"): shutil.copy(j_file, target_json_dir / j_file.name)
+
+        root_codes      = script_directory / "codes.txt"
+        target_codes    = tour_folder_path / "0" / "code.txt"
+
+        if root_codes.exists():
+            target_codes.parent.mkdir(parents = True, exist_ok = True)
+            shutil.copy(root_codes, target_codes)
+
     selection_dialog    = TourSelectionDialog(root, ["0", "1", "2"])
     selected_tours      = selection_dialog.selected_tours
 

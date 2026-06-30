@@ -2,7 +2,8 @@ from pathlib import Path
 
 def clean():
     script_dir  = Path(__file__).parent.absolute()
-    tour_dir    = script_dir / "tour"
+    json_dir    = script_dir / "jsons"
+    tour_dir    = script_dir / "hako" / "tour"
 
     for folder in tour_dir.glob("*/*"):
         if folder.is_dir():
@@ -14,18 +15,20 @@ def clean():
 
                 except Exception as e:  print(f"[X] Failed to delete {item}: {e}")
 
-    all_txt_files = set(script_dir.glob('*.txt')).union(tour_dir.rglob('*.txt'))
+    txt_files = set(script_dir.glob('*.txt')).union(tour_dir.rglob('*.txt'))
 
-    for file_path in all_txt_files:
+    for file_path in txt_files:
         try:
             print(f"[?] Clearing contents of: {file_path}")
             file_path.write_text("")
 
         except Exception as e: print(f"[X] Failed to clear {file_path}: {e}")
 
-    for file_path in script_dir.glob('*.png'):
+    dry_files = set(script_dir.glob('*.png')).union(json_dir.glob('*.json'))
+
+    for file_path in dry_files:
         try:
-            print(f"[?] Deleting PNG: {file_path}")
+            print(f"[?] Deleting Dry's files: {file_path}")
             file_path.unlink()
 
         except Exception as e: print(f"[X] Failed to delete {file_path}: {e}")

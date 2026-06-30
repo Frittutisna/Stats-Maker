@@ -14,8 +14,8 @@ from bs4                    import BeautifulSoup
 from collections            import Counter, defaultdict
 from curl_cffi              import requests
 from dateutil.relativedelta import relativedelta
-from help.config            import *
-from help.dialog            import *
+from hako.help.config       import *
+from hako.help.dialog       import *
 from html2image             import Html2Image
 from pathlib                import Path
 from PIL                    import Image
@@ -918,12 +918,12 @@ class TourAnalyzer:
                 except Exception    : pass
 
         if self.dry_choice != "No":            
-            target_jsons_dir    = self.script_dir   / "jsons"
-            target_codes_file   = self.script_dir   / "codes.txt"
-            source_jsons_dir    = self.tour_dir     / "json"
-            source_codes_file   = self.tour_dir     / "code.txt"
+            target_jsons_dir    = self.script_dir.parent    / "jsons"
+            target_codes_file   = self.script_dir.parent    / "codes.txt"
+            source_jsons_dir    = self.tour_dir             / "json"
+            source_codes_file   = self.tour_dir             / "code.txt"
             script_name         = "ngm_local.py" if "don't push" in self.dry_choice else "ngm_stats.py"
-            target_script       = self.script_dir   / script_name
+            target_script       = self.script_dir.parent    / script_name
 
             print(f"[?] Processing Tour {self.tour_id} using Dry's script")
 
@@ -942,7 +942,7 @@ class TourAnalyzer:
             print(f"[?] Running Dry's script")
 
             try:
-                subprocess.run([sys.executable, str(target_script)], cwd = str(self.script_dir), check = True)
+                subprocess.run([sys.executable, str(target_script)], cwd = str(self.script_dir.parent), check = True)
                 print(f"[✓] Ran Dry's script successfully")
 
                 output_dir = self.tour_dir / "dry"
@@ -959,8 +959,8 @@ class TourAnalyzer:
                 print("[?] Copying Dry's PNGs back")
 
                 for src_name, dest_name in files_to_copy.items():
-                    src_file    = self.script_dir   / src_name
-                    dest_file   = output_dir        / dest_name
+                    src_file    = self.script_dir.parent    / src_name
+                    dest_file   = output_dir                / dest_name
 
                     if src_file.exists():
                         shutil.copy(src_file, dest_file)
@@ -970,20 +970,20 @@ class TourAnalyzer:
 
                 if self.dry_choice == "Yes, and push it to the database":
                     timestamp           = datetime.datetime.now().strftime("%y%m%d%H%M")
-                    archive_dir         = self.script_dir   / "archive"     / timestamp
-                    hakohoka_dir        = self.tour_dir     / "hakohoka"
+                    archive_dir         = self.script_dir.parent    / "hako" / "archive" / timestamp
+                    hako_dir            = self.tour_dir             / "hako"
                     files_to_archive    = ["Dashboard.html", "Script.js", "Styles.css", "Data.json", "Search.json"]
 
                     print(f"[?] Copying website components to archive/{timestamp}")
                     archive_dir.mkdir(parents = True, exist_ok = True)
 
                     for file_name in files_to_archive:
-                        src_file = hakohoka_dir / file_name
+                        src_file = hako_dir / file_name
                         if src_file.exists():
                             shutil.copy(src_file, archive_dir / file_name)
                             print(f"[✓] Copied {file_name}")
 
-                        else: print(f"[X] {file_name} not found in hakohoka to copy")
+                        else: print(f"[X] {file_name} not found in {hako_dir} to copy")
                             
                     dashboard_url = f"https://frittutisna.github.io/Stats-Maker/archive/{timestamp}/Dashboard.html?update=1"
                     print(f"[?] Pushing to GitHub")
