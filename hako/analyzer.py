@@ -985,7 +985,7 @@ class TourAnalyzer:
 
                         else: print(f"[X] {file_name} not found in {hako_dir} to copy")
                             
-                    dashboard_url = f"https://frittutisna.github.io/Stats-Maker/archive/{timestamp}/Dashboard.html?update=1"
+                    dashboard_url = f"https://frittutisna.github.io/Stats-Maker/hako/archive/{timestamp}/Dashboard.html?update=1"
                     print(f"[?] Pushing to GitHub")
 
                     try:
