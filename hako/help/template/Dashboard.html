@@ -10,7 +10,12 @@
     <body class="p-5 select-none">
         <div id="customJsTooltip"></div>
         <h2 id="dashboardTitle" class="text-4xl text-center font-bold">Tour Dashboard</h2>
-        <p id="lastUpdatedSubtitle" class="text-xl text-center font-bold mb-1">Last updated: Some time ago</p>
+        <div class="relative flex justify-center mb-1 z-50">
+            <button id="archiveDropdownToggle" class="text-xl text-center font-bold cursor-pointer select-none" onclick="toggleArchiveDropdown(event)">
+                <span id="lastUpdatedSubtitleText">Last updated: Some time ago</span> <span class="text-[15px] align-middle">▼</span>
+            </button>
+            <div id="archiveDropdown" class="absolute top-full mt-1 bg-white border shadow-md flex-col hidden max-h-[300px] overflow-y-auto text-sm min-w-[100px]"></div>
+        </div>
         <div id="tabContainer" class="border-b flex justify-center mb-1">
             <button id="langToggleBtn" class="tab-btn" style="width: 40px; background-color: black; color: white;" onclick="toggleSearchLanguage()">JP</button>
             <button class="tab-btn active-tab" onclick="switchDashboardTab(event, 'player-tab')">Player</button>

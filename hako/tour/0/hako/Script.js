@@ -96,7 +96,7 @@ if (typeof scatterData !== 'undefined' && scatterData) {
 }
 
 function updateTimeSubtitle() {
-    const subtitle = document.getElementById('lastUpdatedSubtitle');
+    const subtitle = document.getElementById('lastUpdatedSubtitleText');
     if (!subtitle) return;
 
     const differenceInMiliseconds   = Date.now() - generatedTime;
@@ -226,7 +226,78 @@ window.toggleGlobalHelp = function(event) {
     }
 };
 
-document.addEventListener("click", () => {document.querySelectorAll('#globalGearWrapper > div, #globalHelpWrapper > div').forEach(el => {if (el.id.includes('Dropdown')) el.classList.add('hidden');});});
+window.toggleArchiveDropdown = function(event) {
+    event.stopPropagation();
+    document.getElementById("archiveDropdown").classList.toggle("hidden");
+    document.querySelectorAll('#globalGearWrapper > div, #globalHelpWrapper > div').forEach(el => {if (el.id.includes('Dropdown')) el.classList.add('hidden');});
+};
+
+async function populateArchiveDropdown() {
+    const dropdown = document.getElementById("archiveDropdown");
+    if (!dropdown) return;
+
+    try {
+        const response = await fetch("https://api.github.com/repos/frittutisna/Stats-Maker/contents/hako/archive");
+        if (!response.ok) throw new Error("Failed to scan archive directory");
+
+        const files             = await response.json();
+        const timestampPattern  = /^\d{10}$/;
+        const pastToursArchive  = files
+
+            .filter(item => item.type === "dir" && timestampPattern.test(item.name))
+
+            .map(item => {
+                const name = item.name;
+
+                const yr = parseInt("20" + name.substring(0, 2), 10);
+                const mo = parseInt(name.substring(2, 4), 10) - 1; // JS Date months are 0-indexed
+                const dy = parseInt(name.substring(4, 6), 10);
+                const hr = parseInt(name.substring(6, 8), 10);
+                const mn = parseInt(name.substring(8, 10), 10);
+
+                const jstDateString = `${yr}-${String(mo + 1).padStart(2, '0')}-${String(dy).padStart(2, '0')}T${String(hr).padStart(2, '0')}:${String(mn).padStart(2, '0')}:00+09:00`;
+                const dateObj       = new Date(jstDateString);
+                const tzAbbr        = dateObj.toLocaleDateString(undefined, {day: 'numeric', timeZoneName: 'short'}).split(' ').pop();
+
+                const formattedLabel = dateObj.getFullYear() + '/' +
+                    String(dateObj.getMonth() + 1)  .padStart(2, '0') + '/' +
+                    String(dateObj.getDate())       .padStart(2, '0') + ' ' +
+                    String(dateObj.getHours())      .padStart(2, '0') + ':' +
+                    String(dateObj.getMinutes())    .padStart(2, '0') + ' ' + tzAbbr;
+
+                return {id: name, label: formattedLabel};
+            })
+
+            .sort((a, b) => b.id.localeCompare(a.id));
+
+        if (pastToursArchive.length === 0) {
+            dropdown.innerHTML = `<p class="px-4 py-2 text-gray-500 italic text-center">No archives found</p>`;
+            return;
+        }
+
+        dropdown.innerHTML = pastToursArchive.map(tour => `
+            <a href="https://frittutisna.github.io/Stats-Maker/hako/archive/${tour.id}/Dashboard.html?update=1" 
+               class="px-2 py-1 text-black border-b last:border-0 block text-center font-bold no-underline transition-colors">
+               ${tour.label}
+            </a>
+        `).join('');
+
+    }
+
+    catch (err) {
+        console.error("Failed to scan for Archive dropdown:", err);
+        dropdown.innerHTML = `<p class="px-4 py-2 text-red-500 text-center font-bold">Error loading archives</p>`;
+    }
+}
+
+populateArchiveDropdown();
+
+document.addEventListener("click", () => {
+    document.querySelectorAll('#globalGearWrapper > div, #globalHelpWrapper > div').forEach(el => {if (el.id.includes('Dropdown')) el.classList.add('hidden');});
+    const archiveMenu = document.getElementById('archiveDropdown');
+    if (archiveMenu) archiveMenu.classList.add('hidden');
+});
+
 const stopProp = (e) => e.stopPropagation();
 
 [
@@ -238,7 +309,8 @@ const stopProp = (e) => e.stopPropagation();
     'tierGuideDropdown',
     'songGuideDropdown',
     'guessGuideDropdown',
-    'searchGuideDropdown'
+    'searchGuideDropdown',
+    'archiveDropdown'
 ].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("click", stopProp);

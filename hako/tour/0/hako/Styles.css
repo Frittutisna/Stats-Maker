@@ -191,6 +191,7 @@ td[data-songs].highlight-worst:hover::after {
 .table-center-wrapper,
 .w-full.overflow-x-auto,
 #playerColumnCheckboxContainer,
+#archiveDropdown,
 #columnCheckboxContainer,
 #quizColumnCheckboxContainer {
     -ms-overflow-style  : none !important;
@@ -201,6 +202,7 @@ td[data-songs].highlight-worst:hover::after {
 .table-center-wrapper::-webkit-scrollbar,
 .w-full.overflow-x-auto::-webkit-scrollbar,
 #playerColumnCheckboxContainer::-webkit-scrollbar,
+#archiveDropdown::-webkit-scrollbar,
 #columnCheckboxContainer::-webkit-scrollbar,
 #quizColumnCheckboxContainer::-webkit-scrollbar {
     display         : none  !important;
@@ -249,4 +251,14 @@ input[type=number] {
     white-space     : nowrap    !important;
     overflow        : hidden    !important;
     text-overflow   : ellipsis  !important;
+}
+
+#archiveDropdown a {
+    background-color    : white;
+    color               : black;
+}
+
+#archiveDropdown a:hover {
+    background-color    : black !important;
+    color               : white !important;
 }
