@@ -327,16 +327,23 @@ class TourMetadataDialog(UnifiedDialog):
 
         has_extended_delta_data = False
         global_alias_path       = tour_dir / FILE_ALIAS
+        players_with_delta      = set()
 
         if global_alias_path.exists():
             try:
                 with open(global_alias_path, "r", encoding = "utf-8") as f_alias:
                     for line in f_alias:
                         if "," in line:
-                            parts = line.strip().split(",")
-                            if len(parts) > 2:
-                                has_extended_delta_data = True
-                                break
+                            parts = [p.strip() for p in line.split(",")]
+
+                            if len(parts) >= 7 and parts[2] != "N/A":
+                                players_with_delta.add(parts[0].lower())
+                                players_with_delta.add(parts[1].lower())
+
+                all_needed_players = set(p.lower() for p in active_players)
+
+                if sub_candidates                                                           : all_needed_players.update(p.lower() for p in sub_candidates)
+                if all_needed_players and all_needed_players.issubset(players_with_delta)   : has_extended_delta_data = True
 
             except Exception: pass
 
