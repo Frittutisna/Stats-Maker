@@ -388,8 +388,8 @@
             4
         ],
         "alts": [
-            "Gekijouban Aikatsu!",
-            "Aikatsu!"
+            "Aikatsu!",
+            "Gekijouban Aikatsu!"
         ],
         "start_sample": 61
     },
@@ -5521,8 +5521,8 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "arisutachibana",
-            "bigsmo"
+            "bigsmo",
+            "arisutachibana"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -6897,9 +6897,9 @@
             3
         ],
         "alts": [
+            "Initial D",
             "Initial D: Fourth Stage",
-            "Initial D: First Stage",
-            "Initial D"
+            "Initial D: First Stage"
         ],
         "start_sample": 19
     },
@@ -8217,8 +8217,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "kaededayo",
-            "saikichan"
+            "saikichan",
+            "kaededayo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -9810,8 +9810,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "kaededayo",
-            "neoburnz"
+            "neoburnz",
+            "kaededayo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -10023,8 +10023,8 @@
             4
         ],
         "alts": [
-            "Mahou no Star Magical Emi",
-            "Magical Emi, the Magic Star"
+            "Magical Emi, the Magic Star",
+            "Mahou no Star Magical Emi"
         ],
         "start_sample": 147
     },
@@ -12653,9 +12653,9 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "arisutachibana",
+            "bigsmo",
             "beautiful",
-            "bigsmo"
+            "arisutachibana"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12728,8 +12728,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "kaededayo",
-            "neoburnz"
+            "neoburnz",
+            "kaededayo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12737,9 +12737,9 @@
             4
         ],
         "alts": [
-            "Pocket Monsters: Diamond & Pearl",
             "Pokémon: Battle Frontier",
-            "Pokémon: Diamond and Pearl"
+            "Pokémon: Diamond and Pearl",
+            "Pocket Monsters: Diamond & Pearl"
         ],
         "start_sample": 14
     },
@@ -13925,8 +13925,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "saikichan",
-            "neoburnz"
+            "neoburnz",
+            "saikichan"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -14624,8 +14624,8 @@
             "beautiful"
         ],
         "lives_taken_flat": [
-            "atsui_",
-            "beautiful"
+            "beautiful",
+            "atsui_"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -15108,9 +15108,9 @@
             "Armored Trooper Votoms: Big Battle",
             "Armored Trooper Votoms: Alone Again",
             "Soukou Kihei Votoms",
-            "Soukou Kihei Votoms: Koei Futatabi",
             "Armored Trooper Votoms",
-            "Soukou Kihei Votoms: Big Battle"
+            "Soukou Kihei Votoms: Big Battle",
+            "Soukou Kihei Votoms: Koei Futatabi"
         ],
         "start_sample": 49
     },
@@ -15576,8 +15576,8 @@
             "beautiful"
         ],
         "lives_taken_flat": [
-            "atsui_",
             "beautiful",
+            "atsui_",
             "bigsmo"
         ],
         "lives_saved_flat": [],
@@ -15965,8 +15965,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "atsui_",
-            "beautiful"
+            "beautiful",
+            "atsui_"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -16285,8 +16285,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "saikichan",
-            "neoburnz"
+            "neoburnz",
+            "saikichan"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -16417,8 +16417,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "saikichan",
-            "neoburnz"
+            "neoburnz",
+            "saikichan"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -17219,8 +17219,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "kaededayo",
-            "saikichan"
+            "saikichan",
+            "kaededayo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -18043,8 +18043,8 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "edwardd",
-            "mami"
+            "mami",
+            "edwardd"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [

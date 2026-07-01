@@ -975,7 +975,18 @@ class TourAnalyzer:
 
             except subprocess.CalledProcessError as e: (f"[X] Failed to run Dry's script: {e}")
 
-        if self.share_choice == "Yes, push it to the archive":
+        if self.share_choice == "No, I'll upload the site folder to Netlify Drop post-tour":
+            workspace_root  = self.script_dir.parent
+            png_src         = self.tour_dir / "png"
+            site_src        = self.tour_dir / "site"
+            player_file     = png_src / "Player.png"
+            extra_file      = png_src / "Extra.png"
+
+            if player_file  .exists(): shutil.copy      (player_file,   workspace_root / f"hako-{self.tour_id}-player.png")
+            if extra_file   .exists(): shutil.copy      (extra_file,    workspace_root / f"hako-{self.tour_id}-extra.png")
+            if site_src     .exists(): shutil.copytree  (site_src,      workspace_root / f"hako-{self.tour_id}-site", dirs_exist_ok = True)
+
+        elif self.share_choice == "Yes, push it to the archive":
             timestamp           = datetime.datetime.now().strftime("%y%m%d%H%M")
             archive_dir         = self.script_dir.parent / "hako" / "archive" / timestamp
             hako_dir            = web_path 
