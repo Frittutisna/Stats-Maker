@@ -434,7 +434,7 @@ class TourAnalyzer:
         self.new_players        = meta_res["selected_new"]
         self.dry_choice         = meta_res.get("dry_choice", "No")
         self.share_choice       = meta_res.get("share_choice", "No, I'll upload the site folder to Netlify Drop post-tour")
-        self.exp_map            = {name: self.base_exp for name in all_known}
+        self.exp_map            = {name: (self.base_exp - 1 if name.lower() in self.subbed_players_set else self.base_exp) for name in all_known}
         self.dry_mapped_index   = dry_mode_mapping.get(self.tour_label, "15")
 
         return True
