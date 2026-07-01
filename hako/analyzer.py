@@ -984,7 +984,7 @@ class TourAnalyzer:
 
             if player_file  .exists(): shutil.copy      (player_file,   workspace_root / f"hako-{self.tour_id}-player.png")
             if extra_file   .exists(): shutil.copy      (extra_file,    workspace_root / f"hako-{self.tour_id}-extra.png")
-            if site_src     .exists(): shutil.copytree  (site_src,      workspace_root / f"hako-{self.tour_id}-site", dirs_exist_ok = True)
+            if site_src     .exists(): shutil.copytree  (site_src,      workspace_root / f"hako-{self.tour_id}-upload",     dirs_exist_ok = True)
 
         elif self.share_choice == "Yes, push it to the archive":
             timestamp   = datetime.datetime.now().strftime("%y%m%d%H%M")

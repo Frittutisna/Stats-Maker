@@ -4626,188 +4626,188 @@ function renderSearchTable(filteredSongs) {
     setupTooltipListeners();
 }
 
-fetch('Search.json')
-    .then(res => res.json())
+Promise.all([
+    fetch('Search.json')    .then(res => res.json()),
+    fetch('Name.json')      .then(res => res.json())
+])
 
-    .then(searchJson => {
-        globalSearchData = searchJson.map(song => {
-            if (!song.guessers_flat && song.guessers_hover) song.guessers_flat  = song.guessers_hover.map(g => g.split(' (')[0]);
-            if (!song.listers_flat  && song.listers_hover)  song.listers_flat   = song.listers_hover;
+.then(([searchJson, nameJson]) => {
+    window.localAnimeNamesPool = Array.isArray(nameJson) ? nameJson : [];
 
-            song._altsLower         = (song.alts                || []).map(a => String(a).toLowerCase());
-            song._romajiLower       = (song.romaji              || "").toLowerCase();
-            song._englishLower      = (song.english             || "").toLowerCase();
-            song._songLower         = (song.song                || "").toLowerCase();
-            song._artistRawLower    = (song.artist_raw          || "").toLowerCase();
-            song._composerLower     = (song.composer            || "").toLowerCase();
-            song._arrangerLower     = (song.arranger            || "").toLowerCase();
-            song._typeLower         = (song.type                || "").toLowerCase();
-            song._vintageLower      = (song.vintage             || "").toLowerCase();
-            song._animeTypeLower    = (song.anime_type          || "").toLowerCase();
-            song._genresLower       = (song.genres_raw          || []).map(g => g.toLowerCase());
-            song._tagsLower         = (song.tags_raw            || []).map(t => t.toLowerCase());
-            song._genresCount       = (song.genres_raw          || []).length;
-            song._tagsCount         = (song.tags_raw            || []).length;
-            song._chantingLower     = (song.chanting            || "").toLowerCase();
-            song._roomPlayersLower  = (song.room_players        || []).map(p => p.toLowerCase());
-            song._livesTakenLower   = (song.lives_taken_flat    || []);
-            song._livesSavedLower   = (song.lives_saved_flat    || []);
-            song._diffParsed        = song.difficulty === "Unrated"   ? -Infinity                   : parseFloat(song.difficulty);
-            song._altsCount         = Array.isArray(song.alts)        ? song.alts           .length : 0;
-            song._guessersCount     = song.guessers_flat              ? song.guessers_flat  .length : 0;
-            song._listersCount      = song.listers_flat               ? song.listers_flat   .length : 0;
-            song._vintageParsed     = parseVintageToFloat(song.vintage);
-            song._correctTeamsLower = (song.correct_teams_flat  || []).map(tid => {
-                const leader = window.dashboardData.json_teams.find(t => t._tid === tid || t.tid === tid);
-                return leader ? leader["Team Leader"].toLowerCase() : "";
-            });
+    globalSearchData = searchJson.map(song => {
+        if (!song.guessers_flat && song.guessers_hover) song.guessers_flat  = song.guessers_hover.map(g => g.split(' (')[0]);
+        if (!song.listers_flat  && song.listers_hover)  song.listers_flat   = song.listers_hover;
 
-            return song;
+        song._altsLower         = (song.alts                || []).map(a => String(a).toLowerCase());
+        song._romajiLower       = (song.romaji              || "").toLowerCase();
+        song._englishLower      = (song.english             || "").toLowerCase();
+        song._songLower         = (song.song                || "").toLowerCase();
+        song._artistRawLower    = (song.artist_raw          || "").toLowerCase();
+        song._composerLower     = (song.composer            || "").toLowerCase();
+        song._arrangerLower     = (song.arranger            || "").toLowerCase();
+        song._typeLower         = (song.type                || "").toLowerCase();
+        song._vintageLower      = (song.vintage             || "").toLowerCase();
+        song._animeTypeLower    = (song.anime_type          || "").toLowerCase();
+        song._genresLower       = (song.genres_raw          || []).map(g => g.toLowerCase());
+        song._tagsLower         = (song.tags_raw            || []).map(t => t.toLowerCase());
+        song._genresCount       = (song.genres_raw          || []).length;
+        song._tagsCount         = (song.tags_raw            || []).length;
+        song._chantingLower     = (song.chanting            || "").toLowerCase();
+        song._roomPlayersLower  = (song.room_players        || []).map(p => p.toLowerCase());
+        song._livesTakenLower   = (song.lives_taken_flat    || []);
+        song._livesSavedLower   = (song.lives_saved_flat    || []);
+        song._diffParsed        = song.difficulty === "Unrated"   ? -Infinity                   : parseFloat(song.difficulty);
+        song._altsCount         = Array.isArray(song.alts)        ? song.alts           .length : 0;
+        song._guessersCount     = song.guessers_flat              ? song.guessers_flat  .length : 0;
+        song._listersCount      = song.listers_flat               ? song.listers_flat   .length : 0;
+        song._vintageParsed     = parseVintageToFloat(song.vintage);
+        song._correctTeamsLower = (song.correct_teams_flat  || []).map(tid => {
+            const leader = window.dashboardData.json_teams.find(t => t._tid === tid || t.tid === tid);
+            return leader ? leader["Team Leader"].toLowerCase() : "";
         });
 
-        const countInput = document.getElementById("quizSongCountInput");
-        if (countInput && globalSearchData.length > 0) countInput.setAttribute("max", globalSearchData.length);
+        return song;
+    });
 
-        initColumnSettingsCheckboxes    ();
-        sortSearchData                  ();
-        renderSearchTable               (globalSearchData);
-        renderTierCharts                ();
-        updatePlayerHelpDropdown        ();
-        updateTierHelpDropdown          ();
-        updateSongHelpDropdown          ();
-        updateGuessHelpDropdown         ();
-        updateSearchHelpDropdown        ();
+    const countInput = document.getElementById("quizSongCountInput");
+    if (countInput && globalSearchData.length > 0) countInput.setAttribute("max", globalSearchData.length);
 
-        const searchInput = document.getElementById('songSearchInput');
-        if (searchInput) {
+    initColumnSettingsCheckboxes    ();
+    sortSearchData                  ();
+    renderSearchTable               (globalSearchData);
+    renderTierCharts                ();
+    updatePlayerHelpDropdown        ();
+    updateTierHelpDropdown          ();
+    updateSongHelpDropdown          ();
+    updateGuessHelpDropdown         ();
+    updateSearchHelpDropdown        ();
 
-            const processQuery = (e) => {
-                const rawQuery = searchInput.value.trim();
+    const searchInput = document.getElementById('songSearchInput');
 
-                if (!rawQuery) {
-                    renderSearchTable(globalSearchData);
-                    return;
-                }
+    if (searchInput) {
+        const processQuery = (e) => {
+            const rawQuery = searchInput.value.trim();
+            if (!rawQuery) { renderSearchTable(globalSearchData); return; }
 
-                const tokens        = [];
-                const tokenRegex    = /\(|\)|or\b|and\b|[a-zA-Z0-9_/-]+(?:<=|>=|!=|!:|[:<>==])"[^"]*"|[^\s"()]+|"[^"]*"/gi;
+            const tokens        = [];
+            const tokenRegex    = /\(|\)|or\b|and\b|[a-zA-Z0-9_/-]+(=|>=|!=|!:|[:<>==])"[^"]*"|[^\s"()]+|"[^"]*"/gi;
 
-                let match;
-                while ((match = tokenRegex.exec(rawQuery)) !== null) tokens.push(match[0]);
+            let match;
+            while ((match = tokenRegex.exec(rawQuery)) !== null) tokens.push(match[0]);
 
-                function parseToRPN(tokens) {
-                    const outputQueue   = [];
-                    const operatorStack = [];
-                    const precedence    = {'or': 1, 'and': 2};
-                    let expectOperator  = false;
+            function parseToRPN(tokens) {
+                const outputQueue   = [];
+                const operatorStack = [];
+                const precedence    = {'or': 1, 'and': 2};
+                let expectOperator  = false;
 
-                    tokens.forEach(token => {
-                        const lowerToken = token.toLowerCase();
+                tokens.forEach(token => {
+                    const lowerToken = token.toLowerCase();
 
-                        if (expectOperator && lowerToken !== 'and' && lowerToken !== 'or' && lowerToken !== ')') {
-                            while (operatorStack.length && precedence[operatorStack[operatorStack.length - 1]] >= precedence['and']) outputQueue.push(operatorStack.pop());
-                            operatorStack.push('and');
-                        }
-
-                        if (lowerToken === 'and' || lowerToken === 'or') {
-                            while (operatorStack.length && precedence[operatorStack[operatorStack.length - 1]] >= precedence[lowerToken]) outputQueue.push(operatorStack.pop());
-                            operatorStack.push(lowerToken);
-                            expectOperator = false;
-                        }
-
-                        else if (token === '(') {
-                            operatorStack.push(token);
-                            expectOperator = false;
-                        }
-
-                        else if (token === ')') {
-                            while (operatorStack.length && operatorStack[operatorStack.length - 1] !== '(') outputQueue.push(operatorStack.pop());
-                            operatorStack.pop();
-                            expectOperator = true;
-                        }
-
-                        else {
-                            outputQueue.push(token);
-                            expectOperator = true;
-                        }
-                    });
-
-                    while (operatorStack.length) outputQueue.push(operatorStack.pop());
-                    return outputQueue;
-                }
-
-                function evaluateSingleToken(song, token) {
-                    const queryRegex    = /^([a-zA-Z_]+)(<=|>=|!=|!:|[:<>==])(.+)$/;
-                    const parsedMatch   = token.match(queryRegex);
-
-                    if (parsedMatch) {
-                        let queryKey = parsedMatch[1].toLowerCase();
-                        if (queryKey === "correct") queryKey = "guessers";
-                        if (queryKey === "list")    queryKey = "listers";
-
-                        let cleanVal = parsedMatch[3].trim();
-                        if (cleanVal.startsWith('"') && cleanVal.endsWith('"')) cleanVal = cleanVal.slice(1, -1).trim();
-                        else                                                    cleanVal = cleanVal.replace(/^"|"$/g, '').trim();
-
-                        return evaluateQuery(song, queryKey, parsedMatch[2], cleanVal.toLowerCase());
+                    if (expectOperator && lowerToken !== 'and' && lowerToken !== 'or' && lowerToken !== ')') {
+                        while (operatorStack.length && precedence[operatorStack[operatorStack.length - 1]] >= precedence['and']) outputQueue.push(operatorStack.pop());
+                        operatorStack.push('and');
                     }
 
-                    const wordClean = token.replace(/^"|"$/g, '').toLowerCase();
-
-                    return (
-                        song._romajiLower       .includes               (wordClean)     ||
-                        song._englishLower      .includes               (wordClean)     ||
-                        song._songLower         .includes               (wordClean)     ||
-                        song._artistRawLower    .includes               (wordClean)     ||
-                        song._composerLower     .includes               (wordClean)     ||
-                        song._arrangerLower     .includes               (wordClean)     ||
-                        song._typeLower         .includes               (wordClean)     ||
-                        song._vintageLower      .includes               (wordClean)     ||
-                        song._animeTypeLower    .includes               (wordClean)     ||
-                        song._chantingLower     .includes               (wordClean)     ||
-                        song._altsLower         .some(a => a.includes   (wordClean))    ||
-                        song._genresLower       .some(g => g.includes   (wordClean))    ||
-                        song._tagsLower         .some(t => t.includes   (wordClean))    ||
-                        song.difficulty         .toLowerCase().includes (wordClean)
-                    );
-                }
-
-                const rpnTokens = parseToRPN(tokens);
-
-                const filtered = globalSearchData.filter(song => {
-                    if (rpnTokens.length === 0) return true;
-                    const stack = [];
-
-                    for (let token of rpnTokens) {
-                        const lowerToken = typeof token === 'string' ? token.toLowerCase() : '';
-
-                        if (lowerToken === 'and') {
-                            const b = stack.pop();
-                            const a = stack.pop();
-                            stack.push(a && b);
-                        }
-
-                        else if (lowerToken === 'or') {
-                            const b = stack.pop();
-                            const a = stack.pop();
-                            stack.push(a || b);
-                        }
-
-                        else stack.push(evaluateSingleToken(song, token));
+                    if (lowerToken === 'and' || lowerToken === 'or') {
+                        while (operatorStack.length && precedence[operatorStack[operatorStack.length - 1]] >= precedence[lowerToken]) outputQueue.push(operatorStack.pop());
+                        operatorStack.push(lowerToken);
+                        expectOperator = false;
                     }
 
-                    return stack[0];
+                    else if (token === '(') {
+                        operatorStack.push(token);
+                        expectOperator = false;
+                    }
+
+                    else if (token === ')') {
+                        while (operatorStack.length && operatorStack[operatorStack.length - 1] !== '(') outputQueue.push(operatorStack.pop());
+                        operatorStack.pop();
+                        expectOperator = true;
+                    }
+
+                    else {
+                        outputQueue.push(token);
+                        expectOperator = true;
+                    }
                 });
 
-                renderSearchTable(filtered);
-            };
+                while (operatorStack.length) outputQueue.push(operatorStack.pop());
+                return outputQueue;
+            }
 
-            searchInput.addEventListener('input',           debounce(processQuery, 250));
-            searchInput.addEventListener('input-direct',    processQuery);
-        }
-    })
+            function evaluateSingleToken(song, token) {
+                const queryRegex    = /^([a-zA-Z_]+)(<=|>=|!=|!:|[:<>==])(.+)$/;
+                const parsedMatch   = token.match(queryRegex);
 
-    .catch(err => console.error("Error setting up lookup engine layout context mapping:", err));
+                if (parsedMatch) {
+                    let queryKey = parsedMatch[1].toLowerCase();
+
+                    if (queryKey === "correct") queryKey = "guessers";
+                    if (queryKey === "list")    queryKey = "listers";
+
+                    let cleanVal = parsedMatch[3].trim();
+
+                    if (cleanVal.startsWith('"') && cleanVal.endsWith('"')) cleanVal = cleanVal.slice(1, -1).trim();
+                    else                                                    cleanVal = cleanVal.replace(/^"|"$/g, '').trim();
+
+                    return evaluateQuery(song, queryKey, parsedMatch[2], cleanVal.toLowerCase());
+                }
+
+                const wordClean = token.replace(/^"|"$/g, '').toLowerCase();
+
+                return (
+                    song._romajiLower       .includes               (wordClean)     ||
+                    song._englishLower      .includes               (wordClean)     ||
+                    song._songLower         .includes               (wordClean)     ||
+                    song._artistRawLower    .includes               (wordClean)     ||
+                    song._composerLower     .includes               (wordClean)     ||
+                    song._arrangerLower     .includes               (wordClean)     ||
+                    song._typeLower         .includes               (wordClean)     ||
+                    song._vintageLower      .includes               (wordClean)     ||
+                    song._animeTypeLower    .includes               (wordClean)     ||
+                    song._chantingLower     .includes               (wordClean)     ||
+                    song._altsLower         .some(a => a.includes   (wordClean))    ||
+                    song._genresLower       .some(g => g.includes   (wordClean))    ||
+                    song._tagsLower         .some(t => t.includes   (wordClean))    ||
+                    song.difficulty         .toLowerCase().includes (wordClean)
+                );
+            }
+
+            const rpnTokens = parseToRPN(tokens);
+
+            const filtered = globalSearchData.filter(song => {
+                if (rpnTokens.length === 0) return true;
+                const stack = [];
+
+                for (let token of rpnTokens) {
+                    const lowerToken = typeof token === 'string' ? token.toLowerCase() : '';
+
+                    if (lowerToken === 'and') {
+                        const b = stack.pop(); const a = stack.pop();
+                        stack.push(a && b);
+                    }
+
+                    else if (lowerToken === 'or') {
+                        const b = stack.pop(); const a = stack.pop();
+                        stack.push(a || b);
+                    }
+
+                    else stack.push(evaluateSingleToken(song, token));
+                }
+
+                return stack[0];
+            });
+
+            renderSearchTable(filtered);
+        };
+
+        searchInput.addEventListener('input',           debounce(processQuery, 250));
+        searchInput.addEventListener('input-direct',    processQuery);
+    }
+})
+
+.catch(err => console.error("Error setting up lookup engine layout context mapping:", err));
 
 window.searchPlayerMetricFromTable = function(filterStr) {
     const searchTabBtn  = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('search-tab'));
@@ -5598,53 +5598,49 @@ function executeQuizTrack() {
         });
 
         quizCurrentAudio.addEventListener('playing', () => {
-            isAudioPlaying = true;
-            if (!quizAudioTimeoutId && !quizReplayActive) {quizAudioTimeoutId = setTimeout(() => {if (quizCurrentAudio && !quizReplayActive) quizCurrentAudio.pause();}, quizSoundLimit * 1000);
+            if (!isAudioPlaying) {
+                isAudioPlaying = true;
+
+                quizTimerId = setInterval(() => {
+                    if (quizLeewayActive) return;
+
+                    if (!quizReplayActive) {
+                        if (isAudioPlaying) {
+                            quizTimeRemaining -= 1;
+
+                            if (quizTimeRemaining <= 0) {
+                                quizTimeRemaining = 0;
+                                updateQuizTimerUI(0);
+                                resolveQuizItem(false);
+                                return;
+                            }
+
+                            updateQuizTimerUI(quizTimeRemaining);
+                            if (quizTimeRemaining <= quizNoSoundLimit && quizCurrentAudio && !quizCurrentAudio.paused) quizCurrentAudio.pause();
+                        }
+                    }
+
+                    else {
+                        quizRevealTimeElapsed += 1;
+                        let displayCountdown = Math.max(0, (quizSoundLimit + quizNoSoundLimit) - quizRevealTimeElapsed);
+                        updateQuizTimerUI(displayCountdown);
+
+                        if (displayCountdown <= 0) {
+                            if      (quizIsPaused)                          quizLeewayActive = true;
+                            else if (quizIndex >= quizActivePool.length)    exitQuizEngine      ();
+                            else                                            executeQuizTrack    ();
+                        }
+                    }
+                }, 1000);
             }
+
+            if (!quizAudioTimeoutId && !quizReplayActive) {quizAudioTimeoutId = setTimeout(() => {if (quizCurrentAudio && !quizReplayActive) quizCurrentAudio.pause();}, quizSoundLimit * 1000);}
         });
 
         quizCurrentAudio.play().catch(() => {});
     }
 
     if (quizCurrentMode === "entry") inputEl.focus();
-
-    quizTimerId = setInterval(() => {
-        if (quizLeewayActive) return;
-        
-        if (!quizReplayActive) {
-            if (isAudioPlaying) {
-                quizTimeRemaining -= 1;
-
-                if (quizTimeRemaining <= 0) {
-                    quizTimeRemaining = 0;
-
-                    updateQuizTimerUI   (0);
-                    resolveQuizItem     (false);
-
-                    return;
-                }
-
-                updateQuizTimerUI(quizTimeRemaining);
-                if (quizTimeRemaining <= quizNoSoundLimit && quizCurrentAudio && !quizCurrentAudio.paused) quizCurrentAudio.pause();
-            }
-        }
-
-        else {
-            quizRevealTimeElapsed   +=  1;
-            let displayCountdown    =   Math.max(0, (quizSoundLimit + quizNoSoundLimit) - quizRevealTimeElapsed);
-
-            updateQuizTimerUI(displayCountdown);
-
-            if (displayCountdown <= 0) {
-                if (quizIsPaused) quizLeewayActive = true;
-
-                else {
-                    if (quizIndex >= quizActivePool.length) exitQuizEngine      ();
-                    else                                    executeQuizTrack    ();
-                }
-            }
-        }
-    }, 1000);
 
     if (inputEl) {
         inputEl.oninput     = null; 
@@ -5863,17 +5859,12 @@ function exitQuizEngine() {
 
 const quizInput         = document.getElementById("quizAnimeInput");
 const quizAutoDropdown  = document.getElementById("quizAutocompleteDropdown");
-
-let currentFocusIndex           = -1;
-let autocompleteDebounceTimeout = null;
-let currentAbortController      = null;
-const suggestionCache           = new Map();
+let currentFocusIndex   = -1;
 
 if (quizInput && quizAutoDropdown) {
-    document.addEventListener("click", (e) => {if (e.target !== quizInput && e.target !== quizAutoDropdown) {closeQuizAutocomplete();}});
+    document.addEventListener("click", (e) => {if (e.target !== quizInput && e.target !== quizAutoDropdown) closeQuizAutocomplete();});
 
     quizInput.addEventListener("input", () => {
-        clearTimeout(autocompleteDebounceTimeout);
         const query = quizInput.value.trim();
 
         if (query.length < 3 || quizReplayActive || quizLeewayActive) {
@@ -5881,7 +5872,7 @@ if (quizInput && quizAutoDropdown) {
             return;
         }
 
-        autocompleteDebounceTimeout = setTimeout(() => {fetchAnimeSuggestions(query);}, 300);
+        fetchAnimeSuggestions(query);
     });
 
     quizInput.addEventListener("keydown", (e) => {
@@ -5909,6 +5900,7 @@ if (quizInput && quizAutoDropdown) {
             if (currentFocusIndex > -1 && items[currentFocusIndex]) {
                 e.preventDefault    ();
                 e.stopPropagation   ();
+
                 items[currentFocusIndex].click();
             }
         }
@@ -5937,108 +5929,42 @@ function getQuizStringSimilarity(str1, str2) {
     return (2.0 * intersection) / (b1.size + b2.size);
 }
 
-async function fetchAnimeSuggestions(query) {
+function fetchAnimeSuggestions(query) {
     const normalizedQuery   = query.toLowerCase().trim();
-    const localMatches      = [];
+    const pool              = window.localAnimeNamesPool || [];
+    const matchedTitles     = [];
 
-    if (globalSearchData && globalSearchData.length > 0) {
-        const seenLocalTitles = new Set();
+    for (let i = 0; i < pool.length; i++) {
+        const title = pool[i];
 
-        for (let i = 0; i < globalSearchData.length; i++) {
-            const song          = globalSearchData[i];
-            const candidates    = [song.romaji, song.english, ...(song.alts || [])];
-
-            for (let j = 0; j < candidates.length; j++) {
-                const title = candidates[j];
-                if (!title) continue;
-
-                const trimmedTitle  = title.trim();
-                const lowerTitle    = trimmedTitle.toLowerCase();
-
-                if (lowerTitle.includes(normalizedQuery) && !seenLocalTitles.has(lowerTitle)) {
-                    seenLocalTitles.add(lowerTitle);
-                    localMatches.push(trimmedTitle);
-                }
-            }
-
-            if (localMatches.length >= 10) break;
-        }
+        if (!title)                                         continue;
+        if (title.toLowerCase().includes(normalizedQuery))  matchedTitles.push(title);
     }
 
-    if (localMatches.length > 0)  renderAutocompleteOptions(localMatches.slice(0, 5));
+    matchedTitles.sort((a, b) => {
+        const similarityA = getQuizStringSimilarity(query, a);
+        const similarityB = getQuizStringSimilarity(query, b);
 
-    if (suggestionCache.has(normalizedQuery)) {
-        renderAutocompleteOptions(suggestionCache.get(normalizedQuery));
-        return;
-    }
+        if (a.length    !== b.length)       return a.length     - b.length;
+        if (similarityB !== similarityA)    return similarityB  - similarityA;
 
-    if (currentAbortController) currentAbortController.abort();
+        return a.localeCompare(b);
+    });
 
-    currentAbortController  = new AbortController();
-    const signal            = currentAbortController.signal;
-
-    try {
-        let remoteTitles    = [];
-        const malUrl        = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=6`;
-        const response      = await fetch(malUrl, { signal });
-
-        if (response.ok) {
-            const result = await response.json();
-
-            if (result.data && result.data.length > 0) {
-                const seenRemoteTitles = new Set();
-
-                result.data.forEach(anime => {
-                    const variants = [anime.title, anime.title_english];
-
-                    variants.forEach(v => {
-                        if (v) {
-                            const trimmedV  = v.trim();
-                            const lowerV    = trimmedV.toLowerCase();
-
-                            if (!seenRemoteTitles.has(lowerV)) {
-                                seenRemoteTitles.add(lowerV);
-                                remoteTitles.push(trimmedV);
-                            }
-                        }
-                    });
-                });
-            }
-        }
-
-        const finalUniqueTitles = [];
-        const globalSeenMap     = new Set();
-        const combinedPool      = [...localMatches, ...remoteTitles];
-
-        combinedPool.forEach(title => {
-            const lower = title.toLowerCase();
-            if (!globalSeenMap.has(lower)) {
-                globalSeenMap.add(lower);
-                finalUniqueTitles.push(title);
-            }
-        });
-
-        const unifiedOutputList = finalUniqueTitles.slice(0, 5);
-        suggestionCache.set(normalizedQuery, unifiedOutputList);
-        renderAutocompleteOptions(unifiedOutputList);
-
-    }
-
-    catch (err) {if (err.name !== 'AbortError') console.error("Autocomplete backend fetch failed: ", err);}
+    const topFiveMatches = matchedTitles.slice(0, 5);
+    renderAutocompleteOptions(topFiveMatches);
 }
 
 function renderAutocompleteOptions(titlesArray) {
     quizAutoDropdown.innerHTML  = "";
     currentFocusIndex           = -1;
 
-    const limitedTitles = titlesArray.slice(0, 5);
-
-    if (!limitedTitles.length) {
+    if (!titlesArray.length) {
         closeQuizAutocomplete();
         return;
     }
 
-    limitedTitles.forEach(title => {
+    titlesArray.forEach(title => {
         const btn       = document.createElement("button");
         btn.type        = "button";
         btn.className   = "w-full h-8 text-left px-3 py-0 hover:bg-black hover:text-white transition-colors cursor-pointer border-b last:border-0 border-gray-100 whitespace-nowrap overflow-hidden text-ellipsis bg-white text-black font-medium flex items-center";
