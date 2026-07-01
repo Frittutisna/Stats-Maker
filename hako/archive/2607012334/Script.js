@@ -5866,6 +5866,8 @@ const quizAutoDropdown  = document.getElementById("quizAutocompleteDropdown");
 
 let currentFocusIndex           = -1;
 let autocompleteDebounceTimeout = null;
+let currentAbortController      = null;
+const suggestionCache           = new Map();
 
 if (quizInput && quizAutoDropdown) {
     document.addEventListener("click", (e) => {if (e.target !== quizInput && e.target !== quizAutoDropdown) {closeQuizAutocomplete();}});
@@ -5879,7 +5881,7 @@ if (quizInput && quizAutoDropdown) {
             return;
         }
 
-        autocompleteDebounceTimeout = setTimeout(() => {fetchAnimeSuggestions(query);}, 100);
+        autocompleteDebounceTimeout = setTimeout(() => {fetchAnimeSuggestions(query);}, 300);
     });
 
     quizInput.addEventListener("keydown", (e) => {
@@ -5936,37 +5938,49 @@ function getQuizStringSimilarity(str1, str2) {
 }
 
 async function fetchAnimeSuggestions(query) {
-    try {
-        const normalizedQuery   = query.toLowerCase().trim();
-        const localMatches      = [];
+    const normalizedQuery   = query.toLowerCase().trim();
+    const localMatches      = [];
 
-        if (globalSearchData && globalSearchData.length > 0) {
-            const seenLocalTitles = new Set();
+    if (globalSearchData && globalSearchData.length > 0) {
+        const seenLocalTitles = new Set();
 
-            for (let i = 0; i < globalSearchData.length; i++) {
-                const song          = globalSearchData[i];
-                const candidates    = [song.romaji, song.english, ...(song.alts || [])];
+        for (let i = 0; i < globalSearchData.length; i++) {
+            const song          = globalSearchData[i];
+            const candidates    = [song.romaji, song.english, ...(song.alts || [])];
 
-                for (let j = 0; j < candidates.length; j++) {
-                    const title = candidates[j];
-                    if (!title) continue;
+            for (let j = 0; j < candidates.length; j++) {
+                const title = candidates[j];
+                if (!title) continue;
 
-                    const trimmedTitle  = title.trim();
-                    const lowerTitle    = trimmedTitle.toLowerCase();
+                const trimmedTitle  = title.trim();
+                const lowerTitle    = trimmedTitle.toLowerCase();
 
-                    if (lowerTitle.includes(normalizedQuery) && !seenLocalTitles.has(lowerTitle)) {
-                        seenLocalTitles.add(lowerTitle);
-                        localMatches.push(trimmedTitle);
-                    }
+                if (lowerTitle.includes(normalizedQuery) && !seenLocalTitles.has(lowerTitle)) {
+                    seenLocalTitles.add(lowerTitle);
+                    localMatches.push(trimmedTitle);
                 }
-
-                if (localMatches.length >= 10) break;
             }
-        }
 
+            if (localMatches.length >= 10) break;
+        }
+    }
+
+    if (localMatches.length > 0)  renderAutocompleteOptions(localMatches.slice(0, 5));
+
+    if (suggestionCache.has(normalizedQuery)) {
+        renderAutocompleteOptions(suggestionCache.get(normalizedQuery));
+        return;
+    }
+
+    if (currentAbortController) currentAbortController.abort();
+
+    currentAbortController  = new AbortController();
+    const signal            = currentAbortController.signal;
+
+    try {
         let remoteTitles    = [];
         const malUrl        = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=6`;
-        const response      = await fetch(malUrl);
+        const response      = await fetch(malUrl, { signal });
 
         if (response.ok) {
             const result = await response.json();
@@ -6004,13 +6018,13 @@ async function fetchAnimeSuggestions(query) {
             }
         });
 
-        renderAutocompleteOptions(finalUniqueTitles.slice(0, 5));
+        const unifiedOutputList = finalUniqueTitles.slice(0, 5);
+        suggestionCache.set(normalizedQuery, unifiedOutputList);
+        renderAutocompleteOptions(unifiedOutputList);
 
     }
 
-    catch (err) {
-        console.error("Autocomplete failed: ", err);
-    }
+    catch (err) {if (err.name !== 'AbortError') console.error("Autocomplete backend fetch failed: ", err);}
 }
 
 function renderAutocompleteOptions(titlesArray) {
