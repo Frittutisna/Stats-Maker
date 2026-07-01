@@ -5879,7 +5879,7 @@ if (quizInput && quizAutoDropdown) {
             return;
         }
 
-        autocompleteDebounceTimeout = setTimeout(() => {fetchAnimeSuggestions(query);}, 300);
+        autocompleteDebounceTimeout = setTimeout(() => {fetchAnimeSuggestions(query);}, 100);
     });
 
     quizInput.addEventListener("keydown", (e) => {
@@ -5938,91 +5938,69 @@ function getQuizStringSimilarity(str1, str2) {
 async function fetchAnimeSuggestions(query) {
     try {
         const normalizedQuery   = query.toLowerCase().trim();
-        const localTitlesSet    = new Set();
+        const localMatches      = [];
 
         if (globalSearchData && globalSearchData.length > 0) {
-            globalSearchData.forEach(song => {
-                if (song.romaji)                            localTitlesSet.add(song.romaji.trim());
-                if (song.english)                           localTitlesSet.add(song.english.trim());
-                if (song.alts && Array.isArray(song.alts))  {song.alts.forEach(alt => {if (alt) localTitlesSet.add(alt.trim());});
+            const seenLocalTitles = new Set();
+
+            for (let i = 0; i < globalSearchData.length; i++) {
+                const song          = globalSearchData[i];
+                const candidates    = [song.romaji, song.english, ...(song.alts || [])];
+
+                for (let j = 0; j < candidates.length; j++) {
+                    const title = candidates[j];
+                    if (!title) continue;
+
+                    const trimmedTitle  = title.trim();
+                    const lowerTitle    = trimmedTitle.toLowerCase();
+
+                    if (lowerTitle.includes(normalizedQuery) && !seenLocalTitles.has(lowerTitle)) {
+                        seenLocalTitles.add(lowerTitle);
+                        localMatches.push(trimmedTitle);
+                    }
                 }
-            });
+
+                if (localMatches.length >= 10) break;
+            }
         }
 
-        const scoredLocalMatches = Array.from(localTitlesSet)
-            .filter(title => title.toLowerCase().includes(normalizedQuery))
-            .map(title => ({
-                title   : title,
-                score   : getQuizStringSimilarity(title, normalizedQuery),
-                isLocal : true
-            }))
-            .sort((a, b) => b.score - a.score);
-
-        const graphqlQuery = `
-            query ($search: String) {
-                Page (page: 1, perPage: 6) {
-                    media (search: $search, type: ANIME, sort: POPULARITY_DESC) {
-                        title {
-                            romaji
-                            english
-                        }
-                    }
-                }
-            }
-        `;
-
-        const variables     = {search: query};
-        let remoteMatches   = [];
-
-        const response = await fetch("https://graphql.anilist.co", {
-            method  : "POST",
-            headers : {
-                "Content-Type"  : "application/json",
-                "Accept"        : "application/json"
-            },
-            body    : JSON.stringify({ query: graphqlQuery, variables: variables })
-        });
+        let remoteTitles    = [];
+        const malUrl        = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=6`;
+        const response      = await fetch(malUrl);
 
         if (response.ok) {
-            const result    = await response.json();
-            const animeList = result.data?.Page?.media;
+            const result = await response.json();
 
-            if (animeList && animeList.length > 0) {
-                const apiTitlesSet = new Set();
+            if (result.data && result.data.length > 0) {
+                const seenRemoteTitles = new Set();
 
-                animeList.forEach(anime => {
-                    if (anime.title) {
-                        if (anime.title.romaji)     apiTitlesSet.add(anime.title.romaji.trim());
-                        if (anime.title.english)    apiTitlesSet.add(anime.title.english.trim());
-                    }
+                result.data.forEach(anime => {
+                    const variants = [anime.title, anime.title_english];
+
+                    variants.forEach(v => {
+                        if (v) {
+                            const trimmedV  = v.trim();
+                            const lowerV    = trimmedV.toLowerCase();
+
+                            if (!seenRemoteTitles.has(lowerV)) {
+                                seenRemoteTitles.add(lowerV);
+                                remoteTitles.push(trimmedV);
+                            }
+                        }
+                    });
                 });
-
-                remoteMatches = Array.from(apiTitlesSet).map(title => ({
-                    title   : title,
-                    score   : getQuizStringSimilarity(title, normalizedQuery),
-                    isLocal : false
-                }));
             }
         }
 
         const finalUniqueTitles = [];
-        const lowerCaseSeenMap  = new Set();
+        const globalSeenMap     = new Set();
+        const combinedPool      = [...localMatches, ...remoteTitles];
 
-        scoredLocalMatches.forEach(item => {
-            const lower = item.title.toLowerCase();
-
-            if (!lowerCaseSeenMap.has(lower)) {
-                lowerCaseSeenMap.add(lower);
-                finalUniqueTitles.push(item.title);
-            }
-        });
-
-        remoteMatches.forEach(item => {
-            const lower = item.title.toLowerCase();
-
-            if (!lowerCaseSeenMap.has(lower)) {
-                lowerCaseSeenMap.add(lower);
-                finalUniqueTitles.push(item.title);
+        combinedPool.forEach(title => {
+            const lower = title.toLowerCase();
+            if (!globalSeenMap.has(lower)) {
+                globalSeenMap.add(lower);
+                finalUniqueTitles.push(title);
             }
         });
 
@@ -6031,7 +6009,7 @@ async function fetchAnimeSuggestions(query) {
     }
 
     catch (err) {
-        console.error("Hybrid entry autocomplete failed: ", err);
+        console.error("Autocomplete failed: ", err);
     }
 }
 
