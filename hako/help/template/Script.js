@@ -5860,3 +5860,246 @@ function exitQuizEngine() {
     document.getElementById("globalQuizPauseBtn")   .classList.add      ("hidden");
     document.getElementById("globalQuizReturnBtn")  .classList.add      ("hidden");
 }
+
+const quizInput         = document.getElementById("quizAnimeInput");
+const quizAutoDropdown  = document.getElementById("quizAutocompleteDropdown");
+
+let currentFocusIndex           = -1;
+let autocompleteDebounceTimeout = null;
+
+if (quizInput && quizAutoDropdown) {
+    document.addEventListener("click", (e) => {if (e.target !== quizInput && e.target !== quizAutoDropdown) {closeQuizAutocomplete();}});
+
+    quizInput.addEventListener("input", () => {
+        clearTimeout(autocompleteDebounceTimeout);
+        const query = quizInput.value.trim();
+
+        if (query.length < 3 || quizReplayActive || quizLeewayActive) {
+            closeQuizAutocomplete();
+            return;
+        }
+
+        autocompleteDebounceTimeout = setTimeout(() => {fetchAnimeSuggestions(query);}, 300);
+    });
+
+    quizInput.addEventListener("keydown", (e) => {
+        const items = quizAutoDropdown.getElementsByTagName("button");
+        if (!items.length) return;
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            currentFocusIndex++;
+            setActiveAutocompleteItem(items);
+        }
+
+        else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            currentFocusIndex--;
+            setActiveAutocompleteItem(items);
+        }
+
+        else if (e.key === "Escape") {
+            e.preventDefault        ();
+            closeQuizAutocomplete   ();
+        }
+
+        else if (e.key === "Enter" && quizAutoDropdown.classList.contains("hidden") === false) {
+            if (currentFocusIndex > -1 && items[currentFocusIndex]) {
+                e.preventDefault    ();
+                e.stopPropagation   ();
+                items[currentFocusIndex].click();
+            }
+        }
+    });
+}
+
+function getQuizStringSimilarity(str1, str2) {
+    const s1 = str1.toLowerCase().replace(/\s+/g, '');
+    const s2 = str2.toLowerCase().replace(/\s+/g, '');
+
+    if (s1 === s2)                      return 1.0;
+    if (s1.length < 2 || s2.length < 2) return 0.0;
+
+    const getBigrams = (str) => {
+        const bigrams = new Set();
+        for (let i = 0; i < str.length - 1; i++) bigrams.add(str.substring(i, i + 2));
+        return bigrams;
+    };
+
+    const b1 = getBigrams(s1);
+    const b2 = getBigrams(s2);
+
+    let intersection = 0;
+    b1.forEach(gram => {if (b2.has(gram)) intersection++;});
+
+    return (2.0 * intersection) / (b1.size + b2.size);
+}
+
+async function fetchAnimeSuggestions(query) {
+    try {
+        const normalizedQuery   = query.toLowerCase().trim();
+        const localTitlesSet    = new Set();
+
+        if (globalSearchData && globalSearchData.length > 0) {
+            globalSearchData.forEach(song => {
+                if (song.romaji)                            localTitlesSet.add(song.romaji.trim());
+                if (song.english)                           localTitlesSet.add(song.english.trim());
+                if (song.alts && Array.isArray(song.alts))  {song.alts.forEach(alt => {if (alt) localTitlesSet.add(alt.trim());});
+                }
+            });
+        }
+
+        const scoredLocalMatches = Array.from(localTitlesSet)
+            .filter(title => title.toLowerCase().includes(normalizedQuery))
+            .map(title => ({
+                title   : title,
+                score   : getQuizStringSimilarity(title, normalizedQuery),
+                isLocal : true
+            }))
+            .sort((a, b) => b.score - a.score);
+
+        const graphqlQuery = `
+            query ($search: String) {
+                Page (page: 1, perPage: 6) {
+                    media (search: $search, type: ANIME, sort: POPULARITY_DESC) {
+                        title {
+                            romaji
+                            english
+                        }
+                    }
+                }
+            }
+        `;
+
+        const variables     = {search: query};
+        let remoteMatches   = [];
+
+        const response = await fetch("https://graphql.anilist.co", {
+            method  : "POST",
+            headers : {
+                "Content-Type"  : "application/json",
+                "Accept"        : "application/json"
+            },
+            body    : JSON.stringify({ query: graphqlQuery, variables: variables })
+        });
+
+        if (response.ok) {
+            const result    = await response.json();
+            const animeList = result.data?.Page?.media;
+
+            if (animeList && animeList.length > 0) {
+                const apiTitlesSet = new Set();
+
+                animeList.forEach(anime => {
+                    if (anime.title) {
+                        if (anime.title.romaji)     apiTitlesSet.add(anime.title.romaji.trim());
+                        if (anime.title.english)    apiTitlesSet.add(anime.title.english.trim());
+                    }
+                });
+
+                remoteMatches = Array.from(apiTitlesSet).map(title => ({
+                    title   : title,
+                    score   : getQuizStringSimilarity(title, normalizedQuery),
+                    isLocal : false
+                }));
+            }
+        }
+
+        const finalUniqueTitles = [];
+        const lowerCaseSeenMap  = new Set();
+
+        scoredLocalMatches.forEach(item => {
+            const lower = item.title.toLowerCase();
+
+            if (!lowerCaseSeenMap.has(lower)) {
+                lowerCaseSeenMap.add(lower);
+                finalUniqueTitles.push(item.title);
+            }
+        });
+
+        remoteMatches.forEach(item => {
+            const lower = item.title.toLowerCase();
+
+            if (!lowerCaseSeenMap.has(lower)) {
+                lowerCaseSeenMap.add(lower);
+                finalUniqueTitles.push(item.title);
+            }
+        });
+
+        renderAutocompleteOptions(finalUniqueTitles.slice(0, 5));
+
+    }
+
+    catch (err) {
+        console.error("Hybrid entry autocomplete failed: ", err);
+    }
+}
+
+function renderAutocompleteOptions(titlesArray) {
+    quizAutoDropdown.innerHTML  = "";
+    currentFocusIndex           = -1;
+
+    const limitedTitles = titlesArray.slice(0, 5);
+
+    if (!limitedTitles.length) {
+        closeQuizAutocomplete();
+        return;
+    }
+
+    limitedTitles.forEach(title => {
+        const btn       = document.createElement("button");
+        btn.type        = "button";
+        btn.className   = "w-full h-8 text-left px-3 py-0 hover:bg-black hover:text-white transition-colors cursor-pointer border-b last:border-0 border-gray-100 whitespace-nowrap overflow-hidden text-ellipsis bg-white text-black font-medium flex items-center";
+        btn.textContent = title;
+
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            quizInput.value = title;
+            closeQuizAutocomplete();
+            quizInput.focus();
+        });
+
+        quizAutoDropdown.appendChild(btn);
+    });
+
+    quizAutoDropdown.classList.remove("hidden");
+}
+
+function setActiveAutocompleteItem(items) {
+    for (let i = 0; i < items.length; i++) {
+        items[i].classList.remove   ("bg-black", "text-white");
+        items[i].classList.add      ("bg-white", "text-black");
+    }
+
+    if (currentFocusIndex >= items.length)  currentFocusIndex = 0;
+    if (currentFocusIndex < 0)              currentFocusIndex = items.length - 1;
+
+    if (items[currentFocusIndex]) {
+        items[currentFocusIndex].classList.remove   ("bg-white", "text-black");
+        items[currentFocusIndex].classList.add      ("bg-black", "text-white");
+        items[currentFocusIndex].scrollIntoView     ({block: "nearest"});
+    }
+}
+
+function closeQuizAutocomplete() {
+    if (quizAutoDropdown) {
+        quizAutoDropdown.classList.add("hidden");
+        quizAutoDropdown.innerHTML = "";
+    }
+
+    currentFocusIndex = -1;
+}
+
+const nativeResolveQuizItem = resolveQuizItem;
+
+resolveQuizItem = function(isCorrect) {
+    closeQuizAutocomplete();
+    if (nativeResolveQuizItem) nativeResolveQuizItem(isCorrect);
+};
+
+const nativeExitQuizEngine = exitQuizEngine;
+
+exitQuizEngine = function() {
+    closeQuizAutocomplete();
+    if (nativeExitQuizEngine) nativeExitQuizEngine();
+};

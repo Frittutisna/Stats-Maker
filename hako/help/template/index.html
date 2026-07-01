@@ -230,9 +230,12 @@
                             <div id="quizResolutionLabel" class="min-w-0 px-2 text-center text-xl whitespace-nowrap overflow-hidden text-ellipsis font-bold" style="font-family: 'Segoe UI', system-ui, sans-serif;"></div>
                             <div id="quizTimerValue" class="text-right font-bold" style="font-family: 'Segoe UI', system-ui, sans-serif;">0</div>
                         </div>
-                        <div id="quizInterfaceBody" class="flex gap-1 items-stretch">
+                        <div id="quizInterfaceBody" class="flex gap-1 items-stretch relative">
                             <button id="quizSkipBtn" onclick="handleQuizSkipClick()" class="w-10 bg-black text-white text-xs font-bold hover:bg-gray-800 transition-all uppercase tracking-wider shrink-0 flex items-center justify-center rounded-none">Skip</button>
-                            <input type="text" id="quizAnimeInput" autocomplete="off" class="flex-1 h-8 px-3 border text-sm focus:outline-black rounded-none">
+                            <div class="flex-1 relative">
+                                <input type="text" id="quizAnimeInput" autocomplete="off" class="w-full h-8 px-3 border text-sm focus:outline-black rounded-none">
+                                <div id="quizAutocompleteDropdown" class="absolute left-0 top-full w-full bg-white border border-t-0 shadow-md flex flex-col hidden z-[60] max-h-[160px] overflow-y-auto text-xs text-black"></div>
+                            </div>
                         </div>
                         <div id="quizMcInterfaceBody" class="hidden flex gap-1 items-stretch w-full">
                             <button id="quizMcSkipBtn" onclick="handleMcSkipClick()" class="w-10 bg-black text-white text-xs font-bold hover:bg-gray-800 transition-all uppercase tracking-wider shrink-0 flex items-center justify-center rounded-none">Skip</button>
