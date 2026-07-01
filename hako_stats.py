@@ -1,4 +1,4 @@
-import gspread, os, shutil, sys
+import gspread, ijson, json, os, shutil, sys, urllib.request
 import tkinter as tk
 
 from hako.analyzer       import TourAnalyzer
@@ -28,6 +28,37 @@ def sync_chanting(tour_dir_path):
 
     except Exception as e: print(f"Failed to download chanting song IDs: {e}")
 
+def extract_unique_names(template_dir):
+    name_file_path = template_dir / "Name.json"
+
+    if not name_file_path.exists() or os.path.getsize(name_file_path) == 0:
+        print("[?] Name.json is missing or empty, extracting from libraryMasterList")
+
+        url             = "https://animemusicquiz.com/libraryMasterList"
+        unique_names    = set()
+        headers         = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        request         = urllib.request.Request(url, headers=headers)
+
+        try:
+            with urllib.request.urlopen(request) as response:
+                parser = ijson.kvitems(response, "animeMap")
+
+                for _, anime_data in parser:
+                    main_names = anime_data.get("mainNames", {})
+                    if not main_names: continue
+
+                    ja_name = main_names.get("JA")
+                    en_name = main_names.get("EN")
+
+                    if ja_name: unique_names.add(ja_name.strip())
+                    if en_name: unique_names.add(en_name.strip())
+
+            flat_list = sorted(list(unique_names))
+            with open(name_file_path, "w", encoding = "utf-8") as out_f: json.dump(flat_list, out_f, ensure_ascii = False, indent = 4)
+            print(f"[✓] Success! Extracted {len(flat_list)} unique names to: {name_file_path}")
+            
+        except Exception as e: print(f"[X] Failed to extract unique names: {e}")
+
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
@@ -36,6 +67,9 @@ if __name__ == "__main__":
     tour_folder_path    = script_directory / "hako" / DIR_TOURS
     chant_txt_file      = tour_folder_path / FILE_CHANT    
     has_valid_tour      = False
+    template_path       = script_directory / "hako" / "help" / "template"
+
+    extract_unique_names(template_path)
 
     for json_dir in tour_folder_path.glob("*/json"):
         if any(json_dir.glob("*.json")):

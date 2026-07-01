@@ -102,8 +102,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "tsui",
-            "skychael"
+            "skychael",
+            "tsui"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -388,8 +388,8 @@
             4
         ],
         "alts": [
-            "Aikatsu!",
-            "Gekijouban Aikatsu!"
+            "Gekijouban Aikatsu!",
+            "Aikatsu!"
         ],
         "start_sample": 61
     },
@@ -977,8 +977,8 @@
             3
         ],
         "alts": [
-            "Berserk: The Golden Age Arc III - The Advent",
-            "Berserk Ougon Jidai-hen III: Kourin"
+            "Berserk Ougon Jidai-hen III: Kourin",
+            "Berserk: The Golden Age Arc III - The Advent"
         ],
         "start_sample": 5
     },
@@ -2088,10 +2088,10 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "tsui",
-            "skychael",
             "spartric",
-            "chommy"
+            "chommy",
+            "skychael",
+            "tsui"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -2753,8 +2753,8 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "tsui",
-            "chommy"
+            "chommy",
+            "tsui"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -4358,9 +4358,9 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "tsui",
+            "spartric",
             "skychael",
-            "spartric"
+            "tsui"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -4989,8 +4989,8 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "tsui",
-            "skychael"
+            "skychael",
+            "tsui"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -5315,8 +5315,8 @@
             "beautiful"
         ],
         "lives_taken_flat": [
-            "atsui_",
-            "arisutachibana"
+            "arisutachibana",
+            "atsui_"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -6897,9 +6897,9 @@
             3
         ],
         "alts": [
-            "Initial D",
             "Initial D: First Stage",
-            "Initial D: Fourth Stage"
+            "Initial D: Fourth Stage",
+            "Initial D"
         ],
         "start_sample": 19
     },
@@ -7324,8 +7324,8 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "tsui",
-            "spartric"
+            "spartric",
+            "tsui"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -8217,8 +8217,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "saikichan",
-            "kaededayo"
+            "kaededayo",
+            "saikichan"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -8834,8 +8834,8 @@
             2
         ],
         "alts": [
-            "Mobile Police Patlabor",
-            "Shiawase no Katachi"
+            "Shiawase no Katachi",
+            "Mobile Police Patlabor"
         ],
         "start_sample": 68
     },
@@ -9264,8 +9264,8 @@
             "beautiful"
         ],
         "lives_taken_flat": [
-            "atsui_",
-            "arisutachibana"
+            "arisutachibana",
+            "atsui_"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -9810,8 +9810,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "neoburnz",
-            "kaededayo"
+            "kaededayo",
+            "neoburnz"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -10023,8 +10023,8 @@
             4
         ],
         "alts": [
-            "Mahou no Star Magical Emi",
-            "Magical Emi, the Magic Star"
+            "Magical Emi, the Magic Star",
+            "Mahou no Star Magical Emi"
         ],
         "start_sample": 147
     },
@@ -12653,8 +12653,8 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "beautiful",
             "arisutachibana",
+            "beautiful",
             "bigsmo"
         ],
         "lives_saved_flat": [],
@@ -12728,8 +12728,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "neoburnz",
-            "kaededayo"
+            "kaededayo",
+            "neoburnz"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12737,9 +12737,9 @@
             4
         ],
         "alts": [
-            "Pokémon: Battle Frontier",
+            "Pocket Monsters: Diamond & Pearl",
             "Pokémon: Diamond and Pearl",
-            "Pocket Monsters: Diamond & Pearl"
+            "Pokémon: Battle Frontier"
         ],
         "start_sample": 14
     },
@@ -13512,8 +13512,8 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "tsui",
-            "skychael"
+            "skychael",
+            "tsui"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -14561,8 +14561,8 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "tsui",
-            "skychael"
+            "skychael",
+            "tsui"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -14624,8 +14624,8 @@
             "beautiful"
         ],
         "lives_taken_flat": [
-            "atsui_",
-            "beautiful"
+            "beautiful",
+            "atsui_"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -15105,11 +15105,11 @@
             4
         ],
         "alts": [
-            "Soukou Kihei Votoms: Big Battle",
-            "Armored Trooper Votoms: Big Battle",
             "Soukou Kihei Votoms: Koei Futatabi",
             "Armored Trooper Votoms: Alone Again",
+            "Soukou Kihei Votoms: Big Battle",
             "Soukou Kihei Votoms",
+            "Armored Trooper Votoms: Big Battle",
             "Armored Trooper Votoms"
         ],
         "start_sample": 49
@@ -15316,8 +15316,8 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "tsui",
-            "skychael"
+            "skychael",
+            "tsui"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -15576,9 +15576,9 @@
             "beautiful"
         ],
         "lives_taken_flat": [
+            "beautiful",
             "atsui_",
-            "bigsmo",
-            "beautiful"
+            "bigsmo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -15965,8 +15965,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "atsui_",
-            "beautiful"
+            "beautiful",
+            "atsui_"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -16968,10 +16968,10 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "tsui",
-            "skychael",
             "spartric",
-            "chommy"
+            "chommy",
+            "skychael",
+            "tsui"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -17219,8 +17219,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "saikichan",
-            "kaededayo"
+            "kaededayo",
+            "saikichan"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -18043,8 +18043,8 @@
             "chommy"
         ],
         "lives_taken_flat": [
-            "mami",
-            "edwardd"
+            "edwardd",
+            "mami"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [

@@ -987,22 +987,17 @@ class TourAnalyzer:
             if site_src     .exists(): shutil.copytree  (site_src,      workspace_root / f"hako-{self.tour_id}-site", dirs_exist_ok = True)
 
         elif self.share_choice == "Yes, push it to the archive":
-            timestamp           = datetime.datetime.now().strftime("%y%m%d%H%M")
-            archive_dir         = self.script_dir.parent / "hako" / "archive" / timestamp
-            hako_dir            = web_path 
-            files_to_archive    = ["index.html", "Script.js", "Styles.css", "Data.json", "Search.json"]
+            timestamp   = datetime.datetime.now().strftime("%y%m%d%H%M")
+            archive_dir = self.script_dir.parent / "hako" / "archive" / timestamp
+            hako_dir    = web_path 
 
-            print(f"[?] Copying website components to archive/{timestamp}")
-            archive_dir.mkdir(parents = True, exist_ok = True)
+            print(f"[?] Copying files to archive/{timestamp}")
 
-            for file_name in files_to_archive:
-                src_file = hako_dir / file_name
+            try:
+                shutil.copytree(hako_dir, archive_dir, dirs_exist_ok = True)
+                print(f"[✓] Copied all files from {hako_dir.name}")
 
-                if src_file.exists():
-                    shutil.copy(src_file, archive_dir / file_name)
-                    print(f"[✓] Copied {file_name}")
-
-                else: print(f"[X] {file_name} not found in {hako_dir} to copy")
+            except Exception as e: print(f"[X] Failed to copy files: {e}")
   
             dashboard_url = f"https://frittutisna.github.io/Stats-Maker/hako/archive/{timestamp}/index.html?update=1"
             print(f"[?] Pushing to GitHub")
@@ -3047,6 +3042,7 @@ class TourAnalyzer:
         shutil.copy(template_dir / "index.html",    path / "index.html")
         shutil.copy(template_dir / "Styles.css",    path / "Styles.css")
         shutil.copy(template_dir / "Script.js",     path / "Script.js")
+        shutil.copy(template_dir / "Name.json",     path / "Name.json")
 
     def _export_png(self, df, path, fname, title, mask = None, val_str = "default"):
         if not self.browser_path: return
