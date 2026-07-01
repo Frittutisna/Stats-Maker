@@ -5545,16 +5545,28 @@ function executeQuizTrack() {
     const song = quizActivePool[quizIndex];
 
     if (quizCurrentMode === "mc") {
-        const isJp          = currentSearchLang === "JP";
-        const correctTitle  = isJp ? (song.romaji || song.english || "") : (song.english || song.romaji || "");
-        const allTitles     = new Set();
+        const isJp              = currentSearchLang === "JP";
+        const correctTitle      = isJp ? (song.romaji || song.english || "") : (song.english || song.romaji || "");
+        const forbiddenTitles   = new Set();
 
-        globalSearchData.forEach(s => {
-            const title = isJp ? (s.romaji || s.english || "") : (s.english || s.romaji || "");
-            if (title && title !== correctTitle) allTitles.add(title);
-        });
+        if (song.romaji)                            forbiddenTitles                                     .add(song.romaji    .toLowerCase().trim());
+        if (song.english)                           forbiddenTitles                                     .add(song.english   .toLowerCase().trim());
+        if (song.alts && Array.isArray(song.alts))  song.alts.forEach(alt => {if (alt) forbiddenTitles  .add(alt            .toLowerCase().trim());});
 
-        const optionsArray = Array.from(allTitles).sort(() => Math.random() - 0.5).slice(0, 3);
+        const poolSource            = window.localAnimeNamesPool || [];
+        const distractorScoringPool = [];
+
+        for (let i = 0; i < poolSource.length; i++) {
+            const currentTitle = poolSource[i];
+            if (!currentTitle || forbiddenTitles.has(currentTitle.toLowerCase().trim())) continue;
+
+            const similarityScore = getQuizStringSimilarity(correctTitle, currentTitle);
+            distractorScoringPool.push({title: currentTitle, score: similarityScore});
+        }
+
+        distractorScoringPool.sort((a, b) => b.score - a.score);
+
+        const optionsArray = distractorScoringPool.slice(0, 3).map(item => item.title);
         optionsArray.push(correctTitle);
         optionsArray.sort(() => Math.random() - 0.5);
 
