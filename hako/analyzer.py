@@ -1690,12 +1690,12 @@ class TourAnalyzer:
         valid_spd_rows  = [i for i, r in enumerate(rows2) if pd.notnull(r["spd_val"])]
         valid_chn_rows  = [i for i, r in enumerate(rows2) if r["chn_val"] is not None and r["chn_val"] > 0]
 
-        best_gen_idx = len(rows1) - 1 - max(range(len(rows1)),  key = lambda i: rows1[::-1][i]["gen_val"]) if rows1             else None
-        best_atk_idx = len(rows1) - 1 - max(range(len(rows1)),  key = lambda i: rows1[::-1][i]["atk_val"]) if rows1             else None
-        best_blk_idx = len(rows1) - 1 - max(range(len(rows1)),  key = lambda i: rows1[::-1][i]["blk_val"]) if rows1             else None
-        best_con_idx = len(rows2) - 1 - max(range(len(rows2)),  key = lambda i: rows2[::-1][i]["con_val"]) if rows2             else None
-        best_spd_idx = len(rows2) - 1 - min(valid_spd_rows,     key = lambda i: rows2[::-1][i]["spd_val"]) if valid_spd_rows    else None
-        best_chn_idx = len(rows2) - 1 - max(valid_chn_rows,     key = lambda i: rows2[::-1][i]["chn_val"]) if valid_chn_rows    else None
+        best_gen_idx = len(rows1) - 1 - max(range(len(rows1)),  key = lambda i: rows1[::-1][i]["gen_val"])  if rows1            else None
+        best_atk_idx = len(rows1) - 1 - max(range(len(rows1)),  key = lambda i: rows1[::-1][i]["atk_val"])  if rows1            else None
+        best_blk_idx = len(rows1) - 1 - max(range(len(rows1)),  key = lambda i: rows1[::-1][i]["blk_val"])  if rows1            else None
+        best_con_idx = len(rows2) - 1 - max(range(len(rows2)),  key = lambda i: rows2[::-1][i]["con_val"])  if rows2            else None
+        best_spd_idx = min(valid_spd_rows,                      key = lambda i: rows2[i]["spd_val"])        if valid_spd_rows   else None
+        best_chn_idx = max(valid_chn_rows,                      key = lambda i: rows2[i]["chn_val"])        if valid_chn_rows   else None
 
         html_parts = []
         html_parts.append("<tr><th>Tier</th><th>Guess Rate</th><th>Lives Taken</th><th>Lives Saved</th></tr>")
