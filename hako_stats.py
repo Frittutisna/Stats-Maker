@@ -50,8 +50,14 @@ def extract_unique_names(template_dir):
                     ja_name = main_names.get("JA")
                     en_name = main_names.get("EN")
 
-                    if ja_name: unique_names.add(ja_name.strip())
-                    if en_name: unique_names.add(en_name.strip())
+                    ja_clean = ja_name.strip() if ja_name else ""
+                    en_clean = en_name.strip() if en_name else ""
+
+                    if ja_clean and en_clean and ja_clean != en_clean: unique_names.add(f"{ja_clean} || {en_clean}")
+
+                    elif ja_clean or en_clean:
+                        only_name = ja_clean or en_clean
+                        unique_names.add(f"{only_name} || {only_name}")
 
             flat_list = sorted(list(unique_names))
             with open(name_file_path, "w", encoding = "utf-8") as out_f: json.dump(flat_list, out_f, ensure_ascii = False, indent = 4)

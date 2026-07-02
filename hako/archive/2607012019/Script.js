@@ -5569,8 +5569,15 @@ function executeQuizTrack() {
         const distractorScoringPool = [];
 
         for (let i = 0; i < poolSource.length; i++) {
-            const currentTitle = poolSource[i];
-            if (!currentTitle || forbiddenTitles.has(currentTitle.toLowerCase().trim())) continue;
+                let currentTitle = poolSource[i];
+                if (!currentTitle) continue;
+
+                if (currentTitle.includes(" || ")) {
+                    const parts = currentTitle.split(" || ");
+                    currentTitle = isJp ? parts[0] : parts[1];
+                }
+
+                if (forbiddenTitles.has(currentTitle.toLowerCase().trim())) continue;
 
             const similarityScore = getQuizStringSimilarity(correctTitle, currentTitle);
             distractorScoringPool.push({title: currentTitle, score: similarityScore});
@@ -5961,12 +5968,18 @@ function fetchAnimeSuggestions(query) {
     const normalizedQuery   = query.toLowerCase().trim();
     const pool              = window.localAnimeNamesPool || [];
     const matchedTitles     = [];
+    const isJp              = currentSearchLang === "JP"; 
 
     for (let i = 0; i < pool.length; i++) {
-        const title = pool[i];
+        let title = pool[i];
+        if (!title) continue;
 
-        if (!title)                                         continue;
-        if (title.toLowerCase().includes(normalizedQuery))  matchedTitles.push(title);
+        if (title.includes(" || ")) {
+            const parts = title.split(" || ");
+            title = isJp ? parts[0] : parts[1];
+        }
+
+        if (title.toLowerCase().includes(normalizedQuery) && !matchedTitles.includes(title)) matchedTitles.push(title); 
     }
 
     matchedTitles.sort((a, b) => {

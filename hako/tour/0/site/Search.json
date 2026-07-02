@@ -805,9 +805,9 @@
             "TBDhater"
         ],
         "lives_taken_flat": [
+            "raphtelia",
             "cipherkai",
-            "spartric",
-            "raphtelia"
+            "spartric"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -1019,16 +1019,16 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [],
         "alts": [
-            "Ao no Exorcist: Yosuga-hen",
-            "Ao no Exorcist: Kyoto Fujouou-hen",
-            "Blue Exorcist: The Movie",
             "Blue Exorcist: Shimane Illuminati Saga",
-            "Blue Exorcist: Beyond the Snow Saga",
             "Blue Exorcist: The Blue Night Saga",
             "Ao no Exorcist: Yuki no Hate-hen",
+            "Blue Exorcist: The Movie",
+            "Ao no Exorcist Gekijouban",
+            "Ao no Exorcist: Kyoto Fujouou-hen",
             "Blue Exorcist: Kyoto Saga",
-            "Ao no Exorcist: Shimane Illuminati-hen",
-            "Ao no Exorcist Gekijouban"
+            "Blue Exorcist: Beyond the Snow Saga",
+            "Ao no Exorcist: Yosuga-hen",
+            "Ao no Exorcist: Shimane Illuminati-hen"
         ],
         "start_sample": 87
     },
@@ -1105,8 +1105,8 @@
             4
         ],
         "alts": [
-            "Aria the Avvenire",
-            "Aria the Animation"
+            "Aria the Animation",
+            "Aria the Avvenire"
         ],
         "start_sample": 41
     },
@@ -1458,8 +1458,8 @@
             3
         ],
         "alts": [
-            "BanG Dream! Ave Mujica",
-            "Ave Mujica: The Die is Cast"
+            "Ave Mujica: The Die is Cast",
+            "BanG Dream! Ave Mujica"
         ],
         "start_sample": 44
     },
@@ -2270,8 +2270,8 @@
             "bamboo"
         ],
         "lives_taken_flat": [
-            "bamboo",
-            "i_dont_like_loli"
+            "i_dont_like_loli",
+            "bamboo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -2351,9 +2351,9 @@
             "TBDhater"
         ],
         "lives_taken_flat": [
+            "furlain",
             "cipherkai",
-            "spartric",
-            "furlain"
+            "spartric"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -2653,8 +2653,8 @@
             "Wolbachia"
         ],
         "lives_taken_flat": [
-            "spartric",
-            "furlain"
+            "furlain",
+            "spartric"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -2746,11 +2746,11 @@
             3
         ],
         "alts": [
+            "Macross Flash Back 2012",
             "Choujikuu Yousai Macross: Ai, Oboete Imasu ka",
+            "Super Dimension Fortress Macross: Do You Remember Love?",
             "Macross",
             "The Super Dimension Fortress Macross: Flash Back 2012",
-            "Super Dimension Fortress Macross: Do You Remember Love?",
-            "Macross Flash Back 2012",
             "Macross: Do You Remember Love?"
         ],
         "start_sample": 9
@@ -3937,9 +3937,9 @@
         ],
         "alts": [
             "Dragon Ball: Curse of the Blood Rubies",
-            "Dragon Ball: Shenlong no Densetsu",
+            "Dragon Ball: Majin-jou no Nemurihime",
             "Dragon Ball: Sleeping Princess in Devil's Castle",
-            "Dragon Ball: Majin-jou no Nemurihime"
+            "Dragon Ball: Shenlong no Densetsu"
         ],
         "start_sample": 8
     },
@@ -6292,9 +6292,9 @@
             "bamboo"
         ],
         "lives_taken_flat": [
-            "jakemonkey",
             "i_dont_like_loli",
-            "bamboo"
+            "bamboo",
+            "jakemonkey"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -6561,9 +6561,9 @@
             "Wolbachia"
         ],
         "lives_taken_flat": [
-            "foopypoopy",
             "liljakatsuragi",
-            "tbdhater"
+            "tbdhater",
+            "foopypoopy"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -6975,9 +6975,9 @@
             "bamboo"
         ],
         "lives_taken_flat": [
+            "hakohoka",
             "dking20",
-            "annayanami",
-            "hakohoka"
+            "annayanami"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -7604,8 +7604,8 @@
             "Wolbachia"
         ],
         "lives_taken_flat": [
-            "foopypoopy",
-            "tbdhater"
+            "tbdhater",
+            "foopypoopy"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -8181,9 +8181,9 @@
             "Wolbachia"
         ],
         "lives_taken_flat": [
-            "foopypoopy",
             "liljakatsuragi",
-            "lordgrond"
+            "lordgrond",
+            "foopypoopy"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -11196,9 +11196,9 @@
             1
         ],
         "alts": [
+            "Meitantei Conan",
             "Case Closed",
-            "Detective Conan",
-            "Meitantei Conan"
+            "Detective Conan"
         ],
         "start_sample": 194
     },
@@ -13573,13 +13573,13 @@
             1
         ],
         "alts": [
-            "Pokémon: Mewtwo Returns",
-            "Pokémon: Spell of the Unown",
-            "Pokémon: Battle Frontier",
-            "Pokémon: Advanced",
-            "Pocket Monsters",
-            "Pokémon",
             "Pocket Monsters: Mewtwo! Ware wa Koko ni Ari",
+            "Pokémon: Mewtwo Returns",
+            "Pokémon: Battle Frontier",
+            "Pocket Monsters",
+            "Pokémon: Spell of the Unown",
+            "Pokémon",
+            "Pokémon: Advanced",
             "Pocket Monsters: Advanced Generation"
         ],
         "start_sample": 16
@@ -13663,9 +13663,9 @@
             "Wolbachia"
         ],
         "lives_taken_flat": [
+            "furlain",
             "cipherkai",
-            "spartric",
-            "furlain"
+            "spartric"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -14071,8 +14071,8 @@
             "bamboo"
         ],
         "lives_taken_flat": [
-            "spartric",
-            "furlain"
+            "furlain",
+            "spartric"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -14299,9 +14299,9 @@
             "bamboo"
         ],
         "lives_taken_flat": [
-            "jakemonkey",
             "i_dont_like_loli",
-            "bamboo"
+            "bamboo",
+            "jakemonkey"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -14904,8 +14904,8 @@
             1
         ],
         "alts": [
-            "School Rumble: Ni Gakki",
-            "School Rumble: 2nd Semester"
+            "School Rumble: 2nd Semester",
+            "School Rumble: Ni Gakki"
         ],
         "start_sample": 1
     },
@@ -15047,8 +15047,8 @@
             "bamboo"
         ],
         "lives_taken_flat": [
-            "foopypoopy",
-            "tbdhater"
+            "tbdhater",
+            "foopypoopy"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -15056,8 +15056,8 @@
             3
         ],
         "alts": [
-            "Seishun Buta Yarou wa Odekake Sister no Yume o Minai",
-            "Rascal Does Not Dream of a Sister Venturing Out"
+            "Rascal Does Not Dream of a Sister Venturing Out",
+            "Seishun Buta Yarou wa Odekake Sister no Yume o Minai"
         ],
         "start_sample": 36
     },
@@ -15735,9 +15735,9 @@
             1
         ],
         "alts": [
-            "Attack on Titan: Chronicle",
-            "Shingeki! Kyojin Chuugakkou",
             "Shingeki no Kyojin: Chronicle",
+            "Shingeki! Kyojin Chuugakkou",
+            "Attack on Titan: Chronicle",
             "Attack on Titan: Junior High"
         ],
         "start_sample": 78
@@ -16778,8 +16778,8 @@
             "Wolbachia"
         ],
         "lives_taken_flat": [
-            "cipherkai",
-            "furlain"
+            "furlain",
+            "cipherkai"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -17452,8 +17452,8 @@
             "TBDhater"
         ],
         "lives_taken_flat": [
-            "spartric",
-            "furlain"
+            "furlain",
+            "spartric"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -18814,10 +18814,10 @@
             3
         ],
         "alts": [
-            "Gunslinger Girl",
-            "Kemeko DX",
             "Kemeko Deluxe!",
-            "Psycho-Pass"
+            "Kemeko DX",
+            "Psycho-Pass",
+            "Gunslinger Girl"
         ],
         "start_sample": 30
     },
@@ -20358,9 +20358,9 @@
             "bamboo"
         ],
         "lives_taken_flat": [
-            "foopypoopy",
             "lordgrond",
-            "tbdhater"
+            "tbdhater",
+            "foopypoopy"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -20787,9 +20787,9 @@
             "bamboo"
         ],
         "lives_taken_flat": [
+            "bamboo",
             "jakemonkey",
-            "nunuchu42",
-            "bamboo"
+            "nunuchu42"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
