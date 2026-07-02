@@ -2741,33 +2741,45 @@ function setupTooltipListeners() {
             catch (err) {}
         });
 
+        td.addEventListener('mousemove',    positionTooltip);
+        td.addEventListener('mouseleave',   requestHideTooltip);
+    });
+
     document.querySelectorAll('[data-quiz-hover]').forEach(el => {
-        el.removeEventListener('mouseenter', el._quizEnter);
-        el.removeEventListener('mousemove',  positionTooltip);
-        el.removeEventListener('mouseleave', el._quizLeave);
+        el.removeEventListener('mouseenter',    el._quizEnter);
+        el.removeEventListener('mousemove',     el._quizMove);
+        el.removeEventListener('mouseleave',    el._quizLeave);
 
         el._quizEnter = (e) => {
             clearHideTimeout();
+            if (el.id !== "quizResolutionLabel" && el.scrollWidth <= el.clientWidth) return;
+
             const rawText = decodeURIComponent(el.getAttribute('data-quiz-hover'));
             if (!rawText) return;
 
-            tooltipNode.style.backgroundColor = 'black';
-            tooltipNode.style.color           = 'white';
-            tooltipNode.style.border          = 'none';
-            tooltipNode.innerHTML             = `<b>${rawText}</b>`;
-            
+            tooltipNode.style.backgroundColor   = 'black';
+            tooltipNode.style.color             = 'white';
+            tooltipNode.style.border            = 'none';
+            tooltipNode.innerHTML               = `<b>${rawText}</b>`;
+
             positionTooltip(e);
         };
 
-        el._quizLeave = () => { requestHideTooltip(); };
+        el._quizMove = (e) => {
+            if (el.id !== "quizResolutionLabel" && el.scrollWidth <= el.clientWidth) return;
+            positionTooltip(e);
+        };
+
+        el._quizLeave = () => { 
+            requestHideTooltip();
+
+            tooltipNode.style.display   = 'none';
+            tooltipNode.innerHTML       = '';
+        };
 
         el.addEventListener('mouseenter', el._quizEnter);
-        el.addEventListener('mousemove',  positionTooltip);
+        el.addEventListener('mousemove',  el._quizMove);
         el.addEventListener('mouseleave', el._quizLeave);
-    });
-
-        td.addEventListener('mousemove',    positionTooltip);
-        td.addEventListener('mouseleave',   requestHideTooltip);
     });
 }
 
@@ -5574,15 +5586,19 @@ function executeQuizTrack() {
             const btn = document.getElementById(`quizMcOpt${i}`);
 
             if (btn) {
-                btn.innerText               = optionsArray[i - 1];
+                const optTitle              = optionsArray[i - 1];
+                btn.innerText               = optTitle;
                 btn.disabled                = false;
                 btn.style.backgroundColor   = "";
                 btn.style.color             = "";
                 btn.style.fontWeight        = "";
 
-                btn.removeAttribute("data-selected");
+                btn.removeAttribute ("data-selected");
+                btn.setAttribute    ("data-quiz-hover", encodeURIComponent(optTitle));
             }
         }
+
+        setupTooltipListeners();
     }
 
     const anchor        = document.getElementById("quizAudioAnchor");
