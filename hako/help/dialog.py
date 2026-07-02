@@ -397,7 +397,7 @@ class TourMetadataDialog(UnifiedDialog):
 
         self.dry_var    = tk.StringVar(value = "No")
         self.dry_boxes  = {}
-        dry_options     = ["No", "Yes, but don't push it to the database", "Yes, and push it to the database"]
+        dry_options     = ["No", "Yes, run ngm_local.py", "Yes, run ngm_stats.py"]
 
         for opt in dry_options:
             f_dry = ttk.Frame(right_frame)
@@ -415,15 +415,15 @@ class TourMetadataDialog(UnifiedDialog):
             
             for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_dry_opt(o))
 
-        ttk.Label(right_frame, text = "Are you Hako, and would you like to share the site?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+        ttk.Label(right_frame, text = "Would you like to share the Stats site?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
 
-        self.share_var    = tk.StringVar(value = "No, I'll upload the site folder to Netlify Drop post-tour")
+        self.share_var    = tk.StringVar(value = "No (Mid-tour)")
         self.share_boxes  = {}
 
         share_options = [
-            "No, I'll upload the site folder to Netlify Drop post-tour",
-            "Yes, but don't push it to the archive yet",
-            "Yes, push it to the archive"
+            "No (Mid-tour)",
+            "Yes, push this to Netlify (Post-tour, non-Hako)",
+            "Yes, push this to GitHub (Post-tour, Hako-only)"
         ]
 
         for opt in share_options:

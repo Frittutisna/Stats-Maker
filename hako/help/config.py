@@ -26,6 +26,7 @@ THRESH_PLYR = 20
 THRESH_SONG = 35
 THRESH_TIME = 17.5
 THRESH_WTCH = 5
+TOKEN_NTLFY = "nfp_n58sF53EWEurX9VVkKTpL9ekLsbeDp2Xde73"
 URL_ALIAS   = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
 
 NGM_STATS_SHEET_ID  = "1ihfqssregh74curDyvRE0GAFihQfovUAHpYDrtOIrOA"

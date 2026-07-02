@@ -1,4 +1,4 @@
-import datetime, gspread, hashlib, json, logging, math, matplotlib, os, re, shutil, subprocess, sys, time
+import datetime, gspread, hashlib, json, logging, math, matplotlib, os, re, shutil, subprocess, sys, time, zipfile
 
 logging     .getLogger  ("adjustText").setLevel(logging.ERROR)
 matplotlib  .use        ('Agg')
@@ -432,8 +432,8 @@ class TourAnalyzer:
         self.val_str            = meta_res["th_str"]
         self.base_exp           = meta_res["base_exp"]
         self.new_players        = meta_res["selected_new"]
-        self.dry_choice         = meta_res.get("dry_choice", "No")
-        self.share_choice       = meta_res.get("share_choice", "No, I'll upload the site folder to Netlify Drop post-tour")
+        self.dry_choice         = meta_res.get("dry_choice",    "No")
+        self.share_choice       = meta_res.get("share_choice",  "No (Mid-tour)")
         self.exp_map            = {name: (self.base_exp - 1 if name.lower() in self.subbed_players_set else self.base_exp) for name in all_known}
         self.dry_mapped_index   = dry_mode_mapping.get(self.tour_label, "15")
 
@@ -927,7 +927,7 @@ class TourAnalyzer:
             target_codes_file   = self.script_dir.parent    / "codes.txt"
             source_jsons_dir    = self.tour_dir             / "json"
             source_codes_file   = self.tour_dir             / "code.txt"
-            script_name         = "ngm_local.py" if "don't push" in self.dry_choice else "ngm_stats.py"
+            script_name         = "ngm_local.py" if "ngm_local" in self.dry_choice else "ngm_stats.py"
             target_script       = self.script_dir.parent    / script_name
 
             print(f"[?] Processing Tour {self.tour_id} using Dry's script")
@@ -975,18 +975,76 @@ class TourAnalyzer:
 
             except subprocess.CalledProcessError as e: (f"[X] Failed to run Dry's script: {e}")
 
-        if self.share_choice == "No, I'll upload the site folder to Netlify Drop post-tour":
+        if self.share_choice == "Yes, push this to Netlify (Post-tour, non-Hako)":
             workspace_root  = self.script_dir.parent
             png_src         = self.tour_dir / "png"
             site_src        = self.tour_dir / "site"
-            player_file     = png_src / "Player.png"
-            extra_file      = png_src / "Extra.png"
+            player_file     = png_src       / "Player.png"
+            extra_file      = png_src       / "Extra.png"
 
-            if player_file  .exists(): shutil.copy      (player_file,   workspace_root / f"hako-{self.tour_id}-player.png")
-            if extra_file   .exists(): shutil.copy      (extra_file,    workspace_root / f"hako-{self.tour_id}-extra.png")
-            if site_src     .exists(): shutil.copytree  (site_src,      workspace_root / f"hako-{self.tour_id}-upload",     dirs_exist_ok = True)
+            if player_file  .exists(): shutil.copy(player_file, workspace_root / f"Hako-{self.tour_id}-Player.png")
+            if extra_file   .exists(): shutil.copy(extra_file,  workspace_root / f"Hako-{self.tour_id}-Extra.png")
 
-        elif self.share_choice == "Yes, push it to the archive":
+            print("[?] Pushing to Netlify")
+
+            try:
+                zip_path = workspace_root / f"hako-{self.tour_id}-upload.zip"
+
+                with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                    if site_src.exists():
+                        for root_dir, _, files in os.walk(site_src):
+                            for file in files:
+                                file_path   = os.path.join      (root_dir,  file)
+                                arcname     = os.path.relpath   (file_path, site_src)
+
+                                zipf.write(file_path, arcname)
+
+                with open(zip_path, 'rb') as f: zip_data = f.read()
+
+                custom_site_name    = f"amq-tour-{datetime.datetime.now().strftime('%y%m%d%H%M')}"
+                base_headers        = {"Authorization": f"Bearer {TOKEN_NTLFY}"}
+
+                print(f"[?] Requesting unique link: {custom_site_name}")
+
+                create_res = requests.post(
+                    "https://api.netlify.com/api/v1/sites",
+                    headers = {**base_headers, "Content-Type": "application/json"}, 
+                    json    = {"name": custom_site_name}, 
+                    timeout = 15
+                )
+
+                if create_res.status_code in [200, 201]:
+                    site_info   = create_res.json()
+                    site_id     = site_info.get("id")
+
+                else:
+                    print(f"[!] Unique link unavailable ({create_res.status_code}), using randomly-generated link instead")
+                    site_id = None
+
+                if site_id  : target_url = f"https://api.netlify.com/api/v1/sites/{site_id}/deploys"
+                else        : target_url = "https://api.netlify.com/api/v1/sites"
+
+                res = requests.post(
+                    target_url, 
+                    headers = {**base_headers, "Content-Type": "application/zip"}, 
+                    data    = zip_data, 
+                    timeout = 30
+                )
+
+                if res.status_code in [200, 201]:
+                    site_data   = res.json()
+                    deploy_url  = site_data.get("ssl_url") or site_data.get("url")
+
+                    print(f"[✓] Link to Stats site: {deploy_url}")
+                
+                else: print(f"[X] Failed to push to Netlify: {res.status_code} {res.text}")
+
+                try     : zip_path.unlink()
+                except  : pass
+
+            except Exception as e: print(f"[X] Failed to push to Netlify: {e}")
+
+        elif self.share_choice == "Yes, push this to GitHub (Post-tour, Hako-only)":
             timestamp   = datetime.datetime.now().strftime("%y%m%d%H%M")
             archive_dir = self.script_dir.parent / "hako" / "archive" / timestamp
             hako_dir    = web_path 
