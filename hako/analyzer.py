@@ -1335,7 +1335,7 @@ class TourAnalyzer:
 
     def _compute_tour_stats(self, use_teams, watched):
         def fmt_most(names, val):
-            if not names: return "N/A"
+            if not names: return "N/A", None
 
             win = sorted(names, key = lambda x: (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0)[0]
             gr  = (self.c_counts[win] / self.s_part[win]) * 100 if self.s_part[win] else 0
@@ -1688,7 +1688,7 @@ class TourAnalyzer:
     def _create_tier_png(self, assigns, path, has_chanting_songs):
         rows1, rows2    = self._compute_tier_rows(assigns, has_chanting_songs)
         valid_spd_rows  = [i for i, r in enumerate(rows2) if pd.notnull(r["spd_val"])]
-        valid_chn_rows  = [i for i, r in enumerate(rows2) if r["chn_val"] is not None]
+        valid_chn_rows  = [i for i, r in enumerate(rows2) if r["chn_val"] is not None and r["chn_val"] > 0]
 
         best_gen_idx = len(rows1) - 1 - max(range(len(rows1)),  key = lambda i: rows1[::-1][i]["gen_val"]) if rows1             else None
         best_atk_idx = len(rows1) - 1 - max(range(len(rows1)),  key = lambda i: rows1[::-1][i]["atk_val"]) if rows1             else None
