@@ -1,5 +1,69 @@
 [
     {
+        "romaji": "18if",
+        "english": "18if",
+        "song": "Hikari no Parade",
+        "artist_raw": "Wakana",
+        "artist_arr": [
+            "Wakana"
+        ],
+        "composer": "Shinichi",
+        "arranger": "Kokoro Oto",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=19410",
+        "anime_type": "TV",
+        "vintage": "Summer 2017",
+        "genres_raw": [
+            "Adventure",
+            "Fantasy",
+            "Mystery",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Witch",
+            "Episodic",
+            "Amnesia",
+            "Isekai",
+            "Disability"
+        ],
+        "difficulty": "21.06",
+        "video_url": "https://nawdist.animemusicquiz.com/ryal9u.mp3",
+        "guessers_flat": [
+            "bamboo"
+        ],
+        "guessers_hover": [
+            "Team bamboo: bamboo (2.96)",
+            "Team CipherKai: None"
+        ],
+        "listers_flat": [
+            "bamboo"
+        ],
+        "listers_hover": [
+            "Team bamboo: bamboo",
+            "Team CipherKai: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [
+            "bamboo"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1
+        ],
+        "alts": [],
+        "start_sample": 21
+    },
+    {
         "romaji": "Ao no Exorcist",
         "english": "Blue Exorcist",
         "song": "éXORCiST",
@@ -68,16 +132,16 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [],
         "alts": [
-            "Ao no Exorcist: Yosuga-hen",
-            "Ao no Exorcist: Shimane Illuminati-hen",
             "Blue Exorcist: The Movie",
             "Blue Exorcist: The Blue Night Saga",
-            "Blue Exorcist: Beyond the Snow Saga",
-            "Blue Exorcist: Shimane Illuminati Saga",
-            "Ao no Exorcist: Kyoto Fujouou-hen",
             "Ao no Exorcist: Yuki no Hate-hen",
+            "Ao no Exorcist: Kyoto Fujouou-hen",
+            "Ao no Exorcist: Yosuga-hen",
+            "Blue Exorcist: Kyoto Saga",
             "Ao no Exorcist Gekijouban",
-            "Blue Exorcist: Kyoto Saga"
+            "Blue Exorcist: Beyond the Snow Saga",
+            "Ao no Exorcist: Shimane Illuminati-hen",
+            "Blue Exorcist: Shimane Illuminati Saga"
         ],
         "start_sample": 87
     },
@@ -161,6 +225,75 @@
         ],
         "alts": [],
         "start_sample": 16
+    },
+    {
+        "romaji": "Canaan",
+        "english": "Canaan",
+        "song": "My heaven",
+        "artist_raw": "Annabel",
+        "artist_arr": [
+            "Annabel"
+        ],
+        "composer": "myu",
+        "arranger": "myu",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=10270",
+        "anime_type": "TV",
+        "vintage": "Summer 2009",
+        "genres_raw": [
+            "Action",
+            "Sci-Fi",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Politics",
+            "Primarily Adult Cast",
+            "War",
+            "Guns",
+            "Photography",
+            "Foreign",
+            "Revenge",
+            "Terrorism",
+            "Assassins",
+            "Urban"
+        ],
+        "difficulty": "19.94",
+        "video_url": "https://nawdist.animemusicquiz.com/ysdfuy.mp3",
+        "guessers_flat": [
+            "LordGrond"
+        ],
+        "guessers_hover": [
+            "Team LiljaKatsuragi: LordGrond (3.82)",
+            "Team AnnaYanami: None"
+        ],
+        "listers_flat": [
+            "LordGrond"
+        ],
+        "listers_hover": [
+            "Team LiljaKatsuragi: LordGrond",
+            "Team AnnaYanami: None"
+        ],
+        "room_players": [
+            "AnnaYanami",
+            "DKing20",
+            "FoopyPoopy",
+            "HakoHoka",
+            "LiljaKatsuragi",
+            "LordGrond",
+            "TBDhater",
+            "Wolbachia"
+        ],
+        "lives_taken_flat": [
+            "lordgrond"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3
+        ],
+        "alts": [],
+        "start_sample": 4
     },
     {
         "romaji": "Charlotte",
@@ -337,11 +470,11 @@
         ],
         "alts": [
             "The Super Dimension Fortress Macross: Flash Back 2012",
-            "Super Dimension Fortress Macross: Do You Remember Love?",
             "Macross Flash Back 2012",
+            "Macross: Do You Remember Love?",
             "Macross",
             "Choujikuu Yousai Macross: Ai, Oboete Imasu ka",
-            "Macross: Do You Remember Love?"
+            "Super Dimension Fortress Macross: Do You Remember Love?"
         ],
         "start_sample": 9
     },
@@ -421,6 +554,94 @@
         "start_sample": 59
     },
     {
+        "romaji": "Clevatess: Majuu no Ou to Akago to Shikabane no Yuusha",
+        "english": "Clevatess",
+        "song": "Destiny",
+        "artist_raw": "Ellie Goulding",
+        "artist_arr": [
+            "Ellie Goulding"
+        ],
+        "composer": "Ellie Goulding, Jack Rochon and Kurtis Walls",
+        "arranger": "Ellie Goulding, Jack Rochon and Kurtis Walls",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32863",
+        "anime_type": "TV",
+        "vintage": "Summer 2025",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Swordplay",
+            "Super Power",
+            "Tragedy",
+            "Gore",
+            "Anti-Hero",
+            "Primarily Adult Cast",
+            "War",
+            "Dystopian",
+            "Slavery",
+            "Revenge",
+            "Lost Civilization",
+            "Cosmic Horror",
+            "Body Horror",
+            "Shapeshifting",
+            "Tomboy",
+            "Adoption",
+            "Monster Boy",
+            "Found Family",
+            "Orphan",
+            "Parenthood",
+            "Medieval"
+        ],
+        "difficulty": "34.19",
+        "video_url": "https://nawdist.animemusicquiz.com/30wstw.mp3",
+        "guessers_flat": [
+            "I_dont_like_loli",
+            "Spartric",
+            "CipherKai",
+            "Raphtelia",
+            "Jakemonkey"
+        ],
+        "guessers_hover": [
+            "Team bamboo: Jakemonkey (4.91), I_dont_like_loli (13.27)",
+            "Team CipherKai: CipherKai (5.26), Spartric (4.87), Raphtelia (5.77)"
+        ],
+        "listers_flat": [
+            "I_dont_like_loli",
+            "Jakemonkey"
+        ],
+        "listers_hover": [
+            "Team bamboo: Jakemonkey, I_dont_like_loli",
+            "Team CipherKai: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            4,
+            4,
+            4,
+            1
+        ],
+        "alts": [],
+        "start_sample": 26
+    },
+    {
         "romaji": "Corpse Party: Tortured Souls - Bougyakusareta Tamashii no Jukyou",
         "english": "Corpse Party: Tortured Souls - Bougyakusareta Tamashii no Jukyou",
         "song": "Hotarubi",
@@ -487,6 +708,107 @@
         ],
         "alts": [],
         "start_sample": 39
+    },
+    {
+        "romaji": "Darling in the FranXX",
+        "english": "Darling in the FranXX",
+        "song": "D#regards",
+        "artist_raw": "Anna Pingina",
+        "artist_arr": [
+            "Anna Pingina"
+        ],
+        "composer": "Asami Tachibana",
+        "arranger": "Asami Tachibana",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=19850",
+        "anime_type": "TV",
+        "vintage": "Winter 2018",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Mecha",
+            "Psychological",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Military",
+            "Space",
+            "Tragedy",
+            "Family Life",
+            "Post-Apocalyptic",
+            "Coming of Age",
+            "Politics",
+            "Love Triangle",
+            "Survival",
+            "Super Robot",
+            "Tsundere",
+            "Robots",
+            "Aliens",
+            "Fishing",
+            "Dystopian",
+            "Monster Girl",
+            "Kaiju",
+            "Environmental",
+            "Memory Manipulation",
+            "Pregnancy",
+            "Conspiracy",
+            "Lost Civilization",
+            "LGBTQ+ Themes",
+            "Body Horror",
+            "Monster Boy",
+            "Found Family",
+            "Travel",
+            "Clone",
+            "Orphan",
+            "Marriage",
+            "Unrequited Love",
+            "Psychosexual",
+            "Cohabitation"
+        ],
+        "difficulty": "21.15",
+        "video_url": "https://nawdist.animemusicquiz.com/4bt6p2.mp3",
+        "guessers_flat": [
+            "FoopyPoopy",
+            "LiljaKatsuragi",
+            "Wolbachia"
+        ],
+        "guessers_hover": [
+            "Team AnnaYanami: Wolbachia (8.19)",
+            "Team LiljaKatsuragi: LiljaKatsuragi (4.04), FoopyPoopy (16.89)"
+        ],
+        "listers_flat": [
+            "FoopyPoopy",
+            "LiljaKatsuragi",
+            "Wolbachia"
+        ],
+        "listers_hover": [
+            "Team AnnaYanami: Wolbachia",
+            "Team LiljaKatsuragi: LiljaKatsuragi, FoopyPoopy"
+        ],
+        "room_players": [
+            "AnnaYanami",
+            "DKing20",
+            "FoopyPoopy",
+            "HakoHoka",
+            "LiljaKatsuragi",
+            "LordGrond",
+            "TBDhater",
+            "Wolbachia"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "wolbachia"
+        ],
+        "correct_teams_flat": [
+            3,
+            3,
+            2
+        ],
+        "alts": [],
+        "start_sample": 0
     },
     {
         "romaji": "Dragon Ball",
@@ -583,6 +905,328 @@
         "start_sample": 8
     },
     {
+        "romaji": "Dragon Ball Z: Fukkatsu no 'F'",
+        "english": "Dragon Ball Z: Resurrection 'F'",
+        "song": "'Z' no Chikai",
+        "artist_raw": "Momoiro Clover Z",
+        "artist_arr": [
+            "Momoiro Clover Z"
+        ],
+        "composer": "NARASAKI",
+        "arranger": "NARASAKI & Yuyoyuppe",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16549",
+        "anime_type": "Movie",
+        "vintage": "Winter 2015",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Martial Arts",
+            "Shounen",
+            "Super Power",
+            "CGI",
+            "Henshin",
+            "Primarily Adult Cast",
+            "Aliens",
+            "Revenge",
+            "Gods",
+            "Cultivation"
+        ],
+        "difficulty": "18.70",
+        "video_url": "https://nawdist.animemusicquiz.com/mdlu04.mp3",
+        "guessers_flat": [
+            "CipherKai",
+            "Nunuchu42",
+            "Jakemonkey"
+        ],
+        "guessers_hover": [
+            "Team bamboo: Jakemonkey (5.98), Nunuchu42 (5.86)",
+            "Team CipherKai: CipherKai (11.20)"
+        ],
+        "listers_flat": [
+            "Nunuchu42"
+        ],
+        "listers_hover": [
+            "Team bamboo: Nunuchu42",
+            "Team CipherKai: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "cipherkai"
+        ],
+        "correct_teams_flat": [
+            4,
+            1,
+            1
+        ],
+        "alts": [],
+        "start_sample": 179
+    },
+    {
+        "romaji": "Dungeon ni Deai o Motomeru no wa Machigatteiru Darou ka",
+        "english": "Is It Wrong to Try to Pick Up Girls in a Dungeon?",
+        "song": "RIGHT LIGHT RISE",
+        "artist_raw": "Kanon Wakeshima",
+        "artist_arr": [
+            "Kanon Wakeshima"
+        ],
+        "composer": "Kanon Wakeshima",
+        "arranger": "Naoki \"naotyu-\" Chiba",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16443",
+        "anime_type": "TV",
+        "vintage": "Spring 2015",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Swordplay",
+            "Nudity",
+            "Love Triangle",
+            "Mythology",
+            "Gods",
+            "Cultivation",
+            "Elf",
+            "Dungeon",
+            "Kuudere",
+            "Medieval",
+            "Cohabitation"
+        ],
+        "difficulty": "38.73",
+        "video_url": "https://nawdist.animemusicquiz.com/yqj40v.mp3",
+        "guessers_flat": [
+            "I_dont_like_loli",
+            "Spartric",
+            "CipherKai",
+            "bamboo",
+            "Nunuchu42",
+            "Jakemonkey"
+        ],
+        "guessers_hover": [
+            "Team bamboo: bamboo (4.20), Jakemonkey (5.44), I_dont_like_loli (5.49), Nunuchu42 (3.28)",
+            "Team CipherKai: CipherKai (7.73), Spartric (7.24)"
+        ],
+        "listers_flat": [
+            "I_dont_like_loli",
+            "Spartric",
+            "CipherKai",
+            "Nunuchu42",
+            "Jakemonkey"
+        ],
+        "listers_hover": [
+            "Team bamboo: Jakemonkey, I_dont_like_loli, Nunuchu42",
+            "Team CipherKai: CipherKai, Spartric"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            4,
+            4,
+            1,
+            1,
+            1
+        ],
+        "alts": [
+            "DanMachi"
+        ],
+        "start_sample": 4
+    },
+    {
+        "romaji": "Gekijouban Mahou Shoujo Madoka★Magica Shinpen: Hangyaku no Monogatari",
+        "english": "Puella Magi Madoka Magica The Movie Part 3: Rebellion",
+        "song": "misterioso",
+        "artist_raw": "Kalafina",
+        "artist_arr": [
+            "Kalafina"
+        ],
+        "composer": "Yuki Kajiura",
+        "arranger": "Yuki Kajiura",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14850",
+        "anime_type": "Movie",
+        "vintage": "Fall 2013",
+        "genres_raw": [
+            "Drama",
+            "Fantasy",
+            "Mahou Shoujo",
+            "Mystery",
+            "Psychological",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Yuri",
+            "Tragedy",
+            "Time Manipulation",
+            "Henshin",
+            "Anti-Hero",
+            "Alternate Universe",
+            "Guns",
+            "Witch",
+            "Aliens",
+            "Mythology",
+            "Gods",
+            "Urban Fantasy",
+            "Memory Manipulation",
+            "Philosophy",
+            "Urban",
+            "Cosmic Horror",
+            "Kuudere",
+            "Curses",
+            "Mixed Media"
+        ],
+        "difficulty": "30.14",
+        "video_url": "https://nawdist.animemusicquiz.com/yhot40.mp3",
+        "guessers_flat": [
+            "CipherKai",
+            "bamboo",
+            "FurLain",
+            "Nunuchu42"
+        ],
+        "guessers_hover": [
+            "Team bamboo: bamboo (5.64), Nunuchu42 (11.07)",
+            "Team CipherKai: CipherKai (3.68), FurLain (4.53)"
+        ],
+        "listers_flat": [
+            "Spartric",
+            "CipherKai",
+            "bamboo",
+            "FurLain",
+            "Nunuchu42"
+        ],
+        "listers_hover": [
+            "Team bamboo: bamboo, Nunuchu42",
+            "Team CipherKai: CipherKai, FurLain, Spartric"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4,
+            1,
+            4,
+            1
+        ],
+        "alts": [],
+        "start_sample": 27
+    },
+    {
+        "romaji": "Gekijouban Mahou Shoujo Madoka★Magica Zenpen: Hajimari no Monogatari",
+        "english": "Puella Magi Madoka Magica the Movie Part 1: Beginnings",
+        "song": "witch world #2",
+        "artist_raw": "Yuri Kasahara",
+        "artist_arr": [
+            "Yuri Kasahara"
+        ],
+        "composer": "Yuki Kajiura",
+        "arranger": "Yuki Kajiura",
+        "type": "Insert",
+        "chanting": "Yes",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14363",
+        "anime_type": "Movie",
+        "vintage": "Fall 2012",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy",
+            "Mahou Shoujo",
+            "Psychological",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Yuri",
+            "Tragedy",
+            "Time Manipulation",
+            "Henshin",
+            "Survival",
+            "Witch",
+            "Aliens",
+            "Urban Fantasy",
+            "Philosophy",
+            "Primarily Child Cast",
+            "Urban",
+            "Time Loop",
+            "Mixed Media"
+        ],
+        "difficulty": "19.95",
+        "video_url": "https://nawdist.animemusicquiz.com/cjgksi.mp3",
+        "guessers_flat": [],
+        "guessers_hover": [
+            "Team bamboo: None",
+            "Team CipherKai: None"
+        ],
+        "listers_flat": [
+            "Spartric",
+            "CipherKai",
+            "bamboo",
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team bamboo: bamboo",
+            "Team CipherKai: CipherKai, FurLain, Spartric"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [],
+        "alts": [],
+        "start_sample": 74
+    },
+    {
         "romaji": "Gekijouban Toaru Majutsu no Index: Endymion no Kiseki",
         "english": "A Certain Magical Index the Movie: The Miracle of Endymion",
         "song": "Brand New Bright Step",
@@ -653,6 +1297,85 @@
         ],
         "alts": [],
         "start_sample": 19
+    },
+    {
+        "romaji": "Gekijouban Youjo Senki",
+        "english": "Saga of Tanya the Evil: The Movie",
+        "song": "Remembrance",
+        "artist_raw": "MYTH & ROID",
+        "artist_arr": [
+            "MYTH & ROID"
+        ],
+        "composer": "MYTH & ROID",
+        "arranger": "MYTH & ROID",
+        "type": "Ending 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20509",
+        "anime_type": "Movie",
+        "vintage": "Winter 2019",
+        "genres_raw": [
+            "Action",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Magic",
+            "Military",
+            "Gender Bending",
+            "Tragedy",
+            "Politics",
+            "Anti-Hero",
+            "Primarily Adult Cast",
+            "War",
+            "Guns",
+            "Foreign",
+            "Reincarnation",
+            "Isekai",
+            "Revenge",
+            "Gods"
+        ],
+        "difficulty": "28.97",
+        "video_url": "https://nawdist.animemusicquiz.com/tpamxw.mp3",
+        "guessers_flat": [
+            "I_dont_like_loli",
+            "Spartric",
+            "CipherKai",
+            "bamboo",
+            "Jakemonkey"
+        ],
+        "guessers_hover": [
+            "Team bamboo: bamboo (5.71), Jakemonkey (5.42), I_dont_like_loli (11.84)",
+            "Team CipherKai: CipherKai (3.02), Spartric (6.38)"
+        ],
+        "listers_flat": [
+            "CipherKai",
+            "Jakemonkey"
+        ],
+        "listers_hover": [
+            "Team bamboo: Jakemonkey",
+            "Team CipherKai: CipherKai"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            4,
+            4,
+            1,
+            1
+        ],
+        "alts": [],
+        "start_sample": 119
     },
     {
         "romaji": "Gnosia",
@@ -732,6 +1455,205 @@
         "start_sample": 84
     },
     {
+        "romaji": "Gochuumon wa Usagi desu ka?? Sing For You",
+        "english": "Is the Order a Rabbit?? Sing for You",
+        "song": "Hi Hi High☆",
+        "artist_raw": "Maaya Uchida",
+        "artist_arr": [
+            "Maaya Uchida"
+        ],
+        "composer": "Tako Yamaguchi",
+        "arranger": "Tako Yamaguchi",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21985",
+        "anime_type": "OVA",
+        "vintage": "Summer 2019",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Kuudere"
+        ],
+        "difficulty": "22.03",
+        "video_url": "https://nawdist.animemusicquiz.com/10i0rd.mp3",
+        "guessers_flat": [
+            "Nunuchu42"
+        ],
+        "guessers_hover": [
+            "Team bamboo: Nunuchu42 (4.91)",
+            "Team CipherKai: None"
+        ],
+        "listers_flat": [
+            "Nunuchu42"
+        ],
+        "listers_hover": [
+            "Team bamboo: Nunuchu42",
+            "Team CipherKai: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [
+            "nunuchu42"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1
+        ],
+        "alts": [],
+        "start_sample": 16
+    },
+    {
+        "romaji": "Hana yori Dango",
+        "english": "Boys Over Flowers",
+        "song": "Kenka no Ato de...",
+        "artist_raw": "Tomohiko Kikuta",
+        "artist_arr": [
+            "Tomohiko Kikuta"
+        ],
+        "composer": "TSUKASA",
+        "arranger": "Akira Nishimoto",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=1136",
+        "anime_type": "TV",
+        "vintage": "Summer 1996",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Shoujo",
+            "Male Harem",
+            "Love Triangle",
+            "Tsundere",
+            "Bullying",
+            "Foreign",
+            "Revenge"
+        ],
+        "difficulty": "17.95",
+        "video_url": "https://nawdist.animemusicquiz.com/vumd1r.mp3",
+        "guessers_flat": [
+            "Wolbachia"
+        ],
+        "guessers_hover": [
+            "Team AnnaYanami: Wolbachia (8.70)",
+            "Team LiljaKatsuragi: None"
+        ],
+        "listers_flat": [
+            "Wolbachia"
+        ],
+        "listers_hover": [
+            "Team AnnaYanami: Wolbachia",
+            "Team LiljaKatsuragi: None"
+        ],
+        "room_players": [
+            "AnnaYanami",
+            "DKing20",
+            "FoopyPoopy",
+            "HakoHoka",
+            "LiljaKatsuragi",
+            "LordGrond",
+            "TBDhater",
+            "Wolbachia"
+        ],
+        "lives_taken_flat": [
+            "wolbachia"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2
+        ],
+        "alts": [],
+        "start_sample": 68
+    },
+    {
+        "romaji": "Hazurewaku no \"Joutai Ijou Skill\" de Saikyou ni Natta Ore ga Subete o Juurin Suru made",
+        "english": "Failure Frame: I Became the Strongest and Annihilated Everything With Low-Level Spells",
+        "song": "Hazure",
+        "artist_raw": "Chogakusei",
+        "artist_arr": [
+            "Chogakusei"
+        ],
+        "composer": "Yuki Tsujimura & Takuya Yamanaka",
+        "arranger": "Yuki Tsujimura",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=31709",
+        "anime_type": "TV",
+        "vintage": "Summer 2024",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Magic",
+            "CGI",
+            "Anti-Hero",
+            "Survival",
+            "Bullying",
+            "Fugitive",
+            "Isekai",
+            "Revenge",
+            "Elf"
+        ],
+        "difficulty": "32.83",
+        "video_url": "https://nawdist.animemusicquiz.com/6sf801.mp3",
+        "guessers_flat": [
+            "FoopyPoopy",
+            "LiljaKatsuragi",
+            "TBDhater"
+        ],
+        "guessers_hover": [
+            "Team LiljaKatsuragi: LiljaKatsuragi (6.98), TBDhater (4.33), FoopyPoopy (4.33)",
+            "Team AnnaYanami: None"
+        ],
+        "listers_flat": [
+            "FoopyPoopy",
+            "TBDhater"
+        ],
+        "listers_hover": [
+            "Team LiljaKatsuragi: TBDhater, FoopyPoopy",
+            "Team AnnaYanami: None"
+        ],
+        "room_players": [
+            "AnnaYanami",
+            "DKing20",
+            "FoopyPoopy",
+            "HakoHoka",
+            "LiljaKatsuragi",
+            "LordGrond",
+            "TBDhater",
+            "Wolbachia"
+        ],
+        "lives_taken_flat": [
+            "tbdhater",
+            "foopypoopy",
+            "liljakatsuragi"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            3
+        ],
+        "alts": [],
+        "start_sample": 22
+    },
+    {
         "romaji": "Hidamari Sketch × 365",
         "english": "Hidamari Sketch × 365",
         "song": "Ryuusei Record",
@@ -797,6 +1719,80 @@
         ],
         "alts": [],
         "start_sample": 27
+    },
+    {
+        "romaji": "Higurashi no Naku Koro ni Kaku: Outbreak",
+        "english": "When They Cry: Outbreak",
+        "song": "you -Visionen im Spiegel",
+        "artist_raw": "Yuzuki",
+        "artist_arr": [
+            "Yuzuki"
+        ],
+        "composer": "dai",
+        "arranger": "Morrigan",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15268",
+        "anime_type": "OVA",
+        "vintage": "Summer 2013",
+        "genres_raw": [
+            "Action",
+            "Mystery",
+            "Psychological",
+            "Thriller"
+        ],
+        "tags_raw": [
+            "Gore",
+            "Alternate Universe",
+            "Rural",
+            "Primarily Child Cast",
+            "Denpa",
+            "Pandemic"
+        ],
+        "difficulty": "35.55",
+        "video_url": "https://nawdist.animemusicquiz.com/g5tx9e.mp3",
+        "guessers_flat": [
+            "I_dont_like_loli",
+            "Spartric",
+            "CipherKai",
+            "bamboo",
+            "FurLain",
+            "Jakemonkey"
+        ],
+        "guessers_hover": [
+            "Team bamboo: bamboo (4.35), Jakemonkey (14.15), I_dont_like_loli (5.91)",
+            "Team CipherKai: CipherKai (7.32), FurLain (9.78), Spartric (6.95)"
+        ],
+        "listers_flat": [
+            "I_dont_like_loli",
+            "CipherKai"
+        ],
+        "listers_hover": [
+            "Team bamboo: I_dont_like_loli",
+            "Team CipherKai: CipherKai"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            4,
+            4,
+            1,
+            4,
+            1
+        ],
+        "alts": [],
+        "start_sample": 89
     },
     {
         "romaji": "Isekai Nonbiri Nouka 2",
@@ -933,8 +1929,8 @@
             "Wolbachia"
         ],
         "lives_taken_flat": [
-            "foopypoopy",
-            "tbdhater"
+            "tbdhater",
+            "foopypoopy"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -1107,6 +2103,95 @@
         "start_sample": 24
     },
     {
+        "romaji": "Kage no Jitsuryokusha ni Naritakute! 2nd Season",
+        "english": "The Eminence in Shadow Season 2",
+        "song": "Everything is Changing",
+        "artist_raw": "Mayu Maeshima",
+        "artist_arr": [
+            "Mayu Maeshima"
+        ],
+        "composer": "Tomoyuki Nakazawa",
+        "arranger": "Tomoyuki Nakazawa",
+        "type": "Ending 5",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=27193",
+        "anime_type": "TV",
+        "vintage": "Fall 2023",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Female Harem",
+            "Magic",
+            "Parody",
+            "Swordplay",
+            "Seinen",
+            "Vampire",
+            "Satire",
+            "Post-Apocalyptic",
+            "Nudity",
+            "Anti-Hero",
+            "Trains",
+            "Meta",
+            "Alternate Universe",
+            "Dragons",
+            "Isekai",
+            "Economics",
+            "Kemonomimi",
+            "Chuunibyou",
+            "Assassins",
+            "Conspiracy",
+            "Cult",
+            "Elf"
+        ],
+        "difficulty": "21.27",
+        "video_url": "https://nawdist.animemusicquiz.com/a48le1.mp3",
+        "guessers_flat": [
+            "FoopyPoopy",
+            "LiljaKatsuragi",
+            "LordGrond"
+        ],
+        "guessers_hover": [
+            "Team LiljaKatsuragi: LiljaKatsuragi (6.36), FoopyPoopy (11.79), LordGrond (5.44)",
+            "Team AnnaYanami: None"
+        ],
+        "listers_flat": [
+            "FoopyPoopy",
+            "LiljaKatsuragi",
+            "LordGrond"
+        ],
+        "listers_hover": [
+            "Team LiljaKatsuragi: LiljaKatsuragi, FoopyPoopy, LordGrond",
+            "Team AnnaYanami: None"
+        ],
+        "room_players": [
+            "AnnaYanami",
+            "DKing20",
+            "FoopyPoopy",
+            "HakoHoka",
+            "LiljaKatsuragi",
+            "LordGrond",
+            "TBDhater",
+            "Wolbachia"
+        ],
+        "lives_taken_flat": [
+            "foopypoopy",
+            "lordgrond",
+            "liljakatsuragi"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3,
+            3,
+            3
+        ],
+        "alts": [],
+        "start_sample": 60
+    },
+    {
         "romaji": "Kakegurui",
         "english": "Kakegurui",
         "song": "LAYon-theLINE",
@@ -1261,6 +2346,284 @@
         "start_sample": 58
     },
     {
+        "romaji": "Kimi to Idol Precure♪",
+        "english": "You and Idol Precure",
+        "song": "Mabataki no Gosenfu ~Precure! Wink Crescendo!~",
+        "artist_raw": "Minami Takahashi",
+        "artist_arr": [
+            "Minami Takahashi"
+        ],
+        "composer": "Misaki Umase",
+        "arranger": "Misaki Umase",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=34099",
+        "anime_type": "TV",
+        "vintage": "Winter 2025",
+        "genres_raw": [
+            "Action",
+            "Fantasy",
+            "Mahou Shoujo",
+            "Music"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Magic",
+            "Yuri",
+            "CGI",
+            "Cute Girls Doing Cute Things",
+            "Henshin",
+            "Idol",
+            "Episodic",
+            "Dancing",
+            "Amnesia",
+            "Urban Fantasy",
+            "LGBTQ+ Themes",
+            "Advertisement",
+            "Tokusatsu",
+            "Urban",
+            "Makeup",
+            "Fairy",
+            "Restaurant"
+        ],
+        "difficulty": "30.38",
+        "video_url": "https://nawdist.animemusicquiz.com/s09oyumfm98lalzz.mp3",
+        "guessers_flat": [
+            "CipherKai"
+        ],
+        "guessers_hover": [
+            "Team CipherKai: CipherKai (3.23)",
+            "Team bamboo: None"
+        ],
+        "listers_flat": [
+            "CipherKai"
+        ],
+        "listers_hover": [
+            "Team CipherKai: CipherKai",
+            "Team bamboo: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [
+            "cipherkai"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4
+        ],
+        "alts": [
+            "Eiga Kimi to Idol Precure♪: Omatase! Kimi ni Todokeru Kirakki Live!"
+        ],
+        "start_sample": 10
+    },
+    {
+        "romaji": "Kingdom",
+        "english": "Kingdom",
+        "song": "RULERS",
+        "artist_raw": "Novel Core",
+        "artist_arr": [
+            "Novel Core"
+        ],
+        "composer": "Ryosuke \"Dr.R\" Sakai & Novel Core",
+        "arranger": "Ryosuke \"Dr.R\" Sakai",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26401",
+        "anime_type": "TV",
+        "vintage": "Winter 2024",
+        "genres_raw": [
+            "Action"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Military",
+            "Seinen",
+            "CGI",
+            "Politics",
+            "War",
+            "Foreign",
+            "Ancient China"
+        ],
+        "difficulty": "28.20",
+        "video_url": "https://nawdist.animemusicquiz.com/c2zx3c.mp3",
+        "guessers_flat": [
+            "Nunuchu42",
+            "Jakemonkey"
+        ],
+        "guessers_hover": [
+            "Team bamboo: Jakemonkey (2.98), Nunuchu42 (2.82)",
+            "Team CipherKai: None"
+        ],
+        "listers_flat": [
+            "Nunuchu42"
+        ],
+        "listers_hover": [
+            "Team bamboo: Nunuchu42",
+            "Team CipherKai: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [
+            "jakemonkey",
+            "nunuchu42"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            1
+        ],
+        "alts": [],
+        "start_sample": 0
+    },
+    {
+        "romaji": "Kunoichi Tsubaki no Mune no Uchi",
+        "english": "In the Heart of Kunoichi Tsubaki",
+        "song": "Akane-gumi Katsudou Nisshi ~Tatsu-han~",
+        "artist_raw": "Yuka Nukui・Yuuki Takada・Moe Kahara",
+        "artist_arr": [
+            "Yuka Nukui・Yuuki Takada・Moe Kahara"
+        ],
+        "composer": "Ryota Kikuchi & Yusuke Shirato",
+        "arranger": "Ryota Kikuchi",
+        "type": "Ending 7",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24956",
+        "anime_type": "TV",
+        "vintage": "Spring 2022",
+        "genres_raw": [
+            "Comedy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Tsundere",
+            "Episodic",
+            "Ninja",
+            "Tanned Skin",
+            "Primarily Child Cast"
+        ],
+        "difficulty": "33.52",
+        "video_url": "https://nawdist.animemusicquiz.com/r5faoy.mp3",
+        "guessers_flat": [
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team CipherKai: FurLain (6.06)",
+            "Team bamboo: None"
+        ],
+        "listers_flat": [
+            "Spartric",
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team CipherKai: FurLain, Spartric",
+            "Team bamboo: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [
+            "furlain"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4
+        ],
+        "alts": [],
+        "start_sample": 12
+    },
+    {
+        "romaji": "Lapis Re:LiGHTs",
+        "english": "Lapis Re:LiGHTs",
+        "song": "Midnight Sapphire",
+        "artist_raw": "IV KLORE",
+        "artist_arr": [
+            "IV KLORE"
+        ],
+        "composer": "Kotaro Odaka & UiNA",
+        "arranger": "Takayuki Ishikura & Kotaro Odaka",
+        "type": "Ending 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22935",
+        "anime_type": "TV",
+        "vintage": "Summer 2020",
+        "genres_raw": [
+            "Fantasy",
+            "Music"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Yuri",
+            "Cute Girls Doing Cute Things",
+            "Idol",
+            "Ghost",
+            "LGBTQ+ Themes",
+            "Ojou-sama",
+            "Creature Taming"
+        ],
+        "difficulty": "24.24",
+        "video_url": "https://nawdist.animemusicquiz.com/jxm4ea.mp3",
+        "guessers_flat": [
+            "Spartric",
+            "Jakemonkey"
+        ],
+        "guessers_hover": [
+            "Team bamboo: Jakemonkey (3.40)",
+            "Team CipherKai: Spartric (3.94)"
+        ],
+        "listers_flat": [
+            "Spartric"
+        ],
+        "listers_hover": [
+            "Team CipherKai: Spartric",
+            "Team bamboo: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "jakemonkey",
+            "spartric"
+        ],
+        "correct_teams_flat": [
+            4,
+            1
+        ],
+        "alts": [],
+        "start_sample": 47
+    },
+    {
         "romaji": "Love Live! School Idol Project Nijigasaki Gakuen School Idol Doukoukai",
         "english": "Love Live! Nijigasaki High School Idol Club",
         "song": "Koe Tsunagou yo",
@@ -1403,8 +2766,8 @@
             3
         ],
         "alts": [
-            "Lupin III: Green vs Red",
-            "Lupin Sansei: Green vs Red"
+            "Lupin Sansei: Green vs Red",
+            "Lupin III: Green vs Red"
         ],
         "start_sample": 20
     },
@@ -1480,6 +2843,192 @@
         ],
         "alts": [],
         "start_sample": 40
+    },
+    {
+        "romaji": "Maken-Ki! Two",
+        "english": "Maken-Ki! Battling Venus 2",
+        "song": "Reach for Light",
+        "artist_raw": "Saeko Zougou",
+        "artist_arr": [
+            "Saeko Zougou"
+        ],
+        "composer": "Tomokazu Yamada",
+        "arranger": "Shouhei Sumiya & Tomokazu Yamada",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15335",
+        "anime_type": "TV",
+        "vintage": "Winter 2014",
+        "genres_raw": [
+            "Action",
+            "Ecchi"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Super Power",
+            "School Club",
+            "Nudity",
+            "Episodic"
+        ],
+        "difficulty": "14.58",
+        "video_url": "https://nawdist.animemusicquiz.com/t395xw.mp3",
+        "guessers_flat": [
+            "FoopyPoopy"
+        ],
+        "guessers_hover": [
+            "Team LiljaKatsuragi: FoopyPoopy (3.62)",
+            "Team AnnaYanami: None"
+        ],
+        "listers_flat": [
+            "FoopyPoopy"
+        ],
+        "listers_hover": [
+            "Team LiljaKatsuragi: FoopyPoopy",
+            "Team AnnaYanami: None"
+        ],
+        "room_players": [
+            "AnnaYanami",
+            "DKing20",
+            "FoopyPoopy",
+            "HakoHoka",
+            "LiljaKatsuragi",
+            "LordGrond",
+            "TBDhater",
+            "Wolbachia"
+        ],
+        "lives_taken_flat": [
+            "foopypoopy"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3
+        ],
+        "alts": [],
+        "start_sample": 10
+    },
+    {
+        "romaji": "Meitantei Conan: Junkoku no Nightmare",
+        "english": "Detective Conan: The Darkest Nightmare",
+        "song": "Sekai wa Anata no Iro ni Naru",
+        "artist_raw": "B'z",
+        "artist_arr": [
+            "B'z"
+        ],
+        "composer": "Takahiro Matsumoto",
+        "arranger": "Takahiro Matsumoto",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=17873",
+        "anime_type": "Movie",
+        "vintage": "Spring 2016",
+        "genres_raw": [
+            "Action",
+            "Mystery"
+        ],
+        "tags_raw": [
+            "Police",
+            "Shounen",
+            "Amnesia",
+            "Espionage",
+            "Assassins",
+            "Age Regression",
+            "Detective"
+        ],
+        "difficulty": "37.10",
+        "video_url": "https://nawdist.animemusicquiz.com/1v7yd9.mp3",
+        "guessers_flat": [
+            "Jakemonkey"
+        ],
+        "guessers_hover": [
+            "Team bamboo: Jakemonkey (10.49)",
+            "Team CipherKai: None"
+        ],
+        "listers_flat": [
+            "Jakemonkey"
+        ],
+        "listers_hover": [
+            "Team bamboo: Jakemonkey",
+            "Team CipherKai: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [
+            "jakemonkey"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1
+        ],
+        "alts": [
+            "Meitantei Conan",
+            "Detective Conan",
+            "Case Closed"
+        ],
+        "start_sample": 194
+    },
+    {
+        "romaji": "Memories Off 3.5",
+        "english": "Memories Off 3.5",
+        "song": "Shining star",
+        "artist_raw": "Ayumi Murata",
+        "artist_arr": [
+            "Ayumi Murata"
+        ],
+        "composer": "Chiyomaru Shikura",
+        "arranger": "Toshimichi Isoe",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=4456",
+        "anime_type": "OVA",
+        "vintage": "Spring 2004",
+        "genres_raw": [
+            "Drama",
+            "Romance"
+        ],
+        "tags_raw": [],
+        "difficulty": "20.39",
+        "video_url": "https://nawdist.animemusicquiz.com/dm59wx.mp3",
+        "guessers_flat": [
+            "LordGrond"
+        ],
+        "guessers_hover": [
+            "Team LiljaKatsuragi: LordGrond (6.30)",
+            "Team AnnaYanami: None"
+        ],
+        "listers_flat": [
+            "LordGrond"
+        ],
+        "listers_hover": [
+            "Team LiljaKatsuragi: LordGrond",
+            "Team AnnaYanami: None"
+        ],
+        "room_players": [
+            "AnnaYanami",
+            "DKing20",
+            "FoopyPoopy",
+            "HakoHoka",
+            "LiljaKatsuragi",
+            "LordGrond",
+            "TBDhater",
+            "Wolbachia"
+        ],
+        "lives_taken_flat": [
+            "lordgrond"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            3
+        ],
+        "alts": [],
+        "start_sample": 45
     },
     {
         "romaji": "MF Ghost 3rd Season",
@@ -1675,6 +3224,95 @@
         "start_sample": 14
     },
     {
+        "romaji": "Naruto",
+        "english": "Naruto",
+        "song": "Sayonara Sekai",
+        "artist_raw": "Kishidan",
+        "artist_arr": [
+            "Kishidan"
+        ],
+        "composer": "Show Ayanokoji",
+        "arranger": "Kishidan",
+        "type": "Opening 3",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=1825",
+        "anime_type": "TV",
+        "vintage": "Fall 2002",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Drama",
+            "Fantasy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Martial Arts",
+            "Shounen",
+            "Super Power",
+            "Slapstick",
+            "Battle Royale",
+            "Coming of Age",
+            "Achronological Order",
+            "Bullying",
+            "Revenge",
+            "Ninja",
+            "Kaiju",
+            "Philosophy",
+            "Primarily Child Cast",
+            "Anachronism",
+            "Death Game",
+            "Shapeshifting",
+            "Necromancy",
+            "Found Family",
+            "Travel",
+            "Orphan",
+            "Unrequited Love",
+            "Estranged Family",
+            "Criminal Organization"
+        ],
+        "difficulty": "20.79",
+        "video_url": "https://nawdist.animemusicquiz.com/tlq18y.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "FoopyPoopy",
+            "TBDhater"
+        ],
+        "guessers_hover": [
+            "Team AnnaYanami: HakoHoka (5.66)",
+            "Team LiljaKatsuragi: TBDhater (18.96), FoopyPoopy (20.07)"
+        ],
+        "listers_flat": [
+            "HakoHoka",
+            "TBDhater"
+        ],
+        "listers_hover": [
+            "Team AnnaYanami: HakoHoka",
+            "Team LiljaKatsuragi: TBDhater"
+        ],
+        "room_players": [
+            "AnnaYanami",
+            "DKing20",
+            "FoopyPoopy",
+            "HakoHoka",
+            "LiljaKatsuragi",
+            "LordGrond",
+            "TBDhater",
+            "Wolbachia"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "hakohoka"
+        ],
+        "correct_teams_flat": [
+            2,
+            3,
+            3
+        ],
+        "alts": [],
+        "start_sample": 17
+    },
+    {
         "romaji": "Naruto Shippuuden",
         "english": "Naruto Shippuuden",
         "song": "Sayonara Memory",
@@ -1760,6 +3398,78 @@
         ],
         "alts": [],
         "start_sample": 25
+    },
+    {
+        "romaji": "Natsume Yuujinchou San",
+        "english": "Natsume's Book of Friends Season 3",
+        "song": "Boku ni Dekiru Koto",
+        "artist_raw": "HOW MERRY MARRY",
+        "artist_arr": [
+            "HOW MERRY MARRY"
+        ],
+        "composer": "Keiichi Kudou",
+        "arranger": "HOW MERRY MARRY, Takahiro Ito, Motoki Matsuoka",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=12542",
+        "anime_type": "TV",
+        "vintage": "Summer 2011",
+        "genres_raw": [
+            "Drama",
+            "Fantasy",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Shoujo",
+            "Iyashikei",
+            "Episodic",
+            "Mythology",
+            "Youkai",
+            "Rural",
+            "Outdoor Activities",
+            "Urban Fantasy",
+            "Rotoscoping",
+            "Shapeshifting",
+            "Adoption",
+            "Found Family",
+            "Estranged Family"
+        ],
+        "difficulty": "26.43",
+        "video_url": "https://nawdist.animemusicquiz.com/hrr32a.mp3",
+        "guessers_flat": [
+            "bamboo"
+        ],
+        "guessers_hover": [
+            "Team bamboo: bamboo (2.70)",
+            "Team CipherKai: None"
+        ],
+        "listers_flat": [
+            "bamboo"
+        ],
+        "listers_hover": [
+            "Team bamboo: bamboo",
+            "Team CipherKai: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [
+            "bamboo"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1
+        ],
+        "alts": [],
+        "start_sample": 3
     },
     {
         "romaji": "Nobunaga no Shinobi: Ise Kanegasaki-hen",
@@ -1883,6 +3593,229 @@
         ],
         "alts": [],
         "start_sample": 6
+    },
+    {
+        "romaji": "Ongaku Shoujo",
+        "english": "Music Girls",
+        "song": "Oasis",
+        "artist_raw": "Nako Eguchi",
+        "artist_arr": [
+            "Nako Eguchi"
+        ],
+        "composer": "Yuki Fukazawa",
+        "arranger": "Mine Kushita",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20918",
+        "anime_type": "TV",
+        "vintage": "Summer 2018",
+        "genres_raw": [
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Idol",
+            "Dancing"
+        ],
+        "difficulty": "17.43",
+        "video_url": "https://nawdist.animemusicquiz.com/fh8oq7.mp3",
+        "guessers_flat": [
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team CipherKai: FurLain (17.02)",
+            "Team bamboo: None"
+        ],
+        "listers_flat": [
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team CipherKai: FurLain",
+            "Team bamboo: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [
+            "furlain"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4
+        ],
+        "alts": [],
+        "start_sample": 58
+    },
+    {
+        "romaji": "Pocket Monsters: Kesshoutou no Teiou Entei",
+        "english": "Pokémon 3: The Movie",
+        "song": "OK! 2000",
+        "artist_raw": "Rica Matsumoto",
+        "artist_arr": [
+            "Rica Matsumoto"
+        ],
+        "composer": "Hirokazu Tanaka",
+        "arranger": "Hirokazu Tanaka",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=831",
+        "anime_type": "Movie",
+        "vintage": "Summer 2000",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Family Life",
+            "Rural",
+            "Animals",
+            "Creature Taming"
+        ],
+        "difficulty": "26.18",
+        "video_url": "https://nawdist.animemusicquiz.com/p5t4ho.mp3",
+        "guessers_flat": [
+            "Spartric",
+            "CipherKai",
+            "bamboo",
+            "FurLain",
+            "Nunuchu42",
+            "Jakemonkey"
+        ],
+        "guessers_hover": [
+            "Team bamboo: bamboo (7.36), Jakemonkey (7.85), Nunuchu42 (6.57)",
+            "Team CipherKai: CipherKai (6.08), FurLain (8.81), Spartric (4.24)"
+        ],
+        "listers_flat": [
+            "CipherKai",
+            "bamboo",
+            "Jakemonkey"
+        ],
+        "listers_hover": [
+            "Team bamboo: bamboo, Jakemonkey",
+            "Team CipherKai: CipherKai"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4,
+            4,
+            1,
+            4,
+            1,
+            1
+        ],
+        "alts": [
+            "Pokémon: Battle Frontier",
+            "Pocket Monsters: Advanced Generation",
+            "Pocket Monsters: Mewtwo! Ware wa Koko ni Ari",
+            "Pokémon: Mewtwo Returns",
+            "Pokémon: Spell of the Unown",
+            "Pokémon: Advanced",
+            "Pocket Monsters",
+            "Pokémon"
+        ],
+        "start_sample": 16
+    },
+    {
+        "romaji": "Princession Orchestra",
+        "english": "Princession Orchestra",
+        "song": "KING OF SOLITARY",
+        "artist_raw": "Hiro Shimono",
+        "artist_arr": [
+            "Hiro Shimono"
+        ],
+        "composer": "Yuta Kasai",
+        "arranger": "Yuta Kasai",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=32811",
+        "anime_type": "TV",
+        "vintage": "Spring 2025",
+        "genres_raw": [
+            "Action",
+            "Mahou Shoujo",
+            "Music"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Magic",
+            "Martial Arts",
+            "Swordplay",
+            "Super Power",
+            "Yuri",
+            "Tragedy",
+            "Cute Girls Doing Cute Things",
+            "Henshin",
+            "Idol",
+            "Superhero",
+            "Episodic",
+            "Dancing",
+            "Amnesia",
+            "Isekai",
+            "Kaiju",
+            "Urban Fantasy",
+            "Cosplay",
+            "LGBTQ+ Themes",
+            "Tokusatsu",
+            "Acting",
+            "Urban",
+            "Cosmic Horror",
+            "Tomboy",
+            "Fairy",
+            "Aromantic"
+        ],
+        "difficulty": "23.08",
+        "video_url": "https://nawdist.animemusicquiz.com/bueubz.mp3",
+        "guessers_flat": [],
+        "guessers_hover": [
+            "Team bamboo: None",
+            "Team CipherKai: None"
+        ],
+        "listers_flat": [
+            "Spartric",
+            "CipherKai",
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team CipherKai: CipherKai, FurLain, Spartric",
+            "Team bamboo: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [],
+        "alts": [],
+        "start_sample": 26
     },
     {
         "romaji": "PriPara",
@@ -2087,6 +4020,206 @@
         "start_sample": 39
     },
     {
+        "romaji": "Rail Romanesque 2",
+        "english": "Rail Romanesque 2",
+        "song": "Nattitude",
+        "artist_raw": "Miyuri Shimabukuro",
+        "artist_arr": [
+            "Miyuri Shimabukuro"
+        ],
+        "composer": "Kyouhei Nishizaka",
+        "arranger": "Kyouhei Nishizaka",
+        "type": "Ending 8",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23897",
+        "anime_type": "TV",
+        "vintage": "Fall 2023",
+        "genres_raw": [
+            "Sci-Fi",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Trains"
+        ],
+        "difficulty": "26.12",
+        "video_url": "https://nawdist.animemusicquiz.com/b2gcpl.mp3",
+        "guessers_flat": [
+            "Spartric",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team CipherKai: FurLain (4.87), Spartric (3.53)",
+            "Team bamboo: None"
+        ],
+        "listers_flat": [
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team CipherKai: FurLain",
+            "Team bamboo: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [
+            "spartric",
+            "furlain"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            4,
+            4
+        ],
+        "alts": [],
+        "start_sample": 8
+    },
+    {
+        "romaji": "Sacred Seven",
+        "english": "Sacred Seven",
+        "song": "stone cold",
+        "artist_raw": "FictionJunction",
+        "artist_arr": [
+            "FictionJunction"
+        ],
+        "composer": "Yuki Kajiura",
+        "arranger": "Yuki Kajiura",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=12393",
+        "anime_type": "TV",
+        "vintage": "Summer 2011",
+        "genres_raw": [
+            "Action",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Henshin",
+            "Robots",
+            "Tokusatsu"
+        ],
+        "difficulty": "29.36",
+        "video_url": "https://nawdist.animemusicquiz.com/s4eunz.mp3",
+        "guessers_flat": [
+            "CipherKai",
+            "bamboo"
+        ],
+        "guessers_hover": [
+            "Team bamboo: bamboo (5.75)",
+            "Team CipherKai: CipherKai (3.38)"
+        ],
+        "listers_flat": [
+            "CipherKai"
+        ],
+        "listers_hover": [
+            "Team CipherKai: CipherKai",
+            "Team bamboo: None"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "bamboo",
+            "cipherkai"
+        ],
+        "correct_teams_flat": [
+            4,
+            1
+        ],
+        "alts": [],
+        "start_sample": 65
+    },
+    {
+        "romaji": "School Days",
+        "english": "School Days",
+        "song": "Waltz",
+        "artist_raw": "Kanako Itou",
+        "artist_arr": [
+            "Kanako Itou"
+        ],
+        "composer": "Hiroyuki Maezawa",
+        "arranger": "Hiroyuki Maezawa",
+        "type": "Ending 3",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=7815",
+        "anime_type": "TV",
+        "vintage": "Summer 2007",
+        "genres_raw": [
+            "Drama",
+            "Psychological",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Tragedy",
+            "Gore",
+            "Nudity",
+            "Anti-Hero",
+            "Trains",
+            "Love Triangle",
+            "Yandere",
+            "Bullying",
+            "Revenge",
+            "Urban"
+        ],
+        "difficulty": "30.77",
+        "video_url": "https://nawdist.animemusicquiz.com/accg71.mp3",
+        "guessers_flat": [
+            "I_dont_like_loli",
+            "bamboo",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team bamboo: bamboo (2.81), I_dont_like_loli (5.80)",
+            "Team CipherKai: FurLain (4.92)"
+        ],
+        "listers_flat": [
+            "I_dont_like_loli",
+            "bamboo",
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team bamboo: bamboo, I_dont_like_loli",
+            "Team CipherKai: FurLain"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "furlain"
+        ],
+        "correct_teams_flat": [
+            1,
+            1,
+            4
+        ],
+        "alts": [],
+        "start_sample": 52
+    },
+    {
         "romaji": "School Rumble",
         "english": "School Rumble",
         "song": "Kimi e ~Kaze ni Nosete~",
@@ -2149,8 +4282,8 @@
             1
         ],
         "alts": [
-            "School Rumble: 2nd Semester",
-            "School Rumble: Ni Gakki"
+            "School Rumble: Ni Gakki",
+            "School Rumble: 2nd Semester"
         ],
         "start_sample": 1
     },
@@ -2491,6 +4624,84 @@
         ],
         "alts": [],
         "start_sample": 21
+    },
+    {
+        "romaji": "Shuumatsu no Walküre",
+        "english": "Record of Ragnarok",
+        "song": "KAMIGAMI",
+        "artist_raw": "Maximum the Hormone",
+        "artist_arr": [
+            "Maximum the Hormone"
+        ],
+        "composer": "Maximum the Ryo-kun",
+        "arranger": "Maximum the Hormone",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24148",
+        "anime_type": "TV",
+        "vintage": "Spring 2021",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Fantasy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Historical",
+            "Martial Arts",
+            "Swordplay",
+            "Seinen",
+            "Super Power",
+            "Gore",
+            "Primarily Adult Cast",
+            "War",
+            "Survival",
+            "Afterlife",
+            "Mythology",
+            "Gods"
+        ],
+        "difficulty": "36.80",
+        "video_url": "https://nawdist.animemusicquiz.com/sr3sec.mp3",
+        "guessers_flat": [
+            "Spartric",
+            "CipherKai",
+            "FurLain",
+            "Jakemonkey"
+        ],
+        "guessers_hover": [
+            "Team bamboo: Jakemonkey (4.13)",
+            "Team CipherKai: CipherKai (10.51), FurLain (6.85), Spartric (19.61)"
+        ],
+        "listers_flat": [
+            "FurLain",
+            "Jakemonkey"
+        ],
+        "listers_hover": [
+            "Team bamboo: Jakemonkey",
+            "Team CipherKai: FurLain"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "jakemonkey"
+        ],
+        "correct_teams_flat": [
+            4,
+            4,
+            4,
+            1
+        ],
+        "alts": [],
+        "start_sample": 62
     },
     {
         "romaji": "Slime Taoshite 300-nen, Shiranai Uchi ni Level Max ni Nattemashita",
@@ -3046,6 +5257,81 @@
         "start_sample": 65
     },
     {
+        "romaji": "Tsue to Tsurugi no Wistoria Season 2",
+        "english": "Wistoria: Wand and Sword Season 2",
+        "song": "BELIEVERS",
+        "artist_raw": "ASH DA HERO",
+        "artist_arr": [
+            "ASH DA HERO"
+        ],
+        "composer": "ASH",
+        "arranger": "Ryo'Lefty'Miyata",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=33629",
+        "anime_type": "TV",
+        "vintage": "Spring 2026",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Drama",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Swordplay",
+            "Shounen",
+            "Henshin",
+            "Elf",
+            "Medieval"
+        ],
+        "difficulty": "30.01",
+        "video_url": "https://nawdist.animemusicquiz.com/2vkl1f.mp3",
+        "guessers_flat": [
+            "I_dont_like_loli",
+            "Spartric",
+            "CipherKai",
+            "Raphtelia",
+            "FurLain",
+            "Jakemonkey"
+        ],
+        "guessers_hover": [
+            "Team bamboo: Jakemonkey (4.58), I_dont_like_loli (19.00)",
+            "Team CipherKai: CipherKai (20.05), FurLain (6.94), Spartric (5.09), Raphtelia (11.69)"
+        ],
+        "listers_flat": [
+            "Spartric",
+            "CipherKai",
+            "Jakemonkey"
+        ],
+        "listers_hover": [
+            "Team bamboo: Jakemonkey",
+            "Team CipherKai: CipherKai, Spartric"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            4,
+            4,
+            4,
+            4,
+            1
+        ],
+        "alts": [],
+        "start_sample": 6
+    },
+    {
         "romaji": "Tsuujou Kougeki ga Zentai Kougeki de Ni-kai Kougeki no Okaa-san wa Suki desu ka?",
         "english": "Do You Love Your Mom and Her Two-Hit Multi-Target Attacks?",
         "song": "Tsuujou Kougeki ga Zentai Kougeki de Ni-kai Kougeki Mama",
@@ -3195,6 +5481,86 @@
         ],
         "alts": [],
         "start_sample": 25
+    },
+    {
+        "romaji": "Uma Musume: Pretty Derby",
+        "english": "Uma Musume: Pretty Derby",
+        "song": "Arigatou, Kamisama",
+        "artist_raw": "Azumi Waki",
+        "artist_arr": [
+            "Azumi Waki"
+        ],
+        "composer": "Lucas",
+        "arranger": "Lucas",
+        "type": "Ending 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20598",
+        "anime_type": "TV",
+        "vintage": "Spring 2018",
+        "genres_raw": [
+            "Drama",
+            "Music",
+            "Slice of Life",
+            "Sports"
+        ],
+        "tags_raw": [
+            "Gambling",
+            "Cute Girls Doing Cute Things",
+            "Idol",
+            "Time Skip",
+            "Kemonomimi",
+            "Athletics",
+            "Rehabilitation",
+            "Animals",
+            "Kuudere",
+            "Boarding School"
+        ],
+        "difficulty": "23.55",
+        "video_url": "https://nawdist.animemusicquiz.com/bi8j82.mp3",
+        "guessers_flat": [
+            "I_dont_like_loli",
+            "Spartric",
+            "CipherKai",
+            "bamboo",
+            "FurLain",
+            "Nunuchu42"
+        ],
+        "guessers_hover": [
+            "Team bamboo: bamboo (14.74), I_dont_like_loli (15.00), Nunuchu42 (10.35)",
+            "Team CipherKai: CipherKai (4.30), FurLain (5.19), Spartric (4.29)"
+        ],
+        "listers_flat": [
+            "Spartric",
+            "CipherKai",
+            "FurLain",
+            "Nunuchu42"
+        ],
+        "listers_hover": [
+            "Team bamboo: Nunuchu42",
+            "Team CipherKai: CipherKai, FurLain, Spartric"
+        ],
+        "room_players": [
+            "CipherKai",
+            "FurLain",
+            "I_dont_like_loli",
+            "Jakemonkey",
+            "Nunuchu42",
+            "Raphtelia",
+            "Spartric",
+            "bamboo"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            4,
+            4,
+            1,
+            4,
+            1
+        ],
+        "alts": [],
+        "start_sample": 38
     },
     {
         "romaji": "Violet Evergarden",

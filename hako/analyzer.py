@@ -2404,6 +2404,8 @@ class TourAnalyzer:
                 el_num  = num[mask_series].dropna() if col in int_cols else num.dropna()
 
                 if not num.dropna().empty:
+                    if col == "Chant GR" and num.dropna().max() == 0: continue
+
                     if col in desc_cols:
                         best_val    = num.dropna().max()
                         worst_val   = el_num.min() if not el_num.empty else None
@@ -3115,6 +3117,8 @@ class TourAnalyzer:
                 el_num = num[mask].dropna() if mask is not None and col in rest else num.dropna()
 
                 if not num.dropna().empty:
+                    if col == "Chant GR" and num.dropna().max() == 0: continue
+
                     if col in desc:
                         best_val    = num.dropna().max()
                         worst_val   = el_num.min() if not el_num.empty else None
