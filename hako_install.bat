@@ -17,7 +17,7 @@ python -m pip install --upgrade pip
 echo.
 echo [?] Installing required external libraries
 echo.
-python -m pip install pandas numpy matplotlib scipy beautifulsoup4 curl_cffi python-dateutil gspread lxml adjustText html2image Pillow
+python -m pip install pandas numpy matplotlib scipy beautifulsoup4 curl_cffi python-dateutil gspread lxml adjustText html2image Pillow ijson
 
 if %errorlevel% equ 0 (
     echo.
