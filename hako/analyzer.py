@@ -2602,9 +2602,10 @@ class TourAnalyzer:
             df_teams_temp = pd.DataFrame(team_rows)
 
             for col in df_teams_temp.columns:
-                if col.startswith("_"): continue
+                if      col.startswith("_") : continue
+                elif    col == "Win Record" : num = df_teams_temp["_win_pct_sort"]
+                else                        : num = df_teams_temp[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
 
-                num     = df_teams_temp[col].map(lambda x: x["count"] if isinstance(x, dict) else x)
                 desc    = ["Mean Elo", "Mean GR", "Total 1/8s", "Rig Synergy", "Off Synergy", "Shared Rigs", "Win Record"]
                 asc     = ["Mean Over-8"]
 

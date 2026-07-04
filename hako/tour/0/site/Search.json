@@ -1193,13 +1193,13 @@
         "correct_teams_flat": [],
         "alts": [
             "Ao no Exorcist: Yuki no Hate-hen",
+            "Ao no Exorcist: Shimane Illuminati-hen",
+            "Blue Exorcist: Shimane Illuminati Saga",
+            "Blue Exorcist: The Blue Night Saga",
             "Ao no Exorcist: Yosuga-hen",
             "Blue Exorcist: Kyoto Saga",
             "Ao no Exorcist: Kyoto Fujouou-hen",
-            "Blue Exorcist: Beyond the Snow Saga",
-            "Blue Exorcist: The Blue Night Saga",
-            "Ao no Exorcist: Shimane Illuminati-hen",
-            "Blue Exorcist: Shimane Illuminati Saga"
+            "Blue Exorcist: Beyond the Snow Saga"
         ],
         "start_sample": 4
     },
@@ -2339,8 +2339,8 @@
             6
         ],
         "alts": [
-            "BanG Dream! Film Live 2nd Stage",
-            "Gekijouban BanG Dream! It's MyGO!!!!!"
+            "Gekijouban BanG Dream! It's MyGO!!!!!",
+            "BanG Dream! Film Live 2nd Stage"
         ],
         "start_sample": 58
     },
@@ -2419,10 +2419,10 @@
             3
         ],
         "alts": [
-            "Ganso! Bandori-chan",
-            "Ganso! BanG Dream Chan",
             "Ave Mujica: The Die is Cast",
             "Gekijouban BanG Dream! It's MyGO!!!!!",
+            "Ganso! Bandori-chan",
+            "Ganso! BanG Dream Chan",
             "BanG Dream! Ave Mujica"
         ],
         "start_sample": 6
@@ -3476,8 +3476,8 @@
             6
         ],
         "alts": [
-            "Gekijou Soushuuhen Bocchi the Rock!",
-            "Bocchi the Rock! Recaps"
+            "Bocchi the Rock! Recaps",
+            "Gekijou Soushuuhen Bocchi the Rock!"
         ],
         "start_sample": 16
     },
@@ -3686,8 +3686,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "tbdhater",
-            "serozero"
+            "serozero",
+            "tbdhater"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -5379,8 +5379,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "florenz",
-            "furlain"
+            "furlain",
+            "florenz"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -5454,8 +5454,8 @@
             "neoburnz"
         ],
         "lives_taken_flat": [
-            "neoburnz",
-            "emdiel"
+            "emdiel",
+            "neoburnz"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -5726,8 +5726,8 @@
             "neoburnz"
         ],
         "lives_taken_flat": [
-            "hakohoka",
             "emdiel",
+            "hakohoka",
             "neoburnz"
         ],
         "lives_saved_flat": [],
@@ -6866,9 +6866,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "zomg",
+            "alkios",
             "florenz",
-            "alkios"
+            "zomg"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -7027,8 +7027,8 @@
             5
         ],
         "alts": [
-            "Shin Chan",
-            "Crayon Shin-chan"
+            "Crayon Shin-chan",
+            "Shin Chan"
         ],
         "start_sample": 31
     },
@@ -7268,8 +7268,8 @@
             "neoburnz"
         ],
         "lives_taken_flat": [
-            "mcalberthabolea",
-            "konomi"
+            "konomi",
+            "mcalberthabolea"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -7616,10 +7616,10 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "zomg",
-            "florenz",
+            "alkios",
             "furlain",
-            "alkios"
+            "florenz",
+            "zomg"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -8720,8 +8720,8 @@
         "alts": [
             "Kidou Senshi Gundam GQuuuuuuX",
             "Kidou Senshi Gundam Movie Trilogy",
-            "Mobile Suit Gundam GQuuuuuuX",
-            "Mobile Suit Gundam: The Movie Trilogy"
+            "Mobile Suit Gundam: The Movie Trilogy",
+            "Mobile Suit Gundam GQuuuuuuX"
         ],
         "start_sample": 50
     },
@@ -10005,8 +10005,8 @@
             5
         ],
         "alts": [
-            "Gekijouban IDOLiSH7 LIVE 4bit BEYOND THE PERiOD",
             "IDOLiSH7 the Movie LIVE 4bit BEYOND THE PERiOD",
+            "Gekijouban IDOLiSH7 LIVE 4bit BEYOND THE PERiOD",
             "IDOLiSH7 Third Beat!"
         ],
         "start_sample": 103
@@ -10432,8 +10432,8 @@
             "anicomi"
         ],
         "lives_taken_flat": [
-            "anicomi",
-            "sus_domesticus"
+            "sus_domesticus",
+            "anicomi"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -10771,8 +10771,8 @@
             2
         ],
         "alts": [
-            "Kaguya-sama: Love is War - Ultra Romantic",
-            "Kaguya-sama wa Kokurasetai: Ultra Romantic"
+            "Kaguya-sama wa Kokurasetai: Ultra Romantic",
+            "Kaguya-sama: Love is War - Ultra Romantic"
         ],
         "start_sample": 1
     },
@@ -11082,9 +11082,9 @@
             "neoburnz"
         ],
         "lives_taken_flat": [
+            "janeremover",
             "catge",
-            "sus_domesticus",
-            "janeremover"
+            "sus_domesticus"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -11475,8 +11475,8 @@
             "anicomi"
         ],
         "lives_taken_flat": [
-            "sus_domesticus",
-            "catge"
+            "catge",
+            "sus_domesticus"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12315,8 +12315,8 @@
             "neoburnz"
         ],
         "lives_taken_flat": [
-            "anicomi",
-            "sus_domesticus"
+            "sus_domesticus",
+            "anicomi"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -13108,8 +13108,8 @@
             "neoburnz"
         ],
         "lives_taken_flat": [
-            "neoburnz",
-            "emdiel"
+            "emdiel",
+            "neoburnz"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -13755,8 +13755,8 @@
             4
         ],
         "alts": [
-            "Lupin III: Green vs Red",
-            "Lupin Sansei: Green vs Red"
+            "Lupin Sansei: Green vs Red",
+            "Lupin III: Green vs Red"
         ],
         "start_sample": 34
     },
@@ -13828,10 +13828,10 @@
             6
         ],
         "alts": [
+            "The Super Dimension Fortress Macross II: Lovers, Again",
             "Choujikuu Yousai Macross II: Lovers Again",
-            "Macross 7",
             "Super Dimension Fortress Macross II: The Movie",
-            "The Super Dimension Fortress Macross II: Lovers, Again"
+            "Macross 7"
         ],
         "start_sample": 55
     },
@@ -13899,8 +13899,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [],
         "alts": [
-            "Gekijouban Macross Δ: Gekijou no Walküre",
-            "Macross Delta: Passionate Walküre"
+            "Macross Delta: Passionate Walküre",
+            "Gekijouban Macross Δ: Gekijou no Walküre"
         ],
         "start_sample": 0
     },
@@ -15154,8 +15154,8 @@
             "anicomi"
         ],
         "lives_taken_flat": [
-            "sus_domesticus",
-            "catge"
+            "catge",
+            "sus_domesticus"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -15236,9 +15236,9 @@
             4
         ],
         "alts": [
-            "Detective Conan",
+            "Meitantei Conan",
             "Case Closed",
-            "Meitantei Conan"
+            "Detective Conan"
         ],
         "start_sample": 172
     },
@@ -16539,8 +16539,8 @@
             2
         ],
         "alts": [
-            "Ichigo Mashimaro OVA",
-            "Strawberry Marshmallow OVA"
+            "Strawberry Marshmallow OVA",
+            "Ichigo Mashimaro OVA"
         ],
         "start_sample": 2
     },
@@ -17215,8 +17215,8 @@
             "konomi"
         ],
         "lives_taken_flat": [
-            "onlyworlddaistar",
             "_shadow",
+            "onlyworlddaistar",
             "konomi"
         ],
         "lives_saved_flat": [],
@@ -17602,11 +17602,11 @@
             5
         ],
         "alts": [
-            "Overlord: The Dark Warrior",
             "Gekijouban Overlord: Shikkoku no Eiyuu",
+            "Overlord: The Dark Warrior",
             "Overlord: The Undead King",
-            "Gekijouban Overlord: Fushisha no Ou",
-            "Overlord II"
+            "Overlord II",
+            "Gekijouban Overlord: Fushisha no Ou"
         ],
         "start_sample": 67
     },
@@ -18498,10 +18498,10 @@
             4
         ],
         "alts": [
-            "Pokémon: Diamond and Pearl",
+            "Pocket Monsters: Diamond & Pearl",
             "Pokémon",
             "Pocket Monsters",
-            "Pocket Monsters: Diamond & Pearl"
+            "Pokémon: Diamond and Pearl"
         ],
         "start_sample": 20
     },
@@ -19632,8 +19632,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [],
         "alts": [
-            "The Faraway Paladin: The Lord of Rust Mountains",
-            "Saihate no Paladin: Tetsusabi no Yama no Ou"
+            "Saihate no Paladin: Tetsusabi no Yama no Ou",
+            "The Faraway Paladin: The Lord of Rust Mountains"
         ],
         "start_sample": 9
     },
@@ -19704,8 +19704,8 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [],
         "alts": [
-            "Saihate no Paladin",
-            "The Faraway Paladin"
+            "The Faraway Paladin",
+            "Saihate no Paladin"
         ],
         "start_sample": 81
     },
@@ -20578,10 +20578,10 @@
             2
         ],
         "alts": [
+            "Shakugan no Shana-tan @ Gekijouban Ver",
             "Gekijouban Shakugan no Shana",
             "Shakugan no Shana Final",
-            "Shakugan no Shana Movie",
-            "Shakugan no Shana-tan @ Gekijouban Ver"
+            "Shakugan no Shana Movie"
         ],
         "start_sample": 5
     },
@@ -20979,8 +20979,8 @@
             2
         ],
         "alts": [
-            "Attack on Titan Final Season: The Final Chapters",
-            "Shingeki no Kyojin: The Final Season - Kanketsu-hen"
+            "Shingeki no Kyojin: The Final Season - Kanketsu-hen",
+            "Attack on Titan Final Season: The Final Chapters"
         ],
         "start_sample": 9
     },
@@ -21471,8 +21471,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "onlyworlddaistar",
-            "_shadow"
+            "_shadow",
+            "onlyworlddaistar"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -22818,9 +22818,9 @@
             1
         ],
         "alts": [
-            "Bocchi the Rock!",
+            "Bocchi the Rock! Recaps",
             "Gekijou Soushuuhen Bocchi the Rock!",
-            "Bocchi the Rock! Recaps"
+            "Bocchi the Rock!"
         ],
         "start_sample": 21
     },
@@ -23187,9 +23187,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
+            "floth",
             "swapin",
-            "aitsukinakuru",
-            "floth"
+            "aitsukinakuru"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -23271,8 +23271,8 @@
             3
         ],
         "alts": [
-            "Sword Art Online: Alicization - War of Underworld",
-            "Sword Art Online II"
+            "Sword Art Online II",
+            "Sword Art Online: Alicization - War of Underworld"
         ],
         "start_sample": 15
     },
@@ -23351,9 +23351,9 @@
             "TBDhater"
         ],
         "lives_taken_flat": [
+            "floth",
             "swapin",
-            "aitsukinakuru",
-            "floth"
+            "aitsukinakuru"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -24257,8 +24257,8 @@
             "konomi"
         ],
         "lives_taken_flat": [
-            "mcalberthabolea",
-            "_shadow"
+            "_shadow",
+            "mcalberthabolea"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -24459,8 +24459,8 @@
             "anicomi"
         ],
         "lives_taken_flat": [
-            "sus_domesticus",
-            "janeremover"
+            "janeremover",
+            "sus_domesticus"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -25268,9 +25268,9 @@
             2
         ],
         "alts": [
-            "Uchuu Senkan Yamato",
             "Star Blazers",
-            "Space Battleship Yamato"
+            "Space Battleship Yamato",
+            "Uchuu Senkan Yamato"
         ],
         "start_sample": 65
     },
@@ -26373,8 +26373,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "zomg",
-            "alkios"
+            "alkios",
+            "zomg"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
