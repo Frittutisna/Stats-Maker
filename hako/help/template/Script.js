@@ -3783,6 +3783,13 @@ window.translateHoverText = function(textArray) {
     });
 };
 
+window.toggleDarkMode = function() {
+    const isDark    = document.body.classList.toggle("dark-mode");
+    const btn       = document.getElementById("darkModeToggleBtn");
+
+    if (btn) {btn.innerText = isDark ? "⏾" : "⬤"}
+};
+
 window.toggleSearchLanguage = function() {
     const btn           = document.getElementById("langToggleBtn");
     currentSearchLang   = currentSearchLang === "JP" ? "EN" : "JP";
