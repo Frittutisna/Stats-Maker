@@ -37,12 +37,8 @@ body, table, th, td, button, input {font-family: 'Segoe UI', Roboto, Helvetica, 
     font-size           : clamp(9px, 0.9vw, 22.5px);
 }
 
-#searchSongsTable th {
-    font-size: clamp(10px, 1vw, 20px);
-}
-#searchSongsTable td {
-    font-size: clamp(9px, 0.9vw, 18px);
-}
+#searchSongsTable th {font-size: clamp(10px,    1vw,    20px)}
+#searchSongsTable td {font-size: clamp(9px,     0.9vw,  18px)}
 
 .main-table tr:nth-child(even)  {background-color   : var(--rittu-grey);}
 .border-group-line td           {border-bottom      : var(--bold-border) !important;}
@@ -67,9 +63,7 @@ td[data-songs].highlight-worst:hover {
 th.has-explanation:hover,
 #tourStatsTable tr td.has-explanation:hover,
 td[data-songs]:not(.highlight-best):not(.highlight-worst):hover,
-#tourStatsTable td[onclick]:hover {
-    background-color: var(--hover-overlay) !important;
-}
+#tourStatsTable td[onclick]:hover {background-color: var(--hover-overlay) !important}
 
 .tab-btn {
     font-size       : 20px;
@@ -95,7 +89,7 @@ td[data-songs]:not(.highlight-best):not(.highlight-worst):hover,
     max-width   : 100%;
 }
 
-.tab-content.active-content {display: block;}
+.tab-content.active-content {display: block}
 
 .table-center-wrapper {
     display                     : flex;
@@ -140,35 +134,19 @@ td.has-explanation::after {
     background-color    : black;
 }
 
-th.has-explanation[style*="background-color: black"]:hover {
-    background-color: black !important;
-}
-
-th.has-explanation[style*="background-color: black"]::after {
-    background-color: white !important;
-}
+th.has-explanation[style*="background-color: black"]:hover  {background-color: black !important}
+th.has-explanation[style*="background-color: black"]::after {background-color: white !important}
 
 td[data-songs].highlight-best::after,
-td[data-songs].highlight-worst::after {
-    background-color: white;
-}
+td[data-songs].highlight-worst::after {background-color: white}
 
-td[data-songs].highlight-best:hover::after {
-    background-color: var(--rittu-blue);
-}
+td[data-songs].highlight-best   :hover::after {background-color: var(--rittu-blue)}
+td[data-songs].highlight-worst  :hover::after {background-color: var(--rittu-red)}
 
-td[data-songs].highlight-worst:hover::after {
-    background-color: var(--rittu-red);
-}
-
-.search-group-border {
-    border-right: 3px solid black !important;
-}
+.search-group-border {border-right: 3px solid black !important}
 
 .search-c2-text, 
-.search-c2-text a {
-    text-decoration: underline !important;
-}
+.search-c2-text a {text-decoration: underline !important}
 
 #playerColumnSettingsDropdown,
 #tierSettingsDropdown,
@@ -183,9 +161,7 @@ td[data-songs].highlight-worst:hover::after {
 #columnSettingsDropdown       input[type="checkbox"],
 #playerStandingsTable         tr td[onclick],
 #teamStatsTable               tr td[onclick],
-#tourStatsTable               tr td[onclick] {
-    cursor: pointer !important;
-}
+#tourStatsTable               tr td[onclick] {cursor: pointer !important}
 
 .w-max.max-w-full.overflow-x-auto,
 .table-center-wrapper,
@@ -198,21 +174,19 @@ td[data-songs].highlight-worst:hover::after {
     scrollbar-width     : none !important;
 }
 
-.w-max.max-w-full.overflow-x-auto::-webkit-scrollbar,
-.table-center-wrapper::-webkit-scrollbar,
-.w-full.overflow-x-auto::-webkit-scrollbar,
-#playerColumnCheckboxContainer::-webkit-scrollbar,
-#archiveDropdown::-webkit-scrollbar,
-#columnCheckboxContainer::-webkit-scrollbar,
-#quizColumnCheckboxContainer::-webkit-scrollbar {
-    display         : none  !important;
-    width           : 0     !important;
-    height          : 0     !important;
+.w-max.max-w-full.overflow-x-auto   ::-webkit-scrollbar,
+.table-center-wrapper               ::-webkit-scrollbar,
+.w-full.overflow-x-auto             ::-webkit-scrollbar,
+#playerColumnCheckboxContainer      ::-webkit-scrollbar,
+#archiveDropdown                    ::-webkit-scrollbar,
+#columnCheckboxContainer            ::-webkit-scrollbar,
+#quizColumnCheckboxContainer        ::-webkit-scrollbar {
+    display : none  !important;
+    width   : 0     !important;
+    height  : 0     !important;
 }
 
-.w-full.overflow-x-auto {
-    align-items: stretch !important;
-}
+.w-full.overflow-x-auto {align-items: stretch !important}
 
 #playerStandingsTable,
 #searchSongsTable {
@@ -222,13 +196,11 @@ td[data-songs].highlight-worst:hover::after {
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+    -webkit-appearance  : none;
+    margin              : 0;
 }
 
-input[type=number] {
-    -appearance: textfield;
-}
+input[type=number] {-appearance: textfield}
 
 .quiz-dropdown-custom {
     appearance          : none;
