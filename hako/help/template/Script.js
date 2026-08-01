@@ -606,7 +606,7 @@ function initPlayerColumnSettings() {
             const explanationIndicator      = document.createElement("span");
             explanationIndicator.className  = "-ml-1.5 text-black cursor-help select-none font-normal text-base text-bold has-explanation";
             explanationIndicator.setAttribute("data-metric", col.name);
-            explanationIndicator.innerHTML  = "�";
+            explanationIndicator.innerHTML  = "⦾";
             label.appendChild(explanationIndicator);
         }
 
@@ -5350,7 +5350,7 @@ function normalizeQuizString(str) {
     if (!str) return "";
 
     return str.toString().toLowerCase()
-        .replace(/[★▲▼◆■●★☆🍀]/g, " ")
+        .replace(/[★▲▼]/g, " ")
         .replace(/[^a-z0-9\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\s]/g, " ")
         .replace(/\s+/g, " ").trim();
 }
