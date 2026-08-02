@@ -302,8 +302,9 @@ class TourAnalyzer:
                 if not song.get("listStates", [])   : self.missing_list_count += 1
 
         total_jsons         = len(self.json_paths)
-        total_players       = len(all_known)
-        baseline_initial    = total_jsons // (2 if total_players <= THRESH_PLYR else 3)
+        json_count          = total_jsons
+        team_count          = len(self.rosters) if self.use_teams else 0
+        baseline_initial    = int(json_count // (team_count / 2))
         watched_valid       = self.missing_list_count <= THRESH_WTCH
 
         if len(self.tour_types) == 1:
@@ -875,11 +876,15 @@ class TourAnalyzer:
                                 self.p_blks[pA] += 0.50
                                 self.p_blks[pB] += 0.50
 
-        final_threshold = 6 if len(self.s_part) <= THRESH_PLYR else 5
+        team_count = len(self.rosters) if self.use_teams else 0
 
-        if      self.base_exp >= final_threshold: stage = "Final"
-        elif    self.base_exp == 3              : stage = "Mid-Tour"
-        else                                    : stage = f"R{self.base_exp}"
+        if team_count <= 2:
+            if      self.base_exp   >= 3    : stage = "Final"
+            else                            : stage = f"R{self.base_exp}"
+        else:
+            if      self.base_exp   == 3    : stage = "Mid-Tour"
+            elif    team_count      <= 4    : stage = "Final" if self.base_exp >= 6 else f"R{self.base_exp}"
+            else                            : stage = "Final" if self.base_exp >= 5 else f"R{self.base_exp}"
 
         prefix      = f"{self.tour_label.strip()} Tour, " 
         png_path    = self.tour_dir / "png"
@@ -1871,8 +1876,9 @@ class TourAnalyzer:
                     
                     rig_rates   = [self.p_rigs      [name] / self.s_part[name] if self.s_part[name] else 0 for name in plist_l]
                     grid_grs    = [self.p_rigs_h    [name] / self.p_rigs[name] if self.p_rigs[name] else 0 for name in plist_l]
+                    team_count  = len(self.rosters) if self.use_teams else 0
 
-                    scale_l = 1.00 if len(plist_l) <= THRESH_PLYR else (0.75 if len(plist_l) <= THRESH_PLYR + 8 else 0.50)
+                    scale_l = 1.00 if team_count <= THRESH_TEAM else (0.75 if team_count <= THRESH_TEAM + 2 else 0.50)
                     sizes_l = [(rate * scale_l) ** 2 * 10000 for rate in rig_rates]
 
                     cmap_l = mc.LinearSegmentedColormap.from_list("rig_gr_cmap", [
@@ -1944,9 +1950,10 @@ class TourAnalyzer:
 
                 else: norm_perf = [0.5] * len(plist_g)
 
-                scale_g = 1.00 if len(plist_g) <= THRESH_PLYR else (0.75 if len(plist_g) <= THRESH_PLYR + 8 else 0.50)
-                sizes_g = [(rate * scale_g) ** 2 * 10000 for rate in gr_vals]
-                cmap_g  = mc.LinearSegmentedColormap.from_list("guess_uf_elo_cmap", [(0, COLOR_0), (0.5, COLOR_1), (1, COLOR_2)])
+                team_count  = len(self.rosters) if self.use_teams else 0
+                scale_g     = 1.00 if team_count <= THRESH_TEAM else (0.75 if team_count <= THRESH_TEAM + 2 else 0.50)
+                sizes_g     = [(rate * scale_g) ** 2 * 10000 for rate in gr_vals]
+                cmap_g      = mc.LinearSegmentedColormap.from_list("guess_uf_elo_cmap", [(0, COLOR_0), (0.5, COLOR_1), (1, COLOR_2)])
                 
                 configs.append({
                     "filename"          : "Guess.png",
@@ -2822,12 +2829,16 @@ class TourAnalyzer:
 
         t_labels        = {1: "OP GR", 2: "ED GR", 3: "IN GR"}
         valid_elos      = [float(v) for v in self.elo_map.values() if str(v).replace('.', '', 1).isdigit() or (str(v).startswith('-') and str(v)[1:].replace('.', '', 1).isdigit())]
-        avg_rank        = np.mean(valid_elos) if valid_elos else 1.0
-        final_threshold = 6 if len(self.s_part) <= THRESH_PLYR else 5
-
-        if      self.base_exp >= final_threshold    : stage = "Final"
-        elif    self.base_exp == 3                  : stage = "Mid-Tour"
-        else                                        : stage = f"R{self.base_exp}"
+        avg_rank        = np.mean   (valid_elos)    if valid_elos       else 1.0
+        team_count      = len       (self.rosters)  if self.use_teams   else 0
+        
+        if team_count <= 2:
+            if      self.base_exp   >= 3    : stage = "Final"
+            else                            : stage = f"R{self.base_exp}"
+        else:
+            if      self.base_exp   == 3    : stage = "Mid-Tour"
+            elif    team_count      <= 4    : stage = "Final" if self.base_exp >= 6 else f"R{self.base_exp}"
+            else                            : stage = "Final" if self.base_exp >= 5 else f"R{self.base_exp}"
 
         prefix = f"{self.tour_label.strip()} Tour: {stage}"
         player_song_details, tour_song_details, team_song_details, raw_vintage_by_guess, raw_vintage_by_list, matrix_song_details, num_x, num_y = self._get_dashboard_data()
