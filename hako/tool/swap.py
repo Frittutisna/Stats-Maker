@@ -1,4 +1,5 @@
-import glob, re
+import glob, re, os
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def main():
     txt_files = glob.glob("*.txt")

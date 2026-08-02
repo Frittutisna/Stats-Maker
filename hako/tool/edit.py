@@ -7,14 +7,15 @@ from tkinter import messagebox, ttk
 class CustomSpinbox(tk.Frame):
     def __init__(self, parent, from_, to, initial_val = 1, command = None):
         super().__init__(parent, bg = "white")
-        self.from_              = from_
-        self.to                 = to
-        self.command            = command
-        self.var                = tk.StringVar(value = str(initial_val))
-        vcmd                    = (self.register(self._validate_input), "%P")
 
-        self.btn_dec, self.dec_arrow = self._create_arrow_button(column = 0, coords = (7, 9, 17, 9, 12, 15),    delta = -1)
-        self.btn_inc, self.inc_arrow = self._create_arrow_button(column = 2, coords = (12, 9, 7, 15, 17, 15),   delta = 1)
+        self.from_      = from_
+        self.to         = to
+        self.command    = command
+        self.var        = tk.StringVar(value = str(initial_val))
+        vcmd            = (self.register(self._validate_input), "%P")
+
+        self.btn_dec, self.dec_arrow = self._create_arrow_button(column = 0, coords = (7,   9,  17, 9,  12, 15), delta = -1)
+        self.btn_inc, self.inc_arrow = self._create_arrow_button(column = 2, coords = (12,  9,  7,  15, 17, 15), delta = 1)
 
         self.entry = tk.Entry(
             self,
@@ -31,9 +32,9 @@ class CustomSpinbox(tk.Frame):
             validatecommand     = vcmd,
         )
 
-        self.entry.grid(row = 0, column = 1, sticky = "ns")
-        self.grid_columnconfigure(1, minsize = 25)
-        self._update_button_states(initial_val)
+        self.entry.grid             (row = 0, column = 1, sticky = "ns")
+        self.grid_columnconfigure   (1, minsize = 25)
+        self._update_button_states  (initial_val)
 
     def _create_arrow_button(self, column, coords, delta):
         btn = tk.Canvas(
@@ -49,6 +50,7 @@ class CustomSpinbox(tk.Frame):
         arrow = btn.create_polygon(*coords, fill = "white")
         btn.grid(row = 0, column = column, sticky = "nsew")
         btn.bind("<Button-1>", lambda _: self._adjust_value(delta))
+
         return btn, arrow
 
     def _update_button_states(self, current_val):
@@ -127,8 +129,8 @@ class JSONEditor(tk.Tk):
             self.destroy()
             return
 
-        self.create_widgets()
-        self.on_song_changed(1)
+        self.create_widgets     ()
+        self.on_song_changed    (1)
 
     def find_and_load_file(self):
         current_dir = Path(__file__).parent.absolute()
@@ -142,7 +144,6 @@ class JSONEditor(tk.Tk):
         if len(json_files) > 1:
             self.file_path = json_files[0]
             messagebox.showinfo("Multiple Files Found", f"Found multiple JSONs, automatically processing {self.file_path.name}")
-
         else: self.file_path = json_files[0]
 
         self.output_path = current_dir / f"edited-{self.file_path.stem}{self.file_path.suffix}"
@@ -171,31 +172,45 @@ class JSONEditor(tk.Tk):
     def create_widgets(self):
         main_frame = ttk.Frame(self, padding = 20)
         main_frame.pack(fill = tk.BOTH, expand = True)
+
         ttk.Label(main_frame, text = f"Editing {self.file_path.name}",      font = ("Segoe UI", 10, "italic"), foreground = "gray50")   .pack(anchor = "w", pady = (0, 5))
         ttk.Label(main_frame, text = "Which song would you like to edit?",  font = ("Segoe UI", 10, "bold"))                            .pack(anchor = "w", pady = (0, 5))
+
         max_songs = len(self.data.get("songs", []))
+
         self.song_spinbox = CustomSpinbox(main_frame, from_ = 1, to = max_songs if max_songs > 0 else 1, initial_val = 1, command = self.on_song_changed)
         self.song_spinbox.pack(anchor = "w", pady = (0, 10))
+
         self.info_frame = ttk.Frame(main_frame)
         self.info_frame.pack(anchor = "w", pady = (0, 10))
+
         self.lbl_anime = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
         self.lbl_anime.pack(anchor = "w")
+
         self.lbl_type = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
         self.lbl_type.pack(anchor = "w")
+
         self.lbl_songname = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
         self.lbl_songname.pack(anchor = "w")
+
         self.lbl_artist = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
         self.lbl_artist.pack(anchor = "w")
+
         ttk.Label(main_frame, text = "Who got this song right?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 5))
         self.player_frame = ttk.Frame(main_frame)
+
         self.player_frame.pack(side = "top", fill = "x", pady = (0, 10))
         ttk.Label(main_frame, text = "Who has this song on their list?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 5))
+
         self.list_frame = ttk.Frame(main_frame)
         self.list_frame.pack(side = "top", fill = "x", pady = (0, 10))
+
         self.manual_container = ttk.Frame(main_frame)
         self.manual_container.pack(fill = "x", anchor = "w")
+
         self.build_manual_slots()
         ttk.Label(main_frame, text = "Would you like to delete the last song?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 5))
+
         self.delete_var = tk.StringVar(value = "No")
         self.del_boxes  = {}
 
@@ -239,6 +254,7 @@ class JSONEditor(tk.Tk):
                 f_slot = ttk.Frame(self.manual_container)
                 f_slot.pack(anchor = "w", fill = "x", pady = 5)
                 ttk.Label(f_slot, text = f"Player {found_count + i + 1}: ", width = 10, font = ("Segoe UI", 10)).pack(side = tk.LEFT)
+
                 ent = ttk.Entry(f_slot, width = 30)
                 ent.pack(side = tk.LEFT, padx = 5)
                 self.manual_entries.append(ent)
@@ -261,9 +277,8 @@ class JSONEditor(tk.Tk):
         idx = song_num - 1
         if idx >= len(self.data["songs"]): return
 
-        target_song = self.data["songs"][idx]
-        song_info   = target_song.get("songInfo", {})
-
+        target_song     = self.data["songs"][idx]
+        song_info       = target_song.get("songInfo",   {})
         anime_romaji    = song_info.get("animeNames",   {}).get("romaji", "Unknown")
         song_type       = song_info.get("type",         3)
         type_num        = song_info.get("typeNumber",   0)
@@ -396,13 +411,18 @@ class JSONEditor(tk.Tk):
         try:
             with open(self.output_path, "w", encoding = "utf-8") as f: json.dump(self.data, f, ensure_ascii = False)
             messagebox.showinfo("Success", success_message)
+
             self.file_path = self.output_path
             with open(self.file_path, "r", encoding = "utf-8") as f: self.data = json.load(f)
-            self.extract_all_players()
-            self.build_manual_slots()
+
+            self.extract_all_players    ()
+            self.build_manual_slots     ()
+
             max_songs = len(self.data.get("songs", []))
+
             self.song_spinbox.to = max_songs if max_songs > 0 else 1
             self.song_spinbox.set(min(self.song_spinbox.get(), max_songs))
+
             self._select_del_opt("No")
 
         except Exception as e: messagebox.showerror("Error", f"Failed to save changes:\n{str(e)}")
