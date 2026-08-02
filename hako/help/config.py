@@ -19,6 +19,7 @@ FILE_CHANT  = "chant.txt"
 FILE_CODES  = "code.txt"
 FILE_ALIAS  = "alias.txt"
 SCALE_PERF  = -1.5
+TEAMS_RE    = r"([^\s(]+)\s*\(([-]?\d+(?:\.\d+)?)\)"
 THRESH_CHRL = 50
 THRESH_CHRM = 40
 THRESH_CHRS = 30

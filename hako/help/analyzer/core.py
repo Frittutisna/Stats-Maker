@@ -1,0 +1,996 @@
+import concurrent.futures as fut
+import datetime
+import hashlib
+import json
+import math
+import os
+import re
+import shutil
+import subprocess
+import sys
+import zipfile
+from collections import Counter, defaultdict
+from pathlib import Path
+from tkinter import messagebox
+
+import gspread
+from curl_cffi import requests
+
+import logging
+import warnings
+
+# Suppress adjustText logging warnings
+logging.getLogger("adjustText").setLevel(logging.ERROR)
+
+# Suppress UserWarnings from matplotlib/adjustText
+warnings.filterwarnings("ignore", category=UserWarning, module="adjustText")
+warnings.filterwarnings("ignore", message=".*FancyArrowPatch.*")
+
+from hako.help.config import (
+    DIR_CREDS,
+    DIR_JSONS,
+    DIR_TOURS,
+    EXCLUDED_TAGS,
+    FILE_ALIAS,
+    FILE_CHANT,
+    FILE_CODES,
+    NGM_STATS_SHEET_ID,
+    SHEET_PLAYER_IDS,
+    THRESH_CHRL,
+    THRESH_CHRM,
+    THRESH_CHRS,
+    THRESH_SONG,
+    THRESH_WTCH,
+    TOKEN_NTLFY,
+    TOUR_MODE_SHEET_MAP,
+    extract_year,
+    format_year,
+)
+from hako.help.dialog import TourMetadataDialog
+
+# Modular helper imports (assumes sub-modules placed in hako/analyzer/)
+from .dataloader import (
+    clean_data_local,
+    find_browser,
+    generate_acronyms,
+    load_player_ids,
+    load_team_data,
+    scan_players,
+)
+from .png import (
+    create_player_png,
+    create_scatter_png,
+    create_song_png,
+    create_team_png,
+    create_tier_png,
+    create_tour_png,
+    fuse_images,
+)
+from .web import create_dashboard_html
+from .integrations import download_challonge_page, parse_challonge_display_leader
+
+def _nested_int_defaultdict():
+    return defaultdict(int)
+
+def _nested_list_defaultdict():
+    return defaultdict(list)
+
+class TourAnalyzer:
+    def __init__(self, tour_id: str):
+        self.tour_id = str(tour_id)
+        self.script_dir = Path(__file__).parent.parent.parent.absolute()
+        self.tour_dir = self.script_dir / DIR_TOURS / self.tour_id
+        self.browser_path = find_browser()
+
+        # Participation and match stats counters
+        self.s_part = defaultdict(int)
+        self.c_counts = defaultdict(int)
+        self.e_counts = defaultdict(int)
+        self.p_rev_e = defaultdict(int)
+        self.p_two_e = defaultdict(int)
+        self.p_pts = defaultdict(int)
+        self.p_blks = defaultdict(int)
+        self.p_type_c = defaultdict(_nested_int_defaultdict)
+        self.p_type_s = defaultdict(_nested_int_defaultdict)
+        self.p_rigs = defaultdict(int)
+        self.p_rigs_h = defaultdict(int)
+        self.p_l_vint = defaultdict(list)
+        self.p_c_vint = defaultdict(list)
+        self.p_l_corr = defaultdict(list)
+        self.p_lh_vint = defaultdict(list)
+        self.p_lh_corr = defaultdict(list)
+        self.p_m_erigs = defaultdict(int)
+        self.p_l_solos = defaultdict(int)
+        self.p_hit_diff = defaultdict(list)
+        self.p_hit_vint = defaultdict(list)
+        self.p_chan_c = defaultdict(int)
+        self.p_chan_s = defaultdict(int)
+        self.p_usefulness_sum = defaultdict(float)
+        self.p_overs_sum = defaultdict(int)
+        self.p_answer_times = defaultdict(list)
+
+        # Team aggregate trackers
+        self.t_vint = defaultdict(list)
+        self.t_c_ps = defaultdict(list)
+        self.t_on_syn = defaultdict(list)
+        self.t_off_syn = defaultdict(list)
+        self.t_sh_rig = defaultdict(list)
+        self.t_solos = defaultdict(int)
+        self.t_sweeps = defaultdict(int)
+
+        # Metadata collections
+        self.genre_c = Counter()
+        self.tag_c = Counter()
+        self.global_stats = Counter()
+        self.all_diff = []
+        self.all_vint = []
+        self.song_history = []
+        self.song_data = []
+        self.chanting_ids = set()
+        self.subbed_players_set = set()
+        self.sub_relations = defaultdict(list)
+        self.tour_label = ""
+        self.id_database = {}
+        self.player_acronyms = {}
+        self.main_roster_names = set()
+
+        # Detailed song hover data
+        self.player_song_details = defaultdict(_nested_list_defaultdict)
+        self.tour_song_details = defaultdict(list)
+        self.team_song_details = defaultdict(_nested_list_defaultdict)
+        self.matrix_song_details = defaultdict(list)
+        self.raw_vintage_by_guess = defaultdict(list)
+        self.raw_vintage_by_list = defaultdict(list)
+
+    def prepare_configuration(self) -> bool:
+        """Validates input files, parses teams/aliases, and displays configuration UI."""
+        chanting_path = self.script_dir / DIR_TOURS / FILE_CHANT
+        if chanting_path.exists():
+            with open(chanting_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        self.chanting_ids.add(line)
+
+        json_dir = self.tour_dir / DIR_JSONS
+        if not json_dir.exists() or not any(json_dir.glob("*.json")):
+            messagebox.showerror("Error", f"Folder not found or empty: {json_dir}")
+            return False
+
+        self.json_paths = list(json_dir.glob("*.json"))
+        fingerprints = defaultdict(list)
+
+        for path in self.json_paths:
+            try:
+                with open(path, encoding="utf-8") as f:
+                    data = json.load(f)
+            except Exception as e:
+                messagebox.showerror("JSON corrupted", f"Could not read {path.name}: {e}")
+                return False
+
+            songs = data.get("songs", [])
+            if not path.stem.startswith("amq"):
+                match_digits = re.search(r"(\d+)$", path.stem)
+                if match_digits:
+                    m = int(match_digits.group(1))
+                    if m <= THRESH_SONG:
+                        songs = songs[: min(m, len(songs))]
+                        data["songs"] = songs
+
+            if not isinstance(songs, list) or not songs:
+                messagebox.showerror(
+                    "Disconnected Player JSON",
+                    f"Error in {path.name}: The exporter likely disconnected; ask someone else to re-upload this JSON",
+                )
+                return False
+
+            for song in songs:
+                if not isinstance(song, dict) or "videoUrl" not in song:
+                    messagebox.showerror(
+                        "Disconnected Player JSON",
+                        f"Error in {path.name}: The exporter likely disconnected; ask someone else to re-upload this JSON",
+                    )
+                    return False
+
+            payload = json.dumps(songs, sort_keys=True, ensure_ascii=False, default=str)
+            fp = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+            fingerprints[fp].append(path.name)
+
+        duplicates = [names for names in fingerprints.values() if len(names) > 1]
+        if duplicates:
+            msg = "\n".join([f"• {', '.join(set_files)}" for set_files in duplicates])
+            messagebox.showerror("Identical JSONs", f"The following files are from the same match:\n{msg}\nDelete one")
+            return False
+
+        all_known, self.apps = scan_players(self.json_paths)
+        self.player_acronyms = generate_acronyms(all_known)
+
+        (
+            self.use_teams,
+            self.elo_map,
+            self.assignments,
+            self.t1_lookup,
+            self.rosters,
+            all_known,
+            sub_candidates_raw,
+            original_players_display,
+        ) = load_team_data(self.tour_dir, all_known, self.id_database, self.subbed_players_set, self.main_roster_names)
+
+        self.missing_list_count = 0
+        self.tour_types = set()
+
+        for path in self.json_paths:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
+            songs = data.get("songs", [])
+            if not songs:
+                continue
+
+            for song in songs:
+                st = song.get("songInfo", {}).get("type")
+                if st in [1, 2, 3]:
+                    self.tour_types.add(st)
+                if not song.get("listStates", []):
+                    self.missing_list_count += 1
+
+        total_jsons = len(self.json_paths)
+        team_count = len(self.rosters) if self.use_teams else 0
+        baseline_initial = int(total_jsons // (team_count / 2)) if team_count > 0 else 1
+        watched_valid = self.missing_list_count <= THRESH_WTCH
+
+        if len(self.tour_types) == 1:
+            t_map = {1: "OP", 2: "ED", 3: "IN"}
+            t_str = t_map.get(list(self.tour_types)[0], "")
+            init_label = f"Watched {t_str}" if watched_valid else f"Random {t_str}"
+        else:
+            init_label = "Watched" if watched_valid else "Usual"
+
+        if "Eru" in init_label and self.use_teams:
+            default_th = ""
+        else:
+            if init_label == "Watched 2+8s":
+                default_th = "25, 20, 15, 10, 5"
+            elif init_label in ["Watched", "QuagWatched"]:
+                default_th = "28, 18, 12, 6"
+            elif init_label in ["Usual", "Quagsual"]:
+                default_th = "28, 19, 8"
+            else:
+                default_th = "28, 19, 8"
+
+        meta_dialog = TourMetadataDialog(
+            None,
+            self.tour_id,
+            init_label,
+            default_th,
+            baseline_initial,
+            list(all_known),
+            self.elo_map,
+            sub_candidates_raw,
+            original_players_display,
+            self.tour_dir,
+        )
+        if meta_dialog.result is None:
+            sys.exit(0)
+
+        meta_res = meta_dialog.result
+        self.tour_label = meta_res["tour_label"]
+        self.delta_choice = meta_res.get("delta_choice", "No")
+        self.challonge_choice = meta_res.get("challonge_choice", "No")
+
+        if self.delta_choice == "Yes" and self.tour_label in TOUR_MODE_SHEET_MAP:
+            print("[?] Fetching historic baselines")
+            cred_file = self.script_dir / "help" / DIR_CREDS / "credentials.json"
+            auth_file = self.script_dir / "help" / DIR_CREDS / "authorized_user.json"
+
+            try:
+                gc = gspread.oauth(credentials_filename=str(cred_file), authorized_user_filename=str(auth_file))
+                sheet = gc.open_by_key(NGM_STATS_SHEET_ID)
+                wks_ids = sheet.get_worksheet_by_id(SHEET_PLAYER_IDS)
+                rows_ids = wks_ids.get_all_values()
+                sheet_ref = TOUR_MODE_SHEET_MAP[self.tour_label]
+
+                wks_stats = sheet.get_worksheet_by_id(sheet_ref) if isinstance(sheet_ref, int) else sheet.worksheet(sheet_ref)
+                rows_stats = wks_stats.get_all_values()
+                is_list_mode = "Watched" in self.tour_label or self.tour_label == "Watched"
+                avg_df = clean_data_local(rows_ids, rows_stats, 6, 10, is_list_mode)
+                history_profile_map = {}
+
+                for _, r_row in avg_df.iterrows():
+                    pid_key = int(r_row["Player ID"])
+                    history_profile_map[pid_key] = {
+                        "GR": float(r_row.get("Guess rate", 0.0)),
+                        "UF": float(r_row.get("Usefulness", 0.0)),
+                        "OP": float(r_row.get("OP guess rate", 0.0)),
+                        "ED": float(r_row.get("ED guess rate", 0.0)),
+                        "IN": float(r_row.get("IN guess rate", 0.0)),
+                    }
+
+                alias_txt_path = self.tour_dir / FILE_ALIAS
+                current_alias_lines = []
+                if alias_txt_path.exists():
+                    with open(alias_txt_path, "r", encoding="utf-8") as f_alias:
+                        for a_line in f_alias:
+                            if "," in a_line:
+                                current_alias_lines.append(a_line.strip().split(","))
+
+                id_table_lookup = {r[0].strip().lower(): int(r[1]) for r in rows_ids[1:] if len(r) >= 2 and r[0] and r[1]}
+
+                with open(alias_txt_path, "w", encoding="utf-8") as f_out:
+                    for parts in current_alias_lines:
+                        p_name = parts[0].strip()
+                        alias_name = parts[1].strip()
+                        p_low = p_name.lower()
+
+                        p_id = id_table_lookup.get(p_low)
+                        if p_id is None and alias_name.lower() in id_table_lookup:
+                            p_id = id_table_lookup.get(alias_name.lower())
+
+                        if p_id in history_profile_map:
+                            h_prof = history_profile_map[p_id]
+                            f_out.write(
+                                f"{p_name}, {alias_name}, {h_prof['GR']:.2f}, {h_prof['UF']:.2f}, {h_prof['OP']:.2f}, {h_prof['ED']:.2f}, {h_prof['IN']:.2f}\n"
+                            )
+                        else:
+                            f_out.write(f"{p_name}, {alias_name}, N/A, N/A, N/A, N/A, N/A\n")
+                print("[✓] Historic baselines saved to alias.txt")
+            except Exception as e:
+                print(f"[!] Failed to fetch historic baselines: {e}")
+                print("[?] Continuing structural pipeline execution, ignoring baseline fetching")
+
+        if "sub_results" in meta_res:
+            for sub_player, replaced_player in meta_res["sub_results"].items():
+                s_low = sub_player.lower()
+                chosen_team_id, chosen_tier = self.assignments[replaced_player.lower()]
+                self.assignments[s_low] = (chosen_team_id, chosen_tier)
+                self.rosters[chosen_team_id].add(sub_player)
+                self.subbed_players_set.add(s_low)
+                self.subbed_players_set.add(replaced_player.lower())
+                self.sub_relations[replaced_player.casefold()].append(sub_player)
+                self.sub_relations[s_low] = [replaced_player]
+
+        if not self.tour_label:
+            self.tour_label = init_label
+
+        self.val_str = meta_res["th_str"]
+        self.base_exp = meta_res["base_exp"]
+        self.new_players = meta_res["selected_new"]
+        self.dry_choice = meta_res.get("dry_choice", "No")
+        self.share_choice = meta_res.get("share_choice", "No (Mid-tour)")
+        self.exp_map = {
+            name: (self.base_exp - 1 if name.lower() in self.subbed_players_set else self.base_exp) for name in all_known
+        }
+
+        return True
+
+    def process_and_generate(self):
+        """Processes song entries, calculates stats, executes render tasks, and handles deployments."""
+        apply_rev_glob = False
+
+        for path in self.json_paths:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
+            songs = data.get("songs", [])
+
+            if not path.stem.startswith("amq"):
+                match_digits = re.search(r"(\d+)$", path.stem)
+                if match_digits:
+                    m = int(match_digits.group(1))
+                    if m <= THRESH_SONG:
+                        songs = songs[: min(m, len(songs))]
+            if not songs:
+                continue
+
+            raw_f_players = set()
+            for s in songs:
+                for p in s.get("correctGuessPlayers", []):
+                    if isinstance(p, str):
+                        raw_f_players.add(p)
+                    elif isinstance(p, dict) and "name" in p:
+                        raw_f_players.add(p["name"])
+
+                for ls in s.get("listStates", []):
+                    if "name" in ls:
+                        raw_f_players.add(ls["name"])
+
+            final_members = set(raw_f_players)
+            if self.use_teams:
+                t_in_f = {self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments}
+                for tid in t_in_f:
+                    for m_p in self.rosters[tid]:
+                        if m_p.lower() not in self.assignments:
+                            for c_p in raw_f_players:
+                                if c_p.lower() in self.assignments and self.assignments[c_p.lower()][0] == tid:
+                                    self.assignments[m_p.lower()] = self.assignments[c_p.lower()]
+                if len(final_members) < 8:
+                    for tid in t_in_f:
+                        final_members.update(self.rosters[tid])
+
+            apply_rev = len(final_members) % 2 == 0
+            apply_rev_glob = apply_rev
+            max_s = max(s.get("songNumber", 0) for s in songs)
+            f_type_totals = defaultdict(int)
+
+            for song in songs:
+                st = song.get("songInfo", {}).get("type")
+                if st in [1, 2, 3]:
+                    f_type_totals[st] += 1
+
+            for name in final_members:
+                if name in raw_f_players:
+                    self.s_part[name] += max_s
+                    for t in [1, 2, 3]:
+                        self.p_type_s[name][t] += f_type_totals[t]
+
+            for song in songs:
+                si = song.get("songInfo", {})
+                st = si.get("type", 3)
+                t_num = si.get("typeNumber", 0)
+                ann_id = str(si.get("annSongId"))
+                is_chan = ann_id in self.chanting_ids
+
+                anime_name = si.get("animeNames", {}).get("romaji", "Unknown")
+                song_name = si.get("songName", "Unknown")
+                artist_name = si.get("artist", "Unknown")
+
+                if len(anime_name) > THRESH_CHRL:
+                    anime_name = re.sub(r"\s+\S*$", "", anime_name[:THRESH_CHRL]) + " ..."
+                if len(song_name) > THRESH_CHRM:
+                    song_name = re.sub(r"\s+\S*$", "", song_name[:THRESH_CHRM]) + " ..."
+                if len(artist_name) > THRESH_CHRS:
+                    artist_name = re.sub(r"\s+\S*$", "", artist_name[:THRESH_CHRS]) + " ..."
+
+                type_fmt = f"(OP{t_num})" if st == 1 else f"(ED{t_num})" if st == 2 else "(IN)"
+                song_line = f"{anime_name} {type_fmt}: {song_name} by {artist_name}"
+                raw_correct = song.get("correctGuessPlayers", [])
+                correct = set()
+
+                for p in raw_correct:
+                    if isinstance(p, str):
+                        correct.add(p)
+                    elif isinstance(p, dict) and "name" in p:
+                        correct.add(p["name"])
+
+                active_correct = correct & final_members
+                amt_correct = len(active_correct)
+                self.song_history.append((correct, raw_f_players))
+
+                ls = song.get("listStates", [])
+                self.global_stats["tot_c"] += len(correct)
+
+                try:
+                    vint_raw = si.get("vintage", "")
+                    yr = int(extract_year(vint_raw)) if vint_raw else None
+                    vint_scaled = float(extract_year(vint_raw)) if vint_raw else 0.0
+                    vint_pretty = format_year(vint_scaled) if vint_raw else "Unknown"
+                except Exception:
+                    yr = None
+                    vint_pretty = "Unknown"
+
+                if yr is not None:
+                    self.all_vint.append(yr)
+
+                try:
+                    safe_diff = float(si.get("animeDifficulty", 0.0))
+                except Exception:
+                    safe_diff = 0.0
+
+                self.all_diff.append(safe_diff)
+                self.song_data.append(
+                    {"vintage": yr if yr is not None else 0, "difficulty": safe_diff, "correct_count": int(len(correct))}
+                )
+                song_line_hover = (
+                    f"{anime_name} {type_fmt}: {song_name} by {artist_name} ({vint_pretty}/{safe_diff:.2f}: {len(correct)}/8)"
+                )
+
+                if isinstance(si.get("animeGenre"), list):
+                    self.genre_c.update(si.get("animeGenre"))
+                if isinstance(si.get("animeTags"), list):
+                    self.tag_c.update([t for t in si.get("animeTags") if t not in EXCLUDED_TAGS])
+
+                if yr is not None and yr > 0:
+                    diffs_arr = [s["difficulty"] for s in self.song_data]
+                    max_diff_v = max(diffs_arr) if diffs_arr else 0
+                    num_x_v = 8 if max_diff_v < 40 else 9
+                    num_y_v = 8 if max_diff_v < 40 else 9
+                    x_idx_v = min(int(math.floor(safe_diff / 5)), num_x_v - 1)
+                    vint_floor = math.floor(float(yr))
+                    if num_y_v == 8:
+                        y_idx_v = 0 if vint_floor < 1995 else min(int(math.floor((vint_floor - 1995) / 5)) + 1, 7)
+                    else:
+                        y_idx_v = 0 if vint_floor < 1990 else min(int(math.floor((vint_floor - 1990) / 5)) + 1, 8)
+                    self.matrix_song_details[f"{x_idx_v}-{y_idx_v}"].append(song_line_hover)
+
+                if len(correct) == 0:
+                    self.tour_song_details["Total 0/8s"].append(song_line)
+                elif len(correct) == 1:
+                    sw_v = list(correct)[0]
+                    self.tour_song_details["Total 1/8s"].append(f"{song_line} ({sw_v})")
+                    if sw_v.lower() in self.assignments:
+                        self.team_song_details[self.assignments[sw_v.lower()][0]]["Total 1/8s"].append(
+                            f"{song_line} ({sw_v})"
+                        )
+                elif len(correct) == 2:
+                    p_list_v = list(correct)
+                    self.tour_song_details["Total 2/8s"].append(f"{song_line} ({p_list_v[0]}/{p_list_v[1]})")
+                elif apply_rev and len(final_members - correct) == 1:
+                    missing_player_v = list(final_members - correct)[0]
+                    self.tour_song_details["Total 7/8s"].append(f"{song_line} ({missing_player_v})")
+                elif len(final_members - correct) == 0:
+                    self.tour_song_details["Total 8/8s"].append(song_line)
+
+                for sw_v in active_correct:
+                    if amt_correct == 1:
+                        self.player_song_details[sw_v]["1/8s"].append(song_line)
+                    elif amt_correct == 2:
+                        opp_player_v = (
+                            list(active_correct)[1]
+                            if sw_v.casefold() == list(active_correct)[0].casefold() and len(active_correct) > 1
+                            else list(active_correct)[0]
+                        )
+                        t_sw_v = self.assignments.get(sw_v.lower(), (None,))[0] if self.use_teams else None
+                        t_opp_v = self.assignments.get(opp_player_v.lower(), (None,))[0] if self.use_teams else None
+
+                        if t_sw_v is not None and t_opp_v is not None and t_sw_v == t_opp_v:
+                            self.player_song_details[sw_v]["2/8s"].append(f"{song_line} (covered by {opp_player_v})")
+                        else:
+                            self.player_song_details[sw_v]["2/8s"].append(f"{song_line} (blocked by {opp_player_v})")
+
+                    if safe_diff > 0:
+                        self.p_hit_diff[sw_v].append(safe_diff)
+                    if yr is not None:
+                        self.p_hit_vint[sw_v].append(extract_year(si.get("vintage")))
+
+                if apply_rev and len(final_members - correct) == 1:
+                    missing_player_v = list(final_members - correct)[0]
+                    self.player_song_details[missing_player_v]["7/8s"].append(song_line)
+
+                if isinstance(si.get("animeGenre"), list):
+                    for gen in si.get("animeGenre"):
+                        self.tour_song_details[f"Genre: {gen}"].append(song_line)
+                if isinstance(si.get("animeTags"), list):
+                    for tag in si.get("animeTags"):
+                        if tag not in EXCLUDED_TAGS:
+                            self.tour_song_details[f"Tag: {tag}"].append(song_line)
+
+                if si.get("vintage"):
+                    for p in song.get("correctGuessPlayers", []):
+                        p_name_v = p if isinstance(p, str) else p.get("name") if isinstance(p, dict) else None
+                        if p_name_v:
+                            self.raw_vintage_by_guess[p_name_v].append(si.get("vintage"))
+                    for ls_v in song.get("listStates", []):
+                        if "name" in ls_v:
+                            self.raw_vintage_by_list[ls_v["name"]].append(si.get("vintage"))
+
+                seen_song_times = set()
+                if isinstance(raw_correct, list):
+                    for p in raw_correct:
+                        if isinstance(p, dict) and "name" in p and "answerTime" in p:
+                            try:
+                                seen_song_times.add((str(p["name"]).casefold(), float(p["answerTime"])))
+                            except Exception:
+                                pass
+
+                for key_name in ["answerTimes", "answerTime", "answerTimesByPlayer", "playerAnswerTimes"]:
+                    val = song.get(key_name)
+                    if isinstance(val, dict):
+                        for p_name, t_val in val.items():
+                            try:
+                                seen_song_times.add((str(p_name).casefold(), float(t_val)))
+                            except (ValueError, TypeError):
+                                pass
+
+                name_map = {m.lower(): m for m in final_members}
+                for p_name_lower, t_float in seen_song_times:
+                    if p_name_lower in name_map:
+                        self.p_answer_times[name_map[p_name_lower]].append(t_float)
+
+                s_riggers = {p["name"] for p in ls}
+                if len(ls) == 1:
+                    u = ls[0]["name"]
+                    self.p_l_solos[u] += 1
+                    if not (len(correct) == 1 and list(correct)[0] == u):
+                        self.p_m_erigs[u] += 1
+
+                if ls:
+                    is_true_solo_rig = len(ls) == 1
+                    for p in ls:
+                        n_v = p["name"]
+                        marker_v = "✓" if (n_v in active_correct) else "✗"
+                        self.player_song_details[n_v]["Rigs"].append(f"{marker_v} {song_line}")
+
+                        if is_true_solo_rig:
+                            self.player_song_details[n_v]["Solo Rigs"].append(f"{marker_v} {song_line}")
+                            s_v = sorted(list(active_correct - {n_v}))
+                            sC_v = len(s_v)
+                            tag_v = (
+                                "(0/8)"
+                                if sC_v == 0
+                                else f"(stolen by {s_v[0]})"
+                                if sC_v == 1
+                                else f"(stolen by {s_v[0]}/{s_v[1]})"
+                                if sC_v == 2
+                                else f"({amt_correct}/8)"
+                            )
+
+                            if n_v in active_correct and amt_correct == 1:
+                                self.player_song_details[n_v]["Solo Rig Conversions"].append(f"✓ {song_line}")
+                            else:
+                                self.player_song_details[n_v]["Solo Rig Conversions"].append(f"✗ {song_line} {tag_v}")
+
+                if self.use_teams:
+                    t_list = list({self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments})
+                    if len(t_list) == 2:
+                        tA, tB = t_list[0], t_list[1]
+                        cA, cB = correct & self.rosters[tA], correct & self.rosters[tB]
+
+                        if len(cA) == 4 and not cB:
+                            self.t_sweeps[tA] += 1
+                            self.global_stats["sweeps"] += 1
+                        if len(cB) == 4 and not cA:
+                            self.t_sweeps[tB] += 1
+                            self.global_stats["sweeps"] += 1
+
+                        if (len(cA & final_members) == 4 and not (cB & final_members)) or (
+                            len(cB & final_members) == 4 and not (cA & final_members)
+                        ):
+                            self.tour_song_details["Total 4-0s"].append(song_line)
+
+                        for cur, opp in [(tA, tB), (tB, tA)]:
+                            cC, oC = correct & self.rosters[cur], correct & self.rosters[opp]
+                            if not oC:
+                                for p in cC:
+                                    self.p_pts[p] += 1
+                            if len(cC) == 1 and len(oC) > 0:
+                                lone_p = list(cC)[0]
+                                self.p_blks[lone_p] += 1
+
+                        for _, opp_v, cC_v, oC_v in [
+                            (tA, tB, cA & final_members, cB & final_members),
+                            (tB, tA, cB & final_members, cA & final_members),
+                        ]:
+                            oL_v = self.t1_lookup.get(opp_v, f"Team {opp_v}")
+                            if not oC_v:
+                                for p_v in cC_v:
+                                    self.player_song_details[p_v]["Lives Taken"].append(f"{song_line} (from Team {oL_v})")
+                            if len(cC_v) == 1 and len(oC_v) > 0:
+                                oP_v = sorted(
+                                    list(oC_v), key=lambda x: self.assignments.get(x.lower(), (None, "5"))[1]
+                                )
+                                opp_tag_v = (
+                                    f"(from {oP_v[0]} in Team {oL_v})"
+                                    if len(oP_v) == 1 and oP_v[0] != oL_v
+                                    else f"(from {oP_v[0]})"
+                                    if len(oP_v) == 1
+                                    else f"(from {oP_v[0]}/{oP_v[1]} in Team {oL_v})"
+                                    if len(oP_v) == 2 and oP_v[0] != oL_v and oP_v[1] != oL_v
+                                    else f"(from {oP_v[0]}/{oP_v[1]})"
+                                    if len(oP_v) == 2
+                                    else f"(from Team {oL_v})"
+                                )
+                                self.player_song_details[list(cC_v)[0]]["Lives Saved"].append(
+                                    f"{song_line} {opp_tag_v}"
+                                )
+
+                    for tid in t_list:
+                        ros = self.rosters[tid]
+                        c_on_t = correct & ros
+                        self.t_c_ps[tid].append(len(c_on_t) / 4.0)
+                        if yr is not None:
+                            self.t_vint[tid].append(yr)
+
+                        if s_riggers & ros:
+                            self.t_on_syn[tid].append(len(c_on_t) / 4.0)
+                            self.t_sh_rig[tid].append((len(s_riggers & ros) - 1) / 3.0)
+                        else:
+                            self.t_off_syn[tid].append(len(c_on_t) / 4.0)
+
+                if len(final_members - correct) == 0:
+                    self.global_stats["fulls"] += 1
+                elif apply_rev and len(final_members - correct) == 1:
+                    self.global_stats["sevens"] += 1
+                    self.p_rev_e[list(final_members - correct)[0]] += 1
+                elif len(correct) == 2:
+                    self.global_stats["doubles"] += 1
+                    p_list = list(correct)
+                    p1, p2 = p_list[0], p_list[1]
+                    self.p_two_e[p1] += 1
+                    self.p_two_e[p2] += 1
+
+                elif len(correct) == 1:
+                    self.global_stats["solos"] += 1
+                    sw = list(correct)[0]
+                    self.e_counts[sw] += 1
+                    if sw.lower() in self.assignments:
+                        self.t_solos[self.assignments[sw.lower()][0]] += 1
+                elif len(correct) == 0:
+                    self.global_stats["blanks"] += 1
+
+                amtcorrect = len(correct)
+                if amtcorrect > 0:
+                    teamsize = 4
+                    uf_song = sum(
+                        math.comb(2 * teamsize - (i + 2), amtcorrect - 1)
+                        / math.comb(2 * teamsize - 1, amtcorrect - 1)
+                        for i in range(teamsize)
+                    ) / teamsize
+
+                    for name in final_members:
+                        if name in correct:
+                            self.p_usefulness_sum[name] += uf_song
+
+                for name in final_members:
+                    if name in correct:
+                        self.c_counts[name] += 1
+                        self.p_overs_sum[name] += len(correct)
+
+                        if st in [1, 2, 3]:
+                            self.p_type_c[name][st] += 1
+                            self.player_song_details[name][f"Type {st}"].append(f"✓ {song_line}")
+
+                        if is_chan:
+                            self.p_chan_c[name] += 1
+                            self.player_song_details[name]["Chant"].append(f"✓ {song_line}")
+
+                        if yr is not None:
+                            self.p_c_vint[name].append(yr)
+                        self.player_song_details[name]["Overall"].append(f"✓ {song_line}")
+                    else:
+                        if st in [1, 2, 3]:
+                            self.player_song_details[name][f"Type {st}"].append(f"✗ {song_line}")
+                        if is_chan:
+                            self.player_song_details[name]["Chant"].append(f"✗ {song_line}")
+                        self.player_song_details[name]["Overall"].append(f"✗ {song_line}")
+
+                    if is_chan:
+                        self.p_chan_s[name] += 1
+
+                if ls:
+                    for p in ls:
+                        n = p["name"]
+                        self.p_rigs[n] += 1
+                        if n in correct:
+                            self.p_rigs_h[n] += 1
+                            self.p_lh_corr[n].append(len(correct))
+                            if yr is not None:
+                                self.p_lh_vint[n].append(yr)
+                        if yr is not None:
+                            self.p_l_vint[n].append(yr)
+                        self.p_l_corr[n].append(len(correct))
+
+        if "Eru" in self.tour_label and self.use_teams:
+            self.p_pts.clear()
+            self.p_blks.clear()
+            for cor, raw_f_players in self.song_history:
+                t_list = list({self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments})
+                if len(t_list) == 2:
+                    tA, tB = t_list[0], t_list[1]
+                    cA = {
+                        self.assignments[p.lower()][1]: p
+                        for p in raw_f_players
+                        if p.lower() in self.assignments and self.assignments[p.lower()][0] == tA
+                    }
+                    cB = {
+                        self.assignments[p.lower()][1]: p
+                        for p in raw_f_players
+                        if p.lower() in self.assignments and self.assignments[p.lower()][0] == tB
+                    }
+                    for tr in ["1", "2", "3", "4"]:
+                        pA, pB = cA.get(tr), cB.get(tr)
+                        if pA and pB:
+                            rA, rB = pA in cor, pB in cor
+                            if rA and not rB:
+                                self.p_pts[pA] += 1
+                            if rB and not rA:
+                                self.p_pts[pB] += 1
+                            if rA and rB:
+                                self.p_blks[pA] += 0.50
+                                self.p_blks[pB] += 0.50
+
+        team_count = len(self.rosters) if self.use_teams else 0
+        if team_count <= 2:
+            stage = "Final" if self.base_exp >= 3 else f"R{self.base_exp}"
+        else:
+            stage = (
+                "Mid-Tour"
+                if self.base_exp == 3
+                else "Final"
+                if (team_count <= 4 and self.base_exp >= 6) or (team_count > 4 and self.base_exp >= 5)
+                else f"R{self.base_exp}"
+            )
+
+        prefix = f"{self.tour_label.strip()} Tour, "
+        png_path = self.tour_dir / "png"
+        web_path = self.tour_dir / "site"
+
+        for path_dir in [png_path, web_path]:
+            path_dir.mkdir(parents=True, exist_ok=True)
+            for item in path_dir.iterdir():
+                if item.is_file():
+                    item.unlink()
+
+        watched_valid = self.missing_list_count <= THRESH_WTCH
+        tasks = [
+            (
+                create_player_png,
+                (
+                    self,
+                    self.elo_map,
+                    watched_valid,
+                    stage,
+                    png_path,
+                    self.apps,
+                    prefix,
+                    self.exp_map,
+                    self.base_exp,
+                    self.new_players,
+                    self.val_str,
+                ),
+            ),
+            (create_tour_png, (self, self.use_teams, watched_valid, png_path)),
+            (create_scatter_png, (self, png_path, False, self.elo_map)),
+            (create_song_png, (self, png_path)),
+            (create_dashboard_html, (self, web_path, self.use_teams, watched_valid)),
+        ]
+
+        if self.assignments:
+            tasks.append((create_tier_png, (self, self.assignments, png_path, any(self.p_chan_s.values()))))
+            tasks.append((create_team_png, (self, self.assignments, self.t1_lookup, png_path)))
+
+        if watched_valid:
+            tasks.append((create_scatter_png, (self, png_path, True, self.elo_map)))
+
+        with fut.ProcessPoolExecutor() as executor:
+            task_map = {executor.submit(func, *args): func.__name__ for func, args in tasks}
+            for future in fut.as_completed(task_map):
+                task_name = task_map[future]
+                try:
+                    future.result()
+                except Exception as e:
+                    print(f"Task {task_name} failed: {e}")
+
+        fuse_images(png_path)
+        allowed_files = {"General.png", "Player.png", "Extra.png", "Plots.png"}
+        for file_path in png_path.glob("*.png"):
+            if file_path.name not in allowed_files:
+                try:
+                    file_path.unlink()
+                except Exception:
+                    pass
+
+        if self.dry_choice != "No":
+            self._handle_dry_script_execution()
+
+        if self.share_choice == "Yes, push this to Netlify (Post-tour, non-Hako)":
+            self._handle_netlify_deploy(web_path)
+        elif self.share_choice == "Yes, push this to GitHub (Post-tour, Hako-only)":
+            self._handle_github_deploy(web_path)
+
+    def _handle_dry_script_execution(self):
+        target_jsons_dir = self.script_dir.parent / "jsons"
+        target_codes_file = self.script_dir.parent / "codes.txt"
+        source_jsons_dir = self.tour_dir / "json"
+        source_codes_file = self.tour_dir / "code.txt"
+        script_name = "ngm_local.py" if "ngm_local" in self.dry_choice else "ngm_stats.py"
+        target_script = self.script_dir.parent / script_name
+
+        print(f"[?] Processing Tour {self.tour_id} using Dry's script")
+        for file in self.script_dir.glob("*.png"):
+            file.unlink()
+        for file in target_jsons_dir.glob("*.json"):
+            file.unlink()
+
+        if source_jsons_dir.exists():
+            for file in source_jsons_dir.glob("*.json"):
+                shutil.copy(file, target_jsons_dir / file.name)
+        print("[✓] Copied JSONs to Dry's workspace")
+
+        if source_codes_file.exists():
+            shutil.copy(source_codes_file, target_codes_file)
+            print("[✓] Copied code.txt to Dry's workspace")
+
+        print("[?] Running Dry's script")
+        try:
+            subprocess.run([sys.executable, str(target_script)], cwd=str(self.script_dir.parent), check=True)
+            print("[✓] Ran Dry's script successfully")
+
+            output_dir = self.tour_dir / "dry"
+            output_dir.mkdir(parents=True, exist_ok=True)
+            files_to_copy = {
+                "Stats.png": "1-Player.png",
+                "Stats2.png": "2-Type.png",
+                "Stats3 - Watched Exclusive.png": "3-List.png",
+                "Stats Songs.png": "4-Song.png",
+                "Stats4.png": "5-Extra.png",
+            }
+
+            print("[?] Copying Dry's PNGs back")
+            for src_name, dest_name in files_to_copy.items():
+                src_file = self.script_dir.parent / src_name
+                dest_file = output_dir / dest_name
+                if src_file.exists():
+                    shutil.copy(src_file, dest_file)
+                    print(f"[✓] Copied {src_name} as {dest_name}")
+                else:
+                    print(f"[X] {src_name} not found in Dry's workspace")
+        except subprocess.CalledProcessError as e:
+            print(f"[X] Failed to run Dry's script: {e}")
+
+    def _handle_netlify_deploy(self, web_path: Path):
+        workspace_root = self.script_dir.parent
+        png_src = self.tour_dir / "png"
+        player_file = png_src / "Player.png"
+        extra_file = png_src / "Extra.png"
+
+        if player_file.exists():
+            shutil.copy(player_file, workspace_root / f"Hako-{self.tour_id}-Player.png")
+        if extra_file.exists():
+            shutil.copy(extra_file, workspace_root / f"Hako-{self.tour_id}-Extra.png")
+
+        print("[?] Pushing to Netlify")
+        try:
+            zip_path = workspace_root / f"hako-{self.tour_id}-upload.zip"
+            with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+                if web_path.exists():
+                    for root_dir, _, files in os.walk(web_path):
+                        for file in files:
+                            file_path = os.path.join(root_dir, file)
+                            arcname = os.path.relpath(file_path, web_path)
+                            zipf.write(file_path, arcname)
+
+            with open(zip_path, "rb") as f:
+                zip_data = f.read()
+
+            custom_site_name = f"amq-tour-{datetime.datetime.now().strftime('%y%m%d%H%M')}"
+            base_headers = {"Authorization": f"Bearer {TOKEN_NTLFY}"}
+
+            print(f"[?] Requesting unique link: {custom_site_name}")
+            create_res = requests.post(
+                "https://api.netlify.com/api/v1/sites",
+                headers={**base_headers, "Content-Type": "application/json"},
+                json={"name": custom_site_name},
+                timeout=15,
+            )
+
+            site_id = create_res.json().get("id") if create_res.status_code in [200, 201] else None
+            target_url = f"https://api.netlify.com/api/v1/sites/{site_id}/deploys" if site_id else "https://api.netlify.com/api/v1/sites"
+
+            res = requests.post(
+                target_url,
+                headers={**base_headers, "Content-Type": "application/zip"},
+                data=zip_data,
+                timeout=30,
+            )
+
+            if res.status_code in [200, 201]:
+                deploy_url = res.json().get("ssl_url") or res.json().get("url")
+                print(f"[✓] Link to Stats site: {deploy_url}")
+            else:
+                print(f"[X] Failed to push to Netlify: {res.status_code} {res.text}")
+
+            try:
+                zip_path.unlink()
+            except Exception:
+                pass
+        except Exception as e:
+            print(f"[X] Failed to push to Netlify: {e}")
+
+    def _handle_github_deploy(self, web_path: Path):
+        timestamp = datetime.datetime.now().strftime("%y%m%d%H%M")
+        archive_dir = self.script_dir.parent / "hako" / "archive" / timestamp
+
+        print(f"[?] Copying files to archive/{timestamp}")
+        try:
+            shutil.copytree(web_path, archive_dir, dirs_exist_ok=True)
+            print(f"[✓] Copied all files from {web_path.name}")
+        except Exception as e:
+            print(f"[X] Failed to copy files: {e}")
+
+        dashboard_url = f"https://frittutisna.github.io/Stats-Maker/hako/archive/{timestamp}/index.html?update=1"
+        print("[?] Pushing to GitHub")
+        try:
+            subprocess.run(["git", "add", "."], check=True)
+            subprocess.run(["git", "commit", "-m", "Updated tour"], check=True)
+            subprocess.run(["git", "push"], check=True)
+            print(f"[✓] Deployment completed, dashboard link: {dashboard_url}")
+        except subprocess.CalledProcessError as git_error:
+            print(f"[X] Failed to push to GitHub: {git_error}")
