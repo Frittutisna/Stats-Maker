@@ -605,24 +605,30 @@ def render_dashboard_plot(
         if analyzer.c_counts[name] > 0:
             tot = analyzer.s_part[name]
             uf_scaled = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
+            gr_val = analyzer.c_counts[name] / tot if tot else 0.0
 
             try:
                 elo = float(analyzer.elo_map.get(name.lower(), 0.0))
             except Exception:
                 elo = 0.0
 
-            pool_data.append({"name": name, "uf": uf_scaled, "elo": elo})
+            pool_data.append({"name": name, "uf": uf_scaled, "gr": gr_val, "elo": elo})
 
     els = np.array([p["elo"] for p in pool_data])
     ufs = np.array([p["uf"] for p in pool_data])
+    grs = np.array([p["gr"] for p in pool_data])
 
     if len(els) > 1 and np.var(els) > 0:
-        slope, intercept = np.polyfit(els, ufs, 1)
-        res_std = np.std(ufs - (slope * els + intercept))
-        if res_std == 0:
-            res_std = 1
+        slope_uf, int_uf = np.polyfit(els, ufs, 1)
+        res_std_uf = np.std(ufs - (slope_uf * els + int_uf))
+        if res_std_uf == 0: res_std_uf = 1
+
+        slope_gr, int_gr = np.polyfit(els, grs, 1)
+        res_std_gr = np.std(grs - (slope_gr * els + int_gr))
+        if res_std_gr == 0: res_std_gr = 1
     else:
-        slope, intercept, res_std = 0, np.mean(ufs) if len(ufs) > 0 else 0, 1
+        slope_uf, int_uf, res_std_uf = 0, np.mean(ufs) if len(ufs) > 0 else 0, 1
+        slope_gr, int_gr, res_std_gr = 0, np.mean(grs) if len(grs) > 0 else 0, 1
 
     scatter_list, arrow_list = [], []
 
@@ -641,15 +647,20 @@ def render_dashboard_plot(
 
             tot = analyzer.s_part[name]
             uf_scaled = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
+            gr_val = analyzer.c_counts[name] / tot if tot else 0.0
 
             try:
                 elo = float(analyzer.elo_map.get(name.lower(), 0.0))
             except Exception:
                 elo = 0.0
 
-            expected_uf = slope * elo + intercept
-            residual = uf_scaled - expected_uf
-            perf_score = (1 / (1 + np.exp(SCALE_PERF * (residual / res_std)))) * 100
+            residual_uf = uf_scaled - (slope_uf * elo + int_uf)
+            perf_score_uf = (1 / (1 + np.exp(SCALE_PERF * (residual_uf / res_std_uf)))) * 100
+
+            residual_gr = gr_val - (slope_gr * elo + int_gr)
+            perf_score_gr = (1 / (1 + np.exp(SCALE_PERF * (residual_gr / res_std_gr)))) * 100
+
+            perf_score = (perf_score_uf * 0.5) + (perf_score_gr * 0.5)
 
             base_node = {
                 "acronym": analyzer.player_acronyms.get(name.lower(), name[:3].upper()),
@@ -783,7 +794,7 @@ def create_dashboard_html(analyzer, path: Path, use_teams: bool, watched: bool):
     explanations = {
         "Player": "★ New player<br>▲ Subbed in<br>▼ Subbed out",
         "UF": "Usefulness<br>Calculates this player's contribution to their team, scaled by Elo and songs played",
-        "Score": "Calculates this player's value (Usefulness) against what's expected from their Elo<br>50 means this player is playing to expectations",
+        "Score": "Calculates this player's Elo and GR against what's expected from their Elo<br>50 means this player is playing to expectations",
         "Mean Over-8": "Average of correct guessers across songs this player/team guessed correctly",
         "Lives Taken": "Count of points won against the opposing team<br>Correct guessers exclusively on their team",
         "Lives Saved": "Count of blocks achieved against the opposing team<br>Lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
