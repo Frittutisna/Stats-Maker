@@ -182,7 +182,7 @@ class TourAnalyzer:
         if "Eru" in init_label and self.use_teams   : default_th = ""
         else:
             if      init_label == "Watched 2+8s"    : default_th = "25, 20, 15, 10, 5"
-            elif    init_label == "Watched"         : default_th = "28, 18, 12, 6"
+            elif    "Watched" in init_label         : default_th = "28, 18, 12, 6"
             else                                    : default_th = "28, 19, 8"
 
         meta_dialog = TourMetadataDialog(
