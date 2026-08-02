@@ -315,14 +315,35 @@ class TourAnalyzer:
             if self.use_teams:
                 t_in_f = {self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments}
 
+                if len(t_in_f) < 2 and len(self.rosters) >= 2:
+                    all_team_ids    = list(self.rosters.keys())
+                    missing_teams   = [f"Team {tid} ({self.t1_lookup.get(tid, tid)})" for tid in all_team_ids if tid not in t_in_f]
+
+                    if missing_teams:
+                        dialog = AskPlayerSelectionDialog(None, f"Missing Team in {path.name}", f"Only {len(t_in_f)} team(s) detected in {path.name}, which teams are actually playing?", missing_teams)
+                        if dialog.result_selection:
+                            sel_tid = int(dialog.result_selection.split()[1])
+                            t_in_f.add(sel_tid)
+
                 for tid in t_in_f:
                     for m_p in self.rosters[tid]:
                         if m_p.lower() not in self.assignments:
                             for c_p in raw_f_players:
-                                if c_p.lower() in self.assignments and self.assignments[c_p.lower()][0] == tid: self.assignments[m_p.lower()] = self.assignments[c_p.lower()]
+                                if c_p.lower() in self.assignments and self.assignments[c_p.lower()][0] == tid: 
+                                    self.assignments[m_p.lower()] = self.assignments[c_p.lower()]
 
-                if len(final_members) < 8:
-                    for tid in t_in_f: final_members.update(self.rosters[tid])
+                for tid in t_in_f:
+                    team_roster     = self.rosters[tid]
+                    present_in_team = {p for p in raw_f_players if p.lower() in self.assignments and self.assignments[p.lower()][0] == tid}
+
+                    if len(present_in_team) < 4:
+                        missing_candidates  = list(team_roster - present_in_team)
+                        needed_count        = 4 - len(present_in_team)
+
+                        if len(missing_candidates) > needed_count:
+                            dialog = AskPlayerSelectionDialog(None, f"Ambiguous 0/0 Player in {path.name}", f"Which player is missing/playing for Team {self.t1_lookup.get(tid, tid)} in {path.name}?", sorted(missing_candidates))
+                            if dialog.result_selection: final_members.add(dialog.result_selection)
+                        else: final_members.update(missing_candidates)
 
             apply_rev       = len(final_members) % 2 == 0
             max_s           = max(s.get("songNumber", 0) for s in songs)

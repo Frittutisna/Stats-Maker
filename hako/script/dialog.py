@@ -652,3 +652,39 @@ class TourMetadataDialog(UnifiedDialog):
             with open(self.tour_dir / "subs.txt", "w", encoding = "utf-8") as f : f.write("\n".join(existing_lines) + "\n")
 
         super().on_confirm()
+
+class AskPlayerSelectionDialog(UnifiedDialog):
+    def __init__(self, parent, title, prompt, options):
+        super().__init__(parent, title, prompt)
+
+        self.selected_option    = tk.StringVar(value = options[0] if options else "")
+        self.fill_color         = "#000000"
+        self.boxes              = {}
+
+        for opt in options:
+            f_opt = ttk.Frame(self.container)
+            f_opt.pack(anchor = "w", pady = 2)
+
+            is_sel      = (self.selected_option.get() == opt)
+            bg_color    = self.fill_color if is_sel else "white"
+
+            box = tk.Canvas(f_opt, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
+            box.pack(side = tk.LEFT, padx = (0, 4))
+            self.boxes[opt] = box
+
+            lbl = ttk.Label(f_opt, text = opt, font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+
+            for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_opt(o))
+
+        self.protocol       ("WM_DELETE_WINDOW", lambda: [setattr(self, 'result_selection', None), self.destroy()])
+        self.grab_set       ()
+        self.wait_window    ()
+
+    def _select_opt(self, opt):
+        self.selected_option.set(opt)
+        for k, box in self.boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
+
+    def on_confirm(self):
+        self.result_selection = self.selected_option.get()
+        super().on_confirm()
