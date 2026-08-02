@@ -7,8 +7,8 @@ from hako.script.dialog import *
 from pathlib            import Path
 
 def sync_chanting(tour_dir_path):
-    cred_file   = os.path.join("hako", "help", DIR_CREDS, "credentials.json")
-    auth_file   = os.path.join("hako", "help", DIR_CREDS, "authorized_user.json")
+    cred_file   = os.path.join("hako", DIR_CREDS, "credentials.json")
+    auth_file   = os.path.join("hako", DIR_CREDS, "authorized_user.json")
     sheet_name  = "NGM Stats Export v2"
 
     try:
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     tour_folder_path    = script_directory / "hako" / DIR_TOURS
     chant_txt_file      = tour_folder_path / FILE_CHANT    
     has_valid_tour      = False
-    template_path       = script_directory / "hako" / "help" / "template"
+    template_path       = script_directory / "hako" / "template"
 
     extract_unique_names(template_path)
 

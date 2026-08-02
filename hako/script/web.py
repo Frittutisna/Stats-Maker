@@ -829,7 +829,7 @@ def create_dashboard_html(analyzer, path: Path, use_teams: bool, watched: bool):
     with open(path / "jsons" / "search.json",   "w", encoding = "utf-8") as f: json.dump(search_songs_list, f, ensure_ascii = False, indent = 4)
     with open(path / "jsons" / "data.json",     "w", encoding = "utf-8") as f: json.dump(data_payload,      f, ensure_ascii = False, indent = 4)
 
-    template_dir = analyzer.script_dir / "help" / "template"
+    template_dir = analyzer.script_dir / "template"
 
     shutil.copy     (template_dir / "index.html",           path / "index.html")
     shutil.copy     (template_dir / "styles.css",           path / "styles.css")

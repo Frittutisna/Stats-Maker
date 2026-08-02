@@ -24,7 +24,7 @@ def clean():
 
         except Exception as e: print(f"[X] Failed to clear {file_path}: {e}")
 
-    name_json = script_dir / "hako" / "help" / "template" / "name.json"
+    name_json = script_dir / "hako" / "template" / "name.json"
 
     if name_json.exists():
         try:

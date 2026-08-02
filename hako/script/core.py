@@ -208,8 +208,8 @@ class TourAnalyzer:
         if self.delta_choice == "Yes" and self.tour_label in TOUR_MODE_SHEET_MAP:
             print("[?] Fetching historic baselines")
 
-            cred_file = self.script_dir / "help" / DIR_CREDS / "credentials.json"
-            auth_file = self.script_dir / "help" / DIR_CREDS / "authorized_user.json"
+            cred_file = self.script_dir / DIR_CREDS / "credentials.json"
+            auth_file = self.script_dir / DIR_CREDS / "authorized_user.json"
 
             try:
                 gc                  = gspread.oauth(credentials_filename = str(cred_file), authorized_user_filename = str(auth_file))
