@@ -1,9 +1,9 @@
 import datetime, json, os, re
 import pandas as pd
 
+from .config                import *
 from collections            import Counter, defaultdict
 from dateutil.relativedelta import relativedelta
-from hako.help.config       import *
 from pathlib                import Path
 from tkinter                import messagebox
 

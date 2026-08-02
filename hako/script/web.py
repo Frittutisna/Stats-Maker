@@ -2,10 +2,10 @@ import json, shutil, time
 import numpy    as np
 import pandas   as pd
 
-from .statistics        import *
-from collections        import defaultdict
-from hako.help.config   import *
-from pathlib            import Path
+from .config        import *
+from .statistics    import *
+from collections    import defaultdict
+from pathlib        import Path
 
 def render_dashboard_player(
     analyzer,

@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from hako.help.config   import DIR_TOURS, DIR_JSONS, FILE_ALIAS
-from pathlib            import Path
-from tkinter            import ttk
+from .config import *
+from pathlib import Path
+from tkinter import ttk
 
 class CustomSpinbox(tk.Frame):
     def __init__(self, parent, from_, to, initial_val = 1, state = "normal"):

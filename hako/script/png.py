@@ -6,13 +6,13 @@ import pandas               as pd
 
 matplotlib.use('Agg')
 
-from .statistics        import *
-from adjustText         import adjust_text
-from hako.help.config   import *
-from html2image         import Html2Image
-from pathlib            import Path
-from PIL                import Image
-from scipy.spatial      import ConvexHull
+from .config        import *
+from .statistics    import *
+from adjustText     import adjust_text
+from html2image     import Html2Image
+from pathlib        import Path
+from PIL            import Image
+from scipy.spatial  import ConvexHull
 
 def create_player_png(
     analyzer,

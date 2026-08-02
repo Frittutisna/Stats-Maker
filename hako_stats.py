@@ -1,9 +1,9 @@
 import gspread, ijson, json, os, shutil, sys, urllib.request
 import tkinter as tk
 
-from hako.help.analyzer import TourAnalyzer
-from hako.help.config   import DIR_CREDS, DIR_TOURS, FILE_CHANT
-from hako.help.dialog   import TourSelectionDialog
+from hako.script        import TourAnalyzer
+from hako.script.config import *
+from hako.script.dialog import *
 from pathlib            import Path
 
 def sync_chanting(tour_dir_path):

@@ -1,14 +1,14 @@
 import concurrent.futures, datetime, gspread, hashlib, json, logging, math, os, re, shutil, subprocess, sys, warnings, zipfile
 
-from .dataloader        import *
-from .png               import *
-from .web               import create_dashboard_html
-from collections        import Counter, defaultdict
-from curl_cffi          import requests
-from hako.help.config   import *
-from hako.help.dialog   import TourMetadataDialog
-from pathlib            import Path
-from tkinter            import messagebox
+from .config        import *
+from .dataloader    import *
+from .dialog        import *
+from .png           import *
+from .web           import create_dashboard_html
+from collections    import Counter, defaultdict
+from curl_cffi      import requests
+from pathlib        import Path
+from tkinter        import messagebox
 
 logging.getLogger("adjustText").setLevel(logging.ERROR)
 
@@ -21,7 +21,7 @@ def _nested_list_defaultdict    (): return defaultdict(list)
 class TourAnalyzer:
     def __init__(self, tour_id: str):
         self.tour_id        = str(tour_id)
-        self.script_dir     = Path(__file__).parent.parent.parent.absolute()
+        self.script_dir     = Path(__file__).parent.parent.absolute()
         self.tour_dir       = self.script_dir / DIR_TOURS / self.tour_id
         self.browser_path   = find_browser()
 

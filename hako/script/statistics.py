@@ -2,10 +2,10 @@ import json, re
 import numpy    as np
 import pandas   as pd
 
-from .integrations      import *
-from bs4                import BeautifulSoup
-from collections        import defaultdict
-from hako.help.config   import *
+from .config        import *
+from .integrations  import *
+from bs4            import BeautifulSoup
+from collections    import defaultdict
 
 def compute_player_rows(
     analyzer,
