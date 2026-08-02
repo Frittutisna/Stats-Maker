@@ -3095,15 +3095,16 @@ class TourAnalyzer:
 
         search_songs_list.sort(key = lambda x: x["romaji"].lower())
 
-        with open(path / "Search.json", "w", encoding = "utf-8") as f: json.dump(search_songs_list, f, ensure_ascii = False, indent = 4)
-        with open(path / "Data.json",   "w", encoding = "utf-8") as f: json.dump(data_payload,      f, ensure_ascii = False, indent = 4)
+        with open(path / "jsons" / "search.json",   "w", encoding = "utf-8") as f: json.dump(search_songs_list, f, ensure_ascii = False, indent = 4)
+        with open(path / "jsons" / "data.json",     "w", encoding = "utf-8") as f: json.dump(data_payload,      f, ensure_ascii = False, indent = 4)
 
         template_dir = self.script_dir / "help" / "template"
 
-        shutil.copy(template_dir / "index.html",    path / "index.html")
-        shutil.copy(template_dir / "Styles.css",    path / "Styles.css")
-        shutil.copy(template_dir / "Script.js",     path / "Script.js")
-        shutil.copy(template_dir / "Name.json",     path / "Name.json")
+        shutil.copy     (template_dir / "index.html",           path / "index.html")
+        shutil.copy     (template_dir / "styles.css",           path / "styles.css")
+        shutil.copy     (template_dir / "config.js",            path / "config.js")
+        shutil.copy     (template_dir / "jsons" / "name.json",  path / "jsons" / "name.json")
+        shutil.copytree (template_dir / "tabs",                 path / "tabs", dirs_exist_ok = True)
 
     def _export_png(self, df, path, fname, title, mask = None, val_str = "default"):
         if not self.browser_path: return

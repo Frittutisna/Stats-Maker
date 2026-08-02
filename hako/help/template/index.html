@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Tour Dashboard</title>
-        <link rel="stylesheet" href="Styles.css">
+        <link rel="stylesheet" href="styles.css">
         <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     </head>
@@ -251,13 +251,37 @@
                 </div>
             </div>
         </div>
-        <script>fetch('Data.json')
+        <script>
+        fetch('jsons/data.json')
             .then(response => response.json())
             .then(data => {
                 window.dashboardData = data;
-                const script = document.createElement('script');
-                script.src = "Script.js";
-                document.body.appendChild(script);
+
+                const scripts = [
+                    "config.js",
+                    "tabs/0-ui.js",
+                    "tabs/1-player.js",
+                    "tabs/2-tour-team.js",
+                    "tabs/3-tier.js",
+                    "tabs/4-song.js",
+                    "tabs/5-guess-list.js",
+                    "tabs/6-search.js",
+                    "tabs/7-quiz.js"
+                ];
+
+                let loaded = 0;
+
+                function loadNext() {
+                    if (loaded >= scripts.length) return;
+
+                    const script    = document.createElement('script');
+                    script.src      = scripts[loaded];
+                    script.onload   = () => {loaded++; loadNext()};
+
+                    document.body.appendChild(script);
+                }
+
+                loadNext();
             })
             .catch(err => console.error("Could not trace configuration database mapping initialization payload :", err));
         </script>

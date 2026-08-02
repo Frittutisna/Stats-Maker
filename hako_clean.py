@@ -24,14 +24,14 @@ def clean():
 
         except Exception as e: print(f"[X] Failed to clear {file_path}: {e}")
 
-    name_json = script_dir / "hako" / "help" / "template" / "Name.json"
+    name_json = script_dir / "hako" / "help" / "template" / "name.json"
 
     if name_json.exists():
         try:
-            print(f"[?] Clearing contents of Name.json")
+            print(f"[?] Clearing contents of name.json")
             name_json.write_text("")
 
-        except Exception as e: print(f"[X] Failed to clear Name.json: {e}")
+        except Exception as e: print(f"[X] Failed to clear name.json: {e}")
 
     dry_files = set(script_dir.glob('*.png')).union(json_dir.glob('*.json'))
 

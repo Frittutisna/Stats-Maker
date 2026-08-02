@@ -29,10 +29,10 @@ def sync_chanting(tour_dir_path):
     except Exception as e: print(f"Failed to download chanting song IDs: {e}")
 
 def extract_unique_names(template_dir):
-    name_file_path = template_dir / "Name.json"
+    name_file_path = template_dir / "jsons" / "name.json"
 
     if not name_file_path.exists() or os.path.getsize(name_file_path) == 0:
-        print("[?] Name.json is missing or empty, extracting from libraryMasterList")
+        print("[?] name.json is missing or empty, extracting from libraryMasterList")
 
         url             = "https://animemusicquiz.com/libraryMasterList"
         unique_names    = set()
