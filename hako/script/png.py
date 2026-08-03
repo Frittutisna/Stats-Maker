@@ -52,7 +52,7 @@ def create_player_png(
     for dc in delta_cols:
         if dc in df_png.columns: df_png[dc] = pd.to_numeric(df_png[dc], errors="coerce").map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
-    export_png(analyzer, df_png, path, "Player.png", f"{prefix}Player Statistics, {stage}", mask, val_str)
+    export_png(analyzer, df_png, path, "Player.png", f"{prefix}{stage}", mask, val_str)
 
 def create_tour_png(analyzer, use_teams: bool, watched: bool, path: Path):
     stats   = compute_tour_stats(analyzer, use_teams, watched)
@@ -226,35 +226,10 @@ def create_scatter_png(analyzer, path: Path, list_mode: bool = False, elo_map: d
             gr_vals = [analyzer.c_counts[name] / analyzer.s_part[name] if analyzer.s_part[name] else 0 for name in plist_g]
             if elo_map is None: elo_map = {}
 
-            uf_pool, el_pool    = [], []
-            valid_elos          = [float(v) for v in elo_map.values() if str(v).replace(".", "", 1).isdigit() or (str(v).startswith("-") and str(v)[1:].replace(".", "", 1).isdigit())]
-            avg_rank            = np.mean(valid_elos) if valid_elos else 1.0
-
-            for name in plist_g:
-                tot         = analyzer.s_part[name]
-                uf_scaled   = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
-                elo_val     = elo_map.get(name.lower(), 0.0)
-
-                try                 : elo = float(elo_val)
-                except Exception    : elo = 0.0
-
-                uf_pool.append(uf_scaled)
-                el_pool.append(elo)
-
-            if uf_pool and el_pool:
-                els, ufs = np.array(el_pool), np.array(uf_pool)
-
-                if len(els) > 1 and np.var(els) > 0:
-                    slope, intercept    = np.polyfit(els, ufs, 1)
-                    expected_ufs        = slope * els + intercept
-                else: expected_ufs      = np.array([np.mean(ufs)] * len(ufs))
-
-                residuals   = ufs - expected_ufs
-                res_std     = np.std(residuals) if np.std(residuals) > 0 else 1
-                norm_perf   = [1 / (1 + np.exp(-1.5 * (res / res_std))) for res in residuals]
-            else: norm_perf = [0.5] * len(plist_g)
-
-            team_count = len(analyzer.rosters) if analyzer.use_teams else 0
+            valid_elos  = [float(v) for v in elo_map.values() if str(v).replace(".", "", 1).isdigit() or (str(v).startswith("-") and str(v)[1:].replace(".", "", 1).isdigit())]
+            avg_rank    = np.mean(valid_elos) if valid_elos else 1.0
+            norm_perf   = compute_player_performance_scores(plist_g, analyzer, elo_map, avg_rank)
+            team_count  = len(analyzer.rosters) if analyzer.use_teams else 0
 
             scale_g = 1.00 if team_count <= THRESH_TEAM else (0.75 if team_count <= THRESH_TEAM + 2 else 0.50)
             sizes_g = [(rate * scale_g) ** 2 * 10000 for rate in gr_vals]
@@ -602,25 +577,8 @@ def export_png(analyzer, df: pd.DataFrame, path: Path, fname: str, title: str, m
     borders = []
 
     if "GR" in df.columns:
-        if "Eru" in analyzer.tour_label: th = []
-        else:
-            if val_str == "default":
-                if      analyzer.tour_label == "Watched 2+8s"   : th_val = "25, 20, 15, 10, 5"
-                elif    "Watched" in analyzer.tour_label        : th_val = "28, 18, 12, 6"
-                else                                            : th_val = "28, 19, 8"
-            else                                                : th_val = val_str
-
-            try                 : th = [float(x.strip()) for x in th_val.split(",")] if th_val else []
-            except Exception    : th = [28.0, 18.0, 12.0, 6.0]
-
-        gv = pd.to_numeric(df["GR"].astype(str).str.replace("%", ""), errors = "coerce").tolist()
-
-        for t in th:
-            f_idx = -1
-
-            for i, v in enumerate(gv):
-                if pd.notnull(v) and v >= t: f_idx = i
-            if f_idx != -1 and f_idx < len(df) - 1: borders.append(f_idx)
+        gv_series   = pd.to_numeric(df["GR"].astype(str).str.replace("%", ""), errors = "coerce")
+        borders     = get_threshold_borders(analyzer, gv_series)
 
     col_borders = {"Player", "Score", "Mean Over-8", "Lives Saved", "IN Δ", "Rig Rate", "Solo Rig Rate", "Over-8 Δ", "Rig Δ", "Median Vintage Hit", "Metric", "Value", "Team Leader"}
 

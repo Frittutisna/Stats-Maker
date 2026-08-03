@@ -16,7 +16,7 @@ def render_dashboard_player(
     player_song_details : dict,
     df_base             : pd.DataFrame,
 ) -> tuple[list[dict], dict, list[int], list[bool]]:
-    rows, eligibility, borders = [], [], []
+    rows, eligibility = [], []
 
     for name in sorted_players:
         row_data    = df_base.loc[df_base["Player"].str.startswith(name)].iloc[0] if any(df_base["Player"].str.startswith(name)) else None
@@ -159,25 +159,11 @@ def render_dashboard_player(
             if df_players[c_field].isna().all() or (df_players[c_field].astype(str) == "nan").all():
                 df_players = df_players.drop(columns=[c_field])
 
+    borders = []
+
     if "GR" in df_players.columns and "Eru" not in analyzer.tour_label:
-        if analyzer.val_str == "default":
-            if      analyzer.tour_label == "Watched 2+8s"   : th_val = "25, 20, 15, 10, 5"
-            elif    "Watched" in analyzer.tour_label        : th_val = "28, 18, 12, 6"
-            else                                            : th_val = "28, 19, 8"
-        else                                                : th_val = analyzer.val_str
-
-        try                 : th = [float(x.strip()) for x in th_val.split(",")] if th_val else []
-        except Exception    : th = [28.0, 18.0, 12.0, 6.0]
-
-        gv = df_players["GR"].map(lambda x: x["count"] if isinstance(x, dict) else x).tolist()
-
-        for t in th:
-            f_idx = -1
-
-            for i, v in enumerate(gv):
-                if pd.notnull(v) and v >= t: f_idx = i
-
-            if f_idx != -1 and f_idx < len(df_players) - 1: borders.append(int(f_idx))
+        gv_series   = df_players["GR"].map(lambda x: x["count"] if isinstance(x, dict) else x)
+        borders     = get_threshold_borders(analyzer, gv_series)
 
     desc_cols = [
         "Elo", "GR", "GR Δ", "UF", "UF Δ", "Score",
@@ -465,98 +451,59 @@ def render_dashboard_song(analyzer) -> list[dict]:
     return song_matrix_list
 
 def render_dashboard_plot(analyzer, avg_rank: float, raw_vintage_by_guess: dict, raw_vintage_by_list: dict) -> tuple[list[dict], list[dict]]:
-    pool_data = []
-
-    for name in analyzer.s_part:
-        if analyzer.c_counts[name] > 0:
-            tot         = analyzer.s_part[name]
-            uf_scaled   = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot    if tot else 0.0
-            gr_val      = analyzer.c_counts[name] / tot                             if tot else 0.0
-
-            try                 : elo = float(analyzer.elo_map.get(name.lower(), 0.0))
-            except Exception    : elo = 0.0
-
-            pool_data.append({"name": name, "uf": uf_scaled, "gr": gr_val, "elo": elo})
-
-    els = np.array([p["elo"]    for p in pool_data])
-    ufs = np.array([p["uf"]     for p in pool_data])
-    grs = np.array([p["gr"]     for p in pool_data])
-
-    if len(els) > 1 and np.var(els) > 0:
-        slope_uf, int_uf = np.polyfit(els, ufs, 1)
-        slope_gr, int_gr = np.polyfit(els, grs, 1)
-
-        res_std_uf = np.std(ufs - (slope_uf * els + int_uf))
-        res_std_gr = np.std(grs - (slope_gr * els + int_gr))
-
-        if res_std_uf == 0: res_std_uf = 1
-        if res_std_gr == 0: res_std_gr = 1
-
-    else:
-        slope_uf, int_uf, res_std_uf = 0, np.mean(ufs) if len(ufs) > 0 else 0, 1
-        slope_gr, int_gr, res_std_gr = 0, np.mean(grs) if len(grs) > 0 else 0, 1
+    plist_g     = [name for name in analyzer.s_part if analyzer.c_counts[name] > 0]
+    scores      = compute_player_performance_scores(plist_g, analyzer, analyzer.elo_map, avg_rank)
+    perf_map    = {name: score * 100 for name, score in zip(plist_g, scores)}
 
     scatter_list, arrow_list = [], []
 
-    for name in analyzer.s_part:
-        if analyzer.c_counts[name] > 0:
-            yl = np.median(analyzer.p_l_vint[name]) if analyzer.p_l_vint[name] else np.nan
-            yg = np.median(analyzer.p_c_vint[name]) if analyzer.p_c_vint[name] else np.nan
+    for name in plist_g:
+        yl = np.median(analyzer.p_l_vint[name]) if analyzer.p_l_vint[name] else np.nan
+        yg = np.median(analyzer.p_c_vint[name]) if analyzer.p_c_vint[name] else np.nan
 
-            p_vints     = raw_vintage_by_guess.get(name, [])
-            p_vint_med  = np.median([extract_year(v) for v in p_vints]) if p_vints else yg
-            p_seas      = format_year(p_vint_med)                       if p_vints else f"Winter {int(yg)}" if pd.notnull(yg) else "N/A"
+        p_vints     = raw_vintage_by_guess.get(name, [])
+        p_vint_med  = np.median([extract_year(v) for v in p_vints]) if p_vints else yg
+        p_seas      = format_year(p_vint_med)                       if p_vints else f"Winter {int(yg)}" if pd.notnull(yg) else "N/A"
 
-            r_vints     = raw_vintage_by_list.get(name, [])
-            r_vint_med  = np.median([extract_year(v) for v in r_vints]) if r_vints else yl
-            r_seas      = format_year(r_vint_med)                       if r_vints else f"Winter {int(yl)}" if pd.notnull(yl) else "N/A"
+        r_vints     = raw_vintage_by_list.get(name, [])
+        r_vint_med  = np.median([extract_year(v) for v in r_vints]) if r_vints else yl
+        r_seas      = format_year(r_vint_med)                       if r_vints else f"Winter {int(yl)}" if pd.notnull(yl) else "N/A"
 
-            tot         = analyzer.s_part[name]
-            uf_scaled   = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot    if tot else 0.0
-            gr_val      = analyzer.c_counts[name] / tot                             if tot else 0.0
+        perf_score = perf_map.get(name, 50.0)
 
-            try                 : elo = float(analyzer.elo_map.get(name.lower(), 0.0))
-            except Exception    : elo = 0.0
+        base_node = {
+            "acronym"           : analyzer.player_acronyms.get(name.lower(), name[:3].upper()),
+            "name"              : name,
+            "over8"             : float(round(analyzer.p_overs_sum[name]    / analyzer.c_counts [name],         2)),
+            "vintage"           : float(round(p_vint_med,                                                       2)),
+            "seasonal_vintage"  : p_seas,
+            "gr"                : float(round(analyzer.c_counts[name]       / analyzer.s_part   [name] * 100,   2)) if analyzer.s_part[name] else 0.0,
+            "rig_gr"            : float(round(analyzer.p_rigs_h[name]       / analyzer.p_rigs   [name] * 100,   2)) if analyzer.p_rigs[name] else 0.0,
+            "performance"       : float(round(perf_score,                                                       2)),
+            "rig_rate"          : float(round(analyzer.p_rigs[name]         / analyzer.s_part   [name] * 100,   2)) if analyzer.s_part[name] else 0.0
+        }
 
-            residual_uf     = uf_scaled - (slope_uf * elo + int_uf)
-            residual_gr     = gr_val - (slope_gr * elo + int_gr)
-            perf_score_uf   = (1 / (1 + np.exp(SCALE_PERF * (residual_uf / res_std_uf)))) * 100
-            perf_score_gr   = (1 / (1 + np.exp(SCALE_PERF * (residual_gr / res_std_gr)))) * 100
-            perf_score      = (perf_score_uf * 0.5) + (perf_score_gr * 0.5)
+        scatter_list.append(base_node)
 
-            base_node = {
-                "acronym"           : analyzer.player_acronyms.get(name.lower(), name[:3].upper()),
-                "name"              : name,
-                "over8"             : float(round(analyzer.p_overs_sum[name]    / analyzer.c_counts [name], 2)),
-                "vintage"           : float(round(p_vint_med, 2)),
-                "seasonal_vintage"  : p_seas,
-                "gr"                : float(round(analyzer.c_counts[name]       / analyzer.s_part   [name] * 100, 2)) if analyzer.s_part[name] else 0.0,
-                "rig_gr"            : float(round(analyzer.p_rigs_h[name]       / analyzer.p_rigs   [name] * 100, 2)) if analyzer.p_rigs[name] else 0.0,
-                "performance"       : float(round(perf_score, 2)),
-                "rig_rate"          : float(round(analyzer.p_rigs[name]         / analyzer.s_part   [name] * 100, 2)) if analyzer.s_part[name] else 0.0
-            }
+        if analyzer.p_l_corr[name] and pd.notnull(yl) and pd.notnull(yg):
+            hit_over8   = np.mean   (analyzer.p_lh_corr[name]) if analyzer.p_lh_corr[name] else base_node["over8"]
+            hit_vint    = np.median (analyzer.p_lh_vint[name]) if analyzer.p_lh_vint[name] else base_node["vintage"]
 
-            scatter_list.append(base_node)
-
-            if analyzer.p_l_corr[name] and pd.notnull(yl) and pd.notnull(yg):
-                hit_over8   = np.mean(analyzer.p_lh_corr[name]) if analyzer.p_lh_corr[name] else base_node["over8"]
-                hit_vint    = np.median(analyzer.p_lh_vint[name]) if analyzer.p_lh_vint[name] else base_node["vintage"]
-
-                arrow_list.append({
-                    "acronym"                   : base_node["acronym"],
-                    "name"                      : name,
-                    "x_start"                   : float(round(np.mean(analyzer.p_l_corr[name]), 2)),
-                    "y_start"                   : float(round(r_vint_med,                       2)),
-                    "seasonal_vintage_start"    : r_seas,
-                    "x_end"                     : base_node["over8"],
-                    "y_end"                     : base_node["vintage"],
-                    "x_hit"                     : float(round(hit_over8,                        2)),
-                    "y_hit"                     : float(round(hit_vint,                         2)),
-                    "seasonal_vintage_end"      : p_seas,
-                    "rig_gr"                    : base_node["rig_gr"],
-                    "gr"                        : base_node["gr"],
-                    "rig_rate"                  : base_node["rig_rate"],
-                })
+            arrow_list.append({
+                "acronym"                   : base_node["acronym"],
+                "name"                      : name,
+                "x_start"                   : float(round(np.mean(analyzer.p_l_corr[name]), 2)),
+                "y_start"                   : float(round(r_vint_med,                       2)),
+                "seasonal_vintage_start"    : r_seas,
+                "x_end"                     : base_node["over8"],
+                "y_end"                     : base_node["vintage"],
+                "x_hit"                     : float(round(hit_over8,                        2)),
+                "y_hit"                     : float(round(hit_vint,                         2)),
+                "seasonal_vintage_end"      : p_seas,
+                "rig_gr"                    : base_node["rig_gr"],
+                "gr"                        : base_node["gr"],
+                "rig_rate"                  : base_node["rig_rate"],
+            })
 
     return scatter_list, arrow_list
 
@@ -567,11 +514,7 @@ def create_dashboard_html(analyzer, path: Path, use_teams: bool, watched: bool):
     t_labels    = {1: "OP GR", 2: "ED GR", 3: "IN GR"}
     valid_elos  = [float(v) for v in analyzer.elo_map.values() if str(v).replace(".", "", 1).isdigit() or (str(v).startswith("-") and str(v)[1:].replace(".", "", 1).isdigit())]
     avg_rank    = np.mean(valid_elos)   if valid_elos           else 1.0
-    team_count  = len(analyzer.rosters) if analyzer.use_teams   else 0
-
-    if team_count <= 2  : stage = "Final" if analyzer.base_exp >= 3 else f"R{analyzer.base_exp}"
-    else                : stage = "Mid-Tour" if analyzer.base_exp == 3 else "Final" if (team_count <= 4 and analyzer.base_exp >= 6) or (team_count > 4 and analyzer.base_exp >= 5) else f"R{analyzer.base_exp}"
-
+    stage       = analyzer.get_stage_label()
     prefix      = f"{analyzer.tour_label.strip()} Tour: {stage}"
     diffs       = [s["difficulty"] for s in analyzer.song_data]
     max_diff    = max(diffs)    if diffs            else 0

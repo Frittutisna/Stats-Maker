@@ -7,6 +7,67 @@ from .integrations  import *
 from bs4            import BeautifulSoup
 from collections    import defaultdict
 
+def get_threshold_borders(analyzer, df_gr_series) -> list[int]:
+    if "Eru" in analyzer.tour_label: return []
+
+    if analyzer.val_str == "default":
+        if      analyzer.tour_label == "Watched 2+8s"   : th_val = "25, 20, 15, 10, 5"
+        elif    "Watched" in analyzer.tour_label        : th_val = "28, 18, 12, 6"
+        else                                            : th_val = "28, 19, 8"
+    else                                                : th_val = analyzer.val_str
+
+    try                 : th = [float(x.strip()) for x in th_val.split(",")] if th_val else []
+    except Exception    : th = [28.0, 18.0, 12.0, 6.0]
+
+    gv      = df_gr_series.tolist()
+    borders = []
+
+    for t in th:
+        f_idx = -1
+
+        for i, v in enumerate(gv):
+            if pd.notnull(v) and v >= t: f_idx = i
+
+        if f_idx != -1 and f_idx < len(df_gr_series) - 1: borders.append(int(f_idx))
+
+    return borders
+
+def compute_player_performance_scores(plist: list, analyzer, elo_map: dict, avg_rank: float) -> list[float]:
+    uf_pool, el_pool, gr_pool = [], [], []
+
+    for name in plist:
+        tot         = analyzer.s_part[name]
+        uf_scaled   = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
+        gr_val      = analyzer.c_counts[name] / tot if tot else 0.0
+
+        try                 : elo = float(elo_map.get(name.lower(), 0.0))
+        except Exception    : elo = 0.0
+
+        uf_pool.append(uf_scaled)
+        el_pool.append(elo)
+        gr_pool.append(gr_val)
+
+    if len(el_pool) > 1 and np.var(el_pool) > 0:
+        els = np.array(el_pool)
+        ufs = np.array(uf_pool)
+        grs = np.array(gr_pool)
+
+        s_uf, i_uf = np.polyfit(els, ufs, 1)
+        s_gr, i_gr = np.polyfit(els, grs, 1)
+
+        res_uf = ufs - (s_uf * els + i_uf)
+        res_gr = grs - (s_gr * els + i_gr)
+
+        std_uf = np.std(res_uf) if np.std(res_uf) > 0 else 1.0
+        std_gr = np.std(res_gr) if np.std(res_gr) > 0 else 1.0
+
+        scores_uf = (1 / (1 + np.exp(SCALE_PERF * (res_uf / std_uf)))) * 100
+        scores_gr = (1 / (1 + np.exp(SCALE_PERF * (res_gr / std_gr)))) * 100
+
+        return list((scores_uf * 0.5) + (scores_gr * 0.5))
+
+    return [50.0] * len(plist)
+
 def compute_player_rows(
     analyzer,
     elo_map     : dict,
@@ -20,6 +81,10 @@ def compute_player_rows(
     avg_rank    : float,
 ) -> tuple[pd.DataFrame, list[bool]]:
     rows, eligibility = [], []
+    
+    plist       = list(analyzer.s_part.keys())
+    perf_scores = compute_player_performance_scores(plist, analyzer, elo_map, avg_rank)
+    perf_map    = dict(zip(plist, perf_scores))
 
     for name in analyzer.s_part:
         tot, cor    = analyzer.s_part[name], analyzer.c_counts[name]
@@ -72,38 +137,7 @@ def compute_player_rows(
             delta_uf = uf_val - history_baselines["UF"] if pd.notnull(history_baselines["UF"]) else np.nan
             row.update({"UF Δ": round(delta_uf, 2) if pd.notnull(delta_uf) else np.nan})
 
-            try                 : elo = float(elo_map.get(name.lower(), 0.0))
-            except Exception    : elo = 0.0
-
-            all_ufs     = [(analyzer.p_usefulness_sum[p] * avg_rank * 8) / analyzer.s_part[p] if analyzer.s_part[p] else 0.0 for p in analyzer.s_part]
-            all_grs     = [(analyzer.c_counts[p] / analyzer.s_part[p]) if analyzer.s_part[p] else 0.0 for p in analyzer.s_part]
-            all_elos    = []
-
-            for p in analyzer.s_part:
-                try                 : all_elos.append(float(elo_map.get(p.lower(), 0.0)))
-                except Exception    : all_elos.append(0.0)
-
-            if len(all_elos) > 1 and np.var(all_elos) > 0:
-                slope_uf, int_uf = np.polyfit(all_elos, all_ufs, 1)
-                slope_gr, int_gr = np.polyfit(all_elos, all_grs, 1)
-
-                res_std_uf = np.std(np.array(all_ufs) - (slope_uf * np.array(all_elos) + int_uf))
-                res_std_gr = np.std(np.array(all_grs) - (slope_gr * np.array(all_elos) + int_gr))
-
-                if res_std_uf == 0: res_std_uf = 1
-                if res_std_gr == 0: res_std_gr = 1
-
-            else: 
-                slope_uf, int_uf, res_std_uf = 0, np.mean(all_ufs) if all_ufs else 0, 1
-                slope_gr, int_gr, res_std_gr = 0, np.mean(all_grs) if all_grs else 0, 1
-
-            residual_uf     = uf_val - (slope_uf * elo + int_uf)
-            residual_gr     = current_gr - (slope_gr * elo + int_gr)
-            perf_score_uf   = (1 / (1 + np.exp(SCALE_PERF * (residual_uf / res_std_uf)))) * 100
-            perf_score_gr   = (1 / (1 + np.exp(SCALE_PERF * (residual_gr / res_std_gr)))) * 100
-            perf_score      = (perf_score_uf * 0.5) + (perf_score_gr * 0.5)
-
-            row.update({"Score": perf_score})
+            row.update({"Score": perf_map.get(name, 50.0)})
 
         avg_over8 = analyzer.p_overs_sum[name] / cor if cor else np.nan
         row.update({"1/8s": analyzer.e_counts[name], "2/8s": analyzer.p_two_e[name], "7/8s": analyzer.p_rev_e[name], "Mean Over-8": avg_over8})

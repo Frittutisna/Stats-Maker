@@ -287,6 +287,11 @@ class TourAnalyzer:
 
         return True
 
+    def get_stage_label(self) -> str:
+        team_count = len(self.rosters) if self.use_teams else 0
+        if team_count == 2: return "Final" if self.base_exp >= 3 else f"R{self.base_exp}"
+        return "Mid-Tour" if self.base_exp == 3  else "Final" if (team_count <= 4 and self.base_exp >= 6) or (team_count > 4 and self.base_exp >= 5) else f"R{self.base_exp}"
+
     def process_and_generate(self):
         for path in self.json_paths:
             with open(path, encoding = "utf-8") as f: data = json.load(f)
@@ -681,12 +686,8 @@ class TourAnalyzer:
                                 self.p_blks[pA] += 0.50
                                 self.p_blks[pB] += 0.50
 
-        team_count = len(self.rosters) if self.use_teams else 0
-
-        if team_count == 2  : stage = "Final" if self.base_exp >= 3 else f"R{self.base_exp}"
-        else                : stage = ("Mid-Tour" if self.base_exp == 3 else "Final" if (team_count <= 4 and self.base_exp >= 6) or (team_count > 4 and self.base_exp >= 5) else f"R{self.base_exp}")
-
-        prefix = f"{self.tour_label.strip()} Tour, "
+        stage   = self.get_stage_label()
+        prefix  = f"{self.tour_label.strip()} Tour: "
 
         png_path = self.tour_dir / "png"
         web_path = self.tour_dir / "site"
