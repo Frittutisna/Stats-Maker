@@ -453,7 +453,7 @@ def render_dashboard_song(analyzer) -> list[dict]:
 def render_dashboard_plot(analyzer, avg_rank: float, raw_vintage_by_guess: dict, raw_vintage_by_list: dict) -> tuple[list[dict], list[dict]]:
     plist_g     = [name for name in analyzer.s_part if analyzer.c_counts[name] > 0]
     scores      = compute_player_performance_scores(plist_g, analyzer, analyzer.elo_map, avg_rank)
-    perf_map    = {name: score * 100 for name, score in zip(plist_g, scores)}
+    perf_map    = {name: score for name, score in zip(plist_g, scores)}
 
     scatter_list, arrow_list = [], []
 
