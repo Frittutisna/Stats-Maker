@@ -1,4 +1,32 @@
-import gspread, ijson, json, os, shutil, sys, urllib.request
+import subprocess, sys
+
+def ensure_installed(package_name, import_name = None):
+    import_name = import_name or package_name
+
+    try: __import__(import_name)
+    except ImportError:
+        print(f"[!] Installing missing package: {package_name}")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
+
+REQUIRED_PACKAGES = [
+    ("gspread",         "gspread"),
+    ("ijson",           "ijson"),
+    ("pillow",          "PIL"),
+    ("curl_cffi",       "curl_cffi"),
+    ("adjustText",      "adjustText"),
+    ("pandas",          "pandas"),
+    ("python-dateutil", "dateutil"),
+    ("matplotlib",      "matplotlib"),
+    ("numpy",           "numpy"),
+    ("scipy",           "scipy"),
+    ("html2image",      "html2image"),
+    ("beautifulsoup4",  "bs4"),
+    ("lxml",            "lxml"),
+]
+
+for pkg, imp in REQUIRED_PACKAGES: ensure_installed(pkg, imp)
+
+import gspread, ijson, json, os, shutil, urllib.request
 import tkinter as tk
 
 from hako.script        import TourAnalyzer
