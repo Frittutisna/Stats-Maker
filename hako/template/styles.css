@@ -5,6 +5,19 @@
     --hover-overlay     : rgba(128, 128, 128, 0.25);
     --bold-border       : 2px solid black;
     --normal-border     : 1px solid black;
+    --bg-main           : white;
+    --text-main         : black;
+    --even-row-bg       : var(--rittu-grey);
+    --border-color      : black;
+}
+
+body.dark-mode {
+    --bg-main           : #323232;
+    --text-main         : white;
+    --even-row-bg       : #3c3c3c;
+    --border-color      : white;
+    background-color    : var(--bg-main)    !important;
+    color               : var(--text-main)  !important;
 }
 
 body, table, th, td, button, input {font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;}
@@ -233,4 +246,104 @@ input[type=number] {-appearance: textfield}
 #archiveDropdown a:hover {
     background-color    : black !important;
     color               : white !important;
+}
+
+body.dark-mode {
+    --bg-main           : #323232;
+    --text-main         : white;
+    --even-row-bg       : #3c3c3c;
+    --border-color      : white;
+    background-color    : var(--bg-main)    !important;
+    color               : var(--text-main)  !important;
+}
+
+body.dark-mode div,
+body.dark-mode table,
+body.dark-mode th,
+body.dark-mode td,
+body.dark-mode button,
+body.dark-mode input,
+body.dark-mode label,
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode a {color: var(--text-main)}
+
+body.dark-mode .main-table {border-color: var(--border-color) !important}
+
+body.dark-mode .main-table th {
+    background-color    : var(--even-row-bg)    !important;
+    border-color        : var(--border-color)   !important;
+}
+
+body.dark-mode .main-table td                   {border-color       : var(--border-color)   !important}
+body.dark-mode .main-table tr:nth-child(even)   {background-color   : var(--even-row-bg)    !important}
+body.dark-mode .tab-btn                         {color              : white                 !important}
+
+body.dark-mode .tab-btn.active-tab,
+body.dark-mode #langToggleBtn,
+body.dark-mode #darkModeToggleBtn {
+    background-color    : white     !important;
+    color               : #323232   !important;
+}
+
+body.dark-mode #archiveDropdown,
+body.dark-mode #playerGuideDropdown,
+body.dark-mode #tierGuideDropdown,
+body.dark-mode #guessGuideDropdown,
+body.dark-mode #songGuideDropdown,
+body.dark-mode #searchGuideDropdown,
+body.dark-mode #quizGuideDropdown,
+body.dark-mode #playerColumnSettingsDropdown,
+body.dark-mode #columnSettingsDropdown,
+body.dark-mode #tierSettingsDropdown,
+body.dark-mode #guessSettingsDropdown,
+body.dark-mode #quizSettingsDropdown,
+body.dark-mode #quizAutocompleteDropdown,
+body.dark-mode #quizSampleDropdown,
+body.dark-mode #quizModeDropdown {
+    background-color    : #323232   !important;
+    border-color        : white     !important;
+    color               : white     !important;
+}
+
+body.dark-mode input[type="text"],
+body.dark-mode input[type="number"],
+body.dark-mode #quizSampleSelect,
+body.dark-mode #quizModeSelect {
+    background-color    : #323232   !important;
+    color               : white     !important;
+    border-color        : white     !important;
+}
+
+body.dark-mode #playerSearchCounter,
+body.dark-mode #searchCounter {
+    background-color    : white !important;
+    color               : black !important;
+}
+
+body.dark-mode #globalHelpWrapper > button,
+body.dark-mode #globalGearWrapper > button,
+body.dark-mode #globalQuizPauseBtn,
+body.dark-mode #globalQuizReturnBtn {
+    background-color    : white     !important;
+    color               : #323232   !important;
+}
+
+body.dark-mode .tab-btn:hover {
+    background-color    : #3c3c3c   !important;
+    color               : white     !important;
+}
+
+body.dark-mode th[style*="background-color: black"],
+body.dark-mode th[style*="background-color: rgb(0, 0, 0)"] {
+    background-color    : white !important;
+    color               : black !important;
+}
+
+body.dark-mode th.has-explanation[style*="background-color: black"]         ::after,
+body.dark-mode th.has-explanation[style*="background-color: rgb(0, 0, 0)"]  ::after {background-color: black !important}
+
+body.dark-mode #quizStartBtn {
+    background-color    : white !important;
+    color               : black !important;
 }
