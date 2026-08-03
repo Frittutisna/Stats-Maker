@@ -124,9 +124,9 @@ td[data-songs], th.has-explanation, td.has-explanation {
     position: relative;
 }
 
-td[data-songs]      ::after,
-th.has-explanation  ::after,
-td.has-explanation  ::after {
+td[data-songs]::after,
+th.has-explanation::after,
+td.has-explanation::after {
     content             : '';
     position            : absolute;
     top                 : 2px;
@@ -139,11 +139,11 @@ td.has-explanation  ::after {
 th.has-explanation[style*="background-color: black"]:hover  {background-color: black !important}
 th.has-explanation[style*="background-color: black"]::after {background-color: white !important}
 
-td[data-songs].highlight-best   ::after,
-td[data-songs].highlight-worst  ::after {background-color: white}
+td[data-songs].highlight-best::after,
+td[data-songs].highlight-worst::after {background-color: white}
 
-td[data-songs].highlight-best   :hover::after {background-color: var(--rittu-blue)}
-td[data-songs].highlight-worst  :hover::after {background-color: var(--rittu-red)}
+td[data-songs].highlight-best:hover::after {background-color: var(--rittu-blue)}
+td[data-songs].highlight-worst:hover::after {background-color: var(--rittu-red)}
 
 #customJsTooltip {
     position            : absolute;
@@ -272,12 +272,12 @@ body.dark-mode th[style *= "background-color: rgb(0, 0, 0)"] {
     color               : var(--rittu-dark-bg) !important;
 }
 
-body.dark-mode th.has-explanation[style *= "background-color: black"]         ::after,
-body.dark-mode th.has-explanation[style *= "background-color: rgb(0, 0, 0)"]  ::after {background-color: var(--rittu-dark-bg) !important}
+body.dark-mode th.has-explanation[style *= "background-color: black"]::after,
+body.dark-mode th.has-explanation[style *= "background-color: rgb(0, 0, 0)"]::after {background-color: var(--rittu-dark-bg) !important}
 
-body.dark-mode td[data-songs]       ::after,
-body.dark-mode th.has-explanation   ::after,
-body.dark-mode td.has-explanation   ::after {background-color   : white !important}
+body.dark-mode td[data-songs]::after,
+body.dark-mode th.has-explanation::after,
+body.dark-mode td.has-explanation::after    {background-color   : white !important}
 body.dark-mode .tab-btn                     {color              : white !important}
 
 body.dark-mode .tab-btn.active-tab,

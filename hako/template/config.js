@@ -30,16 +30,18 @@ let c3Mode                  = "MED";
 document.getElementById('dashboardTitle').innerText = prefix;
 
 const dynamicStyles = document.createElement('style');
+
 dynamicStyles.innerHTML = `
     .highlight-best     {background-color: ${c2} !important}
     .highlight-worst    {background-color: ${c0} !important}
 
-    td[data-songs].highlight-best   :hover{color: ${c2} !important}
-    td[data-songs].highlight-worst  :hover{color: ${c0} !important}
+    td[data-songs].highlight-best:hover{color: ${c2} !important}
+    td[data-songs].highlight-worst:hover{color: ${c0} !important}
 
-    td[data-songs].highlight-best   :hover::after{background-color: ${c2} !important}
-    td[data-songs].highlight-worst  :hover::after{background-color: ${c0} !important}
+    td[data-songs].highlight-best:hover::after{background-color: ${c2} !important}
+    td[data-songs].highlight-worst:hover::after{background-color: ${c0} !important}
 `;
+
 document.head.appendChild(dynamicStyles);
 
 const thickBorderColumns = new Set([
