@@ -24,6 +24,11 @@ window.toggleDarkMode = function() {
         }
     }
 
+    if (typeof renderTierCharts         === 'function') renderTierCharts        ();
+    if (typeof renderSongHeatmap        === 'function') renderSongHeatmap       ();
+    if (typeof renderGuessScatterChart  === 'function') renderGuessScatterChart ();
+    if (typeof renderListChart          === 'function') renderListChart         ();
+
     window.dispatchEvent(new Event('resize'));
 };
 

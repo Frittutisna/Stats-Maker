@@ -152,6 +152,12 @@ function updateTierHelpDropdown() {
 }
 
 function renderTierCharts() {
+    const isDark    = window.isDarkMode;
+    const textColor = isDark ? '#ffffff' : '#323232';
+    const paperBg   = isDark ? '#323232' : 'rgba(0, 0, 0, 0)';
+    const plotBg    = isDark ? '#323232' : 'rgba(0, 0, 0, 0)';
+    const gridColor = isDark ? '#3c3c3c' : '#f0f0f0';
+
     if ((!document.getElementById('tierChart_MainMetrics') && !document.getElementById('tierChart_MainMetricsMain')) || !tierStats) return;
     if (!globalSearchData || globalSearchData.length === 0)                                                                         return;
 
@@ -721,15 +727,19 @@ function renderTierCharts() {
     const hasLegends    = (c1Sub === "OVER-8" || (globalChartMode === "COUNT" && c1Sub === "BASE"));
 
     const layoutC1 = {
-        font        : {family: 'Segoe UI'}, title: {text: titleC1, yref: 'container', y: 15, yanchor: 'top'},
-        xaxis       : {type: 'linear', tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true, range: rangeC1},
-        yaxis       : {type: 'category', tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: " "},
-        bargap      : 0.0,
-        barmode     : 'stack',
-        margin      : {l: 150, r: 0, t: hasLegends ? 100 : 50, b: 25},
-        hoverlabel  : {align: 'left', font: {family: 'Segoe UI', size: 15}}, 
-        showlegend  : hasLegends,
-        legend      : { 
+        font            : {family: 'Segoe UI', color: textColor},
+        paper_bgcolor   : paperBg,
+        plot_bgcolor    : plotBg,
+        title           : {text: titleC1, yref: 'container', y: 15, yanchor: 'top', font: {color: textColor}},
+        xaxis           : {type: 'linear', tickfont: {size: 15, color: textColor, weight: 'bold'}, gridcolor: gridColor, fixedrange: true, showgrid: true, range: rangeC1},
+        yaxis           : {type: 'category', tickfont: {size: 15, color: textColor, weight: 'bold'}, gridcolor: gridColor, fixedrange: true, showgrid: false, ticksuffix: " "},
+        bargap          : 0.0,
+        barmode         : 'stack',
+        margin          : {l: 150, r: 0, t: hasLegends ? 100 : 50, b: 25},
+        hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}}, 
+        showlegend      : hasLegends,
+        legend          : { 
+            font            : {color: textColor},
             orientation     : "h", 
             yanchor         : "bottom",
             y               : 1.01, 
@@ -993,15 +1003,19 @@ function renderTierCharts() {
     const titleC2   = `<span style="font-size: 30px;"><b>${displayTitleC2}</b></span>`;
 
     const layoutC2 = {
-        font        : {family: 'Segoe UI'}, title: {text: titleC2, yref: 'container', y: 15, yanchor: 'top'},
-        xaxis       : {type: 'linear', tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true, range: rangeC2},
-        yaxis       : {type: 'category', tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: " "},
-        bargap      : 0.0,
-        barmode     : 'stack',
-        margin      : {l: 150, r: 0, t: 100, b: 25},
-        hoverlabel  : {align: 'left', font: {family: 'Segoe UI', size: 15}}, 
-        showlegend  : true,
-        legend      : { 
+        font            : {family: 'Segoe UI', color: textColor},
+        paper_bgcolor   : paperBg,
+        plot_bgcolor    : plotBg,
+        title           : {text: titleC2, yref: 'container', y: 15, yanchor: 'top', font: {color: textColor}},
+        xaxis           : {type: 'linear', tickfont: {size: 15, color: textColor, weight: 'bold'}, gridcolor: gridColor, fixedrange: true, showgrid: true, range: rangeC2},
+        yaxis           : {type: 'category', tickfont: {size: 15, color: textColor, weight: 'bold'}, gridcolor: gridColor, fixedrange: true, showgrid: false, ticksuffix: " "},
+        bargap          : 0.0,
+        barmode         : 'stack',
+        margin          : {l: 150, r: 0, t: 100, b: 25},
+        hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}}, 
+        showlegend      : true,
+        legend          : { 
+            font            : {color: textColor},
             orientation     : "h", 
             yanchor         : "bottom",
             y               : 1.01, 
@@ -1170,13 +1184,16 @@ function renderTierCharts() {
     const titleC3 = `<span style="font-size: 30px;"><b>${displayTitleC3}</b></span>`;
 
     const layoutC3 = {
-        font        : {family: 'Segoe UI'}, title: {text: titleC3, yref: 'container', y: 15, yanchor: 'top'},
-        xaxis       : {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: true,  range: [0, 21], tickmode: 'array', tickvals: [0, 4, 8, 12, 16, 20]},
-        yaxis       : {tickfont: {size: 15, color: 'black', weight: 'bold'}, fixedrange: true, showgrid: false, ticksuffix: " "},
-        bargap      : 0.0,
-        margin      : {l: 150, r: 0, t: 50, b: 25},
-        hoverlabel  : {align: 'left', font: {family: 'Segoe UI', size: 15}},
-        showlegend  : false
+        font            : {family: 'Segoe UI', color: textColor},
+        paper_bgcolor   : paperBg,
+        plot_bgcolor    : plotBg,
+        title           : {text: titleC3, yref: 'container', y: 15, yanchor: 'top', font: {color: textColor}},
+        xaxis           : {tickfont: {size: 15, color: textColor, weight: 'bold'}, gridcolor: gridColor, fixedrange: true, showgrid: true, range: [0, 21], tickmode: 'array', tickvals: [0, 4, 8, 12, 16, 20]},
+        yaxis           : {tickfont: {size: 15, color: textColor, weight: 'bold'}, gridcolor: gridColor, fixedrange: true, showgrid: false, ticksuffix: " "},
+        bargap          : 0.0,
+        margin          : {l: 150, r: 0, t: 50, b: 25},
+        hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}},
+        showlegend      : false
     };
 
     layoutC3.height = 27.5 * c3Data.yLabels.length;

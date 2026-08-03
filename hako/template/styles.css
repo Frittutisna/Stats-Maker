@@ -318,7 +318,7 @@ body.dark-mode #quizModeSelect {
 body.dark-mode #playerSearchCounter,
 body.dark-mode #searchCounter {
     background-color    : white !important;
-    color               : black !important;
+    color               : #323232 !important;
 }
 
 body.dark-mode #globalHelpWrapper > button,
@@ -329,7 +329,7 @@ body.dark-mode #globalQuizReturnBtn {
     color               : #323232   !important;
 }
 
-body.dark-mode .tab-btn:hover {
+body.dark-mode .tab-btn:hover:not(.active-tab) {
     background-color    : #3c3c3c   !important;
     color               : white     !important;
 }
@@ -337,13 +337,74 @@ body.dark-mode .tab-btn:hover {
 body.dark-mode th[style*="background-color: black"],
 body.dark-mode th[style*="background-color: rgb(0, 0, 0)"] {
     background-color    : white !important;
-    color               : black !important;
+    color               : #323232 !important;
 }
 
 body.dark-mode th.has-explanation[style*="background-color: black"]         ::after,
-body.dark-mode th.has-explanation[style*="background-color: rgb(0, 0, 0)"]  ::after {background-color: black !important}
+body.dark-mode th.has-explanation[style*="background-color: rgb(0, 0, 0)"]  ::after {background-color: #323232 !important}
 
 body.dark-mode #quizStartBtn {
     background-color    : white !important;
-    color               : black !important;
+    color               : #323232 !important;
+}
+
+body.dark-mode #quizSkipBtn,
+body.dark-mode #quizMcSkipBtn {
+    background-color: white !important;
+    color: #323232 !important;
+}
+
+body.dark-mode #quizSkipBtn:hover,
+body.dark-mode #quizMcSkipBtn:hover {
+    background-color: #f0f0f0 !important;
+    color: #323232 !important;
+}
+
+body.dark-mode #quizScoreValue,
+body.dark-mode #quizTimerValue {
+    color: white !important;
+}
+
+body:not(.dark-mode) #quizScoreValue,
+body:not(.dark-mode) #quizTimerValue {
+    color: #323232 !important;
+}
+
+body.dark-mode #quizAutocompleteDropdown {
+    background-color: #323232 !important;
+    border-color: white !important;
+}
+
+body.dark-mode #quizAutocompleteDropdown button {
+    background-color: #323232 !important;
+    color: white !important;
+}
+
+body.dark-mode #quizAutocompleteDropdown button:hover,
+body.dark-mode #quizAutocompleteDropdown button.bg-black {
+    background-color: white !important;
+    color: #323232 !important;
+}
+
+body.dark-mode #quizMcInterfaceBody button[id^="quizMcOpt"]:not([style*="background-color"]) {
+    background-color: #323232 !important;
+    color: white !important;
+    border-color: white !important;
+}
+
+body.dark-mode #quizMcInterfaceBody button[id^="quizMcOpt"]:not([style*="background-color"]):hover:not(:disabled) {
+    background-color: #3c3c3c !important;
+    color: white !important;
+}
+
+body.dark-mode td[data-songs]::after,
+body.dark-mode th.has-explanation::after,
+body.dark-mode td.has-explanation::after {
+    background-color: white !important;
+}
+
+body.dark-mode [id*="GuideDropdown"] code {
+    background-color: white !important;
+    color: #323232 !important;
+    border-radius: 0.25rem !important;
 }

@@ -66,11 +66,15 @@ function get75PercentileHull(pts, xKey, yKey) {
 }
 
 function buildScatterAnnotations(data, xKey, yKey, sizeKeyMultiplier) {
+    const isDark     = window.isDarkMode;
+    const textColor  = isDark ? '#ffffff' : '#323232';
+    const arrowColor = isDark ? '#ffffff' : 'rgba(0, 0, 0, 0.5)';
+
     const defaultAnn = [
-        {x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'top'},
-        {x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'top'},
-        {x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom'},
-        {x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {size: 20}, opacity: 0.75, xanchor: 'left',  yanchor: 'bottom'}
+        {x: 0, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Hard</b>', showarrow: false, font: {size: 20, color: textColor}, opacity: 0.75, xanchor: 'left',  yanchor: 'top'},
+        {x: 1, y: 1, xref: 'paper', yref: 'paper', text: '<b>New<br>Easy</b>', showarrow: false, font: {size: 20, color: textColor}, opacity: 0.75, xanchor: 'right', yanchor: 'top'},
+        {x: 1, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Easy</b>', showarrow: false, font: {size: 20, color: textColor}, opacity: 0.75, xanchor: 'right', yanchor: 'bottom'},
+        {x: 0, y: 0, xref: 'paper', yref: 'paper', text: '<b>Old<br>Hard</b>', showarrow: false, font: {size: 20, color: textColor}, opacity: 0.75, xanchor: 'left',  yanchor: 'bottom'}
     ];
 
     const xCenter = data.reduce((sum, d) => sum + d[xKey], 0) / data.length;
@@ -95,11 +99,11 @@ function buildScatterAnnotations(data, xKey, yKey, sizeKeyMultiplier) {
             x           : d[xKey],
             y           : d[yKey],
             text        : `<b>${d.acronym}</b>`,
-            font        : {family: 'Segoe UI', size: 20, color: 'black'},
+            font        : {family: 'Segoe UI', size: 20, color: textColor},
             showarrow   : true,
             arrowhead   : 0,
             arrowwidth  : 1,
-            arrowcolor  : 'rgba(0, 0, 0, 0.5)',
+            arrowcolor  : arrowColor,
             ax          : axVal,
             ay          : ayVal,
             xanchor     : xAlign,
@@ -159,9 +163,9 @@ function updateGuessHelpDropdown() {
 
     if (currentGuessListViewMode === "ALL") {
         exampleText = `
-            A <b>small, <span style="color: #3232c8;">blue</span></b> circle in the <b>bottom-left</b> means that, on average, this player:<br>
+            A <b>small, blue</b> circle in the <b>bottom-left</b> means that, on average, this player:<br>
             • Has low Guess Rate (<b>small</b>), yet<br>
-            • Is over-performing their Elo (<b><span style="color: #3232c8;">blue</span></b>),<br>
+            • Is over-performing their Elo (<b>blue</b>),<br>
             • Usually hits harder (<b>left</b>) songs, and<br>
             • Prefers the older (<b>bottom</b>) ones
         `;
@@ -169,20 +173,20 @@ function updateGuessHelpDropdown() {
 
     else if (currentGuessListViewMode === "RIG") {
         exampleText = `
-            A <b>big, <span style="color: #c83232;">red</span></b> circle in the <b>top-right</b> means that, on average, this player's list:<br>
+            A <b>big, red</b> circle in the <b>top-right</b> means that, on average, this player's list:<br>
             • Usually has newer (<b>top</b>) songs,<br>
             • Appears a lot (<b>big</b>),<br>
-            • Is difficult for the player (<b><span style="color: #c83232;">red</span></b>), yet<br>
+            • Is difficult for the player (<b>red</b>), yet<br>
             • Easy for others (<b>right</b>)
         `;
     }
 
     else if (currentGuessListViewMode === "HIT") {
         exampleText = `
-            A <b>big, <span style="color: #c83232;">red</span></b> circle in the <b>top-right</b> means that, on average, this player:<br>
+            A <b>big, red</b> circle in the <b>top-right</b> means that, on average, this player:<br>
             • Focuses heavily on newer (<b>top</b>) songs from their list,<br>
             • Said list appears a lot (<b>big</b>),<br>
-            • Is difficult (<b><span style="color: #c83232;">red</span></b>) for them to get right, yet<br>
+            • Is difficult (<b>red</b>) for them to get right, yet<br>
             • Easy for others (<b>right</b>)
         `;
     }
@@ -249,23 +253,27 @@ function initGuessDropdownListeners() {
 }
 
 function renderGuessScatterChart() {
+    const isDark    = window.isDarkMode;
+    const textColor = isDark ? '#ffffff' : '#000000';
+    const paperBg   = isDark ? '#323232' : 'rgba(0, 0, 0, 0)';
+    const plotBg    = isDark ? '#323232' : 'rgba(0, 0, 0, 0)';
+    const gridColor = isDark ? '#555555' : '#e5e5e5';
+
     const targetNode = document.getElementById('plotlyGuessChart');
     if (!targetNode || !scatterData) return;
 
     const guessHull = get75PercentileHull(scatterData, 'over8', 'vintage');
     let guessTraces = [];
 
-    if (guessHull) {
-        guessTraces.push({
-            x           : guessHull.x,
-            y           : guessHull.y,
-            type        : 'scatter',
-            mode        : 'lines',
-            line        : {color: 'black', width: 0.5, dash: 'solid'},
-            hoverinfo   : 'skip',
-            showlegend  : false
-        });
-    }
+    if (guessHull) guessTraces.push({
+        x           : guessHull.x,
+        y           : guessHull.y,
+        type        : 'scatter',
+        mode        : 'lines',
+        line        : {color: textColor, width: 0.5, dash: 'solid'},
+        hoverinfo   : 'skip',
+        showlegend  : false
+    });
 
     guessTraces.push({
         x               : scatterData.map(d => d.over8),
@@ -283,7 +291,7 @@ function renderGuessScatterChart() {
             colorscale  : [[0, hexToRgba(c0)], [0.5, hexToRgba(c1)], [1, hexToRgba(c2)]],
             showscale   : true,
             colorbar    : {
-                title       : {text: '<b>Score</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
+                title       : {text: '<b>Score</b>', font: {family: 'Segoe UI', size: 25, color: textColor, weight: 'bold'}, side: 'right'},
                 thickness   : 25,
                 len         : 1.0,
                 y           : 0.5,
@@ -292,19 +300,22 @@ function renderGuessScatterChart() {
                 tickmode    : 'array',
                 tickvals    : [0, 50, 100],
                 ticktext    : ['0', '50', '100'],
-                tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'}
+                tickfont    : {family: 'Segoe UI', size: 20, color: textColor, weight: 'bold'}
             },
-            line        : {color: 'black', width: 0},
+            line        : {color: isDark ? '#ffffff' : 'black', width: 0},
             cmin        : 0,
             cmax        : 100
         }
     });
 
     Plotly.newPlot('plotlyGuessChart', guessTraces, {
-        font        : {family: 'Segoe UI'},
-        xaxis       : {
-            title       : {text: '<b>Over-8</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
-            tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'},
+        font            : {family: 'Segoe UI', color: textColor},
+        paper_bgcolor   : paperBg,
+        plot_bgcolor    : plotBg,
+        xaxis           : {
+            title       : {text: '<b>Over-8</b>', font: {family: 'Segoe UI', size: 25, color: textColor, weight: 'bold'}, pad: 5},
+            tickfont    : {family: 'Segoe UI', size: 20, color: textColor, weight: 'bold'},
+            gridcolor   : gridColor,
             showgrid    : true,
             tickformat  : '.1f',
             dtick       : 0.5,
@@ -314,10 +325,11 @@ function renderGuessScatterChart() {
             fixedrange  : false,
             range       : [window.unifiedChartLimits.xMin, window.unifiedChartLimits.xMax]
         },
-        yaxis       : {
-            title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
-            tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'},
+        yaxis           : {
+            title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: textColor, weight: 'bold'}, pad: 5},
+            tickfont    : {family: 'Segoe UI', size: 20, color: textColor, weight: 'bold'},
             tickangle   : -90,
+            gridcolor   : gridColor,
             showgrid    : true,
             tickformat  : 'd',
             dtick       : window.unifiedChartLimits.dtickY,
@@ -371,6 +383,12 @@ if (document.getElementById('plotlyListChart') && typeof arrowData !== 'undefine
 }
 
 function renderListChart() {
+    const isDark    = window.isDarkMode;
+    const textColor = isDark ? '#ffffff' : '#000000';
+    const paperBg   = isDark ? '#323232' : 'rgba(0, 0, 0, 0)';
+    const plotBg    = isDark ? '#323232' : 'rgba(0, 0, 0, 0)';
+    const gridColor = isDark ? '#555555' : '#e5e5e5';
+
     if (!window.listDataPool || !window.listDataPool[currentListChartMode]) return;
 
     const activeScatterSource   = window.listDataPool[currentListChartMode];
@@ -383,7 +401,7 @@ function renderListChart() {
             y           : listHull.y,
             type        : 'scatter',
             mode        : 'lines',
-            line        : {color: 'black', width: 0.5, dash: 'solid'},
+            line        : {color: textColor, width: 0.5, dash: 'solid'},
             hoverinfo   : 'skip',
             showlegend  : false
         });
@@ -404,7 +422,7 @@ function renderListChart() {
             colorscale  : [[0, hexToRgba(c0)], [0.7, hexToRgba(c0)], [0.8, hexToRgba(c1)], [0.9, hexToRgba(c2)], [1, hexToRgba(c2)]],
             showscale   : true,
             colorbar    : {
-                title       : {text: '<b>Rig GR</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
+                title       : {text: '<b>Rig GR</b>', font: {family: 'Segoe UI', size: 25, color: textColor, weight: 'bold'}, side: 'right'},
                 thickness   : 25,
                 len         : 1.0,
                 y           : 0.5,
@@ -413,9 +431,9 @@ function renderListChart() {
                 tickmode    : 'array',
                 tickvals    : [0, 70, 80, 90, 100],
                 ticktext    : ['0', '70', '80', '90', '100'],
-                tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'}
+                tickfont    : {family: 'Segoe UI', size: 20, color: textColor, weight: 'bold'}
             },
-            line        : {color: 'black', width: 0},
+            line        : {color: isDark ? '#ffffff' : 'black', width: 0},
             cmin        : 0,
             cmax        : 100
         }
@@ -424,10 +442,13 @@ function renderListChart() {
     const currentBounds = isGraphFocused ? getLocalizedChartBounds(activeScatterSource, 'x', 'y') : window.unifiedChartLimits;
 
     Plotly.newPlot('plotlyListChart', listTraces, {
-        font        : {family: 'Segoe UI'},
-        xaxis       : {
-            title       : {text: '<b>Over-8</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
-            tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'},
+        font            : {family: 'Segoe UI', color: textColor},
+        paper_bgcolor   : paperBg,
+        plot_bgcolor    : plotBg,
+        xaxis           : {
+            title       : {text: '<b>Over-8</b>', font: {family: 'Segoe UI', size: 25, color: textColor, weight: 'bold'}, pad: 5},
+            tickfont    : {family: 'Segoe UI', size: 20, color: textColor, weight: 'bold'},
+            gridcolor   : gridColor,
             showgrid    : true,
             tickformat  : '.1f',
             dtick       : 0.5,
@@ -437,10 +458,11 @@ function renderListChart() {
             fixedrange  : false,
             range       : [currentBounds.xMin, currentBounds.xMax]
         },
-        yaxis       : {
-            title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
-            tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'},
+        yaxis           : {
+            title       : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: textColor, weight: 'bold'}, pad: 5},
+            tickfont    : {family: 'Segoe UI', size: 20, color: textColor, weight: 'bold'},
             tickangle   : -90,
+            gridcolor   : gridColor,
             showgrid    : true,
             tickformat  : 'd',
             dtick       : currentBounds.dtickY,
