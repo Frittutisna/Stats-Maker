@@ -75,8 +75,6 @@ if __name__ == "__main__":
     has_valid_tour      = False
     template_path       = script_directory / "hako" / "template"
 
-    extract_unique_names(template_path)
-
     for json_dir in tour_folder_path.glob("*/json"):
         if any(json_dir.glob("*.json")):
             has_valid_tour = True
@@ -105,6 +103,8 @@ if __name__ == "__main__":
 
     selection_dialog    = TourSelectionDialog(root, ["0", "1", "2"])
     selected_tours      = selection_dialog.selected_tours
+
+    extract_unique_names(template_path)
 
     if not chant_txt_file.exists() or os.path.getsize(chant_txt_file) == 0: sync_chanting(tour_folder_path)
     

@@ -84,4 +84,4 @@ def trim_whitespace(image_path):
             img = img.crop(bbox)
             img = ImageOps.expand(img, border = 10, fill = "white")
 
-            img.save(image_path, compress_level = 9, optimize = True)
+            img.save(image_path, compress_level = 1, optimize = False)

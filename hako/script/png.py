@@ -699,7 +699,7 @@ def fuse_images(path: Path):
 
     if img_plots:
         plots_out_p = path / "Plots.png"
-        img_plots.save(plots_out_p, compress_level = 9, optimize = True)
+        img_plots.save(plots_out_p, compress_level = 1, optimize = False)
 
         try                 : trim_whitespace(plots_out_p)
         except Exception    : pass
@@ -735,7 +735,7 @@ def fuse_images(path: Path):
 
     if img_plots: img_extra.paste(img_plots_scaled, (left_w_max + gap_size, 0))
     extra_out_p = path / "Extra.png"
-    img_extra.save(extra_out_p, compress_level = 9, optimize = True)
+    img_extra.save(extra_out_p, compress_level = 1, optimize = False)
 
     try                 : trim_whitespace(extra_out_p)
     except Exception    : pass
@@ -757,7 +757,7 @@ def fuse_images(path: Path):
         img_general.paste(img_extra,            (0, player_h_scaled + 10))
 
         gen_out_p = path / "General.png"
-        img_general.save(gen_out_p, compress_level = 9, optimize = True)
+        img_general.save(gen_out_p, compress_level = 1, optimize = False)
 
         try                 : trim_whitespace(gen_out_p)
         except Exception    : pass
