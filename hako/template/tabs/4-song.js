@@ -225,7 +225,7 @@ function renderSongHeatmap() {
             fixedrange      : true
         },
         annotations : annotations,
-        margin      : {l: 75, r: 0, t: 0, b: 75}
+        margin      : {l: 75, r: 0, t: 25, b: 75}
     }, {responsive: true, displayModeBar: false});
 
     const songChartDiv = document.getElementById('plotlySongChart');
