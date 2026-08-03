@@ -149,8 +149,8 @@ function updateSongHelpDropdown() {
         <p class="text-xs font-normal">
             <b>Difficulty:</b> 25-30<br>
             <b>Vintage:</b> 2015-2020<br>
-            <b>Over-8:</b> <b><span style="color: #3232c8;">6.26</span></b><br>
-            This means that, on average, <b><span style="color: #3232c8;">6.26/8</span></b> people guessed songs from <b>2015-2020</b> with a difficulty of <b>25-30</b> correctly
+            <b>Over-8:</b> 6.26<br>
+            This means that, on average, <b>6.26/8</b> people guessed songs from <b>2015-2020</b> with a difficulty of <b>25-30</b> correctly
         </p>
     `;
 }
@@ -159,19 +159,25 @@ function renderSongHeatmap() {
     const targetNode = document.getElementById('plotlySongChart');
     if (!targetNode) return;
 
+    const isDark    = window.isDarkMode;
+    const textColor = isDark ? '#ffffff' : '#323232';
+    const paperBg   = isDark ? '#323232' : 'rgba(0, 0, 0, 0)';
+    const plotBg    = isDark ? '#323232' : 'rgba(0, 0, 0, 0)';
+    const gridColor = isDark ? '#3c3c3c' : '#f0f0f0';
+
     Plotly.newPlot('plotlySongChart', [{
-        z               : zValues,
-        x               : Array.from({length: numX}, (_, i) => i),
-        y               : Array.from({length: numY}, (_, i) => i),
-        text            : textLabels,
-        hoverinfo       : 'none',
-        type            : 'heatmap',
-        colorscale      : [[0, c0], [0.375, c1], [0.625, c2], [1, c2]],
-        zmin            : 0,
-        zmax            : 8,
-        showscale       : true,
-        colorbar        : {
-            title       : {text: '<b>Over-8</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, side: 'right'},
+        z           : zValues,
+        x           : Array.from({length: numX}, (_, i) => i),
+        y           : Array.from({length: numY}, (_, i) => i),
+        text        : textLabels,
+        hoverinfo   : 'none',
+        type        : 'heatmap',
+        colorscale  : [[0, c0], [0.375, c1], [0.625, c2], [1, c2]],
+        zmin        : 0,
+        zmax        : 8,
+        showscale   : true,
+        colorbar    : {
+            title       : {text: '<b>Over-8</b>', font: {family: 'Segoe UI', size: 25, color: textColor, weight: 'bold'}, side: 'right'},
             thickness   : 25,
             len         : 1.0,
             y           : 0.5,
@@ -181,16 +187,19 @@ function renderSongHeatmap() {
             tickmode    : 'array',
             tickvals    : [0, 3, 5, 8],
             ticktext    : ['0', '3', '5', '8'],
-            tickfont    : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'}
+            tickfont    : {family: 'Segoe UI', size: 20, color: textColor, weight: 'bold'}
         }
     }], {
-        font        : {family: 'Segoe UI', size: 50},
-        xaxis       : {
-            title           : {text: '<b>Difficulty</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
+        font            : {family: 'Segoe UI', size: 50, color: textColor},
+        paper_bgcolor   : paperBg,
+        plot_bgcolor    : plotBg,
+        xaxis           : {
+            title           : {text: '<b>Difficulty</b>', font: {family: 'Segoe UI', size: 25, color: textColor, weight: 'bold'}, pad: 5},
             tickmode        : 'array',
             tickvals        : Array.from({length: numX - 1}, (_, i) => i + 0.5),
             ticktext        : xLabels,
-            tickfont        : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'},
+            tickfont        : {family: 'Segoe UI', size: 20, color: textColor, weight: 'bold'},
+            gridcolor       : gridColor,
             showgrid        : true,
             zeroline        : false,
             showticklabels  : true,
@@ -200,12 +209,13 @@ function renderSongHeatmap() {
             fixedrange      : true
         },
         yaxis: {
-            title           : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: 'black', weight: 'bold'}, pad: 5},
+            title           : {text: '<b>Vintage</b>', font: {family: 'Segoe UI', size: 25, color: textColor, weight: 'bold'}, pad: 5},
             tickmode        : 'array',
             tickvals        : Array.from({length: numY - 1}, (_, i) => i + 0.5),
             ticktext        : yLabels,
-            tickfont        : {family: 'Segoe UI', size: 20, color: 'black', weight: 'bold'},
+            tickfont        : {family: 'Segoe UI', size: 20, color: textColor, weight: 'bold'},
             tickangle       : -90,
+            gridcolor       : gridColor,
             showgrid        : true,
             zeroline        : false,
             showticklabels  : true,
@@ -215,7 +225,7 @@ function renderSongHeatmap() {
             fixedrange      : true
         },
         annotations : annotations,
-        margin      : {l: 75, r: 0, t: 0, b: 75}
+        margin      : {l: 75, r: 0, t: 25, b: 75}
     }, {responsive: true, displayModeBar: false});
 
     const songChartDiv = document.getElementById('plotlySongChart');

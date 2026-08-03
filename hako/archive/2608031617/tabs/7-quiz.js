@@ -354,17 +354,7 @@ function updateQuizTimerUI(secondsVal) {
     if (!displayNode) return;
 
     displayNode.innerText   = Math.ceil(secondsVal);
-    const totalDuration     = quizSoundLimit + quizNoSoundLimit;
-    const ratio             = totalDuration > 0 ? Math.max(0, Math.min(1, secondsVal / totalDuration)) : 0;
-
-    const rgbStart  = parseColorToRGB(c2);
-    const rgbEnd    = parseColorToRGB(c0);
-
-    const r = Math.round(rgbEnd[0] + ratio * (rgbStart[0] - rgbEnd[0]));
-    const g = Math.round(rgbEnd[1] + ratio * (rgbStart[1] - rgbEnd[1]));
-    const b = Math.round(rgbEnd[2] + ratio * (rgbStart[2] - rgbEnd[2]));
-
-    displayNode.style.color = `rgb(${r}, ${g}, ${b})`;
+    displayNode.style.color = ""; 
 }
 
 function normalizeQuizString(str) {
@@ -791,10 +781,7 @@ function resolveQuizItem(isCorrect) {
     const displayIndex  = Math.min(quizIndex + 1, quizActivePool.length);
     const scoreNode     = document.getElementById("quizScoreValue");
 
-    if (scoreNode) {
-        scoreNode.innerText     = `${displayIndex}/${quizActivePool.length}: ${quizScore}`;
-        scoreNode.style.color   = isCorrect ? c2 : c0;
-    }
+    if (scoreNode) scoreNode.innerText = `${displayIndex}/${quizActivePool.length}: ${quizScore}`
 
     const inputEl = document.getElementById("quizAnimeInput");
     if (inputEl) inputEl.disabled = true;

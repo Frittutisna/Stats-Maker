@@ -1,3 +1,37 @@
+window.isDarkMode = false;
+
+window.toggleDarkMode = function() {
+    window.isDarkMode   = !window.isDarkMode;
+    const darkBtn       = document.getElementById('darkModeToggleBtn');
+    
+    if (window.isDarkMode) {
+        document.body.classList.add('dark-mode');
+
+        if (darkBtn) {
+            darkBtn.innerText               = '⏾';
+            darkBtn.style.backgroundColor   = 'white';
+            darkBtn.style.color             = '#323232';
+        }
+    }
+
+    else {
+        document.body.classList.remove('dark-mode');
+
+        if (darkBtn) {
+            darkBtn.innerText               = '⦿';
+            darkBtn.style.backgroundColor   = 'black';
+            darkBtn.style.color             = 'white';
+        }
+    }
+
+    if (typeof renderTierCharts         === 'function') renderTierCharts        ();
+    if (typeof renderSongHeatmap        === 'function') renderSongHeatmap       ();
+    if (typeof renderGuessScatterChart  === 'function') renderGuessScatterChart ();
+    if (typeof renderListChart          === 'function') renderListChart         ();
+
+    window.dispatchEvent(new Event('resize'));
+};
+
 const tabContainer  = document.getElementById('tabContainer');
 const tourTabBtn    = document.getElementById('tourTabBtn');
 const helpAnchor    = document.getElementById('globalHelpWrapper');

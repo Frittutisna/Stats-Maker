@@ -225,7 +225,7 @@ function initPlayerColumnSettings() {
             explanationIndicator.className  = "-ml-1.5 text-black cursor-help select-none font-normal text-base text-bold has-explanation";
 
             explanationIndicator.setAttribute("data-metric", col.name);
-            explanationIndicator.innerHTML = "⦾";
+            explanationIndicator.innerHTML = "⦿";
             label.appendChild(explanationIndicator);
         }
 
