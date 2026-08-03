@@ -723,7 +723,19 @@ class TourAnalyzer:
                 except Exception as e   : print(f"Task {task_name} failed: {e}")
 
         fuse_images(png_path)
-        allowed_files = {"Player.png", "Extra.png"}
+
+        workspace_root  = self.script_dir.parent
+        allowed_files   = {"Player.png", "Extra.png"}
+        player_file     = png_path / "Player.png"
+        extra_file      = png_path / "Extra.png"
+
+        if player_file.exists():
+            shutil.copy(player_file, workspace_root / f"hako_{self.tour_id}_player.png")
+            print(f"[✓] Copied Player.png to root as hako_{self.tour_id}_player.png")
+
+        if extra_file.exists():
+            shutil.copy(extra_file, workspace_root / f"hako_{self.tour_id}_extra.png")
+            print(f"[✓] Copied Extra.png to root as hako_{self.tour_id}_extra.png")
 
         for file_path in png_path.glob("*.png"):
             if file_path.name not in allowed_files:
@@ -789,18 +801,10 @@ class TourAnalyzer:
         except subprocess.CalledProcessError as e: print(f"[X] Failed to run Dry's script: {e}")
 
     def _handle_netlify_deploy(self, web_path: Path):
-        workspace_root  = self.script_dir.parent
-        png_src         = self.tour_dir / "png"
-        player_file     = png_src       / "Player.png"
-        extra_file      = png_src       / "Extra.png"
-
-        if player_file  .exists(): shutil.copy(player_file, workspace_root / f"hako_{self.tour_id}_player.png")
-        if extra_file   .exists(): shutil.copy(extra_file,  workspace_root / f"hako_{self.tour_id}_extra.png")
-
         print("[?] Pushing to Netlify")
 
         try:
-            zip_path = workspace_root / f"hako-{self.tour_id}-upload.zip"
+            zip_path = self.script_dir.parent / f"hako-{self.tour_id}-upload.zip"
 
             with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
                 if web_path.exists():
