@@ -242,7 +242,7 @@ def create_scatter_png(analyzer, path: Path, list_mode: bool = False, elo_map: d
                     "x_vals"            : x_vals_g,
                     "y_vals"            : y_vals_g,
                     "sizes"             : sizes_g,
-                    "colors"            : norm_perf,
+                    "colors"            : [s / 100.0 for s in norm_perf],
                     "cmap"              : cmap_g,
                     "vmin"              : 0.0,
                     "vmax"              : 1.0,
