@@ -340,7 +340,8 @@ class TourMetadataDialog(UnifiedDialog):
                                 players_with_delta.add(parts[0].lower())
                                 players_with_delta.add(parts[1].lower())
 
-                all_needed_players = set(p.lower() for p in active_players)
+                existing_players    = [p for p in active_players if p.lower() not in round_elo_players]
+                all_needed_players  = set(p.lower() for p in existing_players)
 
                 if sub_candidates                                                           : all_needed_players.update(p.lower() for p in sub_candidates)
                 if all_needed_players and all_needed_players.issubset(players_with_delta)   : has_extended_delta_data = True
