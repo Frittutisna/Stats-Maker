@@ -859,6 +859,20 @@ class TourAnalyzer:
             iso_timestamp   = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
             valid_elos      = [float(v) for v in self.elo_map.values() if str(v).replace(".", "", 1).isdigit() or (str(v).startswith("-") and str(v)[1:].replace(".", "", 1).isdigit())]
             avg_rank        = np.mean(valid_elos) if valid_elos else 1.0
+            df_teams        = compute_team_rows(self, self.assignments, self.t1_lookup)
+            team_wlt_map    = {}
+
+            if not df_teams.empty:
+                for _, t_row in df_teams.iterrows():
+                    tid       = t_row["_tid"]
+                    h_payload = t_row["_history"]
+
+                    if h_payload["total_matches"] > 0:
+                        w_cnt = sum(len(v) for v in h_payload["wins"]   .values())
+                        l_cnt = sum(len(v) for v in h_payload["losses"] .values())
+                        t_cnt = sum(len(v) for v in h_payload["ties"]   .values())
+
+                        team_wlt_map[tid] = (w_cnt, l_cnt, t_cnt)
 
             def player_sort_key(x):
                 gr = (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0.0
@@ -904,39 +918,50 @@ class TourAnalyzer:
                 zero_x_rigs     = self.p_zero_x_rigs    [name]          if self.use_teams       else ""
                 offlist_erigs   = self.p_offlist_erigs  [name]
 
+                win_val, lose_val, tie_val = "", "", ""
+
+                if self.use_teams and name.lower() in self.assignments:
+                    tid = self.assignments[name.lower()][0]
+
+                    if tid in team_wlt_map:
+                        w_c, l_c, t_c = team_wlt_map[tid]
+
+                        win_val  = w_c
+                        lose_val = l_c
+                        tie_val  = t_c
+
                 row = [
-                    iso_timestamp           if i            == 0    else "",    # timestamp (ISO format, UTC)
-                    name,                                                       # Player name
-                    round(gr,       2)      if tot                  else "",    # Guess rate
-                    round(uf_val,   2)      if uf_val               else "",    # Usefulness
-                    erigs,                                                      # erigs (solos)
-                    zero_e,                                                     # 0/8s
-                    got_78,                                                     # got 7/8'd
-                    round(avg_8,        2)  if avg_8        != ""   else "",    # avg/8
-                    three_below,                                                # # 3/8s or below
-                    round(op_gr,        2)  if op_gr        != ""   else "",    # OP guess rate
-                    round(ed_gr,        2)  if ed_gr        != ""   else "",    # ED guess rate
-                    round(in_gr,        2)  if in_gr        != ""   else "",    # IN guess rate
-                    lives_taken,                                                # Total X-0's
-                    lives_saved,                                                # Total 1-X's
-                    cor,                                                        # Total hit
-                    tot,                                                        # Total songs
-                    round(avg_diff,     2)  if avg_diff     != ""   else "",    # avg correct diff
-                    round(med_time,     2)  if med_time     != ""   else "",    # median lock time
-                    "",                                                         # WIN (Unused for now)
-                    "",                                                         # LOSE (Unused for now)
-                    "",                                                         # TIE (Unused for now)
-                    round(onlist,       2)  if onlist       != ""   else "",    # Onlist (Rig GR)
-                    round(offlist,      2)  if offlist      != ""   else "",    # Offlist (Off GR)
-                    round(rig_pct,      2)  if rig_pct      != ""   else "",    # Rig % (Rig Rate)
+                    iso_timestamp           if i            == 0    else "",    # Timestamp
+                    round(gr,       2)      if tot                  else "",    # GR
+                    round(uf_val,   2)      if uf_val               else "",    # UF
+                    erigs,                                                      # 1/8
+                    zero_e,                                                     # 0/8
+                    got_78,                                                     # 7/8
+                    round(avg_8,        2)  if avg_8        != ""   else "",    # Mean Over-8
+                    three_below,                                                # <=3/8
+                    round(op_gr,        2)  if op_gr        != ""   else "",    # OPGR
+                    round(ed_gr,        2)  if ed_gr        != ""   else "",    # EDGR
+                    round(in_gr,        2)  if in_gr        != ""   else "",    # INGR
+                    lives_taken,                                                # Lives Taken
+                    lives_saved,                                                # Lives Saved
+                    cor,                                                        # Corrects
+                    tot,                                                        # Total
+                    round(avg_diff,     2)  if avg_diff     != ""   else "",    # Mean Difficulty Hit
+                    round(med_time,     2)  if med_time     != ""   else "",    # Median Time
+                    win_val,                                                    # Wins
+                    lose_val,                                                   # Losses
+                    tie_val,                                                    # Ties
+                    round(onlist,       2)  if onlist       != ""   else "",    # Rig GR
+                    round(offlist,      2)  if offlist      != ""   else "",    # Off GR
+                    round(rig_pct,      2)  if rig_pct      != ""   else "",    # Rig Rate
                     rigs,                                                       # Rigs
-                    solo_rigs,                                                  # Solo rigs
-                    missed_solos,                                               # Missed solos
-                    rigs_h                  if rigs                 else "",    # Rigs hit
-                    rigs_missed             if rigs                 else "",    # Rigs missed
-                    zero_x_rigs,                                                # 0-X on rigs
-                    offlist_erigs,                                              # Offlist erigs
-                    round(avg_8_rigs,   2)  if avg_8_rigs   != ""   else ""     # avg/8 of your rigs (Rig Over-8)
+                    solo_rigs,                                                  # Solo Rigs
+                    missed_solos,                                               # Missed Solos
+                    rigs_h                  if rigs                 else "",    # Rigs Hit
+                    rigs_missed             if rigs                 else "",    # Rigs Missed
+                    zero_x_rigs,                                                # Lives Lost on Rigs
+                    offlist_erigs,                                              # Off 1/8
+                    round(avg_8_rigs,   2)  if avg_8_rigs   != ""   else ""     # Rig Over-8
                 ]
 
                 rows_to_push.append(row)
@@ -948,9 +973,7 @@ class TourAnalyzer:
             insert_start_row = last_data_row + 1
             wks.insert_rows(rows_to_push, row = insert_start_row, value_input_option = "USER_ENTERED")
             print("[✓] Successfully pushed Ant stats to Google Spreadsheet!")
-        except Exception as e:
-            import traceback
-            print(f"[X] Failed to push Ant stats to Google Spreadsheet:\n{traceback.format_exc()}")
+        except Exception as e: print(f"[X] Failed to push Ant stats to Google Spreadsheet: {e}")
 
     def _handle_netlify_deploy(self, web_path: Path):
         print("[?] Pushing to Netlify")
