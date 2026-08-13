@@ -932,6 +932,7 @@ class TourAnalyzer:
 
                 row = [
                     iso_timestamp           if i            == 0    else "",    # Timestamp
+                    name,                                                       # Name
                     round(gr,       2)      if tot                  else "",    # GR
                     round(uf_val,   2)      if uf_val               else "",    # UF
                     erigs,                                                      # 1/8
