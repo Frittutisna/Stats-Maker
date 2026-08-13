@@ -191,6 +191,35 @@ class TourMetadataDialog(UnifiedDialog):
         left_frame  .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
         right_frame .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
 
+        script_dir      = Path(__file__).parent.parent.absolute()
+        ant_cred_path   = script_dir / DIR_CREDS / "ant_credentials.json"
+
+        self.has_ant_creds  = ant_cred_path.exists()
+        self.mode_var       = tk.StringVar(value = "Tour")
+
+        if self.has_ant_creds:
+            f_mode_container = ttk.Frame(left_frame)
+            f_mode_container.pack(anchor = "w", pady = (0, 8))
+
+            lbl_tour = ttk.Label(f_mode_container, text = "Tour", font = ("Segoe UI", 10, "bold"))
+            lbl_tour.pack(side = tk.LEFT, padx = (0, 5))
+
+            self.toggle_canvas = tk.Canvas(f_mode_container, width = 40, height = 20, highlightthickness = 0)
+            self.toggle_canvas.pack(side = tk.LEFT)
+
+            lbl_ant = ttk.Label(f_mode_container, text = "Ant", font = ("Segoe UI", 10, "bold"))
+            lbl_ant.pack(side = tk.LEFT, padx = (5, 0))
+
+            def toggle_mode(_ = None):
+                self.mode_var.set("Ant" if self.mode_var.get() == "Tour" else "Tour")
+                self._draw_toggle()
+
+            self.toggle_canvas  .bind("<Button-1>", toggle_mode)
+            lbl_tour            .bind("<Button-1>", lambda _: [self.mode_var.set("Tour"), self._draw_toggle()])
+            lbl_ant             .bind("<Button-1>", lambda _: [self.mode_var.set("Ant"),  self._draw_toggle()])
+
+            self._draw_toggle()
+
         ttk.Label(left_frame, text = "What tour is this?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         if      "Watched"   in init_label   : starting_lbl = init_label
@@ -542,6 +571,20 @@ class TourMetadataDialog(UnifiedDialog):
         self.grab_set       ()
         self.wait_window    ()
 
+    def _draw_toggle(self):
+        if not hasattr(self, 'toggle_canvas'): return
+        self.toggle_canvas.delete("all")
+
+        is_ant      = (self.mode_var.get() == "Ant")
+        track_color = self.fill_color if is_ant else "gray60"
+
+        self.toggle_canvas.create_oval      (2,     2, 18, 18, fill = track_color, outline = track_color)
+        self.toggle_canvas.create_oval      (22,    2, 38, 18, fill = track_color, outline = track_color)
+        self.toggle_canvas.create_rectangle (10,    2, 30, 18, fill = track_color, outline = track_color)
+
+        if is_ant   : self.toggle_canvas.create_oval(22,    2, 38, 18, fill = "white", outline = "black")
+        else        : self.toggle_canvas.create_oval(2,     2, 18, 18, fill = "white", outline = "black")
+
     def _select_lbl_opt(self, opt):
         self.lbl_var.set(opt)
         for k, box in self.lbl_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
@@ -628,6 +671,7 @@ class TourMetadataDialog(UnifiedDialog):
         dry_choice      = self.dry_var      .get()
         delta_choice    = self.delta_var    .get()
         self.result     = {
+            "mode_choice"       : self.mode_var.get() if self.has_ant_creds else "Tour",
             "tour_label"        : tour_label, 
             "th_str"            : th_str, 
             "base_exp"          : base_exp, 

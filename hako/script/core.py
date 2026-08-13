@@ -201,6 +201,7 @@ class TourAnalyzer:
         if meta_dialog.result is None: sys.exit(0)
 
         meta_res                = meta_dialog.result
+        self.mode_choice        = meta_res.get("mode_choice",       "Tour")
         self.tour_label         = meta_res["tour_label"]
         self.delta_choice       = meta_res.get("delta_choice",      "No")
         self.challonge_choice   = meta_res.get("challonge_choice",  "No")
@@ -208,8 +209,9 @@ class TourAnalyzer:
         if self.delta_choice == "Yes" and self.tour_label in TOUR_MODE_SHEET_MAP:
             print("[?] Fetching historic baselines")
 
-            cred_file = self.script_dir / DIR_CREDS / "credentials.json"
-            auth_file = self.script_dir / DIR_CREDS / "authorized_user.json"
+            cred_file_name  = "ant_credentials.json" if self.mode_choice == "Ant" else "credentials.json"
+            cred_file       = self.script_dir / DIR_CREDS / cred_file_name
+            auth_file       = self.script_dir / DIR_CREDS / "authorized_user.json"
 
             try:
                 gc                  = gspread.oauth(credentials_filename = str(cred_file), authorized_user_filename = str(auth_file))
