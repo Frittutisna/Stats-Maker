@@ -51,6 +51,10 @@ class TourAnalyzer:
         self.p_usefulness_sum   = defaultdict(float)
         self.p_overs_sum        = defaultdict(int)
         self.p_answer_times     = defaultdict(list)
+        self.p_zero_e           = defaultdict(int)
+        self.p_m_solos          = defaultdict(int)
+        self.p_zero_x_rigs      = defaultdict(int)
+        self.p_offlist_erigs    = defaultdict(int)
 
         self.t_vint     = defaultdict(list)
         self.t_c_ps     = defaultdict(list)
@@ -450,6 +454,33 @@ class TourAnalyzer:
                     self.tour_song_details["Total 7/8s"].append(f"{song_line} ({missing_player_v})")
 
                 elif len(final_members - correct) == 0: self.tour_song_details["Total 8/8s"].append(song_line)
+
+                if amt_correct == 0:
+                    for name in final_members: self.p_zero_e[name] += 1
+
+                if amt_correct == 1:
+                    solo_winner = list(active_correct)[0]
+                    if solo_winner not in s_riggers: self.p_offlist_erigs[solo_winner] += 1
+
+                if self.use_teams and ls:
+                    t_list = list({self.assignments[p.lower()][0] for p in raw_f_players if p.lower() in self.assignments})
+
+                    if len(t_list) == 2:
+                        tA, tB = t_list[0], t_list[1]
+
+                        cA = correct & self.rosters[tA]
+                        cB = correct & self.rosters[tB]
+
+                        for r_item in ls:
+                            r_name = r_item["name"]
+
+                            if r_name.lower() in self.assignments:
+                                r_team = self.assignments[r_name.lower()][0]
+
+                                c_my_team   = cA if r_team == tA else cB
+                                c_opp_team  = cB if r_team == tA else cA
+
+                                if len(c_my_team) == 0 and len(c_opp_team) > 0: self.p_zero_x_rigs[r_name] += 1
 
                 for sw_v in active_correct:
                     if amt_correct == 1: self.player_song_details[sw_v]["1/8s"].append(song_line)
@@ -858,14 +889,20 @@ class TourAnalyzer:
                 avg_diff = np.mean      (self.p_hit_diff        [name]) if self.p_hit_diff      [name] else ""
                 med_time = np.median    (self.p_answer_times    [name]) if self.p_answer_times  [name] else ""
 
-                rigs        = self.p_rigs[name]
-                rigs_h      = self.p_rigs_h[name]
-                onlist      = (rigs_h / rigs * 100)                 if rigs                 else ""
-                offlist     = ((cor - rigs_h) / (tot - rigs) * 100) if (tot - rigs)         else ""
-                rig_pct     = (rigs / tot * 100)                    if tot                  else ""
-                solo_rigs   = self.p_l_solos[name]
-                rigs_missed = rigs - rigs_h                         if rigs                 else ""
-                avg_8_rigs  = np.mean(self.p_l_corr[name])          if self.p_l_corr[name]  else ""
+                rigs            = self.p_rigs           [name]
+                rigs_h          = self.p_rigs_h         [name]
+                onlist          = (rigs_h / rigs * 100)                 if rigs                 else ""
+                offlist         = ((cor - rigs_h) / (tot - rigs) * 100) if (tot - rigs)         else ""
+                rig_pct         = (rigs / tot * 100)                    if tot                  else ""
+                solo_rigs       = self.p_l_solos        [name]
+                rigs_missed     = rigs - rigs_h                         if rigs                 else ""
+                avg_8_rigs      = np.mean(self.p_l_corr [name])         if self.p_l_corr[name]  else ""
+                zero_e          = self.p_zero_e         [name]
+                lives_taken     = self.p_pts            [name]          if self.use_teams       else ""
+                lives_saved     = self.p_blks           [name]          if self.use_teams       else ""
+                missed_solos    = self.p_m_erigs        [name]          
+                zero_x_rigs     = self.p_zero_x_rigs    [name]          if self.use_teams       else ""
+                offlist_erigs   = self.p_offlist_erigs  [name]
 
                 row = [
                     iso_timestamp           if i            == 0    else "",    # timestamp (ISO format, UTC)
@@ -873,32 +910,32 @@ class TourAnalyzer:
                     round(gr,       2)      if tot                  else "",    # Guess rate
                     round(uf_val,   2)      if uf_val               else "",    # Usefulness
                     erigs,                                                      # erigs (solos)
-                    "",                                                         # 0/8s (Unused)
+                    zero_e,                                                     # 0/8s
                     got_78,                                                     # got 7/8'd
                     round(avg_8,        2)  if avg_8        != ""   else "",    # avg/8
                     three_below,                                                # # 3/8s or below
                     round(op_gr,        2)  if op_gr        != ""   else "",    # OP guess rate
                     round(ed_gr,        2)  if ed_gr        != ""   else "",    # ED guess rate
                     round(in_gr,        2)  if in_gr        != ""   else "",    # IN guess rate
-                    "",                                                         # Total X-0's (Unused)
-                    "",                                                         # Total 1-X's (Unused)
+                    lives_taken,                                                # Total X-0's
+                    lives_saved,                                                # Total 1-X's
                     cor,                                                        # Total hit
                     tot,                                                        # Total songs
                     round(avg_diff,     2)  if avg_diff     != ""   else "",    # avg correct diff
                     round(med_time,     2)  if med_time     != ""   else "",    # median lock time
-                    "",                                                         # WIN (Unused)
-                    "",                                                         # LOSE (Unused)
-                    "",                                                         # TIE (Unused)
+                    "",                                                         # WIN (Unused for now)
+                    "",                                                         # LOSE (Unused for now)
+                    "",                                                         # TIE (Unused for now)
                     round(onlist,       2)  if onlist       != ""   else "",    # Onlist (Rig GR)
                     round(offlist,      2)  if offlist      != ""   else "",    # Offlist (Off GR)
                     round(rig_pct,      2)  if rig_pct      != ""   else "",    # Rig % (Rig Rate)
                     rigs,                                                       # Rigs
                     solo_rigs,                                                  # Solo rigs
-                    "",                                                         # Missed solos (Unused)
+                    missed_solos,                                               # Missed solos
                     rigs_h                  if rigs                 else "",    # Rigs hit
                     rigs_missed             if rigs                 else "",    # Rigs missed
-                    "",                                                         # 0-X on rigs (Unused)
-                    "",                                                         # Offlist erigs (Unused)
+                    zero_x_rigs,                                                # 0-X on rigs
+                    offlist_erigs,                                              # Offlist erigs
                     round(avg_8_rigs,   2)  if avg_8_rigs   != ""   else ""     # avg/8 of your rigs (Rig Over-8)
                 ]
 
