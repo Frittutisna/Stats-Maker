@@ -30,6 +30,7 @@ class TourAnalyzer:
         self.e_counts           = defaultdict(int)
         self.p_rev_e            = defaultdict(int)
         self.p_two_e            = defaultdict(int)
+        self.p_three_or_below   = defaultdict(int)
         self.p_pts              = defaultdict(int)
         self.p_blks             = defaultdict(int)
         self.p_type_c           = defaultdict(_nested_int_defaultdict)
@@ -209,9 +210,11 @@ class TourAnalyzer:
         if self.delta_choice == "Yes" and self.tour_label in TOUR_MODE_SHEET_MAP:
             print("[?] Fetching historic baselines")
 
-            cred_file_name  = "ant_credentials.json" if self.mode_choice == "Ant" else "credentials.json"
+            cred_file_name  = "ant_credentials.json"        if self.mode_choice == "Ant" else "credentials.json"
+            auth_file_name  = "ant_authorized_user.json"    if self.mode_choice == "Ant" else "authorized_user.json"
+
             cred_file       = self.script_dir / DIR_CREDS / cred_file_name
-            auth_file       = self.script_dir / DIR_CREDS / "authorized_user.json"
+            auth_file       = self.script_dir / DIR_CREDS / auth_file_name
 
             try:
                 gc                  = gspread.oauth(credentials_filename = str(cred_file), authorized_user_filename = str(auth_file))
@@ -461,6 +464,9 @@ class TourAnalyzer:
 
                     if safe_diff > 0    : self.p_hit_diff[sw_v].append(safe_diff)
                     if yr is not None   : self.p_hit_vint[sw_v].append(extract_year(si.get("vintage")))
+
+                if amt_correct <= 3:
+                    for sw_v in active_correct: self.p_three_or_below[sw_v] += 1
 
                 if apply_rev and len(final_members - correct) == 1:
                     missing_player_v = list(final_members - correct)[0]
@@ -744,7 +750,9 @@ class TourAnalyzer:
                 try                 : file_path.unlink()
                 except Exception    : pass
 
-        if      self.dry_choice     != "No"                                                 : self._handle_dry_script_execution ()
+        if      self.dry_choice == "Yes" and getattr(self, "mode_choice", "Tour") == "Ant"  : self._handle_ant_spreadsheet_push()
+        elif    self.dry_choice != "No"                                                     : self._handle_dry_script_execution()
+
         if      self.share_choice   == "Yes, push this to Netlify (Post-tour, non-Hako)"    : self._handle_netlify_deploy       (web_path)
         elif    self.share_choice   == "Yes, push this to GitHub (Post-tour, Hako-only)"    : self._handle_github_deploy        (web_path)
 
@@ -801,6 +809,111 @@ class TourAnalyzer:
                 else: print(f"[X] {src_name} not found in Dry's workspace")
 
         except subprocess.CalledProcessError as e: print(f"[X] Failed to run Dry's script: {e}")
+
+    def _handle_ant_spreadsheet_push(self):
+        print("[?] Pushing Ant stats to Google Spreadsheet")
+        ANT_SHEET_ID = "1R1Th9ngAr5RwQxX5KforK8xDzplRXGbcF1axCE8liF4"
+
+        if      self.tour_label == "Usual"      : gid = 0
+        elif    self.tour_label == "Watched"    : gid = 220235184
+        else                                    : gid = 1085890115
+
+        cred_file = self.script_dir / DIR_CREDS / "ant_credentials.json"
+        auth_file = self.script_dir / DIR_CREDS / "ant_authorized_user.json"
+
+        try:
+            gc              = gspread.oauth(credentials_filename = str(cred_file), authorized_user_filename = str(auth_file))
+            sheet           = gc.open_by_key(ANT_SHEET_ID)
+            wks             = sheet.get_worksheet_by_id(gid)
+            iso_timestamp   = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            valid_elos      = [float(v) for v in self.elo_map.values() if str(v).replace(".", "", 1).isdigit() or (str(v).startswith("-") and str(v)[1:].replace(".", "", 1).isdigit())]
+            avg_rank        = np.mean(valid_elos) if valid_elos else 1.0
+
+            def player_sort_key(x):
+                gr = (self.c_counts[x] / self.s_part[x]) if self.s_part[x] else 0.0
+
+                try                 : elo = float(self.elo_map.get(x.lower(), float("inf")))
+                except Exception    : elo = float("inf")
+
+                return (gr, -elo)
+
+            sorted_players  = sorted(self.s_part.keys(), key = player_sort_key, reverse = True)
+            rows_to_push    = [[""] * 32]
+
+            for i, name in enumerate(sorted_players):
+                tot = self.s_part[name]
+                cor = self.c_counts[name]
+                gr  = (cor / tot * 100) if tot else 0.0
+
+                uf_val      = (self.p_usefulness_sum    [name] * avg_rank * 8) / tot    if tot else 0.0
+                erigs       = self.e_counts             [name]
+                got_78      = self.p_rev_e              [name]
+                avg_8       = (self.p_overs_sum         [name] / cor)                   if cor else ""
+                three_below = self.p_three_or_below     [name]
+
+                op_gr   = (self.p_type_c[name][1] / self.p_type_s[name][1] * 100) if self.p_type_s[name][1] else ""
+                ed_gr   = (self.p_type_c[name][2] / self.p_type_s[name][2] * 100) if self.p_type_s[name][2] else ""
+                in_gr   = (self.p_type_c[name][3] / self.p_type_s[name][3] * 100) if self.p_type_s[name][3] else ""
+
+                avg_diff = np.mean      (self.p_hit_diff        [name]) if self.p_hit_diff      [name] else ""
+                med_time = np.median    (self.p_answer_times    [name]) if self.p_answer_times  [name] else ""
+
+                rigs        = self.p_rigs[name]
+                rigs_h      = self.p_rigs_h[name]
+                onlist      = (rigs_h / rigs * 100)                 if rigs                 else ""
+                offlist     = ((cor - rigs_h) / (tot - rigs) * 100) if (tot - rigs)         else ""
+                rig_pct     = (rigs / tot * 100)                    if tot                  else ""
+                solo_rigs   = self.p_l_solos[name]
+                rigs_missed = rigs - rigs_h                         if rigs                 else ""
+                avg_8_rigs  = np.mean(self.p_l_corr[name])          if self.p_l_corr[name]  else ""
+
+                row = [
+                    iso_timestamp           if i            == 0    else "",    # timestamp (ISO format, UTC)
+                    name,                                                       # Player name
+                    round(gr,       2)      if tot                  else "",    # Guess rate
+                    round(uf_val,   2)      if uf_val               else "",    # Usefulness
+                    erigs,                                                      # erigs (solos)
+                    "",                                                         # 0/8s (Unused)
+                    got_78,                                                     # got 7/8'd
+                    round(avg_8,        2)  if avg_8        != ""   else "",    # avg/8
+                    three_below,                                                # # 3/8s or below
+                    round(op_gr,        2)  if op_gr        != ""   else "",    # OP guess rate
+                    round(ed_gr,        2)  if ed_gr        != ""   else "",    # ED guess rate
+                    round(in_gr,        2)  if in_gr        != ""   else "",    # IN guess rate
+                    "",                                                         # Total X-0's (Unused)
+                    "",                                                         # Total 1-X's (Unused)
+                    cor,                                                        # Total hit
+                    tot,                                                        # Total songs
+                    round(avg_diff,     2)  if avg_diff     != ""   else "",    # avg correct diff
+                    round(med_time,     2)  if med_time     != ""   else "",    # median lock time
+                    "",                                                         # WIN (Unused)
+                    "",                                                         # LOSE (Unused)
+                    "",                                                         # TIE (Unused)
+                    round(onlist,       2)  if onlist       != ""   else "",    # Onlist (Rig GR)
+                    round(offlist,      2)  if offlist      != ""   else "",    # Offlist (Off GR)
+                    round(rig_pct,      2)  if rig_pct      != ""   else "",    # Rig % (Rig Rate)
+                    rigs,                                                       # Rigs
+                    solo_rigs,                                                  # Solo rigs
+                    "",                                                         # Missed solos (Unused)
+                    rigs_h                  if rigs                 else "",    # Rigs hit
+                    rigs_missed             if rigs                 else "",    # Rigs missed
+                    "",                                                         # 0-X on rigs (Unused)
+                    "",                                                         # Offlist erigs (Unused)
+                    round(avg_8_rigs,   2)  if avg_8_rigs   != ""   else ""     # avg/8 of your rigs (Rig Over-8)
+                ]
+
+                rows_to_push.append(row)
+
+            existing_values = wks.get_all_values()
+            last_data_row   = len(existing_values)
+
+            while last_data_row > 0 and not any(existing_values[last_data_row - 1]): last_data_row -= 1
+            insert_start_row = last_data_row + 1
+            wks.insert_rows(rows_to_push, row = insert_start_row, value_input_option = "USER_ENTERED")
+            print("[✓] Successfully pushed Ant stats to Google Spreadsheet!")
+        except Exception as e:
+            import traceback
+            print(f"[X] Failed to push Ant stats to Google Spreadsheet:\n{traceback.format_exc()}")
 
     def _handle_netlify_deploy(self, web_path: Path):
         print("[?] Pushing to Netlify")

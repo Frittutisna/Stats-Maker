@@ -90,7 +90,7 @@ def extract_unique_names(template_dir):
             flat_list = sorted(list(unique_names))
             with open(name_file_path, "w", encoding = "utf-8") as out_f: json.dump(flat_list, out_f, ensure_ascii = False, indent = 4)
             print(f"[✓] Success! Extracted {len(flat_list)} unique names to: {name_file_path}")
-            
+ 
         except Exception as e: print(f"[X] Failed to extract unique names: {e}")
 
 if __name__ == "__main__":
@@ -135,10 +135,10 @@ if __name__ == "__main__":
     extract_unique_names(template_path)
 
     if not chant_txt_file.exists() or os.path.getsize(chant_txt_file) == 0: sync_chanting(tour_folder_path)
-    
+
     if selected_tours:
         analyzer_pool = []
-        
+
         for tour_id in selected_tours:
             analyzer = TourAnalyzer(tour_id)
             is_valid = analyzer.prepare_configuration()
@@ -149,5 +149,5 @@ if __name__ == "__main__":
                 print(f"Tour {tour_id} failed configuration checks, halting pipeline execution")
                 root.destroy()
                 sys.exit(1)
-                
+
         for analyzer in analyzer_pool: analyzer.process_and_generate()

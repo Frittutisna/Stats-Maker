@@ -218,8 +218,6 @@ class TourMetadataDialog(UnifiedDialog):
             lbl_tour            .bind("<Button-1>", lambda _: [self.mode_var.set("Tour"), self._draw_toggle()])
             lbl_ant             .bind("<Button-1>", lambda _: [self.mode_var.set("Ant"),  self._draw_toggle()])
 
-            self._draw_toggle()
-
         ttk.Label(left_frame, text = "What tour is this?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         if      "Watched"   in init_label   : starting_lbl = init_label
@@ -423,27 +421,14 @@ class TourMetadataDialog(UnifiedDialog):
 
             for w in (box, lbl): w.bind("<Button-1>", lambda _, o=opt: self._select_challonge_opt(o))
 
-        ttk.Label(right_frame, text = "Do you want to use Dry's script as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+        self.dry_label_widget = ttk.Label(right_frame, text = "", font = ("Segoe UI", 10, "bold"))
+        self.dry_label_widget.pack(anchor = "w", pady = (5, 0))
+
+        self.dry_options_container = ttk.Frame(right_frame)
+        self.dry_options_container.pack(anchor = "w")
 
         self.dry_var    = tk.StringVar(value = "No")
         self.dry_boxes  = {}
-        dry_options     = ["No", "Yes, run ngm_local.py", "Yes, run ngm_stats.py"]
-
-        for opt in dry_options:
-            f_dry = ttk.Frame(right_frame)
-            f_dry.pack(anchor = "w", pady = 1)
-
-            is_sel      = (self.dry_var.get() == opt)
-            bg_color    = self.fill_color if is_sel else "white"
-
-            box = tk.Canvas(f_dry, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
-            box.pack(side = tk.LEFT, padx = (0, 4))
-            self.dry_boxes[opt] = box
-
-            lbl = ttk.Label(f_dry, text = opt, font = ("Segoe UI", 10))
-            lbl.pack(side = tk.LEFT)
-            
-            for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_dry_opt(o))
 
         ttk.Label(right_frame, text = "Would you like to share the Stats site?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
 
@@ -563,6 +548,9 @@ class TourMetadataDialog(UnifiedDialog):
                 arrow_btn   .bind("<Button-1>", show_menu_func)
                 entry       .bind("<Button-1>", show_menu_func)
 
+        if self.has_ant_creds   : self._draw_toggle                 ()
+        else                    : self._update_dry_or_push_section  ()
+
         def on_close_cancel():
             self.result = None
             self.destroy()
@@ -584,6 +572,36 @@ class TourMetadataDialog(UnifiedDialog):
 
         if is_ant   : self.toggle_canvas.create_oval(22,    2, 38, 18, fill = "white", outline = "black")
         else        : self.toggle_canvas.create_oval(2,     2, 18, 18, fill = "white", outline = "black")
+
+        self._update_dry_or_push_section()
+
+    def _update_dry_or_push_section(self):
+        is_ant      = (self.mode_var.get() == "Ant")
+        new_label   = "Do you want to push this to the spreadsheet?" if is_ant else "Do you want to use Dry's script as well?"
+
+        self.dry_label_widget.configure(text = new_label)
+        options = ["No", "Yes"] if is_ant else ["No", "Yes, run ngm_local.py", "Yes, run ngm_stats.py"]
+
+        for child in self.dry_options_container.winfo_children(): child.destroy()
+
+        self.dry_boxes.clear()
+        if self.dry_var.get() not in options: self.dry_var.set("No")
+
+        for opt in options:
+            f_dry = ttk.Frame(self.dry_options_container)
+            f_dry.pack(anchor = "w", pady = 1)
+
+            is_sel      = (self.dry_var.get() == opt)
+            bg_color    = self.fill_color if is_sel else "white"
+
+            box = tk.Canvas(f_dry, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
+            box.pack(side = tk.LEFT, padx = (0, 4))
+            self.dry_boxes[opt] = box
+
+            lbl = ttk.Label(f_dry, text = opt, font = ("Segoe UI", 10))
+            lbl.pack(side = tk.LEFT)
+
+            for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_dry_opt(o))
 
     def _select_lbl_opt(self, opt):
         self.lbl_var.set(opt)
