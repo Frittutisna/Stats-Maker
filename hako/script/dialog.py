@@ -131,6 +131,13 @@ class TourSelectionDialog(UnifiedDialog):
             if json_dir.exists() and len(list(json_dir.glob("*.json"))) > 1: is_recommended = True
             states[tid] = is_recommended
 
+        active_tours = [tid for tid, is_rec in states.items() if is_rec]
+
+        if len(active_tours) == 1:
+            self.selected_tours = active_tours
+            self.destroy()
+            return
+
         for tid in tour_ids:
             is_active       = states[tid]
             var             = tk.BooleanVar(value = is_active)

@@ -400,7 +400,9 @@ class TourAnalyzer:
 
                 self.song_history.append((correct, raw_f_players))
 
-                ls = song.get("listStates", [])
+                ls          = song.get("listStates", [])
+                s_riggers   = {p["name"] for p in ls}
+
                 self.global_stats["tot_c"] += len(correct)
 
                 try:
@@ -538,8 +540,6 @@ class TourAnalyzer:
 
                 for p_name_lower, t_float in seen_song_times:
                     if p_name_lower in name_map: self.p_answer_times[name_map[p_name_lower]].append(t_float)
-
-                s_riggers = {p["name"] for p in ls}
 
                 if len(ls) == 1:
                     u                   =   ls[0]["name"]
