@@ -45,7 +45,7 @@ TOUR_MAP_STATS  = {
     "Watched ED"    : 1177334024,
     "Watched IN"    : 928352352,
     "Watched 2+8s"  : 41221104,
-    "Watcehd 5s"    : 1525886733,
+    "Watched 5s"    : 1525886733,
     "Random OP"     : 1093764794,
     "Random ED"     : 1863696842,
     "Random IN"     : 1919154942

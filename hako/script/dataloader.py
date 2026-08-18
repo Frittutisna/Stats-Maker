@@ -9,18 +9,49 @@ from tkinter                import messagebox
 
 def find_browser() -> str | None: return next((p for p in BROWSER_PATHS if os.path.exists(p)), None)
 
-def load_player_ids() -> dict[str, str]:
-    id_map = {}
+def load_player_ids(alias_url: str = None) -> dict[str, str]:
+    id_map  = {}
+    sources = [(alias_url, "")] if alias_url else [(TOUR_URL_ALIAS, "tour_"), (ANT_URL_ALIAS, "ant_")]
 
-    try:
-        df = pd.read_csv(TOUR_URL_ALIAS)
+    for url, prefix in sources:
+        try:
+            df          = pd.read_csv(url)
+            name_col    = None
+            id_col      = None
 
-        for _, row in df.iterrows():
-            name    = str(row.get("Player Name",    "")).strip().lower()
-            pid     = str(row.get("Player ID",      "")).strip()
+            for col in df.columns:
+                c_low = str(col).strip().lower()
 
-            if name and pid: id_map[name] = pid
-    except Exception: pass
+                if      "name"  in c_low: name_col  = col
+                elif    "id"    in c_low: id_col    = col
+
+            if not name_col or not id_col:
+                for idx, row in df.iterrows():
+                    row_vals = [str(x).strip().lower() for x in row if pd.notnull(x)]
+
+                    if any("name" in x for x in row_vals) and any("id" in x for x in row_vals):
+                        df.columns  = [str(x).strip() if pd.notnull(x) else f"unnamed_{i}" for i, x in enumerate(row)]
+                        df          = df.iloc[idx + 1:].copy()
+
+                        break
+
+                for col in df.columns:
+                    c_low = str(col).strip().lower()
+
+                    if      "name"  in c_low: name_col  = col
+                    elif    "id"    in c_low: id_col    = col
+
+            if name_col and id_col:
+                for _, row in df.iterrows():
+                    name    = str(row.get(name_col, "")).strip().lower()
+                    pid     = str(row.get(id_col,   "")).strip()
+
+                    if name and pid and name != "nan" and pid != "nan":
+                        try                 : pid = str(int(float(pid)))
+                        except ValueError   : pass
+
+                        id_map[name] = f"{prefix}{pid}"
+        except Exception: pass
 
     return id_map
 
@@ -170,6 +201,7 @@ def load_team_data(
     id_database         : dict[str, str],
     subbed_players_set  : set[str],
     main_roster_names   : set[str],
+    alias_url           : str = None
 ) -> tuple[bool, dict, dict, dict, defaultdict, set, list, list]:
     codes = tour_dir / FILE_CODES
 
@@ -223,7 +255,7 @@ def load_team_data(
         match = next((n for n in all_known if n.lower() == p_low), None)
 
         if not match:
-            if not id_database: id_database.update(load_player_ids())
+            if not id_database: id_database.update(load_player_ids(alias_url))
 
             if p_low in id_database:
                 target_id   = id_database[p_low]

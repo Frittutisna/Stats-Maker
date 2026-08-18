@@ -1,4 +1,6 @@
 import concurrent.futures, datetime, gspread, hashlib, json, logging, math, os, re, shutil, subprocess, sys, warnings, zipfile
+import pandas   as pd
+import numpy    as np
 
 from .config        import *
 from .dataloader    import *
@@ -211,50 +213,54 @@ class TourAnalyzer:
         self.delta_choice       = meta_res.get("delta_choice",      "No")
         self.challonge_choice   = meta_res.get("challonge_choice",  "No")
 
-        if self.delta_choice == "Yes" and self.tour_label in TOUR_MAP_STATS:
+        is_ant = (self.mode_choice == "Ant")
+
+        stats_map = ANT_MAP_STATS               if is_ant else TOUR_MAP_STATS
+        stats_key = ANT_KEY_STATS               if is_ant else TOUR_KEY_STATS
+        alias_url = ANT_URL_ALIAS               if is_ant else TOUR_URL_ALIAS
+        cred_name = "ant_credentials.json"      if is_ant else "credentials.json"
+        auth_name = "ant_authorized_user.json"  if is_ant else "authorized_user.json"
+
+        if self.delta_choice == "Yes" and self.tour_label in stats_map:
             print("[?] Fetching historic baselines")
 
-            cred_file_name  = "ant_credentials.json"        if self.mode_choice == "Ant" else "credentials.json"
-            auth_file_name  = "ant_authorized_user.json"    if self.mode_choice == "Ant" else "authorized_user.json"
-
-            cred_file       = self.script_dir / DIR_CREDS / cred_file_name
-            auth_file       = self.script_dir / DIR_CREDS / auth_file_name
+            cred_file = self.script_dir / DIR_CREDS / cred_name
+            auth_file = self.script_dir / DIR_CREDS / auth_name
 
             try:
                 gc                  = gspread.oauth(credentials_filename = str(cred_file), authorized_user_filename = str(auth_file))
-                sheet               = gc.open_by_key(TOUR_KEY_STATS)
-                df_alias_ids        = pd.read_csv(TOUR_URL_ALIAS)
-                sheet_ref           = TOUR_MAP_STATS[self.tour_label]
+                sheet               = gc.open_by_key(stats_key)
+                sheet_ref           = stats_map[self.tour_label]
                 wks_stats           = sheet.get_worksheet_by_id(sheet_ref) if isinstance(sheet_ref, int) else sheet.worksheet(sheet_ref)
                 rows_stats          = wks_stats.get_all_values()
-
-                def _parse_stat(val):
-                    if pd.isna(val) or val == "": return 0.0
-
-                    try                 : return float(str(val).strip().replace("%", ""))
-                    except ValueError   : return 0.0
-
-                id_table_lookup = {
-                    str(row.get("Player Name", "")).strip().lower(): int(row.get("Player ID"))
-                    for _, row in df_alias_ids.iterrows()
-                    if pd.notnull(row.get("Player Name")) and pd.notnull(row.get("Player ID"))
-                }
-
+                id_table_lookup     = load_player_ids(alias_url)
                 df_stats            = pd.DataFrame(rows_stats[1:], columns = rows_stats[0])
                 history_profile_map = {}
-
                 for _, r_row in df_stats.iterrows():
-                    raw_name    = str(r_row.get("Player Name", "")).strip().lower()
+                    norm_row = {str(k).strip().lower(): v for k, v in r_row.items() if pd.notnull(k)}
+
+                    def _get_val(*keys):
+                        for k in keys:
+                            if k.lower() in norm_row: return norm_row[k.lower()]
+
+                        return ""
+
+                    def _parse_stat(val):
+                        if pd.isna(val) or val == "": return 0.0
+
+                        try:                 return float(str(val).strip().replace("%", ""))
+                        except ValueError:   return 0.0
+
+                    raw_name    = str(_get_val("player name", "name")).strip().lower()
                     pid_key     = id_table_lookup.get(raw_name)
 
-                    if pid_key is not None:
-                        history_profile_map[pid_key] = {
-                            "GR": _parse_stat(r_row.get("Average GR %")),
-                            "UF": _parse_stat(r_row.get("Average usefulness (new)")),
-                            "OP": _parse_stat(r_row.get("Average OPs GR %")),
-                            "ED": _parse_stat(r_row.get("Average EDs GR %")),
-                            "IN": _parse_stat(r_row.get("Average INs GR %")),
-                        }
+                    if pid_key is not None: history_profile_map[pid_key] = {
+                        "GR": _parse_stat(_get_val("average gr %",              "average gr",       "gr %")),
+                        "UF": _parse_stat(_get_val("average usefulness (new)",  "usefulness",       "average usefulness")),
+                        "OP": _parse_stat(_get_val("average ops gr %",          "average op gr %",  "op gr %")),
+                        "ED": _parse_stat(_get_val("average eds gr %",          "average ed gr %",  "ed gr %")),
+                        "IN": _parse_stat(_get_val("average ins gr %",          "average in gr %",  "in gr %")),
+                    }
 
                 alias_txt_path      = self.tour_dir / FILE_ALIAS
                 current_alias_lines = []
