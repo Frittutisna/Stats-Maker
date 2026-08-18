@@ -211,7 +211,7 @@ class TourAnalyzer:
         self.delta_choice       = meta_res.get("delta_choice",      "No")
         self.challonge_choice   = meta_res.get("challonge_choice",  "No")
 
-        if self.delta_choice == "Yes" and self.tour_label in TOUR_MODE_SHEET_MAP:
+        if self.delta_choice == "Yes" and self.tour_label in TOUR_MAP_STATS:
             print("[?] Fetching historic baselines")
 
             cred_file_name  = "ant_credentials.json"        if self.mode_choice == "Ant" else "credentials.json"
@@ -222,10 +222,10 @@ class TourAnalyzer:
 
             try:
                 gc                  = gspread.oauth(credentials_filename = str(cred_file), authorized_user_filename = str(auth_file))
-                sheet               = gc.open_by_key(NGM_STATS_SHEET_ID)
-                wks_ids             = sheet.get_worksheet_by_id(SHEET_PLAYER_IDS)
-                rows_ids            = wks_ids.get_all_values()
-                sheet_ref           = TOUR_MODE_SHEET_MAP[self.tour_label]
+                sheet               = gc.open_by_key(TOUR_KEY_STATS)
+                df_alias_ids        = pd.read_csv(TOUR_URL_ALIAS)
+                rows_ids            = [df_alias_ids.columns.tolist()] + df_alias_ids.values.tolist()
+                sheet_ref           = TOUR_MAP_STATS[self.tour_label]
                 wks_stats           = sheet.get_worksheet_by_id(sheet_ref) if isinstance(sheet_ref, int) else sheet.worksheet(sheet_ref)
                 rows_stats          = wks_stats.get_all_values()
                 is_list_mode        = "Watched" in self.tour_label or self.tour_label == "Watched"
@@ -251,7 +251,11 @@ class TourAnalyzer:
                         for a_line in f_alias:
                             if "," in a_line: current_alias_lines.append(a_line.strip().split(","))
 
-                id_table_lookup = {r[0].strip().lower(): int(r[1]) for r in rows_ids[1:] if len(r) >= 2 and r[0] and r[1]}
+                id_table_lookup = {
+                    str(row.get("Player Name", "")).strip().lower(): int(row.get("Player ID"))
+                    for _, row in df_alias_ids.iterrows()
+                    if pd.notnull(row.get("Player Name")) and pd.notnull(row.get("Player ID"))
+                }
 
                 with open(alias_txt_path, "w", encoding = "utf-8") as f_out:
                     for parts in current_alias_lines:

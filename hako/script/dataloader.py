@@ -13,7 +13,7 @@ def load_player_ids() -> dict[str, str]:
     id_map = {}
 
     try:
-        df = pd.read_csv(URL_ALIAS)
+        df = pd.read_csv(TOUR_URL_ALIAS)
 
         for _, row in df.iterrows():
             name    = str(row.get("Player Name",    "")).strip().lower()
@@ -23,7 +23,6 @@ def load_player_ids() -> dict[str, str]:
     except Exception: pass
 
     return id_map
-
 
 def internal_clean_data(idtable: list, statstable: list, is_watched: bool) -> pd.DataFrame:
     headers = idtable[0]
@@ -164,7 +163,6 @@ def scan_players(paths: list[Path]) -> tuple[set[str], defaultdict[str, set[str]
         except Exception: continue
 
     return players, apps
-
 
 def load_team_data(
     tour_dir            : Path,

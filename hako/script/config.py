@@ -28,11 +28,10 @@ THRESH_TEAM = 4
 THRESH_TIME = 17.5
 THRESH_WTCH = 5
 TOKEN_NTLFY = "nfp_n58sF53EWEurX9VVkKTpL9ekLsbeDp2Xde73"
-URL_ALIAS   = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
 
-NGM_STATS_SHEET_ID  = "1ihfqssregh74curDyvRE0GAFihQfovUAHpYDrtOIrOA"
-SHEET_PLAYER_IDS    = 1903970832
-TOUR_MODE_SHEET_MAP = {
+TOUR_URL_ALIAS  = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
+TOUR_KEY_STATS  = "1ihfqssregh74curDyvRE0GAFihQfovUAHpYDrtOIrOA"
+TOUR_MAP_STATS  = {
     "Usual"         : 0,
     "Watched"       : 1719516221,
     "Watched OP"    : "Watched OP",
