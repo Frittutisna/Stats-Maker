@@ -134,10 +134,13 @@ def compute_player_rows(
             uf_val = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
             row.update({"UF": uf_val})
 
-            delta_uf = uf_val - history_baselines["UF"] if pd.notnull(history_baselines["UF"]) else np.nan
-            row.update({"UF Δ": round(delta_uf, 2) if pd.notnull(delta_uf) else np.nan})
+            elo_val = float(elo_map.get(name.lower(), np.nan))
 
-            row.update({"Score": perf_map.get(name, 50.0)})
+            if pd.notnull(elo_val) and elo_val != 0 : delta_uf = 100 * (uf_val - elo_val) / elo_val
+            else                                    : delta_uf = np.nan
+
+            row.update({"UF Δ"  : round(delta_uf, 2) if pd.notnull(delta_uf) else np.nan})
+            row.update({"Score" : perf_map.get(name, 50.0)})
 
         avg_over8 = analyzer.p_overs_sum[name] / cor if cor else np.nan
         row.update({"1/8s": analyzer.e_counts[name], "2/8s": analyzer.p_two_e[name], "7/8s": analyzer.p_rev_e[name], "Mean Over-8": avg_over8})
