@@ -224,24 +224,37 @@ class TourAnalyzer:
                 gc                  = gspread.oauth(credentials_filename = str(cred_file), authorized_user_filename = str(auth_file))
                 sheet               = gc.open_by_key(TOUR_KEY_STATS)
                 df_alias_ids        = pd.read_csv(TOUR_URL_ALIAS)
-                rows_ids            = [df_alias_ids.columns.tolist()] + df_alias_ids.values.tolist()
                 sheet_ref           = TOUR_MAP_STATS[self.tour_label]
                 wks_stats           = sheet.get_worksheet_by_id(sheet_ref) if isinstance(sheet_ref, int) else sheet.worksheet(sheet_ref)
                 rows_stats          = wks_stats.get_all_values()
-                is_list_mode        = "Watched" in self.tour_label or self.tour_label == "Watched"
-                avg_df              = clean_data_local(rows_ids, rows_stats, 6, 10, is_list_mode)
+
+                def _parse_stat(val):
+                    if pd.isna(val) or val == "": return 0.0
+
+                    try                 : return float(str(val).strip().replace("%", ""))
+                    except ValueError   : return 0.0
+
+                id_table_lookup = {
+                    str(row.get("Player Name", "")).strip().lower(): int(row.get("Player ID"))
+                    for _, row in df_alias_ids.iterrows()
+                    if pd.notnull(row.get("Player Name")) and pd.notnull(row.get("Player ID"))
+                }
+
+                df_stats            = pd.DataFrame(rows_stats[1:], columns = rows_stats[0])
                 history_profile_map = {}
 
-                for _, r_row in avg_df.iterrows():
-                    pid_key = int(r_row["Player ID"])
+                for _, r_row in df_stats.iterrows():
+                    raw_name    = str(r_row.get("Player Name", "")).strip().lower()
+                    pid_key     = id_table_lookup.get(raw_name)
 
-                    history_profile_map[pid_key] = {
-                        "GR": float(r_row.get("Guess rate",     0.0)),
-                        "UF": float(r_row.get("Usefulness",     0.0)),
-                        "OP": float(r_row.get("OP guess rate",  0.0)),
-                        "ED": float(r_row.get("ED guess rate",  0.0)),
-                        "IN": float(r_row.get("IN guess rate",  0.0)),
-                    }
+                    if pid_key is not None:
+                        history_profile_map[pid_key] = {
+                            "GR": _parse_stat(r_row.get("Average GR %")),
+                            "UF": _parse_stat(r_row.get("Average usefulness (new)")),
+                            "OP": _parse_stat(r_row.get("Average OPs GR %")),
+                            "ED": _parse_stat(r_row.get("Average EDs GR %")),
+                            "IN": _parse_stat(r_row.get("Average INs GR %")),
+                        }
 
                 alias_txt_path      = self.tour_dir / FILE_ALIAS
                 current_alias_lines = []
@@ -250,12 +263,6 @@ class TourAnalyzer:
                     with open(alias_txt_path, "r", encoding = "utf-8") as f_alias:
                         for a_line in f_alias:
                             if "," in a_line: current_alias_lines.append(a_line.strip().split(","))
-
-                id_table_lookup = {
-                    str(row.get("Player Name", "")).strip().lower(): int(row.get("Player ID"))
-                    for _, row in df_alias_ids.iterrows()
-                    if pd.notnull(row.get("Player Name")) and pd.notnull(row.get("Player ID"))
-                }
 
                 with open(alias_txt_path, "w", encoding = "utf-8") as f_out:
                     for parts in current_alias_lines:
