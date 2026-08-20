@@ -1,14 +1,15 @@
-# How to Install
+# Hako Stats v1.0.0
+
+## How to Install
 
 1. Delete the `hako` folder, as well as `hako_clean.py` and `hako_stats.py` from your directory if you have them
-2. Download the latest release
-3. Extract the downloaded file
-4. Move the `hako` folder, `hako_clean.py`, and `hako_stats.py` to your directory. If you are working with **Dry Stats** as well, make sure to put them on the same level as the `assets` folder
-5. Run `hako_clean.py` to clean your directory
+2. Download the latest release, then extract the downloaded file
+3. Move the `hako` folder, `hako_clean.py`, and `hako_stats.py` to your directory. If you are working with **Dry Stats** as well, make sure to put them on the same level as the `assets` folder
+4. Run `hako_clean.py` to clean your directory
 
-# How To Use
+## How To Use
 
-## Single Tour
+### Single Tour
 
 1. Before running stats for a new tour, run `hako_clean.py` to clean your directory
 2. Copy-paste from `#tour-information` to `codes.txt`. **Hako Stats** takes the following format as an example:
@@ -34,7 +35,7 @@ https://challonge.com/dblow5ep
 
 5. Post `hako_0_player.png` and `hako_0_extra.png` to `#tour-talk` for mid-tour stats, or copy-paste the link to the site from the command-line to `#export-stats` below **Dry Stats** outputs at the end of tour
 
-## Multiple (Split) Tours
+### Multiple (Split) Tours
 
 1. **Hako Stats** supports up to three tours simultaneously. Before running stats for a new batch of tours, run `hako_clean.py` to clean your directory
 2. Copy-paste from `#tour-information` to each tour's respective `code.txt` in `hako/tour/[0-2]`. **Hako Stats** takes the following format as an example:
