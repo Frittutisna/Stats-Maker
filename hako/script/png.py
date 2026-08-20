@@ -46,7 +46,6 @@ def create_player_png(
     if "Rig Over-8"             in df_png.columns: df_png["Rig Over-8"]             = pd.to_numeric(df_png["Rig Over-8"],           errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
     if "Over-8 Δ"               in df_png.columns: df_png["Over-8 Δ"]               = pd.to_numeric(df_png["Over-8 Δ"],             errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
     if "Mean Difficulty Hit"    in df_png.columns: df_png["Mean Difficulty Hit"]    = pd.to_numeric(df_png["Mean Difficulty Hit"],  errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
-    if "Median Vintage Hit"     in df_png.columns: df_png["Median Vintage Hit"]     = pd.to_numeric(df_png["Median Vintage Hit"],   errors = "coerce").map(lambda x: format_year(x) if pd.notnull(x) else "N/A")
 
     for c in pcts: df_png[c] = (pd.to_numeric(df_png[c], errors = "coerce").mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A"))
     delta_cols = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]
@@ -604,10 +603,10 @@ def export_png(analyzer, df: pd.DataFrame, path: Path, fname: str, title: str, m
             style = [b_s] if b_s else []
             if cname in col_borders: style.append("border-right: 3px solid black;")
 
-            if      pd.isnull(cell)                 or  cell == "N/A"                   : cell_display = "N/A"
-            elif    cname == "Mean Difficulty Hit"  and isinstance(cell, (int, float))  : cell_display = f"{float(cell):.2f}"
-            elif    cname == "Median Vintage Hit"   and isinstance(cell, (int, float))  : cell_display = format_year(float(cell))
-            else                                                                        : cell_display = cell
+            if      pd.isnull(cell)                 or  cell == "N/A"                                                   : cell_display = "N/A"
+            elif    cname == "Mean Difficulty Hit"  and isinstance(cell, (int, float))                                  : cell_display = f"{float(cell):.2f}"
+            elif    cname == "Median Vintage Hit"   and pd.notnull(cell) and str(cell).replace('.', '', 1).isdigit()    : cell_display = format_year(float(cell))
+            else                                                                                                        : cell_display = cell
 
             if cname in stats:
                 val_best_idx    = stats[cname]["best_idx"]
@@ -634,7 +633,7 @@ def export_png(analyzer, df: pd.DataFrame, path: Path, fname: str, title: str, m
         <head>
             <style>
                 body                {{font-family: 'Segoe UI'; background: white; display: inline-block; margin: 0}}
-                h2                  {{margin: 0 0 10px 0; font-size: 40px; text-align: center}}
+                h2                  {{margin: 0 0 5px 0; font-size: 40px; text-align: center}}
                 table               {{border-collapse: collapse; width: auto; border: 3px solid black}}
                 th                  {{font-weight: bold; font-size: 25px; text-align: center; padding: 5px 10px; border: 1px solid black; border-bottom: 3px solid black; background-color: #f0f0f0}}
                 td                  {{font-size: 25px; text-align: center; padding: 5px 10px; border: 1px solid black}}

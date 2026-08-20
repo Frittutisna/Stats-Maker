@@ -202,7 +202,7 @@ class TourMetadataDialog(UnifiedDialog):
         ant_cred_path   = script_dir / DIR_CREDS / "ant_credentials.json"
 
         self.has_ant_creds  = ant_cred_path.exists()
-        self.mode_var       = tk.StringVar(value = "Tour")
+        self.mode_var       = tk.StringVar(value = "Ant" if self.has_ant_creds else "Tour")
 
         if self.has_ant_creds:
             f_mode_container = ttk.Frame(left_frame)
@@ -312,7 +312,8 @@ class TourMetadataDialog(UnifiedDialog):
 
                     except ValueError: pass
 
-        self.np_var     = tk.StringVar(value = "Yes" if has_round_elo else "No")
+        initial_np      = "No" if (hasattr(self, "mode_var") and self.mode_var.get() == "Ant") else ("Yes" if has_round_elo else "No")
+        self.np_var     = tk.StringVar(value = initial_np)
         self.np_boxes   = {}
 
         for opt in ["No", "Yes"]:

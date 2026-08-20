@@ -161,19 +161,17 @@ def compute_player_rows(
         if watched:
             rig_over8 = np.mean(analyzer.p_l_corr[name]) if analyzer.p_l_corr[name] else np.nan
 
-            row.update(
-                {
-                    "Rigs"          : analyzer.p_rigs[name],
-                    "Rig Rate"      : analyzer.p_rigs[name] / tot                                       if tot                              else np.nan,
-                    "Solo Rigs"     : analyzer.p_l_solos[name],                 
-                    "Solo Rig Rate" : analyzer.p_l_solos[name] / analyzer.p_rigs[name]                  if analyzer.p_rigs[name]            else np.nan,
-                    "Rig Over-8"    : rig_over8,                
-                    "Over-8 Δ"      : rig_over8 - avg_over8,                
-                    "Rig GR"        : analyzer.p_rigs_h[name] / analyzer.p_rigs[name]                   if analyzer.p_rigs[name]            else np.nan,
-                    "Off GR"        : (cor - analyzer.p_rigs_h[name]) / (tot - analyzer.p_rigs[name])   if (tot - analyzer.p_rigs[name])    else np.nan,
-                    "Rig Δ"         : (cor - analyzer.p_rigs[name]) / cor                               if cor                              else np.nan,
-                }
-            )
+            row.update({
+                "Rigs"          : analyzer.p_rigs[name],
+                "Rig Rate"      : analyzer.p_rigs[name] / tot                                       if tot                                  else np.nan,
+                "Solo Rigs"     : analyzer.p_l_solos[name],
+                "Solo Rig Rate" : analyzer.p_l_solos[name] / analyzer.p_rigs[name]                  if analyzer.p_rigs[name]                else np.nan,
+                "Rig Over-8"    : rig_over8,
+                "Over-8 Δ"      : rig_over8 - avg_over8,
+                "Rig GR"        : analyzer.p_rigs_h[name] / analyzer.p_rigs[name]                   if analyzer.p_rigs[name]                else np.nan,
+                "Off GR"        : (cor - analyzer.p_rigs_h[name]) / (tot - analyzer.p_rigs[name])   if (tot - analyzer.p_rigs[name])        else np.nan,
+                "Rig Δ"         : (cor - analyzer.p_rigs[name]) / cor                               if cor and analyzer.p_rigs[name] > 0    else np.nan,
+            })
 
         h_diffs = analyzer.p_hit_diff.get(name, [])
         h_vints = analyzer.p_hit_vint.get(name, [])
