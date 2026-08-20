@@ -3,9 +3,8 @@
 ## How to Install
 
 1. Delete the `hako` folder, as well as `hako_clean.py` and `hako_stats.py` from your directory if you have them
-2. Download the latest release, then extract the downloaded file
-3. Move the `hako` folder, `hako_clean.py`, and `hako_stats.py` to your directory. If you are working with **Dry Stats** as well, make sure to put them on the same level as the `assets` folder
-4. Run `hako_clean.py` to clean your directory
+2. Download the latest release, then extract the downloaded file and move them to your directory. If you are working with **Dry Stats** as well, put them on the same level as the `assets` folder
+3. Run `hako_clean.py` to clean your directory
 
 ## How To Use
 
