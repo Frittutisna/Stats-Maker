@@ -63,3 +63,7 @@ https://challonge.com/dblow5ep
 ![Configuration Prompt Example](https://files.catbox.moe/24lkpn.webp)
 
 6. Post `hako_[0-2]_player.png` and `hako_[0-2]_extra.png` to `#tour-talk` for mid-tour stats, or copy-paste the link to the site from the command-line to `#export-stats` below **Dry Stats** outputs at the end of tour
+
+## Tools
+
+You will find `edit.py`, `stitch.py`, and `swap.py` in the `hako/tool` folder. You can use this to edit the JSON, stitch multiple JSONs from the same round into one JSON, and swap players within `codes.txt` respectively. Make sure to copy-paste the relevant JSON(s) or TXT file to the `hako/tool` folder before running the script.
