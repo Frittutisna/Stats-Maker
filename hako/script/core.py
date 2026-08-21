@@ -779,19 +779,35 @@ class TourAnalyzer:
                 except Exception as e   : print(f"Task {task_name} failed: {e}")
 
         fuse_images(png_path)
+        workspace_root = self.script_dir.parent
 
-        workspace_root  = self.script_dir.parent
+        target_hako_dir = workspace_root / f"hako_{self.tour_id}"
+        target_hako_dir.mkdir(parents = True, exist_ok = True)
+
         allowed_files   = {"Player.png", "Extra.png"}
         player_file     = png_path / "Player.png"
         extra_file      = png_path / "Extra.png"
 
         if player_file.exists():
-            shutil.copy(player_file, workspace_root / f"hako_{self.tour_id}_player.png")
-            print(f"[✓] Copied Player.png to root as hako_{self.tour_id}_player.png")
+            shutil.copy(player_file, target_hako_dir / "Player.png")
+            print(f"[✓] Copied Player.png to {target_hako_dir.name}/Player.png")
 
         if extra_file.exists():
-            shutil.copy(extra_file, workspace_root / f"hako_{self.tour_id}_extra.png")
-            print(f"[✓] Copied Extra.png to root as hako_{self.tour_id}_extra.png")
+            shutil.copy(extra_file, target_hako_dir / "Extra.png")
+            print(f"[✓] Copied Extra.png to {target_hako_dir.name}/Extra.png")
+
+        if web_path.exists():
+            zip_dest_path = target_hako_dir / "Site.zip"
+
+            with zipfile.ZipFile(zip_dest_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+                for root_dir, _, files in os.walk(web_path):
+                    for file in files:
+                        file_path = os.path.join(root_dir, file)
+                        arcname   = os.path.relpath(file_path, web_path)
+
+                        zipf.write(file_path, arcname)
+
+            print(f"[✓] Zipped site contents to {target_hako_dir.name}/Site.zip")
 
         for file_path in png_path.glob("*.png"):
             if file_path.name not in allowed_files:

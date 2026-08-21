@@ -1,10 +1,15 @@
-# Hako Stats v1.0.0
+# Hako Stats v1.1.0
+
+## Changelog
+
+1. Fixed broken Netlify deploy
 
 ## How to Install
 
-1. Delete the `hako` folder, as well as `hako_clean.py` and `hako_stats.py` from your directory if you have them
-2. Download the latest release, then extract the downloaded file and move them to your directory. If you are working with **Dry Stats** as well, put them on the same level as the `assets` folder
-3. Run `hako_clean.py` to clean your directory
+1. Sign up for a [Netlify](https://app.netlify.com/signup) account
+2. Delete any folder and file with `hako` in their name from your directory
+3. Download the latest release, then extract the downloaded file and move them to your directory. If you are working with **Dry Stats** as well, put them on the same level as the `assets` folder
+4. Run `hako_clean.py` to clean your directory
 
 ## How To Use
 
@@ -26,13 +31,14 @@ https://challonge.com/dblow5ep
 
 3. Move the JSON files to the `jsons` folder
 4. Run `hako_stats.py`. You will be presented with the following prompt as an example. While you can usually click `Confirm` without changing anything, feel free to change the answer to each question as you see fit
-    1. `Are there any new player?` detects players with round-number Elos that might need mid-tour guess adjustments
-    2. Change `Do you want to fetch Challonge data as well?` to `Yes` and `Would you like to share the Stats site?` to `Yes, push this to Netlify ...` when running this at the end of tour
-    3.  Change `Do you want to use Dry's script as well?` to `Yes, ...` to continue with running **Dry Stats** after **Hako Stats** ends
 
 ![Configuration Prompt Example](https://files.catbox.moe/24lkpn.webp)
 
-5. Post `hako_0_player.png` and `hako_0_extra.png` to `#tour-talk` for mid-tour stats, or copy-paste the link to the site from the command-line to `#export-stats` below **Dry Stats** outputs at the end of tour
+5. For mid-tour stats, post `Player.png` and `Extra.png` from the `hako_0` folder to `#tour-talk`
+6. At the end of tour:
+    1. Run `hako_stats.py` again, but change `Do you want to fetch Challonge data?` and `Do you want to use Dry's script?` to `Yes`
+    2. Drag-and-drop `Site.zip` from the `hako_0` folder to [Netlify](https://app.netlify.com/drop)
+    3. Copy-paste the Netlify link to `#export-stats` below **Dry Stats** outputs
 
 ### Multiple (Split) Tours
 
@@ -56,13 +62,14 @@ https://challonge.com/dblow5ep
 ![Selection Prompt Example](https://files.catbox.moe/3h2qoh.webp)
 
 5. You will be presented with the following prompt for each tour as an example. While you can usually click `Confirm` without changing anything, feel free to change the answer to each question as you see fit
-    1. `Are there any new player?` detects players with round-number Elos that might need mid-tour guess adjustments
-    2. Change `Do you want to fetch Challonge data as well?` to `Yes` and `Would you like to share the Stats site?` to `Yes, push this to Netlify ...` when running this at the end of tour
-    3.  Change `Do you want to use Dry's script as well?` to `Yes, ...` to continue with running **Dry Stats** after **Hako Stats** ends
 
 ![Configuration Prompt Example](https://files.catbox.moe/24lkpn.webp)
 
-6. Post `hako_[0-2]_player.png` and `hako_[0-2]_extra.png` to `#tour-talk` for mid-tour stats, or copy-paste the link to the site from the command-line to `#export-stats` below **Dry Stats** outputs at the end of tour
+6. For mid-tour stats, post `Player.png` and `Extra.png` from their respective `hako_[0-2]` folder to `#tour-talk`
+7. At the end of tour:
+    1. Run `hako_stats.py` again, but change `Do you want to fetch Challonge data?` and `Do you want to use Dry's script?` to `Yes`
+    2. Drag-and-drop `Site.zip` from their respective `hako_[0-2]` folder to [Netlify](https://app.netlify.com/drop)
+    3. Copy-paste the Netlify link to `#export-stats` below **Dry Stats** outputs
 
 ## Tools
 

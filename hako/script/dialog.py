@@ -11,7 +11,7 @@ class CustomSpinbox(tk.Frame):
         self.from_  = from_
         self.to     = to
         self._state = state
-        self.var    = tk.StringVar(value=str(initial_val))
+        self.var    = tk.StringVar(value = str(initial_val))
         vcmd        = (self.register(self._validate_input), '%P')
         btn_width   = 25
         btn_height  = 25
@@ -387,7 +387,7 @@ class TourMetadataDialog(UnifiedDialog):
         self.delta_var          = tk.StringVar(value = suggested_delta_default)
         self.delta_boxes        = {}
 
-        ttk.Label(right_frame, text = "Do you want to fetch Δ data as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
+        ttk.Label(right_frame, text = "Do you want to fetch Δ data?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         for opt in ["No", "Yes"]:
             f_delta = ttk.Frame(right_frame)
@@ -411,7 +411,7 @@ class TourMetadataDialog(UnifiedDialog):
         self.challonge_var      = tk.StringVar(value = "No")
         self.challonge_boxes    = {}
 
-        ttk.Label(right_frame, text = "Do you want to fetch Challonge data as well?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+        ttk.Label(right_frame, text = "Do you want to fetch Challonge data?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
 
         for opt in ["No", "Yes"]:
             f_chal = ttk.Frame(right_frame)
@@ -438,7 +438,7 @@ class TourMetadataDialog(UnifiedDialog):
         self.dry_var    = tk.StringVar(value = "No")
         self.dry_boxes  = {}
 
-        ttk.Label(right_frame, text = "Would you like to share the Stats site?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+        ttk.Label(right_frame, text = "Do you want to share the Stats site?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
 
         self.share_var    = tk.StringVar(value = "No (Mid-tour)")
         self.share_boxes  = {}
@@ -585,7 +585,7 @@ class TourMetadataDialog(UnifiedDialog):
 
     def _update_dry_or_push_section(self):
         is_ant      = (self.mode_var.get() == "Ant")
-        new_label   = "Do you want to push this to the spreadsheet?" if is_ant else "Do you want to use Dry's script as well?"
+        new_label   = "Do you want to push this to the spreadsheet?" if is_ant else "Do you want to use Dry's script?"
 
         self.dry_label_widget.configure(text = new_label)
         options = ["No", "Yes"] if is_ant else ["No", "Yes, run ngm_local.py", "Yes, run ngm_stats.py"]

@@ -1,9 +1,17 @@
+import shutil
 from pathlib import Path
 
 def clean():
     script_dir  = Path(__file__).parent.absolute()
     json_dir    = script_dir / "jsons"
     tour_dir    = script_dir / "hako" / "tour"
+
+    for hako_folder in script_dir.glob("hako_*"):
+        if hako_folder.is_dir():
+            print(f"[?] Deleting folder: {hako_folder}")
+
+            try                     : shutil.rmtree(hako_folder)
+            except Exception as e   : print(f"[X] Failed to delete {hako_folder}: {e}")
 
     for folder in tour_dir.glob("*/*"):
         if folder.is_dir():
