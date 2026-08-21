@@ -307,8 +307,8 @@ class TourAnalyzer:
         self.val_str        = meta_res["th_str"]
         self.base_exp       = meta_res["base_exp"]
         self.new_players    = meta_res["selected_new"]
-        self.dry_choice     = meta_res.get("dry_choice", "No")
-        self.share_choice   = meta_res.get("share_choice", "No (Mid-tour)")
+        self.dry_choice     = meta_res.get("dry_choice",    "No")
+        self.share_choice   = meta_res.get("share_choice",  "No")
         self.exp_map        = {name: (self.base_exp - 1 if name.lower() in self.subbed_players_set else self.base_exp) for name in all_known}
 
         return True
@@ -814,11 +814,9 @@ class TourAnalyzer:
                 try                 : file_path.unlink()
                 except Exception    : pass
 
-        if      self.dry_choice == "Yes" and getattr(self, "mode_choice", "Tour") == "Ant"  : self._handle_ant_spreadsheet_push()
-        elif    self.dry_choice != "No"                                                     : self._handle_dry_script_execution()
-
-        if      self.share_choice   == "Yes, push this to Netlify (Post-tour, non-Hako)"    : self._handle_netlify_deploy       (web_path)
-        elif    self.share_choice   == "Yes, push this to GitHub (Post-tour, Hako-only)"    : self._handle_github_deploy        (web_path)
+        if      self.dry_choice     == "Yes"    and getattr(self, "mode_choice", "Tour") == "Ant"   : self._handle_ant_spreadsheet_push ()
+        elif    self.dry_choice     != "No"                                                         : self._handle_dry_script_execution ()
+        if      self.share_choice   == "Yes"                                                        : self._handle_github_deploy        (web_path)
 
     def _handle_dry_script_execution(self):
         target_jsons_dir    = self.script_dir.parent / "jsons"
@@ -1008,55 +1006,6 @@ class TourAnalyzer:
             wks.insert_rows(rows_to_push, row = insert_start_row, value_input_option = "USER_ENTERED")
             print("[✓] Successfully pushed Ant stats to Google Spreadsheet!")
         except Exception as e: print(f"[X] Failed to push Ant stats to Google Spreadsheet: {e}")
-
-    def _handle_netlify_deploy(self, web_path: Path):
-        print("[?] Pushing to Netlify")
-
-        try:
-            zip_path = self.script_dir.parent / f"hako-{self.tour_id}-upload.zip"
-
-            with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-                if web_path.exists():
-                    for root_dir, _, files in os.walk(web_path):
-                        for file in files:
-                            file_path   = os.path.join      (root_dir,  file)
-                            arcname     = os.path.relpath   (file_path, web_path)
-
-                            zipf.write(file_path, arcname)
-
-            with open(zip_path, "rb") as f: zip_data = f.read()
-
-            custom_site_name    = f"amq-tour-{datetime.datetime.now().strftime('%y%m%d%H%M')}"
-            base_headers        = {"Authorization": f"Bearer {TOKEN_NTLFY}"}
-
-            print(f"[?] Requesting unique link: {custom_site_name}")
-
-            create_res = requests.post(
-                "https://api.netlify.com/api/v1/sites",
-                headers = {**base_headers, "Content-Type": "application/json"},
-                json    = {"name": custom_site_name},
-                timeout = 15,
-            )
-
-            site_id     = create_res.json().get("id") if create_res.status_code in [200, 201] else None
-            target_url  = f"https://api.netlify.com/api/v1/sites/{site_id}/deploys" if site_id else "https://api.netlify.com/api/v1/sites"
-
-            res = requests.post(
-                target_url,
-                headers = {**base_headers, "Content-Type": "application/zip"},
-                data    = zip_data,
-                timeout = 30,
-            )
-
-            if res.status_code in [200, 201]:
-                deploy_url = res.json().get("ssl_url") or res.json().get("url")
-                print(f"[✓] Link to Stats site: {deploy_url}")
-            else: print(f"[X] Failed to push to Netlify: {res.status_code} {res.text}")
-
-            try                 : zip_path.unlink()
-            except Exception    : pass
-
-        except Exception as e: print(f"[X] Failed to push to Netlify: {e}")
 
     def _handle_github_deploy(self, web_path: Path):
         timestamp   = datetime.datetime.now().strftime("%y%m%d%H%M")

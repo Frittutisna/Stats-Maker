@@ -15,9 +15,10 @@ DIR_CREDS   = "credential"
 DIR_JSONS   = "json"
 DIR_OUT     = "hako"
 DIR_TOURS   = "tour"
+FILE_ALIAS  = "alias.txt"
 FILE_CHANT  = "chant.txt"
 FILE_CODES  = "code.txt"
-FILE_ALIAS  = "alias.txt"
+FILE_HAKO   = "hako.json"
 SCALE_PERF  = -1.5
 TEAMS_RE    = r"([^\s(]+)\s*\(([-]?\d+(?:\.\d+)?)\)"
 THRESH_CHRL = 50
@@ -27,7 +28,6 @@ THRESH_SONG = 35
 THRESH_TEAM = 4
 THRESH_TIME = 17.5
 THRESH_WTCH = 5
-TOKEN_NTLFY = "nfp_n58sF53EWEurX9VVkKTpL9ekLsbeDp2Xde73"
 
 ANT_URL_ALIAS   = "https://docs.google.com/spreadsheets/d/1JjI2GaHjAGr6dABR9Mo_mZ0CdKbXrvlKHnIpttr22uo/export?format=csv&gid=0"
 ANT_KEY_STATS   = "1WadyJ-rpY8AbjO8TW8rKBt1PerYOQH7tj2yk9hgNOzU"

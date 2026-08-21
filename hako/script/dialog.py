@@ -438,32 +438,29 @@ class TourMetadataDialog(UnifiedDialog):
         self.dry_var    = tk.StringVar(value = "No")
         self.dry_boxes  = {}
 
-        ttk.Label(right_frame, text = "Do you want to share the Stats site?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+        hako_cert_path      = script_dir / DIR_CREDS / FILE_HAKO
+        self.is_hako        = hako_cert_path.exists()
+        self.share_var      = tk.StringVar(value = "No")
+        self.share_boxes    = {}
 
-        self.share_var    = tk.StringVar(value = "No (Mid-tour)")
-        self.share_boxes  = {}
+        if self.is_hako:
+            ttk.Label(right_frame, text = "Do you want to share the Stats site?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
 
-        share_options = [
-            "No (Mid-tour)",
-            "Yes, push this to Netlify (Post-tour, non-Hako)",
-            "Yes, push this to GitHub (Post-tour, Hako-only)"
-        ]
+            for opt in ["No", "Yes"]:
+                f_share = ttk.Frame(right_frame)
+                f_share.pack(anchor = "w", pady = 1)
 
-        for opt in share_options:
-            f_share = ttk.Frame(right_frame)
-            f_share.pack(anchor = "w", pady = 1)
+                is_sel      = (self.share_var.get() == opt)
+                bg_color    = self.fill_color if is_sel else "white"
 
-            is_sel      = (self.share_var.get() == opt)
-            bg_color    = self.fill_color if is_sel else "white"
+                box = tk.Canvas(f_share, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
+                box.pack(side = tk.LEFT, padx = (0, 4))
+                self.share_boxes[opt] = box
 
-            box = tk.Canvas(f_share, width = 10, height = 10, bg = bg_color, highlightthickness = 1, highlightbackground = "black")
-            box.pack(side = tk.LEFT, padx = (0, 4))
-            self.share_boxes[opt] = box
+                lbl = ttk.Label(f_share, text = opt, font = ("Segoe UI", 10))
+                lbl.pack(side = tk.LEFT)
 
-            lbl = ttk.Label(f_share, text = opt, font = ("Segoe UI", 10))
-            lbl.pack(side = tk.LEFT)
-
-            for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_share_opt(o))
+                for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_share_opt(o))
 
         ttk.Label(right_frame, text = "What are the comma-separated guess rate threshold values?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
