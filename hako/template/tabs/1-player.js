@@ -43,7 +43,7 @@ let activePlayerHeadersConfig = playerHeadersMasterConfig.filter(col => {
     if (col.teamReq     && !use_teams)  return false;
     if (col.watchedReq  && !watched)    return false;
 
-    if (["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"].includes(col.name)) {
+    if (["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ", "OP GR", "ED GR", "IN GR"].includes(col.name)) {
         if (!players || players.length === 0) return false;
 
         const areAllRowsMissingValue = players.every(p => {
@@ -639,9 +639,10 @@ function sortAndRenderPlayers() {
             let intCols = ["Tier", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"];
             let formattedVal;
 
-            if      (h.name === "Median Vintage Hit")                               formattedVal = parseFloatToVintage(displayVal);
-            else if (typeof displayVal === 'number' && !intCols.includes(h.name))   formattedVal = displayVal.toFixed(2);
-            else                                                                    formattedVal = displayVal;
+            if      (displayVal === undefined || displayVal === null || displayVal === "N/A")   formattedVal = "N/A";
+            else if (h.name === "Median Vintage Hit")                                           formattedVal = parseFloatToVintage(displayVal);
+            else if (typeof displayVal === 'number' && !intCols.includes(h.name))               formattedVal = displayVal.toFixed(2);
+            else                                                                                formattedVal = displayVal;
 
             let finalVal        = (h.name === "Player") ? `<b>${formattedVal}</b>` : formattedVal;
             let clickHandler    = "";
