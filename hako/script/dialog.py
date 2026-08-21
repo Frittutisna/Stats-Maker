@@ -192,15 +192,16 @@ class TourMetadataDialog(UnifiedDialog):
 
         self.fill_color = "#000000"
 
-        left_frame  = ttk.Frame(self.container)
-        right_frame = ttk.Frame(self.container)
+        left_frame   = ttk.Frame(self.container)
+        mid_frame    = ttk.Frame(self.container)
+        right_frame  = ttk.Frame(self.container)
 
         left_frame  .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
+        mid_frame   .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
         right_frame .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
 
-        script_dir      = Path(__file__).parent.parent.absolute()
-        ant_cred_path   = script_dir / DIR_CREDS / "ant_credentials.json"
-
+        script_dir          = Path(__file__).parent.parent.absolute()
+        ant_cred_path       = script_dir / DIR_CREDS / "ant_credentials.json"
         self.has_ant_creds  = ant_cred_path.exists()
         self.mode_var       = tk.StringVar(value = "Ant" if self.has_ant_creds else "Tour")
 
@@ -232,7 +233,7 @@ class TourMetadataDialog(UnifiedDialog):
         elif    init_label == "Usual"       : starting_lbl = "Usual"
         else                                : starting_lbl = "Others"
 
-        self.lbl_var = tk.StringVar(value=starting_lbl if starting_lbl in ["Watched", "Usual"] else "Others")
+        self.lbl_var = tk.StringVar(value = starting_lbl if starting_lbl in ["Watched", "Usual"] else "Others")
         self.lbl_boxes = {}
 
         for opt in ["Usual", "Watched", "Others"]:
@@ -252,8 +253,8 @@ class TourMetadataDialog(UnifiedDialog):
 
                 self.lbl_entry = ttk.Entry(f_opt, width = 20)
                 if self.lbl_var.get() == "Others": self.lbl_entry.insert(0, init_label)
-                self.lbl_entry.pack(side=tk.LEFT, padx=(4, 0))
 
+                self.lbl_entry.pack(side = tk.LEFT, padx = (4, 0))
                 for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_lbl_opt(o))
 
             else:
@@ -265,10 +266,25 @@ class TourMetadataDialog(UnifiedDialog):
         self.sub_lbl_container = ttk.Frame(left_frame)
         self.sub_lbl_container.pack(fill = tk.BOTH)
 
-        columns_layout = [
-            ["Watched OP",  "Watched ED",   "Watched IN",   "Watched IN -Chanting", "Watched OPED",     "Watched 2+8s", "Watched 5s",       "Watched -2009"],
-            ["Random OP",   "Random ED",    "Random IN",    "Random OPED",          "Random Chanting",  "Other Random", "Other Watched",    "Brute-force"]
-        ]
+        columns_layout = [[
+            "Watched OP",
+            "Watched ED",
+            "Watched IN",
+            "Watched IN -Chanting",
+            "Watched OPED",
+            "Watched 2+8s",
+            "Watched 5s",
+            "Watched -2009"
+        ], [
+            "Random OP",
+            "Random ED",
+            "Random IN",
+            "Random OPED",
+            "Random Chanting",
+            "Other Random",
+            "Other Watched",
+            "Brute-force"
+        ]]
 
         self.sub_lbl_widgets = {}
 
@@ -289,11 +305,10 @@ class TourMetadataDialog(UnifiedDialog):
                 lbl.pack(side = tk.LEFT)
                 
                 self.sub_lbl_widgets[name] = lbl
-                for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n=name: self._select_lbl_opt(n))
+                for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n = name: self._select_lbl_opt(n))
 
         self._update_lbl_state()
-
-        ttk.Label(left_frame, text = "Are there any new players?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
+        ttk.Label(mid_frame, text = "Are there any new players?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
         has_round_elo       = False
         round_elo_players   = set()
@@ -317,8 +332,8 @@ class TourMetadataDialog(UnifiedDialog):
         self.np_boxes   = {}
 
         for opt in ["No", "Yes"]:
-            f_np = ttk.Frame(left_frame)
-            f_np.pack(anchor = "w")
+            f_np = ttk.Frame(mid_frame)
+            f_np.pack(anchor = "w", pady = 1)
 
             is_sel      = (self.np_var.get() == opt)
             bg_color    = self.fill_color if is_sel else "white"
@@ -332,8 +347,8 @@ class TourMetadataDialog(UnifiedDialog):
 
             for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_np_opt(o))
 
-        self.player_container = ttk.Frame(left_frame)
-        self.player_container.pack(fill = tk.BOTH)
+        self.player_container = ttk.Frame(mid_frame)
+        self.player_container.pack(fill = tk.BOTH, pady = (4, 0))
 
         self.player_vars    = {}
         player_list         = sorted(list(active_players), key = str.lower)
@@ -356,7 +371,7 @@ class TourMetadataDialog(UnifiedDialog):
             lbl = ttk.Label(item_frame, text = name, font = ("Segoe UI", 10))
             lbl.pack(side = tk.LEFT)
 
-            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n=name, b = box: self.toggle_custom_player(n, b))
+            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n = name, b = box: self.toggle_custom_player(n, b))
 
         self._update_np_state()
 
@@ -427,7 +442,7 @@ class TourMetadataDialog(UnifiedDialog):
             lbl = ttk.Label(f_chal, text = opt, font = ("Segoe UI", 10))
             lbl.pack(side = tk.LEFT)
 
-            for w in (box, lbl): w.bind("<Button-1>", lambda _, o=opt: self._select_challonge_opt(o))
+            for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_challonge_opt(o))
 
         self.dry_label_widget = ttk.Label(right_frame, text = "", font = ("Segoe UI", 10, "bold"))
         self.dry_label_widget.pack(anchor = "w", pady = (5, 0))
@@ -462,7 +477,7 @@ class TourMetadataDialog(UnifiedDialog):
 
                 for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_share_opt(o))
 
-        ttk.Label(right_frame, text = "What are the comma-separated guess rate threshold values?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
+        ttk.Label(right_frame, text = "What are the comma-separated guess rate threshold values?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
 
         self.th_var     = tk.StringVar(value = "default")
         self.th_boxes   = {}
@@ -496,7 +511,8 @@ class TourMetadataDialog(UnifiedDialog):
 
         for w in (box_th2, lbl_th2): w.bind("<Button-1>", lambda _: self._select_th_opt("custom"))
         self._update_th_state()
-        ttk.Label(right_frame, text = "How many rounds have elapsed?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
+
+        ttk.Label(right_frame, text = "How many rounds have elapsed?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (5, 0))
 
         self.spin = CustomSpinbox(right_frame, from_ = 1, to = 6, initial_val = baseline_initial)
         self.spin.pack(anchor = "w")
@@ -518,7 +534,7 @@ class TourMetadataDialog(UnifiedDialog):
 
             for sub_name in sorted_subs:
                 f_sub = ttk.Frame(right_frame)
-                f_sub.pack(anchor = "w") 
+                f_sub.pack(anchor = "w", pady = (5, 0)) 
 
                 lbl = ttk.Label(f_sub, text = f"Who is {sub_name} subbing for?", font = ("Segoe UI", 10, "bold"))
                 lbl.pack(anchor = "w")
@@ -526,8 +542,8 @@ class TourMetadataDialog(UnifiedDialog):
                 choice_var = tk.StringVar()
                 saved_orig = saved_subs_map.get(sub_name.lower())
 
-                if saved_orig and any(p.lower() == saved_orig.lower() for p in sorted_originals)    : choice_var.set(next(p for p in sorted_originals   if p.lower() == saved_orig.lower()))
-                else                                                                                : choice_var.set(sorted_originals[0]                if sorted_originals else "")
+                if saved_orig and any(p.lower() == saved_orig.lower() for p in sorted_originals)    : choice_var.set(next(p for p in sorted_originals if p.lower() == saved_orig.lower()))
+                else                                                                                : choice_var.set(sorted_originals[0] if sorted_originals else "")
 
                 self.sub_vars[sub_name] = choice_var
 

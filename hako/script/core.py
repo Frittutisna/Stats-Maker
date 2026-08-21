@@ -876,9 +876,16 @@ class TourAnalyzer:
         print("[?] Pushing Ant stats to Google Spreadsheet")
         ANT_SHEET_ID = "1R1Th9ngAr5RwQxX5KforK8xDzplRXGbcF1axCE8liF4"
 
-        if      self.tour_label == "Usual"      : gid = 0
-        elif    self.tour_label == "Watched"    : gid = 220235184
-        else                                    : gid = 1085890115
+        if      self.tour_label == "Usual"                  : gid = 0
+        elif    self.tour_label == "Watched"                : gid = 220235184
+        elif    self.tour_label == "Watched OP"             : gid = 313246506
+        elif    self.tour_label == "Watched IN"             : gid = 1251660941
+        elif    self.tour_label == "Watched IN -Chanting"   : gid = 559526622
+        elif    self.tour_label == "Watched 2+8s"           : gid = 881563885
+        elif    self.tour_label == "Watched 2010+"          : gid = 548559487
+        elif    self.tour_label == "Random OP"              : gid = 1955531566
+        elif    self.tour_label == "Random IN"              : gid = 71038376
+        else                                                : gid = 1085890115
 
         cred_file = self.script_dir / DIR_CREDS / "ant_credentials.json"
         auth_file = self.script_dir / DIR_CREDS / "ant_authorized_user.json"

@@ -3,6 +3,7 @@
 ## Changelog
 
 1. Fixed broken Netlify deploy
+2. Tweaked configuration layout
 
 ## How to Install
 
@@ -32,13 +33,13 @@ https://challonge.com/dblow5ep
 3. Move the JSON files to the `jsons` folder
 4. Run `hako_stats.py`. You will be presented with the following prompt as an example. While you can usually click `Confirm` without changing anything, feel free to change the answer to each question as you see fit
 
-![Configuration Prompt Example](https://files.catbox.moe/24lkpn.webp)
+![Configuration Prompt Example](https://files.catbox.moe/s3hvth.png)
 
 5. For mid-tour stats, post `Player.png` and `Extra.png` from the `hako_0` folder to `#tour-talk`
 6. At the end of tour:
     1. Run `hako_stats.py` again, but change `Do you want to fetch Challonge data?` and `Do you want to use Dry's script?` to `Yes`
     2. Drag-and-drop `Site.zip` from the `hako_0` folder to [Netlify](https://app.netlify.com/drop)
-    3. Copy-paste the Netlify link to `#export-stats` below **Dry Stats** outputs
+    3. Post the Netlify link to `#export-stats` below **Dry Stats** outputs
 
 ### Multiple (Split) Tours
 
@@ -63,13 +64,13 @@ https://challonge.com/dblow5ep
 
 5. You will be presented with the following prompt for each tour as an example. While you can usually click `Confirm` without changing anything, feel free to change the answer to each question as you see fit
 
-![Configuration Prompt Example](https://files.catbox.moe/24lkpn.webp)
+![Configuration Prompt Example](https://files.catbox.moe/s3hvth.png)
 
 6. For mid-tour stats, post `Player.png` and `Extra.png` from their respective `hako_[0-2]` folder to `#tour-talk`
 7. At the end of tour:
     1. Run `hako_stats.py` again, but change `Do you want to fetch Challonge data?` and `Do you want to use Dry's script?` to `Yes`
     2. Drag-and-drop `Site.zip` from their respective `hako_[0-2]` folder to [Netlify](https://app.netlify.com/drop)
-    3. Copy-paste the Netlify link to `#export-stats` below **Dry Stats** outputs
+    3. Post the Netlify link to `#export-stats` below **Dry Stats** outputs
 
 ## Tools
 
