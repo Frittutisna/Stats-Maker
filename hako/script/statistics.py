@@ -52,11 +52,13 @@ def compute_player_performance_scores(plist: list, analyzer, elo_map: dict, avg_
         ufs = np.array(uf_pool)
         grs = np.array(gr_pool)
 
-        s_uf, i_uf = np.polyfit(els, ufs, 1)
+        uf_deltas = np.where(ufs != 0, 100.0 * (ufs - els) / ufs, 0.0)
+
+        s_uf, i_uf = np.polyfit(els, uf_deltas, 1)
         s_gr, i_gr = np.polyfit(els, grs, 1)
 
-        res_uf = ufs - (s_uf * els + i_uf)
-        res_gr = grs - (s_gr * els + i_gr)
+        res_uf = uf_deltas  - (s_uf * els + i_uf)
+        res_gr = grs        - (s_gr * els + i_gr)
 
         std_uf = np.std(res_uf) if np.std(res_uf) > 0 else 1.0
         std_gr = np.std(res_gr) if np.std(res_gr) > 0 else 1.0

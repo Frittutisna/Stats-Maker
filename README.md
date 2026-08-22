@@ -1,10 +1,11 @@
-# Hako Stats v1.1.1
+# Hako Stats v1.1.2
 
 ## Changelog
 
 1. Fixed broken Netlify deploy
 2. Tweaked configuration layout
 3. Updated single-type web display
+4. Tweaked Score calculation
 
 ## How to Install
 
