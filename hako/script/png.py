@@ -40,7 +40,7 @@ def create_player_png(
 
     if "Elo"                    in df_png.columns: df_png["Elo"]                    = pd.to_numeric(df_png["Elo"],                  errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
     if "UF"                     in df_png.columns: df_png["UF"]                     = pd.to_numeric(df_png["UF"],                   errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
-    if "Score"                  in df_png.columns: df_png["Score"]                  = pd.to_numeric(df_png["Score"],                errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
+    if "Score"                  in df_png.columns: df_png["Score"]                  = pd.to_numeric(df_png["Score"],                errors = "coerce").map(lambda x: f"{round(x)}"  if pd.notnull(x) else "N/A")
     if "Median Time"            in df_png.columns: df_png["Median Time"]            = pd.to_numeric(df_png["Median Time"],          errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
     if "Mean Over-8"            in df_png.columns: df_png["Mean Over-8"]            = pd.to_numeric(df_png["Mean Over-8"],          errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
     if "Rig Over-8"             in df_png.columns: df_png["Rig Over-8"]             = pd.to_numeric(df_png["Rig Over-8"],           errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")

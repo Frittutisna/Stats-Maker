@@ -5,7 +5,7 @@
 1. Fixed broken Netlify deploy
 2. Tweaked configuration layout
 3. Updated single-type web display
-4. Tweaked Score calculation
+4. Tweaked Score calculation and display
 
 ## How to Install
 

@@ -60,7 +60,7 @@ def render_dashboard_player(
                 "GR Δ"          : float (row_data["GR Δ"])          if pd.notnull(row_data.get("GR Δ"))     else np.nan,
                 "UF"            : float (row_data["UF"])            if "UF"     in row_data                 else np.nan,
                 "UF Δ"          : float (row_data["UF Δ"])          if pd.notnull(row_data.get("UF Δ"))     else np.nan,
-                "Score"         : float (row_data["Score"])         if "Score"  in row_data                 else np.nan,
+                "Score"         : int   (round(row_data["Score"]))  if "Score"  in row_data                 else np.nan,
                 "1/8s"          : int   (row_data["1/8s"]),
                 "2/8s"          : int   (row_data["2/8s"]),
                 "7/8s"          : int   (row_data["7/8s"]),
@@ -175,7 +175,7 @@ def render_dashboard_player(
     ]
 
     asc_cols    = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8", "Mean Difficulty Hit"]
-    int_cols    = ["1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
+    int_cols    = ["Score", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
     rate_cols   = ["GR", "OP GR", "ED GR", "IN GR", "Chant GR", "Rig GR", "Off GR"]
     stats_hl    = {}
 
@@ -479,7 +479,7 @@ def render_dashboard_plot(analyzer, avg_rank: float, raw_vintage_by_guess: dict,
             "seasonal_vintage"  : p_seas,
             "gr"                : float(round(analyzer.c_counts[name]       / analyzer.s_part   [name] * 100,   2)) if analyzer.s_part[name] else 0.0,
             "rig_gr"            : float(round(analyzer.p_rigs_h[name]       / analyzer.p_rigs   [name] * 100,   2)) if analyzer.p_rigs[name] else 0.0,
-            "performance"       : float(round(perf_score,                                                       2)),
+            "performance"       : int(round(perf_score)),
             "rig_rate"          : float(round(analyzer.p_rigs[name]         / analyzer.s_part   [name] * 100,   2)) if analyzer.s_part[name] else 0.0
         }
 

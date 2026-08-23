@@ -142,7 +142,7 @@ def compute_player_rows(
             else                                    : delta_uf = np.nan
 
             row.update({"UF Δ"  : round(delta_uf, 2) if pd.notnull(delta_uf) else np.nan})
-            row.update({"Score" : perf_map.get(name, 50.0)})
+            row.update({"Score" : round(perf_map.get(name, 50.0))})
 
         avg_over8 = analyzer.p_overs_sum[name] / cor if cor else np.nan
         row.update({"1/8s": analyzer.e_counts[name], "2/8s": analyzer.p_two_e[name], "7/8s": analyzer.p_rev_e[name], "Mean Over-8": avg_over8})
