@@ -279,7 +279,7 @@ function renderGuessScatterChart() {
         x               : scatterData.map(d => d.over8),
         y               : scatterData.map(d => d.vintage),
         text            : scatterData.map(d => d.acronym),
-        customdata      : scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), d.performance.toFixed(2)]),
+        customdata      : scatterData.map(d => [d.name, d.over8.toFixed(2), d.seasonal_vintage, d.gr.toFixed(2), Math.round(d.performance)]),
         hovertemplate   : '<b>%{customdata[0]}</b><br>Mean Over-8: %{customdata[1]}<br>Median Vintage: %{customdata[2]}<br>GR: %{customdata[3]}<br>Score: %{customdata[4]}<extra></extra>',
         hoverlabel      : {align: 'left', font: {family: 'Segoe UI', size: 15}},
         mode            : 'markers',

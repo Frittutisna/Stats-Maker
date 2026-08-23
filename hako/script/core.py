@@ -271,11 +271,24 @@ class TourAnalyzer:
 
                 alias_txt_path      = self.tour_dir / FILE_ALIAS
                 current_alias_lines = []
+                seen_players        = set()
 
                 if alias_txt_path.exists():
                     with open(alias_txt_path, "r", encoding = "utf-8") as f_alias:
                         for a_line in f_alias:
-                            if "," in a_line: current_alias_lines.append(a_line.strip().split(","))
+                            if "," in a_line:
+                                parts       = a_line.strip().split(",")
+                                p_name      = parts[0].strip()
+                                alias_name  = parts[1].strip() if len(parts) > 1 else p_name
+
+                                current_alias_lines .append ([p_name, alias_name])
+                                seen_players        .add    (p_name     .lower())
+                                seen_players        .add    (alias_name .lower())
+
+                for p_name in all_known:
+                    if p_name.lower() not in seen_players:
+                        current_alias_lines .append     ([p_name, p_name])
+                        seen_players        .add        (p_name.lower())
 
                 with open(alias_txt_path, "w", encoding = "utf-8") as f_out:
                     for parts in current_alias_lines:

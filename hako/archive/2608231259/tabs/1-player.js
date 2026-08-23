@@ -636,7 +636,7 @@ function sortAndRenderPlayers() {
                 if (h.name !== "Team" && h.name !== "Tier" && isWorst)  cellStyle += "highlight-worst ";
             }
 
-            let intCols = ["Tier", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"];
+            let intCols = ["Tier", "Score", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"];
             let formattedVal;
 
             if      (displayVal === undefined || displayVal === null || displayVal === "N/A")   formattedVal = "N/A";

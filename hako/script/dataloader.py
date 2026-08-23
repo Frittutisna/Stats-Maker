@@ -2,6 +2,7 @@ import datetime, json, os, re
 import pandas as pd
 
 from .config                import *
+from .dialog                import *
 from collections            import Counter, defaultdict
 from dateutil.relativedelta import relativedelta
 from pathlib                import Path
@@ -240,8 +241,11 @@ def load_team_data(
         with open(alias_path, "r", encoding = "utf-8") as f:
             for line in f:
                 if "," in line:
-                    k, v = line.strip().split(",", 1)
-                    local_aliases[k.strip().lower()] = v.strip()
+                    parts = [p.strip() for p in line.split(",")]
+
+                    if len(parts) >= 2:
+                        local_aliases[parts[0].lower()] = parts[1]
+                        local_aliases[parts[1].lower()] = parts[0]
 
     new_aliases = {}
 
@@ -250,7 +254,9 @@ def load_team_data(
 
         if p_low in local_aliases:
             m = local_aliases[p_low]
-            if m in all_known: return m
+
+            matched_known = next((n for n in all_known if n.lower() == m.lower()), None)
+            if matched_known: return matched_known
 
         match = next((n for n in all_known if n.lower() == p_low), None)
 
@@ -263,6 +269,26 @@ def load_team_data(
 
         if match: new_aliases[p_in] = match
         return match
+
+    all_code_players = []
+
+    for line in lines:
+        if line.lower().startswith(("average", "avg")) or line.startswith("http")                                   : continue
+        for p_in, _ in re.findall(TEAMS_RE, line.split("|")[0] if not line.lower().startswith("subs:") else line)   : all_code_players.append(p_in)
+
+    unmatched_known = set(all_known) - {find_best_match(p) for p in all_code_players if find_best_match(p)}
+
+    for p_in in all_code_players:
+        if not find_best_match(p_in) and unmatched_known:
+            dialog = AskPlayerSelectionDialog(None, f"Alias Resolution: {p_in}", f"Which of the following corresponds to {p_in}?", sorted(list(unmatched_known)))
+
+            if dialog.result_selection:
+                selected_match                          = dialog.result_selection
+                local_aliases[p_in.lower()]             = selected_match
+                local_aliases[selected_match.lower()]   = p_in
+                new_aliases[p_in]                       = selected_match
+
+                unmatched_known.discard(selected_match)
 
     for line in lines:
         matches = re.findall(TEAMS_RE, line)

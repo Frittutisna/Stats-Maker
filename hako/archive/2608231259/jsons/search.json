@@ -190,8 +190,8 @@
             "zist"
         ],
         "lives_taken_flat": [
-            "bettyflores",
-            "dking20"
+            "dking20",
+            "bettyflores"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -559,8 +559,8 @@
             "Unknown17"
         ],
         "guessers_hover": [
-            "Team DKing20: DKing20 (4.14), I_dont_like_loli (4.97), Unknown17 (3.27)",
-            "Team zist: None"
+            "Team zist: Kyuu (4.90)",
+            "Team DKing20: DKing20 (4.14), I_dont_like_loli (4.97), Unknown17 (3.27)"
         ],
         "listers_flat": [
             "Kyuu",
@@ -568,8 +568,8 @@
             "Unknown17"
         ],
         "listers_hover": [
-            "Team DKing20: I_dont_like_loli, Unknown17",
-            "Team zist: None"
+            "Team zist: Kyuu",
+            "Team DKing20: I_dont_like_loli, Unknown17"
         ],
         "room_players": [
             "BettyFlores",
@@ -581,14 +581,13 @@
             "Unknown17",
             "zist"
         ],
-        "lives_taken_flat": [
-            "unknown17",
-            "i_dont_like_loli",
-            "dking20"
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "kyuu"
         ],
-        "lives_saved_flat": [],
         "correct_teams_flat": [
             5,
+            3,
             5,
             5
         ],
@@ -631,14 +630,14 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: None",
+            "Team zist: Kyuu (20.03)",
             "Team bamboo: None"
         ],
         "listers_flat": [
             "Kyuu"
         ],
         "listers_hover": [
-            "Team zist: None",
+            "Team zist: Kyuu",
             "Team bamboo: None"
         ],
         "room_players": [
@@ -651,9 +650,13 @@
             "bamboo",
             "zist"
         ],
-        "lives_taken_flat": [],
+        "lives_taken_flat": [
+            "kyuu"
+        ],
         "lives_saved_flat": [],
-        "correct_teams_flat": [],
+        "correct_teams_flat": [
+            3
+        ],
         "alts": [],
         "start_sample": 11
     },
@@ -726,16 +729,16 @@
         "lives_saved_flat": [],
         "correct_teams_flat": [],
         "alts": [
-            "Ao no Exorcist: Yuki no Hate-hen",
-            "Blue Exorcist: The Movie",
-            "Blue Exorcist: The Blue Night Saga",
-            "Blue Exorcist: Beyond the Snow Saga",
-            "Ao no Exorcist: Shimane Illuminati-hen",
             "Ao no Exorcist",
-            "Blue Exorcist: Shimane Illuminati Saga",
             "Ao no Exorcist Gekijouban",
+            "Ao no Exorcist: Yuki no Hate-hen",
+            "Blue Exorcist: Shimane Illuminati Saga",
+            "Blue Exorcist: Beyond the Snow Saga",
+            "Blue Exorcist: The Movie",
             "Blue Exorcist",
-            "Ao no Exorcist: Yosuga-hen"
+            "Ao no Exorcist: Yosuga-hen",
+            "Blue Exorcist: The Blue Night Saga",
+            "Ao no Exorcist: Shimane Illuminati-hen"
         ],
         "start_sample": 123
     },
@@ -1137,7 +1140,7 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: GyroInmobile (5.13), Catge (4.37), FoopyPoopy (4.27), TheNoblesse (3.92)",
-            "Team zist: Serozero (3.80)"
+            "Team zist: Kyuu (5.69), Serozero (3.80)"
         ],
         "listers_flat": [
             "FoopyPoopy",
@@ -1159,14 +1162,13 @@
             "zist"
         ],
         "lives_taken_flat": [],
-        "lives_saved_flat": [
-            "serozero"
-        ],
+        "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
             1,
             1,
             1,
+            3,
             3
         ],
         "alts": [
@@ -1833,8 +1835,8 @@
             "Unknown17"
         ],
         "lives_taken_flat": [
-            "hakohoka",
-            "jlin2"
+            "jlin2",
+            "hakohoka"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -2026,8 +2028,8 @@
             "Unknown17"
         ],
         "guessers_hover": [
-            "Team DKing20: DKing20 (8.38), I_dont_like_loli (5.76), Unknown17 (7.89)",
-            "Team zist: None"
+            "Team zist: Kyuu (11.58)",
+            "Team DKing20: DKing20 (8.38), I_dont_like_loli (5.76), Unknown17 (7.89)"
         ],
         "listers_flat": [
             "DKing20",
@@ -2048,14 +2050,13 @@
             "Unknown17",
             "zist"
         ],
-        "lives_taken_flat": [
-            "unknown17",
-            "i_dont_like_loli",
-            "dking20"
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "kyuu"
         ],
-        "lives_saved_flat": [],
         "correct_teams_flat": [
             5,
+            3,
             5,
             5
         ],
@@ -2174,7 +2175,7 @@
             "I_dont_like_loli"
         ],
         "guessers_hover": [
-            "Team zist: zist (2.69)",
+            "Team zist: zist (2.69), Kyuu (3.98)",
             "Team DKing20: DKing20 (5.12), BettyFlores (7.97), I_dont_like_loli (13.26)"
         ],
         "listers_flat": [
@@ -2185,7 +2186,7 @@
             "I_dont_like_loli"
         ],
         "listers_hover": [
-            "Team zist: zist",
+            "Team zist: zist, Kyuu",
             "Team DKing20: DKing20, BettyFlores, I_dont_like_loli"
         ],
         "room_players": [
@@ -2199,11 +2200,10 @@
             "zist"
         ],
         "lives_taken_flat": [],
-        "lives_saved_flat": [
-            "zist"
-        ],
+        "lives_saved_flat": [],
         "correct_teams_flat": [
             5,
+            3,
             3,
             5,
             5
@@ -2621,7 +2621,7 @@
         ],
         "guessers_hover": [
             "Team Jlin2: Jlin2 (4.63), Shinks (9.79), HakoHoka (5.13)",
-            "Team PoolNoodle: YTK_Bowser (7.68)"
+            "Team PoolNoodle: Ireland (4.64), YTK_Bowser (7.68)"
         ],
         "listers_flat": [
             "HakoHoka",
@@ -2631,7 +2631,7 @@
         ],
         "listers_hover": [
             "Team Jlin2: Jlin2, HakoHoka",
-            "Team PoolNoodle: YTK_Bowser"
+            "Team PoolNoodle: Ireland, YTK_Bowser"
         ],
         "room_players": [
             "DreamFlyAway",
@@ -2644,13 +2644,12 @@
             "YTK_Bowser"
         ],
         "lives_taken_flat": [],
-        "lives_saved_flat": [
-            "ytk_bowser"
-        ],
+        "lives_saved_flat": [],
         "correct_teams_flat": [
             2,
             2,
             2,
+            6,
             6
         ],
         "alts": [],
@@ -2955,8 +2954,8 @@
             "YTK_Bowser"
         ],
         "lives_taken_flat": [
-            "ytk_bowser",
-            "poolnoodle"
+            "poolnoodle",
+            "ytk_bowser"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -3688,7 +3687,7 @@
             "BigSmo"
         ],
         "guessers_hover": [
-            "Team zist: zist (4.20), Serozero (3.09)",
+            "Team zist: zist (4.20), Kyuu (4.51), Serozero (3.09)",
             "Team bamboo: bamboo (2.94), BigSmo (3.76), ange (3.26)"
         ],
         "listers_flat": [
@@ -3701,7 +3700,7 @@
             "BigSmo"
         ],
         "listers_hover": [
-            "Team zist: zist, Serozero",
+            "Team zist: zist, Kyuu, Serozero",
             "Team bamboo: bamboo, BigSmo, ange, KazuyaSouma1"
         ],
         "room_players": [
@@ -3719,6 +3718,7 @@
         "correct_teams_flat": [
             4,
             4,
+            3,
             3,
             3,
             4
@@ -4202,7 +4202,7 @@
         ],
         "guessers_hover": [
             "Team Jlin2: Jlin2 (5.99)",
-            "Team zist: None"
+            "Team zist: Kyuu (8.84)"
         ],
         "listers_flat": [
             "Shinks",
@@ -4212,7 +4212,7 @@
         ],
         "listers_hover": [
             "Team Jlin2: Jlin2, Shinks",
-            "Team zist: zist"
+            "Team zist: zist, Kyuu"
         ],
         "room_players": [
             "DreamFlyAway",
@@ -4224,12 +4224,14 @@
             "Shinks",
             "zist"
         ],
-        "lives_taken_flat": [
-            "jlin2"
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "jlin2",
+            "kyuu"
         ],
-        "lives_saved_flat": [],
         "correct_teams_flat": [
-            2
+            2,
+            3
         ],
         "alts": [],
         "start_sample": 36
@@ -4552,7 +4554,7 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: None",
+            "Team zist: Kyuu (8.05)",
             "Team DKing20: None"
         ],
         "listers_flat": [
@@ -4562,7 +4564,7 @@
             "I_dont_like_loli"
         ],
         "listers_hover": [
-            "Team zist: zist",
+            "Team zist: zist, Kyuu",
             "Team DKing20: BettyFlores, I_dont_like_loli"
         ],
         "room_players": [
@@ -4575,9 +4577,13 @@
             "Unknown17",
             "zist"
         ],
-        "lives_taken_flat": [],
+        "lives_taken_flat": [
+            "kyuu"
+        ],
         "lives_saved_flat": [],
-        "correct_teams_flat": [],
+        "correct_teams_flat": [
+            3
+        ],
         "alts": [],
         "start_sample": 20
     },
@@ -4693,8 +4699,8 @@
             "bamboo"
         ],
         "lives_taken_flat": [
-            "hakohoka",
-            "jlin2"
+            "jlin2",
+            "hakohoka"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -4756,8 +4762,8 @@
             "zist"
         ],
         "lives_taken_flat": [
-            "hakohoka",
-            "jlin2"
+            "jlin2",
+            "hakohoka"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -5662,8 +5668,8 @@
             4
         ],
         "alts": [
-            "Gekijouban Mahou Shoujo Madoka★Magica Kouhen: Eien no Monogatari",
-            "Puella Magi Madoka Magica the Movie Part 2: Eternal"
+            "Puella Magi Madoka Magica the Movie Part 2: Eternal",
+            "Gekijouban Mahou Shoujo Madoka★Magica Kouhen: Eien no Monogatari"
         ],
         "start_sample": 228
     },
@@ -6006,8 +6012,8 @@
             "bamboo"
         ],
         "lives_taken_flat": [
-            "bigsmo",
-            "bamboo"
+            "bamboo",
+            "bigsmo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -6091,8 +6097,8 @@
             3
         ],
         "alts": [
-            "Milky☆Subway: The Galactic Limited Express - The Movie",
-            "Ginga Tokkyuu Milky☆Subway: Kakueki Teisha Gekijou Yuki"
+            "Ginga Tokkyuu Milky☆Subway: Kakueki Teisha Gekijou Yuki",
+            "Milky☆Subway: The Galactic Limited Express - The Movie"
         ],
         "start_sample": 0
     },
@@ -6143,14 +6149,14 @@
         ],
         "guessers_hover": [
             "Team bamboo: bamboo (6.21)",
-            "Team PoolNoodle: PoolNoodle (4.64)"
+            "Team PoolNoodle: PoolNoodle (4.64), Ireland (14.31)"
         ],
         "listers_flat": [
             "Ireland",
             "PoolNoodle"
         ],
         "listers_hover": [
-            "Team PoolNoodle: PoolNoodle",
+            "Team PoolNoodle: PoolNoodle, Ireland",
             "Team bamboo: None"
         ],
         "room_players": [
@@ -6165,18 +6171,18 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [
-            "bamboo",
-            "poolnoodle"
+            "bamboo"
         ],
         "correct_teams_flat": [
             4,
+            6,
             6
         ],
         "alts": [
-            "Time Bokan: Gyakushuu no San Akunin",
             "Gintama.",
             "Shinkansen Henkei Robo Shinkalion The Animation",
-            "Time Bokan: The Villains Strike Back"
+            "Time Bokan: The Villains Strike Back",
+            "Time Bokan: Gyakushuu no San Akunin"
         ],
         "start_sample": 5
     },
@@ -6290,7 +6296,7 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: zist (18.48)",
+            "Team zist: zist (18.48), Kyuu (17.58)",
             "Team bamboo: ange (6.99)"
         ],
         "listers_flat": [
@@ -6312,11 +6318,11 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [
-            "zist",
             "ange"
         ],
         "correct_teams_flat": [
             4,
+            3,
             3
         ],
         "alts": [],
@@ -6999,7 +7005,7 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: GyroInmobile (14.15), Catge (3.36), FoopyPoopy (4.98)",
-            "Team zist: zist (4.32)"
+            "Team zist: zist (4.32), Kyuu (11.69)"
         ],
         "listers_flat": [
             "FoopyPoopy",
@@ -7022,13 +7028,12 @@
             "zist"
         ],
         "lives_taken_flat": [],
-        "lives_saved_flat": [
-            "zist"
-        ],
+        "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
             1,
             1,
+            3,
             3
         ],
         "alts": [],
@@ -7070,16 +7075,16 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team PoolNoodle: PoolNoodle (3.24), Metak (5.43)",
-            "Team zist: None"
+            "Team zist: Kyuu (4.17)",
+            "Team PoolNoodle: PoolNoodle (3.24), Metak (5.43)"
         ],
         "listers_flat": [
             "Metak",
             "Kyuu"
         ],
         "listers_hover": [
-            "Team PoolNoodle: Metak",
-            "Team zist: None"
+            "Team zist: Kyuu",
+            "Team PoolNoodle: Metak"
         ],
         "room_players": [
             "Ireland",
@@ -7091,14 +7096,14 @@
             "YTK_Bowser",
             "zist"
         ],
-        "lives_taken_flat": [
-            "metak",
-            "poolnoodle"
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "kyuu"
         ],
-        "lives_saved_flat": [],
         "correct_teams_flat": [
             6,
-            6
+            6,
+            3
         ],
         "alts": [],
         "start_sample": 0
@@ -7626,8 +7631,8 @@
             "Kyuu"
         ],
         "listers_hover": [
-            "Team PoolNoodle: PoolNoodle",
-            "Team zist: None"
+            "Team zist: Kyuu",
+            "Team PoolNoodle: PoolNoodle"
         ],
         "room_players": [
             "Ireland",
@@ -7814,8 +7819,8 @@
         ],
         "alts": [
             "Saga of Tanya the Evil: The Movie",
-            "Gekijouban Youjo Senki",
             "Youjo Senki",
+            "Gekijouban Youjo Senki",
             "Saga of Tanya the Evil"
         ],
         "start_sample": 0
@@ -8430,14 +8435,14 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: Serozero (10.52)",
+            "Team zist: Kyuu (4.74), Serozero (10.52)",
             "Team DKing20: DKing20 (10.47)"
         ],
         "listers_flat": [
             "Kyuu"
         ],
         "listers_hover": [
-            "Team zist: None",
+            "Team zist: Kyuu",
             "Team DKing20: None"
         ],
         "room_players": [
@@ -8452,12 +8457,12 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [
-            "serozero",
             "dking20"
         ],
         "correct_teams_flat": [
             3,
-            5
+            5,
+            3
         ],
         "alts": [],
         "start_sample": 33
@@ -8647,7 +8652,7 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: FoopyPoopy (3.77)",
-            "Team zist: None"
+            "Team zist: Kyuu (10.49)"
         ],
         "listers_flat": [
             "FoopyPoopy"
@@ -8666,12 +8671,14 @@
             "TheNoblesse",
             "zist"
         ],
-        "lives_taken_flat": [
-            "foopypoopy"
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "foopypoopy",
+            "kyuu"
         ],
-        "lives_saved_flat": [],
         "correct_teams_flat": [
-            1
+            1,
+            3
         ],
         "alts": [],
         "start_sample": 38
@@ -8721,7 +8728,7 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: zist (8.07), Serozero (4.45)",
+            "Team zist: zist (8.07), Kyuu (5.47), Serozero (4.45)",
             "Team bamboo: bamboo (8.55), ange (6.36)"
         ],
         "listers_flat": [
@@ -8730,7 +8737,7 @@
             "Kyuu"
         ],
         "listers_hover": [
-            "Team zist: zist, Serozero",
+            "Team zist: zist, Kyuu, Serozero",
             "Team bamboo: None"
         ],
         "room_players": [
@@ -8748,6 +8755,7 @@
         "correct_teams_flat": [
             4,
             4,
+            3,
             3,
             3
         ],
@@ -8794,7 +8802,7 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: None",
+            "Team zist: Kyuu (10.46)",
             "Team DKing20: None"
         ],
         "listers_flat": [
@@ -8814,9 +8822,13 @@
             "Unknown17",
             "zist"
         ],
-        "lives_taken_flat": [],
+        "lives_taken_flat": [
+            "kyuu"
+        ],
         "lives_saved_flat": [],
-        "correct_teams_flat": [],
+        "correct_teams_flat": [
+            3
+        ],
         "alts": [
             "The Garden of Sinners Remix: Gate of Seventh Heaven",
             "Kara no Kyoukai Remix: Gate of Seventh Heaven"
@@ -8938,7 +8950,7 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: Catge (2.02), TheNoblesse (9.16)",
-            "Team zist: None"
+            "Team zist: Kyuu (7.06)"
         ],
         "listers_flat": [
             "Catge",
@@ -8948,7 +8960,7 @@
         ],
         "listers_hover": [
             "Team GyroInmobile: GyroInmobile, Catge",
-            "Team zist: Serozero"
+            "Team zist: Kyuu, Serozero"
         ],
         "room_players": [
             "Catge",
@@ -8960,14 +8972,14 @@
             "TheNoblesse",
             "zist"
         ],
-        "lives_taken_flat": [
-            "catge",
-            "thenoblesse"
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "kyuu"
         ],
-        "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
-            1
+            1,
+            3
         ],
         "alts": [],
         "start_sample": 64
@@ -9019,14 +9031,14 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: GyroInmobile (10.26)",
-            "Team zist: Serozero (2.62)"
+            "Team zist: Kyuu (4.41), Serozero (2.62)"
         ],
         "listers_flat": [
             "Serozero",
             "Kyuu"
         ],
         "listers_hover": [
-            "Team zist: Serozero",
+            "Team zist: Kyuu, Serozero",
             "Team GyroInmobile: None"
         ],
         "room_players": [
@@ -9041,11 +9053,11 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [
-            "gyroinmobile",
-            "serozero"
+            "gyroinmobile"
         ],
         "correct_teams_flat": [
             1,
+            3,
             3
         ],
         "alts": [],
@@ -9092,7 +9104,7 @@
             "I_dont_like_loli"
         ],
         "guessers_hover": [
-            "Team zist: zist (3.25)",
+            "Team zist: zist (3.25), Kyuu (5.32)",
             "Team DKing20: DKing20 (17.71), BettyFlores (19.30), I_dont_like_loli (19.15)"
         ],
         "listers_flat": [
@@ -9101,7 +9113,7 @@
             "BettyFlores"
         ],
         "listers_hover": [
-            "Team zist: zist",
+            "Team zist: zist, Kyuu",
             "Team DKing20: BettyFlores"
         ],
         "room_players": [
@@ -9115,11 +9127,10 @@
             "zist"
         ],
         "lives_taken_flat": [],
-        "lives_saved_flat": [
-            "zist"
-        ],
+        "lives_saved_flat": [],
         "correct_teams_flat": [
             5,
+            3,
             3,
             5,
             5
@@ -9317,7 +9328,7 @@
         ],
         "guessers_hover": [
             "Team Jlin2: Jlin2 (5.65), HakoHoka (5.00)",
-            "Team zist: zist (9.57), Raphtelia (5.65)"
+            "Team zist: zist (9.57), Kyuu (6.47), Raphtelia (5.65)"
         ],
         "listers_flat": [
             "HakoHoka",
@@ -9328,7 +9339,7 @@
         ],
         "listers_hover": [
             "Team Jlin2: Shinks, HakoHoka",
-            "Team zist: zist, Raphtelia"
+            "Team zist: zist, Kyuu, Raphtelia"
         ],
         "room_players": [
             "DreamFlyAway",
@@ -9345,6 +9356,7 @@
         "correct_teams_flat": [
             2,
             2,
+            3,
             3,
             3
         ],
@@ -9570,7 +9582,7 @@
         ],
         "guessers_hover": [
             "Team DKing20: I_dont_like_loli (17.48)",
-            "Team PoolNoodle: PoolNoodle (7.27), Metak (17.76)"
+            "Team PoolNoodle: PoolNoodle (7.27), Metak (17.76), Ireland (15.45)"
         ],
         "listers_flat": [
             "PoolNoodle",
@@ -9579,7 +9591,7 @@
         ],
         "listers_hover": [
             "Team DKing20: DKing20",
-            "Team PoolNoodle: PoolNoodle"
+            "Team PoolNoodle: PoolNoodle, Ireland"
         ],
         "room_players": [
             "BettyFlores",
@@ -9596,6 +9608,7 @@
             "i_dont_like_loli"
         ],
         "correct_teams_flat": [
+            6,
             6,
             6,
             5
@@ -9660,7 +9673,7 @@
         ],
         "listers_hover": [
             "Team bamboo: bamboo",
-            "Team PoolNoodle: PoolNoodle"
+            "Team PoolNoodle: PoolNoodle, Ireland"
         ],
         "room_players": [
             "BigSmo",
@@ -10572,7 +10585,7 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: zist (1.89)",
+            "Team zist: zist (1.89), Kyuu (10.74)",
             "Team PoolNoodle: PoolNoodle (3.19), Metak (6.26)"
         ],
         "listers_flat": [
@@ -10595,12 +10608,11 @@
             "zist"
         ],
         "lives_taken_flat": [],
-        "lives_saved_flat": [
-            "zist"
-        ],
+        "lives_saved_flat": [],
         "correct_teams_flat": [
             6,
             6,
+            3,
             3
         ],
         "alts": [],
@@ -10745,8 +10757,8 @@
         ],
         "lives_taken_flat": [
             "ange",
-            "bigsmo",
-            "bamboo"
+            "bamboo",
+            "bigsmo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -10831,12 +10843,12 @@
             6
         ],
         "alts": [
-            "Macross 7 Encore",
-            "Macross 7",
-            "Macross 7: The Galaxy is Calling Me!",
             "Gekijouban Macross 7: Ginga ga Ore o Yondeiru!",
+            "Macross FB7: Listen to My Song!",
+            "Macross 7: The Galaxy is Calling Me!",
             "Macross FB7: Ore no Uta o Kike!",
-            "Macross FB7: Listen to My Song!"
+            "Macross 7 Encore",
+            "Macross 7"
         ],
         "start_sample": 5
     },
@@ -10898,7 +10910,7 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: None",
+            "Team zist: Kyuu (12.43)",
             "Team DKing20: None"
         ],
         "listers_flat": [
@@ -10919,9 +10931,13 @@
             "Unknown17",
             "zist"
         ],
-        "lives_taken_flat": [],
+        "lives_taken_flat": [
+            "kyuu"
+        ],
         "lives_saved_flat": [],
-        "correct_teams_flat": [],
+        "correct_teams_flat": [
+            3
+        ],
         "alts": [],
         "start_sample": 123
     },
@@ -11046,7 +11062,7 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: GyroInmobile (18.43), Catge (3.47), FoopyPoopy (4.36)",
-            "Team zist: zist (11.52), Serozero (3.57)"
+            "Team zist: zist (11.52), Kyuu (6.77), Serozero (3.57)"
         ],
         "listers_flat": [
             "FoopyPoopy",
@@ -11056,7 +11072,7 @@
         ],
         "listers_hover": [
             "Team GyroInmobile: FoopyPoopy",
-            "Team zist: zist, Serozero"
+            "Team zist: zist, Kyuu, Serozero"
         ],
         "room_players": [
             "Catge",
@@ -11074,6 +11090,7 @@
             1,
             1,
             1,
+            3,
             3,
             3
         ],
@@ -11993,7 +12010,7 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: zist (6.44), Raphtelia (6.12)",
+            "Team zist: zist (6.44), Kyuu (9.04), Raphtelia (6.12)",
             "Team PoolNoodle: None"
         ],
         "listers_flat": [
@@ -12015,11 +12032,13 @@
             "zist"
         ],
         "lives_taken_flat": [
+            "kyuu",
             "raphtelia",
             "zist"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
+            3,
             3,
             3
         ],
@@ -12219,14 +12238,14 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: GyroInmobile (6.20)",
-            "Team zist: zist (11.44)"
+            "Team zist: zist (11.44), Kyuu (10.12)"
         ],
         "listers_flat": [
             "Kyuu"
         ],
         "listers_hover": [
-            "Team GyroInmobile: None",
-            "Team zist: None"
+            "Team zist: Kyuu",
+            "Team GyroInmobile: None"
         ],
         "room_players": [
             "Catge",
@@ -12240,11 +12259,11 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [
-            "gyroinmobile",
-            "zist"
+            "gyroinmobile"
         ],
         "correct_teams_flat": [
             1,
+            3,
             3
         ],
         "alts": [],
@@ -12355,7 +12374,7 @@
             "BigSmo"
         ],
         "guessers_hover": [
-            "Team zist: zist (5.13)",
+            "Team zist: zist (5.13), Kyuu (5.43)",
             "Team bamboo: BigSmo (18.88)"
         ],
         "listers_flat": [
@@ -12363,8 +12382,8 @@
             "BigSmo"
         ],
         "listers_hover": [
-            "Team bamboo: BigSmo",
-            "Team zist: None"
+            "Team zist: Kyuu",
+            "Team bamboo: BigSmo"
         ],
         "room_players": [
             "BigSmo",
@@ -12378,10 +12397,10 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [
-            "zist",
             "bigsmo"
         ],
         "correct_teams_flat": [
+            3,
             3,
             4
         ],
@@ -12518,7 +12537,7 @@
             "Serozero"
         ],
         "guessers_hover": [
-            "Team zist: Serozero (2.49), Raphtelia (5.00)",
+            "Team zist: Kyuu (7.21), Serozero (2.49), Raphtelia (5.00)",
             "Team PoolNoodle: PoolNoodle (3.13), Metak (3.13)"
         ],
         "listers_flat": [
@@ -12529,7 +12548,7 @@
             "Serozero"
         ],
         "listers_hover": [
-            "Team zist: zist, Serozero, Raphtelia",
+            "Team zist: zist, Kyuu, Serozero, Raphtelia",
             "Team PoolNoodle: YTK_Bowser"
         ],
         "room_players": [
@@ -12547,6 +12566,7 @@
         "correct_teams_flat": [
             6,
             6,
+            3,
             3,
             3
         ],
@@ -12848,14 +12868,14 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: GyroInmobile (8.37)",
-            "Team PoolNoodle: PoolNoodle (7.68)"
+            "Team PoolNoodle: PoolNoodle (7.68), Ireland (4.83)"
         ],
         "listers_flat": [
             "Ireland",
             "PoolNoodle"
         ],
         "listers_hover": [
-            "Team PoolNoodle: PoolNoodle",
+            "Team PoolNoodle: PoolNoodle, Ireland",
             "Team GyroInmobile: None"
         ],
         "room_players": [
@@ -12870,11 +12890,11 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [
-            "gyroinmobile",
-            "poolnoodle"
+            "gyroinmobile"
         ],
         "correct_teams_flat": [
             1,
+            6,
             6
         ],
         "alts": [],
@@ -12976,14 +12996,14 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: None",
+            "Team zist: Kyuu (6.13)",
             "Team bamboo: None"
         ],
         "listers_flat": [
             "Kyuu"
         ],
         "listers_hover": [
-            "Team zist: None",
+            "Team zist: Kyuu",
             "Team bamboo: None"
         ],
         "room_players": [
@@ -12996,9 +13016,13 @@
             "bamboo",
             "zist"
         ],
-        "lives_taken_flat": [],
+        "lives_taken_flat": [
+            "kyuu"
+        ],
         "lives_saved_flat": [],
-        "correct_teams_flat": [],
+        "correct_teams_flat": [
+            3
+        ],
         "alts": [],
         "start_sample": 67
     },
@@ -13041,7 +13065,7 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: GyroInmobile (3.38), Catge (2.63)",
-            "Team PoolNoodle: PoolNoodle (5.27)"
+            "Team PoolNoodle: PoolNoodle (5.27), Ireland (5.17)"
         ],
         "listers_flat": [
             "GyroInmobile",
@@ -13053,7 +13077,7 @@
         ],
         "listers_hover": [
             "Team GyroInmobile: GyroInmobile, Catge, TheNoblesse",
-            "Team PoolNoodle: PoolNoodle, YTK_Bowser"
+            "Team PoolNoodle: PoolNoodle, Ireland, YTK_Bowser"
         ],
         "room_players": [
             "Catge",
@@ -13066,12 +13090,11 @@
             "YTK_Bowser"
         ],
         "lives_taken_flat": [],
-        "lives_saved_flat": [
-            "poolnoodle"
-        ],
+        "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
             1,
+            6,
             6
         ],
         "alts": [],
@@ -13441,7 +13464,7 @@
         ],
         "guessers_hover": [
             "Team Jlin2: Jlin2 (3.02), HakoHoka (7.02)",
-            "Team zist: zist (5.05), Serozero (5.57)"
+            "Team zist: zist (5.05), Kyuu (5.16), Serozero (5.57)"
         ],
         "listers_flat": [
             "Jlin2",
@@ -13466,6 +13489,7 @@
         "correct_teams_flat": [
             2,
             2,
+            3,
             3,
             3
         ],
@@ -13581,7 +13605,7 @@
         ],
         "guessers_hover": [
             "Team Jlin2: Jlin2 (2.65), Shinks (6.25)",
-            "Team zist: zist (13.31)"
+            "Team zist: zist (13.31), Kyuu (7.17)"
         ],
         "listers_flat": [
             "DreamFlyAway",
@@ -13604,12 +13628,11 @@
             "zist"
         ],
         "lives_taken_flat": [],
-        "lives_saved_flat": [
-            "zist"
-        ],
+        "lives_saved_flat": [],
         "correct_teams_flat": [
             2,
             2,
+            3,
             3
         ],
         "alts": [],
@@ -13737,7 +13760,7 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: Catge (9.12), FoopyPoopy (18.64), TheNoblesse (10.13)",
-            "Team zist: None"
+            "Team zist: Kyuu (4.95)"
         ],
         "listers_flat": [
             "FoopyPoopy",
@@ -13747,7 +13770,7 @@
         ],
         "listers_hover": [
             "Team GyroInmobile: GyroInmobile, Catge, FoopyPoopy",
-            "Team zist: None"
+            "Team zist: Kyuu"
         ],
         "room_players": [
             "Catge",
@@ -13759,23 +13782,22 @@
             "TheNoblesse",
             "zist"
         ],
-        "lives_taken_flat": [
-            "catge",
-            "thenoblesse",
-            "foopypoopy"
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "kyuu"
         ],
-        "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
             1,
-            1
+            1,
+            3
         ],
         "alts": [
-            "Overlord",
-            "Gekijouban Overlord: Shikkoku no Eiyuu",
-            "Overlord: The Dark Warrior",
             "Gekijouban Overlord: Fushisha no Ou",
-            "Overlord: The Undead King"
+            "Overlord: The Undead King",
+            "Overlord: The Dark Warrior",
+            "Overlord",
+            "Gekijouban Overlord: Shikkoku no Eiyuu"
         ],
         "start_sample": 1
     },
@@ -13822,8 +13844,8 @@
             "I_dont_like_loli"
         ],
         "listers_hover": [
-            "Team DKing20: I_dont_like_loli",
-            "Team zist: None"
+            "Team zist: Kyuu",
+            "Team DKing20: I_dont_like_loli"
         ],
         "room_players": [
             "BettyFlores",
@@ -13958,8 +13980,8 @@
             "I_dont_like_loli"
         ],
         "guessers_hover": [
-            "Team DKing20: DKing20 (3.76), I_dont_like_loli (5.99)",
-            "Team zist: None"
+            "Team zist: Kyuu (4.07)",
+            "Team DKing20: DKing20 (3.76), I_dont_like_loli (5.99)"
         ],
         "listers_flat": [
             "DKing20",
@@ -13969,8 +13991,8 @@
             "Unknown17"
         ],
         "listers_hover": [
-            "Team DKing20: DKing20, BettyFlores, I_dont_like_loli, Unknown17",
-            "Team zist: None"
+            "Team zist: Kyuu",
+            "Team DKing20: DKing20, BettyFlores, I_dont_like_loli, Unknown17"
         ],
         "room_players": [
             "BettyFlores",
@@ -13982,13 +14004,13 @@
             "Unknown17",
             "zist"
         ],
-        "lives_taken_flat": [
-            "dking20",
-            "i_dont_like_loli"
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "kyuu"
         ],
-        "lives_saved_flat": [],
         "correct_teams_flat": [
             5,
+            3,
             5
         ],
         "alts": [
@@ -14336,8 +14358,8 @@
             "zist"
         ],
         "lives_taken_flat": [
-            "bettyflores",
-            "dking20"
+            "dking20",
+            "bettyflores"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -14389,7 +14411,7 @@
             "I_dont_like_loli"
         ],
         "guessers_hover": [
-            "Team zist: zist (5.74)",
+            "Team zist: zist (5.74), Kyuu (7.35)",
             "Team DKing20: DKing20 (12.56), BettyFlores (5.17), I_dont_like_loli (16.22)"
         ],
         "listers_flat": [
@@ -14397,8 +14419,8 @@
             "BettyFlores"
         ],
         "listers_hover": [
-            "Team DKing20: BettyFlores",
-            "Team zist: None"
+            "Team zist: Kyuu",
+            "Team DKing20: BettyFlores"
         ],
         "room_players": [
             "BettyFlores",
@@ -14411,11 +14433,10 @@
             "zist"
         ],
         "lives_taken_flat": [],
-        "lives_saved_flat": [
-            "zist"
-        ],
+        "lives_saved_flat": [],
         "correct_teams_flat": [
             5,
+            3,
             3,
             5,
             5
@@ -14688,7 +14709,7 @@
             "PoolNoodle"
         ],
         "guessers_hover": [
-            "Team PoolNoodle: PoolNoodle (16.25)",
+            "Team PoolNoodle: PoolNoodle (16.25), Ireland (4.62)",
             "Team bamboo: None"
         ],
         "listers_flat": [
@@ -14698,7 +14719,7 @@
         ],
         "listers_hover": [
             "Team bamboo: BigSmo",
-            "Team PoolNoodle: YTK_Bowser"
+            "Team PoolNoodle: Ireland, YTK_Bowser"
         ],
         "room_players": [
             "BigSmo",
@@ -14711,10 +14732,12 @@
             "bamboo"
         ],
         "lives_taken_flat": [
+            "ireland",
             "poolnoodle"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
+            6,
             6
         ],
         "alts": [],
@@ -14889,7 +14912,7 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: None",
+            "Team zist: Kyuu (11.90)",
             "Team DKing20: None"
         ],
         "listers_flat": [
@@ -14897,7 +14920,7 @@
             "Kyuu"
         ],
         "listers_hover": [
-            "Team zist: Serozero",
+            "Team zist: Kyuu, Serozero",
             "Team DKing20: None"
         ],
         "room_players": [
@@ -14910,9 +14933,13 @@
             "Unknown17",
             "zist"
         ],
-        "lives_taken_flat": [],
+        "lives_taken_flat": [
+            "kyuu"
+        ],
         "lives_saved_flat": [],
-        "correct_teams_flat": [],
+        "correct_teams_flat": [
+            3
+        ],
         "alts": [
             "RikeKoi r=1-sinΘ"
         ],
@@ -15942,14 +15969,14 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: zist (14.57)",
+            "Team zist: zist (14.57), Kyuu (4.64)",
             "Team PoolNoodle: None"
         ],
         "listers_flat": [
             "Kyuu"
         ],
         "listers_hover": [
-            "Team zist: None",
+            "Team zist: Kyuu",
             "Team PoolNoodle: None"
         ],
         "room_players": [
@@ -15963,10 +15990,12 @@
             "zist"
         ],
         "lives_taken_flat": [
+            "kyuu",
             "zist"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
+            3,
             3
         ],
         "alts": [],
@@ -16032,7 +16061,7 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: GyroInmobile (3.71), Catge (3.01), FoopyPoopy (8.18)",
-            "Team zist: zist (5.22), Serozero (20.00), Raphtelia (20.05)"
+            "Team zist: zist (5.22), Kyuu (4.88), Serozero (20.00), Raphtelia (20.05)"
         ],
         "listers_flat": [
             "Catge",
@@ -16040,7 +16069,7 @@
         ],
         "listers_hover": [
             "Team GyroInmobile: Catge",
-            "Team zist: None"
+            "Team zist: Kyuu"
         ],
         "room_players": [
             "Catge",
@@ -16060,14 +16089,15 @@
             1,
             3,
             3,
+            3,
             3
         ],
         "alts": [
             "Symphogear",
-            "Senki Zesshou Symphogear AXZ",
+            "Senki Zesshou Symphogear G",
             "Senki Zesshou Symphogear GX",
-            "Senki Zesshou Symphogear",
-            "Senki Zesshou Symphogear G"
+            "Senki Zesshou Symphogear AXZ",
+            "Senki Zesshou Symphogear"
         ],
         "start_sample": 0
     },
@@ -16313,7 +16343,7 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: GyroInmobile (4.35), FoopyPoopy (3.96)",
-            "Team zist: None"
+            "Team zist: Kyuu (5.41)"
         ],
         "listers_flat": [
             "FoopyPoopy",
@@ -16322,7 +16352,7 @@
         ],
         "listers_hover": [
             "Team GyroInmobile: GyroInmobile, FoopyPoopy",
-            "Team zist: None"
+            "Team zist: Kyuu"
         ],
         "room_players": [
             "Catge",
@@ -16334,14 +16364,14 @@
             "TheNoblesse",
             "zist"
         ],
-        "lives_taken_flat": [
-            "gyroinmobile",
-            "foopypoopy"
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "kyuu"
         ],
-        "lives_saved_flat": [],
         "correct_teams_flat": [
             1,
-            1
+            1,
+            3
         ],
         "alts": [],
         "start_sample": 41
@@ -16663,7 +16693,7 @@
         ],
         "guessers_hover": [
             "Team GyroInmobile: Catge (2.27), TheNoblesse (6.12)",
-            "Team zist: Serozero (2.47), Raphtelia (5.39)"
+            "Team zist: Kyuu (4.46), Serozero (2.47), Raphtelia (5.39)"
         ],
         "listers_flat": [
             "Catge",
@@ -16674,7 +16704,7 @@
         ],
         "listers_hover": [
             "Team GyroInmobile: Catge, TheNoblesse",
-            "Team zist: zist, Serozero"
+            "Team zist: zist, Kyuu, Serozero"
         ],
         "room_players": [
             "Catge",
@@ -16691,6 +16721,7 @@
         "correct_teams_flat": [
             1,
             1,
+            3,
             3,
             3
         ],
@@ -17100,8 +17131,8 @@
             "bamboo"
         ],
         "lives_taken_flat": [
-            "bigsmo",
-            "bamboo"
+            "bamboo",
+            "bigsmo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -17551,8 +17582,8 @@
             "Serozero"
         ],
         "guessers_hover": [
-            "Team zist: Serozero (2.79), Raphtelia (5.18)",
-            "Team PoolNoodle: PoolNoodle (2.73)"
+            "Team zist: Kyuu (4.37), Serozero (2.79), Raphtelia (5.18)",
+            "Team PoolNoodle: PoolNoodle (2.73), Ireland (5.84)"
         ],
         "listers_flat": [
             "PoolNoodle",
@@ -17563,8 +17594,8 @@
             "Serozero"
         ],
         "listers_hover": [
-            "Team zist: zist, Serozero",
-            "Team PoolNoodle: PoolNoodle, YTK_Bowser"
+            "Team zist: zist, Kyuu, Serozero",
+            "Team PoolNoodle: PoolNoodle, Ireland, YTK_Bowser"
         ],
         "room_players": [
             "Ireland",
@@ -17577,11 +17608,11 @@
             "zist"
         ],
         "lives_taken_flat": [],
-        "lives_saved_flat": [
-            "poolnoodle"
-        ],
+        "lives_saved_flat": [],
         "correct_teams_flat": [
             6,
+            6,
+            3,
             3,
             3
         ],
@@ -17774,7 +17805,7 @@
         ],
         "guessers_hover": [
             "Team Jlin2: Shinks (6.07)",
-            "Team zist: zist (15.76)"
+            "Team zist: zist (15.76), Kyuu (10.30)"
         ],
         "listers_flat": [
             "Shinks"
@@ -17795,11 +17826,11 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [
-            "shinks",
-            "zist"
+            "shinks"
         ],
         "correct_teams_flat": [
             2,
+            3,
             3
         ],
         "alts": [],
@@ -17864,8 +17895,8 @@
             2
         ],
         "alts": [
-            "Super Doll Licca-chan: Licca-chan Zettai Zetsumei! Doll Knights no Kiseki",
-            "Super Doll Liccachan: Rika-chan's Desperate Situation! The Doll Knights' Miracle"
+            "Super Doll Liccachan: Rika-chan's Desperate Situation! The Doll Knights' Miracle",
+            "Super Doll Licca-chan: Licca-chan Zettai Zetsumei! Doll Knights no Kiseki"
         ],
         "start_sample": 17
     },
@@ -18838,8 +18869,8 @@
         ],
         "lives_taken_flat": [
             "ange",
-            "bigsmo",
-            "bamboo"
+            "bamboo",
+            "bigsmo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -19170,8 +19201,8 @@
             "Serozero"
         ],
         "guessers_hover": [
-            "Team zist: zist (9.47), Serozero (6.60)",
-            "Team PoolNoodle: PoolNoodle (3.63), Metak (9.86), YTK_Bowser (4.98)"
+            "Team zist: zist (9.47), Kyuu (6.74), Serozero (6.60)",
+            "Team PoolNoodle: PoolNoodle (3.63), Metak (9.86), Ireland (6.98), YTK_Bowser (4.98)"
         ],
         "listers_flat": [
             "PoolNoodle",
@@ -19183,8 +19214,8 @@
             "Serozero"
         ],
         "listers_hover": [
-            "Team zist: zist, Serozero",
-            "Team PoolNoodle: PoolNoodle, Metak, YTK_Bowser"
+            "Team zist: zist, Kyuu, Serozero",
+            "Team PoolNoodle: PoolNoodle, Metak, Ireland, YTK_Bowser"
         ],
         "room_players": [
             "Ireland",
@@ -19202,6 +19233,8 @@
             6,
             6,
             6,
+            6,
+            3,
             3,
             3
         ],
@@ -19450,7 +19483,7 @@
             "Kyuu"
         ],
         "guessers_hover": [
-            "Team zist: zist (8.17), Raphtelia (8.53)",
+            "Team zist: zist (8.17), Kyuu (10.25), Raphtelia (8.53)",
             "Team bamboo: bamboo (2.70), ange (2.52)"
         ],
         "listers_flat": [
@@ -19477,6 +19510,7 @@
         "correct_teams_flat": [
             4,
             4,
+            3,
             3,
             3
         ],
@@ -20192,8 +20226,8 @@
             "zist"
         ],
         "lives_taken_flat": [
-            "bigsmo",
-            "bamboo"
+            "bamboo",
+            "bigsmo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -20254,7 +20288,7 @@
         ],
         "guessers_hover": [
             "Team DKing20: Unknown17 (10.17)",
-            "Team PoolNoodle: PoolNoodle (2.89)"
+            "Team PoolNoodle: PoolNoodle (2.89), Ireland (9.91)"
         ],
         "listers_flat": [
             "Unknown17",
@@ -20263,7 +20297,7 @@
         ],
         "listers_hover": [
             "Team DKing20: I_dont_like_loli, Unknown17",
-            "Team PoolNoodle: None"
+            "Team PoolNoodle: Ireland"
         ],
         "room_players": [
             "BettyFlores",
@@ -20277,12 +20311,12 @@
         ],
         "lives_taken_flat": [],
         "lives_saved_flat": [
-            "unknown17",
-            "poolnoodle"
+            "unknown17"
         ],
         "correct_teams_flat": [
             6,
-            5
+            5,
+            6
         ],
         "alts": [],
         "start_sample": 190
@@ -20648,7 +20682,7 @@
         ],
         "guessers_hover": [
             "Team bamboo: bamboo (3.35)",
-            "Team PoolNoodle: PoolNoodle (3.22), Metak (8.56)"
+            "Team PoolNoodle: PoolNoodle (3.22), Metak (8.56), Ireland (3.60)"
         ],
         "listers_flat": [
             "bamboo",
@@ -20658,7 +20692,7 @@
         ],
         "listers_hover": [
             "Team bamboo: bamboo, BigSmo",
-            "Team PoolNoodle: PoolNoodle"
+            "Team PoolNoodle: PoolNoodle, Ireland"
         ],
         "room_players": [
             "BigSmo",
@@ -20676,6 +20710,7 @@
         ],
         "correct_teams_flat": [
             4,
+            6,
             6,
             6
         ],
