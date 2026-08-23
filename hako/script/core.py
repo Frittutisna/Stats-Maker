@@ -236,6 +236,8 @@ class TourAnalyzer:
                 id_table_lookup     = load_player_ids(alias_url)
                 df_stats            = pd.DataFrame(rows_stats[1:], columns = rows_stats[0])
                 history_profile_map = {}
+                name_profile_map    = {}
+
                 for _, r_row in df_stats.iterrows():
                     norm_row = {str(k).strip().lower(): v for k, v in r_row.items() if pd.notnull(k)}
 
@@ -251,16 +253,21 @@ class TourAnalyzer:
                         try:                 return float(str(val).strip().replace("%", ""))
                         except ValueError:   return 0.0
 
-                    raw_name    = str(_get_val("player name", "name")).strip().lower()
-                    pid_key     = id_table_lookup.get(raw_name)
+                    raw_name = str(_get_val("player name", "name")).strip().lower()
 
-                    if pid_key is not None: history_profile_map[pid_key] = {
+                    stats_data = {
                         "GR": _parse_stat(_get_val("average gr %",              "average gr",       "gr %")),
                         "UF": _parse_stat(_get_val("average usefulness (new)",  "usefulness",       "average usefulness")),
                         "OP": _parse_stat(_get_val("average ops gr %",          "average op gr %",  "op gr %")),
                         "ED": _parse_stat(_get_val("average eds gr %",          "average ed gr %",  "ed gr %")),
                         "IN": _parse_stat(_get_val("average ins gr %",          "average in gr %",  "in gr %")),
                     }
+
+                    if raw_name:
+                        name_profile_map[raw_name] = stats_data
+
+                        pid_key = id_table_lookup.get(raw_name)
+                        if pid_key is not None: history_profile_map[pid_key] = stats_data
 
                 alias_txt_path      = self.tour_dir / FILE_ALIAS
                 current_alias_lines = []
@@ -275,14 +282,16 @@ class TourAnalyzer:
                         p_name      = parts[0].strip()
                         alias_name  = parts[1].strip()
                         p_low       = p_name.lower()
-                        p_id        = id_table_lookup.get(p_low)
+                        a_low       = alias_name.lower()
+                        p_id        = id_table_lookup.get(p_low) or id_table_lookup.get(a_low)
+                        h_prof      = None
 
-                        if p_id is None and alias_name.lower() in id_table_lookup: p_id = id_table_lookup.get(alias_name.lower())
+                        if      p_id    in history_profile_map  : h_prof = history_profile_map[p_id]
+                        elif    p_low   in name_profile_map     : h_prof = name_profile_map[p_low]
+                        elif    a_low   in name_profile_map     : h_prof = name_profile_map[a_low]
 
-                        if p_id in history_profile_map:
-                            h_prof = history_profile_map[p_id]
-                            f_out.write(f"{p_name}, {alias_name}, {h_prof['GR']:.2f}, {h_prof['UF']:.2f}, {h_prof['OP']:.2f}, {h_prof['ED']:.2f}, {h_prof['IN']:.2f}\n")
-                        else: f_out.write(f"{p_name}, {alias_name}, N/A, N/A, N/A, N/A, N/A\n")
+                        if h_prof   : f_out.write(f"{p_name}, {alias_name}, {h_prof['GR']:.2f}, {h_prof['UF']:.2f}, {h_prof['OP']:.2f}, {h_prof['ED']:.2f}, {h_prof['IN']:.2f}\n")
+                        else        : f_out.write(f"{p_name}, {alias_name}, N/A, N/A, N/A, N/A, N/A\n")
 
                 print("[✓] Historic baselines saved to alias.txt")
             except Exception as e:
