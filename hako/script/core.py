@@ -407,9 +407,8 @@ class TourAnalyzer:
                 if st in [1, 2, 3]: f_type_totals[st] += 1
 
             for name in final_members:
-                if name in raw_f_players:
-                    self.s_part[name] += max_s
-                    for t in [1, 2, 3]: self.p_type_s[name][t] += f_type_totals[t]
+                self.s_part[name] += max_s
+                for t in [1, 2, 3]: self.p_type_s[name][t] += f_type_totals[t]
 
             for song in songs:
                 si          = song.get("songInfo",  {})

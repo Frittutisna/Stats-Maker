@@ -3,6 +3,7 @@
 ## Changelog
 
 1. Fixed alias assignment
+2. Fixed 0/0 data
 
 ## How to Install
 

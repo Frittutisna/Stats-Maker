@@ -677,7 +677,7 @@ def create_dashboard_html(analyzer, path: Path, use_teams: bool, watched: bool):
             listers_flat    = [ls["name"] for ls in raw_lists if isinstance(ls, dict) and "name" in ls]
 
             if analyzer.use_teams:
-                t_list = list({analyzer.assignments[p.lower()][0] for p in raw_f_players if p.lower() in analyzer.assignments})
+                t_list = list({analyzer.assignments[p.lower()][0] for p in final_members if p.lower() in analyzer.assignments})
 
                 if len(t_list) == 2:
                     tA, tB      = t_list[0], t_list[1]
