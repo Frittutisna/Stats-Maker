@@ -36,7 +36,7 @@ ANT_MAP_STATS   = {
     "Watched"       : 1294827541
 }
 
-TOUR_URL_ALIAS  = "https://docs.google.com/spreadsheets/d/10YBcZP_l5Tjf1MOiWeBlLg-ATuAWXgTPsj7bW79bU30/export?format=csv&gid=1934025140"
+TOUR_URL_ALIAS  = "https://docs.google.com/spreadsheets/d/1ihfqssregh74curDyvRE0GAFihQfovUAHpYDrtOIrOA/export?format=csv&gid=1903970832"
 TOUR_KEY_STATS  = "1Fm6pMyXv7qhOQkLah4yX9HNow4WaDR4HJuAVMukQl34"
 TOUR_MAP_STATS  = {
     "Usual"         : 0,
