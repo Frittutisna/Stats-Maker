@@ -1,9 +1,10 @@
-# Hako Stats v1.2.0
+# Hako Stats v1.2.1
 
 ## Changelog
 
 1. Fixed alias assignment
 2. Fixed 0/0 data
+3. Moved from `html2image` to `playwright`
 
 ## How to Install
 

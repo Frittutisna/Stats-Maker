@@ -19,7 +19,7 @@ REQUIRED_PACKAGES = [
     ("matplotlib",      "matplotlib"),
     ("numpy",           "numpy"),
     ("scipy",           "scipy"),
-    ("html2image",      "html2image"),
+    ("playwright",      "playwright"),
     ("beautifulsoup4",  "bs4"),
     ("lxml",            "lxml"),
 ]

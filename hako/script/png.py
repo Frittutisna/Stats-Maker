@@ -6,13 +6,13 @@ import pandas               as pd
 
 matplotlib.use('Agg')
 
-from .config        import *
-from .statistics    import *
-from adjustText     import adjust_text
-from html2image     import Html2Image
-from pathlib        import Path
-from PIL            import Image
-from scipy.spatial  import ConvexHull
+from .config                import *
+from .statistics            import *
+from adjustText             import adjust_text
+from pathlib                import Path
+from playwright.sync_api    import sync_playwright
+from PIL                    import Image
+from scipy.spatial          import ConvexHull
 
 def create_player_png(
     analyzer,
@@ -158,16 +158,13 @@ def create_tier_png(analyzer, assigns: dict, path: Path, has_chanting_songs: boo
         </body>
     </html>"""
 
-    if not analyzer.browser_path: return
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless = True, executable_path=analyzer.browser_path if analyzer.browser_path else None)
+        page    = browser.new_page(viewport={"width": 2000, "height": 2000})
 
-    hti = Html2Image(
-        size                = (2000, 2000),
-        browser_executable  = analyzer.browser_path,
-        output_path         = str(path),
-        custom_flags        = ["--log-level=3", "--silent"],
-    )
-
-    hti.screenshot(html_str = full, save_as = "Tier.png")
+        page    .set_content    (full)
+        page    .screenshot     (path = str(path / "Tier.png"), full_page = True)
+        browser .close          ()
 
     try                 : trim_whitespace(path / "Tier.png")
     except Exception    : pass
@@ -485,7 +482,6 @@ def create_song_png(analyzer, path: Path):
     except Exception    : pass
 
 def export_png(analyzer, df: pd.DataFrame, path: Path, fname: str, title: str, mask: list = None, val_str: str = "default"):
-    if not analyzer.browser_path: return
     df = df.reset_index(drop = True)
 
     delta_check_cols    = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]
@@ -646,14 +642,16 @@ def export_png(analyzer, df: pd.DataFrame, path: Path, fname: str, title: str, m
         </body>
     </html>"""
 
-    hti = Html2Image(
-        size                = (max(2000, len(df.columns) * 120), max(2000, len(df) * 60)),
-        browser_executable  = analyzer.browser_path,
-        output_path         = str(path),
-        custom_flags        = ["--log-level=3", "--silent"],
-    )
+    width   = max(2000, len(df.columns) * 120)
+    height  = max(2000, len(df) * 60)
 
-    hti.screenshot(html_str = full, save_as = fname)
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless = True, executable_path = analyzer.browser_path if analyzer.browser_path else None)
+        page    = browser.new_page(viewport = {"width": width, "height": height})
+
+        page    .set_content    (full)
+        page    .screenshot     (path = str(path / fname), full_page = True)
+        browser .close          ()
 
     try                 : trim_whitespace(path / fname)
     except Exception    : pass
