@@ -553,7 +553,7 @@ def create_dashboard_html(analyzer, path: Path, use_teams: bool, watched: bool):
     explanations = {
         "Player"                    : "★ New player<br>▲ Subbed in<br>▼ Subbed out",
         "UF"                        : "Usefulness<br>Calculates this player's contribution to their team, scaled by Elo and songs played",
-        "UF Δ"                      : "100 * (UF - Elo) / Elo<br>Calculates this player's Usefulness relative to their expected Elo",
+        "UF Δ"                      : "100 * (UF - Expected UF) / Expected UF<br>Calculates this player's Usefulness relative to Elo regression expectations",
         "Score"                     : "Calculates this player's GR and UF Δ against what's expected from their Elo<br>50 means this player is playing to expectations",
         "Mean Over-8"               : "Average of correct guessers across songs this player/team guessed correctly",
         "Lives Taken"               : "Count of points won against the opposing team<br>Correct guessers exclusively on their team",

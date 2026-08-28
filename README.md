@@ -1,10 +1,11 @@
-# Hako Stats v1.2.1
+# Hako Stats v1.2.2
 
 ## Changelog
 
 1. Fixed alias assignment
 2. Fixed 0/0 data
 3. Moved from `html2image` to `playwright`
+4. Tweaked UF Δ calculation
 
 ## How to Install
 

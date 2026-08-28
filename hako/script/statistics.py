@@ -87,6 +87,22 @@ def compute_player_rows(
     plist       = list(analyzer.s_part.keys())
     perf_scores = compute_player_performance_scores(plist, analyzer, elo_map, avg_rank)
     perf_map    = dict(zip(plist, perf_scores))
+    valid_pairs = []
+
+    for name in plist:
+        tot     = analyzer.s_part[name]
+        uf_calc = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
+
+        try:
+            e_val = float(elo_map.get(name.lower(), np.nan))
+            if pd.notnull(e_val): valid_pairs.append((e_val, uf_calc))
+        except (ValueError, TypeError): pass
+
+    if len(valid_pairs) > 1 and np.var([p[0] for p in valid_pairs]) > 0:
+        reg_elos                    = np.array([p[0] for p in valid_pairs])
+        reg_ufs                     = np.array([p[1] for p in valid_pairs])
+        slope_uf, intercept_uf      = np.polyfit(reg_elos, reg_ufs, 1)
+    else: slope_uf, intercept_uf    = 1.0, 0.0
 
     for name in analyzer.s_part:
         tot, cor    = analyzer.s_part[name], analyzer.c_counts[name]
@@ -138,8 +154,13 @@ def compute_player_rows(
 
             elo_val = float(elo_map.get(name.lower(), np.nan))
 
-            if pd.notnull(elo_val) and elo_val != 0 : delta_uf = 100 * (uf_val - elo_val) / elo_val
-            else                                    : delta_uf = np.nan
+            if pd.notnull(elo_val):
+                expected_uf = slope_uf * elo_val + intercept_uf
+
+                if expected_uf != 0 : delta_uf = 100 * (uf_val - expected_uf) / expected_uf
+                else                : delta_uf = np.nan
+
+            else: delta_uf = np.nan
 
             row.update({"UF Δ"  : round(delta_uf, 2) if pd.notnull(delta_uf) else np.nan})
             row.update({"Score" : round(perf_map.get(name, 50.0))})
