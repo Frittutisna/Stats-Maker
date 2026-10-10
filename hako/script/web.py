@@ -175,7 +175,7 @@ def render_dashboard_player(
     ]
 
     asc_cols    = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8", "Mean Difficulty Hit"]
-    int_cols    = ["Score", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
+    int_cols    = ["GR Δ", "UF Δ", "Score", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
     rate_cols   = ["GR", "OP GR", "ED GR", "IN GR", "Chant GR", "Rig GR", "Off GR"]
     stats_hl    = {}
 

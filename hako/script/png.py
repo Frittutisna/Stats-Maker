@@ -51,7 +51,9 @@ def create_player_png(
     delta_cols = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]
 
     for dc in delta_cols:
-        if dc in df_png.columns: df_png[dc] = pd.to_numeric(df_png[dc], errors="coerce").map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+        if dc in df_png.columns:
+            if dc in ["GR Δ", "UF Δ"]   : df_png[dc] = pd.to_numeric(df_png[dc], errors="coerce").map(lambda x: f"{round(x)}"   if pd.notnull(x) else "N/A")
+            else                        : df_png[dc] = pd.to_numeric(df_png[dc], errors="coerce").map(lambda x: f"{x:.2f}"      if pd.notnull(x) else "N/A")
 
     export_png(analyzer, df_png, path, "Player.png", f"{prefix}{stage}", mask, val_str)
 

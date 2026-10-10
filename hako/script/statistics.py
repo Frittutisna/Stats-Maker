@@ -66,7 +66,17 @@ def compute_player_performance_scores(plist: list, analyzer, elo_map: dict, avg_
         scores_uf = (1 / (1 + np.exp(SCALE_PERF * (res_uf / std_uf)))) * 100
         scores_gr = (1 / (1 + np.exp(SCALE_PERF * (res_gr / std_gr)))) * 100
 
-        return list((scores_uf * 0.5) + (scores_gr * 0.5))
+        gr_scores_50    = np.round(scores_gr * 0.5)
+        uf_scores_50    = np.round(scores_uf * 0.5)
+        total_scores    = gr_scores_50 + uf_scores_50
+
+        analyzer._cached_gr_delta_map = dict(zip(plist, gr_scores_50))
+        analyzer._cached_uf_delta_map = dict(zip(plist, uf_scores_50))
+
+        return list(total_scores)
+
+    analyzer._cached_gr_delta_map = {name: 25.0 for name in plist}
+    analyzer._cached_uf_delta_map = {name: 25.0 for name in plist}
 
     return [50.0] * len(plist)
 
@@ -84,10 +94,12 @@ def compute_player_rows(
 ) -> tuple[pd.DataFrame, list[bool]]:
     rows, eligibility = [], []
     
-    plist       = list(analyzer.s_part.keys())
-    perf_scores = compute_player_performance_scores(plist, analyzer, elo_map, avg_rank)
-    perf_map    = dict(zip(plist, perf_scores))
-    valid_pairs = []
+    plist           = list(analyzer.s_part.keys())
+    perf_scores     = compute_player_performance_scores(plist, analyzer, elo_map, avg_rank)
+    perf_map        = dict(zip(plist, perf_scores))
+    gr_delta_map    = getattr(analyzer, "_cached_gr_delta_map", {})
+    uf_delta_map    = getattr(analyzer, "_cached_uf_delta_map", {})
+    valid_pairs     = []
 
     for name in plist:
         tot     = analyzer.s_part[name]
@@ -145,25 +157,21 @@ def compute_player_rows(
         current_gr = cor / tot if tot else 0.0
         row.update({"GR": current_gr})
 
-        delta_gr = (current_gr * 100) - history_baselines["GR"] if pd.notnull(history_baselines["GR"]) else np.nan
-        row.update({"GR Δ": round(delta_gr, 2) if pd.notnull(delta_gr) else np.nan})
+        if analyzer.use_teams and elo_map.get(name.lower()) is not None and str(elo_map.get(name.lower(), "")).strip() != "":
+            gr_d = gr_delta_map.get(name, np.nan)
+            row.update({"GR Δ": int(gr_d) if pd.notnull(gr_d) else np.nan})
+        else:
+            delta_gr = (current_gr * 100) - history_baselines["GR"] if pd.notnull(history_baselines["GR"]) else np.nan
+            row.update({"GR Δ": round(delta_gr, 2) if pd.notnull(delta_gr) else np.nan})
 
         if analyzer.use_teams:
-            uf_val = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
-            row.update({"UF": uf_val})
+            uf_val      = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
+            uf_d        = uf_delta_map.get(name, np.nan)
+            score_val   = perf_map.get(name, np.nan)
 
-            elo_val = float(elo_map.get(name.lower(), np.nan))
-
-            if pd.notnull(elo_val):
-                expected_uf = slope_uf * elo_val + intercept_uf
-
-                if expected_uf != 0 : delta_uf = 100 * (uf_val - expected_uf) / expected_uf
-                else                : delta_uf = np.nan
-
-            else: delta_uf = np.nan
-
-            row.update({"UF Δ"  : round(delta_uf, 2) if pd.notnull(delta_uf) else np.nan})
-            row.update({"Score" : round(perf_map.get(name, 50.0))})
+            row.update({"UF"    : uf_val})
+            row.update({"UF Δ"  : int(uf_d) if pd.notnull(uf_d) else np.nan})
+            row.update({"Score" : int(round(score_val)) if pd.notnull(score_val) else np.nan})
 
         avg_over8 = analyzer.p_overs_sum[name] / cor if cor else np.nan
         row.update({"1/8s": analyzer.e_counts[name], "2/8s": analyzer.p_two_e[name], "7/8s": analyzer.p_rev_e[name], "Mean Over-8": avg_over8})
