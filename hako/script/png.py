@@ -36,24 +36,21 @@ def create_player_png(
     avg_rank    = np.mean(valid_elos) if valid_elos else 1.0
     df, mask    = compute_player_rows(analyzer, elo_map, apps, exp_map, base_exp, new_players, watched, active, t_labels, avg_rank)
     df_png      = df.copy()
-    pcts        = (["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Δ", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"])
 
     if "Elo"                    in df_png.columns: df_png["Elo"]                    = pd.to_numeric(df_png["Elo"],                  errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
     if "UF"                     in df_png.columns: df_png["UF"]                     = pd.to_numeric(df_png["UF"],                   errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
-    if "Score"                  in df_png.columns: df_png["Score"]                  = pd.to_numeric(df_png["Score"],                errors = "coerce").map(lambda x: f"{round(x)}"  if pd.notnull(x) else "N/A")
+    if "Total Score"            in df_png.columns: df_png["Total Score"]            = pd.to_numeric(df_png["Total Score"],          errors = "coerce").map(lambda x: f"{round(x)}"  if pd.notnull(x) else "N/A")
     if "Median Time"            in df_png.columns: df_png["Median Time"]            = pd.to_numeric(df_png["Median Time"],          errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
     if "Mean Over-8"            in df_png.columns: df_png["Mean Over-8"]            = pd.to_numeric(df_png["Mean Over-8"],          errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
     if "Rig Over-8"             in df_png.columns: df_png["Rig Over-8"]             = pd.to_numeric(df_png["Rig Over-8"],           errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
     if "Over-8 Δ"               in df_png.columns: df_png["Over-8 Δ"]               = pd.to_numeric(df_png["Over-8 Δ"],             errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
     if "Mean Difficulty Hit"    in df_png.columns: df_png["Mean Difficulty Hit"]    = pd.to_numeric(df_png["Mean Difficulty Hit"],  errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
 
-    for c in pcts: df_png[c] = (pd.to_numeric(df_png[c], errors = "coerce").mul(100).map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A"))
-    delta_cols = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]
+    pct_cols    = (["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Δ", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"])
+    delta_cols  = ["OP Δ", "ED Δ", "IN Δ"]
 
-    for dc in delta_cols:
-        if dc in df_png.columns:
-            if dc in ["GR Δ", "UF Δ"]   : df_png[dc] = pd.to_numeric(df_png[dc], errors="coerce").map(lambda x: f"{round(x)}"   if pd.notnull(x) else "N/A")
-            else                        : df_png[dc] = pd.to_numeric(df_png[dc], errors="coerce").map(lambda x: f"{x:.2f}"      if pd.notnull(x) else "N/A")
+    for pc in pct_cols      : df_png[pc] = (pd.to_numeric(df_png[pc],   errors = "coerce").mul(100) .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A"))
+    for dc in delta_cols    : df_png[dc] = pd.to_numeric(df_png[dc],    errors = "coerce")          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
     export_png(analyzer, df_png, path, "Player.png", f"{prefix}{stage}", mask, val_str)
 
@@ -486,13 +483,13 @@ def create_song_png(analyzer, path: Path):
 def export_png(analyzer, df: pd.DataFrame, path: Path, fname: str, title: str, mask: list = None, val_str: str = "default"):
     df = df.reset_index(drop = True)
 
-    delta_check_cols    = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]
+    delta_check_cols    = ["OP Δ", "ED Δ", "IN Δ"]
     cols_to_drop        = [c for c in delta_check_cols if c in df.columns and (df[c].isna() | (df[c].astype(str).str.strip() == "N/A")).all()]
 
     if cols_to_drop: df = df.drop(columns = cols_to_drop)
 
     desc = [
-        "Elo", "GR", "GR Δ", "UF", "UF Δ", "Score",
+        "Elo", "GR", "GR Score", "UF", "UF Score", "Total Score",
         "1/8s", "2/8s", "Lives Taken", "Lives Saved",
         "OP GR", "OP Δ", "ED GR", "ED Δ", "IN GR", "IN Δ",
         "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate",
@@ -579,10 +576,10 @@ def export_png(analyzer, df: pd.DataFrame, path: Path, fname: str, title: str, m
         gv_series   = pd.to_numeric(df["GR"].astype(str).str.replace("%", ""), errors = "coerce")
         borders     = get_threshold_borders(analyzer, gv_series)
 
-    col_borders = {"Player", "Score", "Mean Over-8", "Lives Saved", "IN Δ", "Rig Rate", "Solo Rig Rate", "Over-8 Δ", "Rig Δ", "Median Vintage Hit", "Metric", "Value", "Team Leader"}
+    col_borders = {"Player", "Total Score", "Mean Over-8", "Lives Saved", "IN Δ", "Rig Rate", "Solo Rig Rate", "Over-8 Δ", "Rig Δ", "Median Vintage Hit", "Metric", "Value", "Team Leader"}
 
-    if "Score"  not in df.columns : col_borders.add("GR Δ") if "GR Δ" in df.columns else col_borders.add("GR")
-    if "IN Δ"   not in df.columns : col_borders.add("IN GR")
+    if "Total Score"    not in df.columns : col_borders.add("GR Score") if "GR Score" in df.columns else col_borders.add("GR")
+    if "IN Δ"           not in df.columns : col_borders.add("IN GR")
 
     th_cells = []
 

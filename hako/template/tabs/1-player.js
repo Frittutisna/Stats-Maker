@@ -8,10 +8,10 @@ const playerHeadersMasterConfig = [
     {id: "tier",                name: "Tier",                   ascMetric: true,    teamReq: true,  watchedReq: false,  def: false, type: "categorical",    subOptions: ["1", "2", "3", "4"]},
     {id: "elo",                 name: "Elo",                    ascMetric: false,   teamReq: true,  watchedReq: false,  def: true,  type: "range",          min: -10,   max: 200,   step: 1},
     {id: "guessrate",           name: "GR",                     ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
-    {id: "grdelta",             name: "GR Δ",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: -100,  max: 100,   step: 1},
+    {id: "grscore",             name: "GR Score",               ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: 0,     max: 50,    step: 1},
     {id: "uf",                  name: "UF",                     ascMetric: false,   teamReq: true,  watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
-    {id: "ufdelta",             name: "UF Δ",                   ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: -100,  max: 100,   step: 1},
-    {id: "score",               name: "Score",                  ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "ufscore",             name: "UF Score",               ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: 0,     max: 50,    step: 1},
+    {id: "totalscore",          name: "Total Score",            ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 1},
     {id: "18s",                 name: "1/8s",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
     {id: "28s",                 name: "2/8s",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
     {id: "78s",                 name: "7/8s",                   ascMetric: true,    teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
@@ -43,7 +43,7 @@ let activePlayerHeadersConfig = playerHeadersMasterConfig.filter(col => {
     if (col.teamReq     && !use_teams)  return false;
     if (col.watchedReq  && !watched)    return false;
 
-    if (["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ", "OP GR", "ED GR", "IN GR"].includes(col.name)) {
+    if (["GR Score", "UF Score", "OP Δ", "ED Δ", "IN Δ", "OP GR", "ED GR", "IN GR"].includes(col.name)) {
         if (!players || players.length === 0) return false;
 
         const areAllRowsMissingValue = players.every(p => {
@@ -62,9 +62,9 @@ let activePlayerHeadersConfig = playerHeadersMasterConfig.filter(col => {
 activePlayerHeadersConfig.forEach(col => {col.visible = col.def;});
 const availableColumnNames = new Set(activePlayerHeadersConfig.map(c => c.name));
 
-if      (availableColumnNames.has("Score")) thickBorderColumns.add("Score");
-else if (availableColumnNames.has("GR Δ"))  thickBorderColumns.add("GR Δ");
-else                                        thickBorderColumns.add("GR");
+if      (availableColumnNames.has("Total Score"))   thickBorderColumns.add("Total Score");
+else if (availableColumnNames.has("GR Score"))      thickBorderColumns.add("GR Score");
+else                                                thickBorderColumns.add("GR");
 
 if      (availableColumnNames.has("IN Δ"))  thickBorderColumns.add("IN Δ");
 else if (availableColumnNames.has("IN GR")) thickBorderColumns.add("IN GR");
@@ -158,14 +158,14 @@ function initPlayerColumnSettings() {
         triggerPlayerTableRefresh();
     });
 
-    const hasDeltaData  = activePlayerHeadersConfig.some(c => ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"].includes(c.name));
+    const hasDeltaData  = activePlayerHeadersConfig.some(c => ["OP Δ", "ED Δ", "IN Δ"].includes(c.name));
     const metricSection = document.getElementById("playerMetricModeSection");
 
     if (metricSection && hasDeltaData) metricSection.classList.remove("hidden");
 
     activePlayerHeadersConfig.forEach(col => {
-        if (currentPlayerMetricMode === "Δ" && ["GR", "UF", "OP GR", "ED GR", "IN GR"]  .includes(col.name)) col.visible = false;
-        if (currentPlayerMetricMode === "%" && ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"] .includes(col.name)) col.visible = false;
+        if (currentPlayerMetricMode === "Δ" && ["OP GR",    "ED GR",    "IN GR"]    .includes(col.name)) col.visible = false;
+        if (currentPlayerMetricMode === "%" && ["OP Δ",     "ED Δ",     "IN Δ"]     .includes(col.name)) col.visible = false;
     });
 
     activePlayerHeadersConfig.forEach(col => {
@@ -636,7 +636,7 @@ function sortAndRenderPlayers() {
                 if (h.name !== "Team" && h.name !== "Tier" && isWorst)  cellStyle += "highlight-worst ";
             }
 
-            let intCols = ["Tier", "Score", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"];
+            let intCols = ["Tier", "GR Score", "UF Score", "Total Score", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"];
             let formattedVal;
 
             if      (displayVal === undefined || displayVal === null || displayVal === "N/A")   formattedVal = "N/A";
@@ -721,10 +721,10 @@ window.updatePlayerMetricModeFromRadio = function(selectedMode) {
     currentPlayerMetricMode = selectedMode;
 
     activePlayerHeadersConfig.forEach(col => {
-        if      (currentPlayerMetricMode === "Δ" && ["GR", "UF", "OP GR", "ED GR", "IN GR"]     .includes(col.name)) col.visible = false;
-        else if (currentPlayerMetricMode === "%" && ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]    .includes(col.name)) col.visible = false;
-        else if (currentPlayerMetricMode === "Δ" && ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]    .includes(col.name)) col.visible = true;
-        else if (currentPlayerMetricMode === "%" && ["GR", "UF", "OP GR", "ED GR", "IN GR"]     .includes(col.name)) col.visible = col.def;
+        if      (currentPlayerMetricMode === "Δ" && ["OP GR",   "ED GR",    "IN GR"]    .includes(col.name)) col.visible = false;
+        else if (currentPlayerMetricMode === "%" && ["OP Δ",    "ED Δ",     "IN Δ"]     .includes(col.name)) col.visible = false;
+        else if (currentPlayerMetricMode === "Δ" && ["OP Δ",    "ED Δ",     "IN Δ"]     .includes(col.name)) col.visible = true;
+        else if (currentPlayerMetricMode === "%" && ["OP GR",   "ED GR",    "IN GR"]    .includes(col.name)) col.visible = col.def;
     });
 
     initPlayerColumnSettings    ();
@@ -739,7 +739,7 @@ function updatePlayerHelpDropdown() {
     const dropdown = document.getElementById("playerGuideDropdown");
     if (!dropdown) return;
 
-    const hasDeltaMetrics = activePlayerHeadersConfig.some(c => ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"].includes(c.name));
+    const hasDeltaMetrics = activePlayerHeadersConfig.some(c => ["OP Δ", "ED Δ", "IN Δ"].includes(c.name));
     let configSectionText = "";
 
     if (hasDeltaMetrics) {

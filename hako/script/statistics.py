@@ -159,19 +159,19 @@ def compute_player_rows(
 
         if analyzer.use_teams and elo_map.get(name.lower()) is not None and str(elo_map.get(name.lower(), "")).strip() != "":
             gr_d = gr_delta_map.get(name, np.nan)
-            row.update({"GR Δ": int(gr_d) if pd.notnull(gr_d) else np.nan})
+            row.update({"GR Score": int(gr_d) if pd.notnull(gr_d) else np.nan})
         else:
             delta_gr = (current_gr * 100) - history_baselines["GR"] if pd.notnull(history_baselines["GR"]) else np.nan
-            row.update({"GR Δ": round(delta_gr, 2) if pd.notnull(delta_gr) else np.nan})
+            row.update({"GR Score": round(delta_gr, 2) if pd.notnull(delta_gr) else np.nan})
 
         if analyzer.use_teams:
             uf_val      = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
             uf_d        = uf_delta_map.get(name, np.nan)
             score_val   = perf_map.get(name, np.nan)
 
-            row.update({"UF"    : uf_val})
-            row.update({"UF Δ"  : int(uf_d) if pd.notnull(uf_d) else np.nan})
-            row.update({"Score" : int(round(score_val)) if pd.notnull(score_val) else np.nan})
+            row.update({"UF"            : uf_val})
+            row.update({"UF Score"      : int(uf_d) if pd.notnull(uf_d) else np.nan})
+            row.update({"Total Score"   : int(round(score_val)) if pd.notnull(score_val) else np.nan})
 
         avg_over8 = analyzer.p_overs_sum[name] / cor if cor else np.nan
         row.update({"1/8s": analyzer.e_counts[name], "2/8s": analyzer.p_two_e[name], "7/8s": analyzer.p_rev_e[name], "Mean Over-8": avg_over8})
@@ -219,7 +219,7 @@ def compute_player_rows(
 
     df = pd.DataFrame(rows)
 
-    if "Score" in df.columns: df = df.sort_values(by = ["GR", "Score"], ascending = [False, False])
+    if "Total Score" in df.columns: df = df.sort_values(by = ["GR", "Total Score"], ascending = [False, False])
     elif "Elo" in df.columns:
         df["_sort_elo"] = pd.to_numeric(df["Elo"], errors = "coerce")
         df              = df.sort_values(by = ["GR", "_sort_elo"], ascending = [False, True]).drop(columns = ["_sort_elo"])
@@ -286,19 +286,19 @@ def compute_tour_stats(analyzer, use_teams: bool, watched: bool) -> list:
         eligible    = [p for p in plist if analyzer.p_l_solos[p] > 0]
 
         if eligible:
-            total_hits      = sum((analyzer.p_l_solos[p] - analyzer.p_m_erigs[p]) for p in eligible)
-            total_attempts  = sum(analyzer.p_l_solos[p] for p in eligible)
+            total_hits      = sum((analyzer.p_l_solos[p] - analyzer.p_m_erigs[p])   for p in eligible)
+            total_attempts  = sum(analyzer.p_l_solos[p]                             for p in eligible)
             global_avg      = total_hits / total_attempts if total_attempts > 0 else 0
 
             for n in eligible:
-                t               = analyzer.p_l_solos[n]
-                h               = t - analyzer.p_m_erigs[n]
-                weighted_score  = (h + CONST_CONV * global_avg) / (t + CONST_CONV)
+                t = analyzer.p_l_solos[n]
+                h = t - analyzer.p_m_erigs[n]
 
-                conv.append({"n": n, "score": weighted_score, "p": 100 * h / t, "h": h, "t": t})
+                weighted_score = (h + CONST_CONV * global_avg) / (t + CONST_CONV)
+                conv.append({"n": n, "Score": weighted_score, "p": 100 * h / t, "h": h, "t": t})
 
-            b = sorted(conv, key = lambda x: x["score"], reverse = True)    [0]
-            w = sorted(conv, key = lambda x: x["score"])                    [0]
+            b = sorted(conv, key = lambda x: x["Score"], reverse = True)    [0]
+            w = sorted(conv, key = lambda x: x["Score"])                    [0]
 
             stats.append(["Best Solo Rig Converter",    f"{b['n']} ({b['p']:.2f}, {b['h']}/{b['t']})", ("Solo Rigs", b["n"])])
             stats.append(["Worst Solo Rig Converter",   f"{w['n']} ({w['p']:.2f}, {w['h']}/{w['t']})", ("Solo Rigs", w["n"])])

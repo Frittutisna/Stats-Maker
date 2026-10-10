@@ -57,10 +57,10 @@ def render_dashboard_player(
 
             row.update({
                 "GR"            : {"count": float(row_data["GR"] * 100), "details": [f"{cor}/{tot}"] + analyzer.player_song_details[name]["Overall"]},
-                "GR Δ"          : float (row_data["GR Δ"])          if pd.notnull(row_data.get("GR Δ"))     else np.nan,
-                "UF"            : float (row_data["UF"])            if "UF"     in row_data                 else np.nan,
-                "UF Δ"          : float (row_data["UF Δ"])          if pd.notnull(row_data.get("UF Δ"))     else np.nan,
-                "Score"         : int   (round(row_data["Score"]))  if "Score"  in row_data                 else np.nan,
+                "GR Score"      : int   (round(row_data["GR Score"]))       if "GR Score"       in row_data else np.nan,
+                "UF"            : float (row_data["UF"])                    if "UF"             in row_data else np.nan,
+                "UF Score"      : int   (round(row_data["UF Score"]))       if "UF Score"       in row_data else np.nan,
+                "Total Score"   : int   (round(row_data["Total Score"]))    if "Total Score"    in row_data else np.nan,
                 "1/8s"          : int   (row_data["1/8s"]),
                 "2/8s"          : int   (row_data["2/8s"]),
                 "7/8s"          : int   (row_data["7/8s"]),
@@ -152,7 +152,7 @@ def render_dashboard_player(
         rows.append(row)
 
     df_players          = pd.DataFrame(rows)
-    delta_json_fields   = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]
+    delta_json_fields   = ["OP Δ", "ED Δ", "IN Δ"]
 
     for c_field in delta_json_fields:
         if c_field in df_players.columns:
@@ -166,7 +166,7 @@ def render_dashboard_player(
         borders     = get_threshold_borders(analyzer, gv_series)
 
     desc_cols = [
-        "Elo", "GR", "GR Δ", "UF", "UF Δ", "Score",
+        "Elo", "GR", "GR Score", "UF", "UF Score", "Total Score",
         "1/8s", "2/8s", "Lives Taken", "Lives Saved",
         "OP GR", "OP Δ", "ED GR", "ED Δ", "IN GR", "IN Δ",
         "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate",
@@ -175,7 +175,7 @@ def render_dashboard_player(
     ]
 
     asc_cols    = ["7/8s", "Median Time", "Mean Over-8", "Rig Over-8", "Mean Difficulty Hit"]
-    int_cols    = ["GR Δ", "UF Δ", "Score", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
+    int_cols    = ["GR Score", "UF Score", "Total Score", "1/8s", "2/8s", "7/8s", "Lives Taken", "Lives Saved", "Rigs", "Solo Rigs"]
     rate_cols   = ["GR", "OP GR", "ED GR", "IN GR", "Chant GR", "Rig GR", "Off GR"]
     stats_hl    = {}
 
@@ -553,9 +553,10 @@ def create_dashboard_html(analyzer, path: Path, use_teams: bool, watched: bool):
 
     explanations = {
         "Player"                    : "★ New player<br>▲ Subbed in<br>▼ Subbed out",
+        "GR Score"                  : "0-50 score measuring this player's GR against their Elo; 25 means they're playing to expectations",
         "UF"                        : "Usefulness<br>Calculates this player's contribution to their team, scaled by Elo and songs played",
-        "UF Δ"                      : "100 * (UF - Expected UF) / Expected UF<br>Calculates this player's Usefulness relative to Elo regression expectations",
-        "Score"                     : "Calculates this player's GR and UF Δ against what's expected from their Elo<br>50 means this player is playing to expectations",
+        "UF Score"                  : "0-50 score measuring this player's UF against their Elo; 25 means they're playing to expectations",
+        "Total Score"               : "GR Score + UF Score; 50 means they're playing to expectations",
         "Mean Over-8"               : "Average of correct guessers across songs this player/team guessed correctly",
         "Lives Taken"               : "Count of points won against the opposing team<br>Correct guessers exclusively on their team",
         "Lives Saved"               : "Count of blocks achieved against the opposing team<br>Lone correct guesser for their team whilst the opposing team also has correct guesser(s)",
