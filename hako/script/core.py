@@ -763,8 +763,9 @@ class TourAnalyzer:
                                 self.p_blks[pA] += 0.50
                                 self.p_blks[pB] += 0.50
 
-        stage   = self.get_stage_label()
-        prefix  = f"{self.tour_label.strip()} Tour: "
+        stage       = self.get_stage_label()
+        mode_prefix = f"Ant {self.tour_label.strip()}" if getattr(self, "mode_choice", "Tour") == "Ant" else f"{self.tour_label.strip()} Tour"
+        prefix      = f"{mode_prefix}: "
 
         png_path = self.tour_dir / "png"
         web_path = self.tour_dir / "site"

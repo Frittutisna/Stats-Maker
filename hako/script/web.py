@@ -515,7 +515,8 @@ def create_dashboard_html(analyzer, path: Path, use_teams: bool, watched: bool):
     valid_elos  = [float(v) for v in analyzer.elo_map.values() if str(v).replace(".", "", 1).isdigit() or (str(v).startswith("-") and str(v)[1:].replace(".", "", 1).isdigit())]
     avg_rank    = np.mean(valid_elos)   if valid_elos           else 1.0
     stage       = analyzer.get_stage_label()
-    prefix      = f"{analyzer.tour_label.strip()} Tour: {stage}"
+    mode_prefix = f"Ant {analyzer.tour_label.strip()}" if getattr(analyzer, "mode_choice", "Tour") == "Ant" else f"{analyzer.tour_label.strip()} Tour"
+    prefix      = f"{mode_prefix}: {stage}"
     diffs       = [s["difficulty"] for s in analyzer.song_data]
     max_diff    = max(diffs)    if diffs            else 0
     num_x       = 8             if max_diff < 40    else 9
