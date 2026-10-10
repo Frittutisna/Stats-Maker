@@ -219,8 +219,26 @@ class TourMetadataDialog(UnifiedDialog):
             lbl_ant.pack(side = tk.LEFT, padx = (5, 0))
 
             def toggle_mode(_ = None):
-                self.mode_var.set("Ant" if self.mode_var.get() == "Tour" else "Tour")
-                self._draw_toggle()
+                new_mode = "Ant" if self.mode_var.get() == "Tour" else "Tour"
+                self.mode_var.set(new_mode)
+
+                if new_mode == "Ant":
+                    self._select_np_opt("No")
+                    for name, var in self.player_vars.items(): var.set(False)
+
+                else:
+                    has_round_elo, round_elo_players = self._check_round_elos()
+
+                    if has_round_elo:
+                        self._select_np_opt("Yes")
+                        for name, var in self.player_vars.items(): var.set(name.lower() in round_elo_players)
+
+                    else:
+                        self._select_np_opt("No")
+                        for name, var in self.player_vars.items(): var.set(False)
+
+                self._update_np_state   ()
+                self._draw_toggle       ()
 
             self.toggle_canvas  .bind("<Button-1>", toggle_mode)
             lbl_tour            .bind("<Button-1>", lambda _: [self.mode_var.set("Tour"), self._draw_toggle()])
@@ -310,26 +328,12 @@ class TourMetadataDialog(UnifiedDialog):
         self._update_lbl_state()
         ttk.Label(mid_frame, text = "Are there any new players?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w")
 
-        has_round_elo       = False
-        round_elo_players   = set()
-
-        if elo_map:
-            for p in active_players:
-                p_low = p.lower()
-
-                if p_low in elo_map:
-                    try:
-                        val = float(elo_map[p_low])
-
-                        if val.is_integer():
-                            has_round_elo = True
-                            round_elo_players.add(p_low)
-
-                    except ValueError: pass
-
-        initial_np      = "No" if (hasattr(self, "mode_var") and self.mode_var.get() == "Ant") else ("Yes" if has_round_elo else "No")
-        self.np_var     = tk.StringVar(value = initial_np)
-        self.np_boxes   = {}
+        self.elo_map                        = elo_map or {}
+        self.active_players                 = active_players
+        has_round_elo, round_elo_players    = self._check_round_elos()
+        initial_np                          = "No" if (hasattr(self, "mode_var") and self.mode_var.get() == "Ant") else ("Yes" if has_round_elo else "No")
+        self.np_var                         = tk.StringVar(value = initial_np)
+        self.np_boxes                       = {}
 
         for opt in ["No", "Yes"]:
             f_np = ttk.Frame(mid_frame)
@@ -736,6 +740,26 @@ class TourMetadataDialog(UnifiedDialog):
             with open(self.tour_dir / "subs.txt", "w", encoding = "utf-8") as f : f.write("\n".join(existing_lines) + "\n")
 
         super().on_confirm()
+
+    def _check_round_elos(self):
+        has_round_elo       = False
+        round_elo_players   = set()
+
+        if self.elo_map:
+            for p in self.active_players:
+                p_low = p.lower()
+
+                if p_low in self.elo_map:
+                    try:
+                        val = float(self.elo_map[p_low])
+
+                        if val.is_integer():
+                            has_round_elo = True
+                            round_elo_players.add(p_low)
+
+                    except ValueError: pass
+
+        return has_round_elo, round_elo_players
 
 class AskPlayerSelectionDialog(UnifiedDialog):
     def __init__(self, parent, title, prompt, options):
