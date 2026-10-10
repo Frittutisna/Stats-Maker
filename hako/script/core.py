@@ -1047,7 +1047,7 @@ class TourAnalyzer:
             print(f"[✓] Copied all files from {web_path.name}")
         except Exception as e: print(f"[X] Failed to copy files: {e}")
 
-        dashboard_url = f"https://frittutisna.github.io/Stats-Maker/hako/archive/{timestamp}/index.html?update=1"
+        dashboard_url = f"https://frittutisna.github.io/Stats-Maker/hako/archive/{timestamp}/index.html"
         print("[?] Pushing to GitHub")
 
         try:

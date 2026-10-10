@@ -6,6 +6,7 @@
 2. Changed `GR Delta/UF Delta/Score` to `GR Score/UF Score/Total Score`
 3. Fixed new player management
 4. Fixed player alias assignment
+5. Moved archives to `Stats-Archive`
 
 ## How to Install
 

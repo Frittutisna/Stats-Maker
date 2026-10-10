@@ -203,7 +203,7 @@ async function populateArchiveDropdown() {
     if (!dropdown) return;
 
     try {
-        const response = await fetch("https://api.github.com/repos/frittutisna/Stats-Maker/contents/hako/archive");
+        const response = await fetch("https://api.github.com/repos/frittutisna/Stats-Archive/contents");
         if (!response.ok) throw new Error("Failed to scan archive directory");
 
         const files             = await response.json();
@@ -224,7 +224,7 @@ async function populateArchiveDropdown() {
         }
 
         dropdown.innerHTML = pastToursArchive.map(tour => `
-            <a href="https://frittutisna.github.io/Stats-Maker/hako/archive/${tour.id}/index.html?update=1" 
+            <a href="https://frittutisna.github.io/Stats-Archive/${tour.id}/index.html" 
                class="px-2 py-1 text-black border-b last:border-0 block text-center font-bold no-underline transition-colors">
                ${tour.label}
             </a>
