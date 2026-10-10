@@ -1,11 +1,11 @@
-# Hako Stats v1.2.2.6
+# Hako Stats v1.3.0
 
 ## Changelog
 
-1. Fixed alias assignment
-2. Fixed 0/0 data
-3. Moved from `html2image` to `playwright`
-4. Tweaked UF Δ calculation
+1. Added update function
+2. Changed `GR Delta/UF Delta/Score` to `GR Score/UF Score/Total Score`
+3. Fixed new player management
+4. Fixed player alias assignment
 
 ## How to Install
 
@@ -13,6 +13,7 @@
 2. Delete any folder and file with `hako` in their name from your directory
 3. Download the latest release, then extract the downloaded file and move them to your directory. If you are working with **Dry Stats** as well, put them on the same level as the `assets` folder
 4. Run `hako_clean.py` to clean your directory
+5. From `v1.3.0` onwards, the `Confirm` button will be replaced with an `Update` button if there's a newer release on GitHub
 
 ## How To Use
 
