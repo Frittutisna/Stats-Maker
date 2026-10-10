@@ -203,7 +203,16 @@ class TourMetadataDialog(UnifiedDialog):
         script_dir          = Path(__file__).parent.parent.absolute()
         ant_cred_path       = script_dir / DIR_CREDS / "ant_credentials.json"
         self.has_ant_creds  = ant_cred_path.exists()
-        self.mode_var       = tk.StringVar(value = "Ant" if self.has_ant_creds else "Tour")
+        self.tour_dir       = tour_dir
+        saved_mode          = None
+
+        if self.tour_dir and (self.tour_dir / "mode.txt").exists():
+            try:
+                with open(self.tour_dir / "mode.txt", "r", encoding = "utf-8") as f: saved_mode = f.read().strip()
+            except Exception: pass
+
+        initial_mode    = saved_mode if saved_mode in ["Tour", "Ant"] else ("Ant" if self.has_ant_creds else "Tour")
+        self.mode_var   = tk.StringVar(value = initial_mode)
 
         if self.has_ant_creds:
             f_mode_container = ttk.Frame(left_frame)
@@ -704,6 +713,11 @@ class TourMetadataDialog(UnifiedDialog):
         for k, box in self.challonge_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
 
     def on_confirm(self):
+        if self.tour_dir:
+            try:
+                with open(self.tour_dir / "mode.txt", "w", encoding = "utf-8") as f: f.write(self.mode_var.get())
+            except Exception: pass
+
         try                 : base_exp = int(self.spin.get())
         except ValueError   : base_exp = 1
 
