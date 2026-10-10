@@ -1,8 +1,82 @@
+import io, json, os, re, sys, urllib.request, zipfile
 import tkinter as tk
 
 from .config import *
 from pathlib import Path
-from tkinter import ttk
+from tkinter import messagebox, ttk
+
+def get_local_version():
+    try:
+        script_dir  = Path(__file__).parent.parent.parent.absolute()
+        readme_path = script_dir / "README.md"
+
+        if readme_path.exists():
+            content = readme_path.read_text(encoding = "utf-8", errors = "ignore")
+            match   = re.search(r'v?(\d+\.\d+(?:\.\d+)*)', content)
+
+            if match: return match.group(1)
+    except Exception as e: print(f"[!] Failed to read local version from README.md: {e}")
+
+    return "0.0.0"
+
+def parse_version(v_str):
+    cleaned = v_str.lstrip('v').strip()
+    parts   = []
+
+    for p in cleaned.split('.'):
+        try                 : parts.append(int(p))
+        except ValueError   : parts.append(0)
+
+    return tuple(parts)
+
+def check_github():
+    try:
+        url = "https://api.github.com/repos/Frittutisna/Stats-Maker/releases/latest"
+        req = urllib.request.Request(url, headers = {"User-Agent": "Stats-Maker-Updater"})
+
+        with urllib.request.urlopen(req, timeout = 3) as response:
+            data        = json.loads(response.read().decode())
+            tag_name    = data.get("tag_name", "")
+
+        local_v = get_local_version()
+
+        if tag_name:
+            remote_tuple    = parse_version(tag_name)
+            local_tuple     = parse_version(local_v)
+
+            if remote_tuple > local_tuple: return True, tag_name
+    except Exception as e: print(f"[!] Failed to check GitHub releases: {e}")
+
+    return False, None
+
+def update(tour_dialog_window, tag_name):
+    try:
+        print(f"[?] Downloading {tag_name} from GitHub")
+
+        zip_url = f"https://github.com/Frittutisna/Stats-Maker/archive/refs/tags/{tag_name}.zip"
+        req     = urllib.request.Request(zip_url, headers={"User-Agent": "Stats-Maker-Updater"})
+
+        with urllib.request.urlopen(req) as response: zip_data = response.read()
+        script_dir = Path(__file__).parent.parent.absolute()
+
+        with zipfile.ZipFile(io.BytesIO(zip_data)) as zf:
+            for member in zf.namelist():
+                parts = Path(member).parts
+
+                if len(parts) > 1:
+                    target_path = script_dir / Path(*parts[1:])
+
+                    if member.endswith('/'): target_path.mkdir(parents = True, exist_ok = True)
+                    else:
+                        target_path.parent.mkdir(parents = True, exist_ok = True)
+                        with zf.open(member) as source, open(target_path, "wb") as target: target.write(source.read())
+
+        print("[✓] Update complete, restarting hako_stats.py")
+
+        tour_dialog_window.destroy()
+        os.execv(sys.executable, [sys.executable] + sys.argv)
+
+    except Exception as e: messagebox.showerror("Update Failed", f"Could not complete update: {e}")
 
 class CustomSpinbox(tk.Frame):
     def __init__(self, parent, from_, to, initial_val = 1, state = "normal"):
@@ -85,7 +159,7 @@ class CustomSpinbox(tk.Frame):
             self.btn_inc    .itemconfig(1, fill = "white")
 
 class UnifiedDialog(tk.Toplevel):
-    def __init__(self, parent, title, prompt):
+    def __init__(self, parent, title, prompt, update_available = False, update_tag = None):
         super().__init__(parent)
 
         self.title(title)
@@ -105,10 +179,11 @@ class UnifiedDialog(tk.Toplevel):
         btn_frame = ttk.Frame(main_frame)
         btn_frame.pack(fill = tk.X)
 
-        self.confirm_btn = ttk.Button(btn_frame, text = "Confirm", command = self.on_confirm)
-        self.confirm_btn.pack(side = tk.RIGHT)
+        if update_available : self.confirm_btn = ttk.Button(btn_frame, text = "Update",     command = lambda: update(self, update_tag))
+        else                : self.confirm_btn = ttk.Button(btn_frame, text = "Confirm",    command = self.on_confirm)
 
-        self.bind("<Return>", lambda: self.on_confirm())
+        self.confirm_btn.pack(side = tk.RIGHT)
+        self.bind("<Return>", lambda _: self.on_confirm() if not update_available else update(self, update_tag))
 
     def on_confirm(self): self.destroy()
 
@@ -188,7 +263,8 @@ class TourSelectionDialog(UnifiedDialog):
 
 class TourMetadataDialog(UnifiedDialog):
     def __init__(self, parent, tour_id, init_label, default_th, baseline_initial, active_players, elo_map = None, sub_candidates = None, original_players_list = None, tour_dir = None):
-        super().__init__(parent, f"Tour {tour_id} Configuration", "")
+        has_update, update_tag = check_github()
+        super().__init__(parent, f"Tour {tour_id} Configuration", "", update_available = has_update, update_tag = update_tag)
 
         self.fill_color = "#000000"
 
