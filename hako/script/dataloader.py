@@ -280,10 +280,12 @@ def load_team_data(
 
     for p_in in all_code_players:
         if not find_best_match(p_in) and unmatched_known:
-            dialog = AskPlayerSelectionDialog(None, f"Alias Resolution: {p_in}", f"Which of the following corresponds to {p_in}?", sorted(list(unmatched_known)))
+            if len(unmatched_known) == 1: selected_match = list(unmatched_known)[0]
+            else:
+                dialog          = AskPlayerSelectionDialog(None, f"Alias Resolution: {p_in}", f"Which of the following corresponds to {p_in}?", sorted(list(unmatched_known)))
+                selected_match  = dialog.result_selection if dialog.result_selection else None
 
-            if dialog.result_selection:
-                selected_match                          = dialog.result_selection
+            if selected_match:
                 local_aliases[p_in.lower()]             = selected_match
                 local_aliases[selected_match.lower()]   = p_in
                 new_aliases[p_in]                       = selected_match
