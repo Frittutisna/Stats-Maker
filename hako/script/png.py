@@ -47,7 +47,7 @@ def create_player_png(
     if "Mean Difficulty Hit"    in df_png.columns: df_png["Mean Difficulty Hit"]    = pd.to_numeric(df_png["Mean Difficulty Hit"],  errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
 
     pct_cols    = (["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Δ", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"])
-    delta_cols  = ["OP Δ", "ED Δ", "IN Δ"]
+    delta_cols  = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]
 
     for pc in pct_cols      : df_png[pc] = (pd.to_numeric(df_png[pc],   errors = "coerce").mul(100) .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A"))
     for dc in delta_cols    : df_png[dc] = pd.to_numeric(df_png[dc],    errors = "coerce")          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -483,13 +483,14 @@ def create_song_png(analyzer, path: Path):
 def export_png(analyzer, df: pd.DataFrame, path: Path, fname: str, title: str, mask: list = None, val_str: str = "default"):
     df = df.reset_index(drop = True)
 
-    delta_check_cols    = ["OP Δ", "ED Δ", "IN Δ"]
+    delta_check_cols    = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]
     cols_to_drop        = [c for c in delta_check_cols if c in df.columns and (df[c].isna() | (df[c].astype(str).str.strip() == "N/A")).all()]
 
     if cols_to_drop: df = df.drop(columns = cols_to_drop)
 
     desc = [
-        "Elo", "GR", "GR Score", "UF", "UF Score", "Total Score",
+        "Elo", "GR", "GR Δ", "GR Score",
+        "UF", "UF Δ", "UF Score", "Total Score",
         "1/8s", "2/8s", "Lives Taken", "Lives Saved",
         "OP GR", "OP Δ", "ED GR", "ED Δ", "IN GR", "IN Δ",
         "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate",

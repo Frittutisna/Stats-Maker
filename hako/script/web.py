@@ -57,10 +57,12 @@ def render_dashboard_player(
 
             row.update({
                 "GR"            : {"count": float(row_data["GR"] * 100), "details": [f"{cor}/{tot}"] + analyzer.player_song_details[name]["Overall"]},
-                "GR Score"      : int   (round(row_data["GR Score"]))       if "GR Score"       in row_data else np.nan,
-                "UF"            : float (row_data["UF"])                    if "UF"             in row_data else np.nan,
-                "UF Score"      : int   (round(row_data["UF Score"]))       if "UF Score"       in row_data else np.nan,
-                "Total Score"   : int   (round(row_data["Total Score"]))    if "Total Score"    in row_data else np.nan,
+                "GR Δ"          : float (row_data["GR Δ"])                  if pd.notnull(row_data.get("GR Δ")) else np.nan,
+                "GR Score"      : int   (round(row_data["GR Score"]))       if "GR Score"       in row_data     else np.nan,
+                "UF"            : float (row_data["UF"])                    if "UF"             in row_data     else np.nan,
+                "UF Δ"          : float (row_data["UF Δ"])                  if pd.notnull(row_data.get("UF Δ")) else np.nan,
+                "UF Score"      : int   (round(row_data["UF Score"]))       if "UF Score"       in row_data     else np.nan,
+                "Total Score"   : int   (round(row_data["Total Score"]))    if "Total Score"    in row_data     else np.nan,
                 "1/8s"          : int   (row_data["1/8s"]),
                 "2/8s"          : int   (row_data["2/8s"]),
                 "7/8s"          : int   (row_data["7/8s"]),
@@ -152,7 +154,7 @@ def render_dashboard_player(
         rows.append(row)
 
     df_players          = pd.DataFrame(rows)
-    delta_json_fields   = ["OP Δ", "ED Δ", "IN Δ"]
+    delta_json_fields   = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"]
 
     for c_field in delta_json_fields:
         if c_field in df_players.columns:
@@ -166,7 +168,8 @@ def render_dashboard_player(
         borders     = get_threshold_borders(analyzer, gv_series)
 
     desc_cols = [
-        "Elo", "GR", "GR Score", "UF", "UF Score", "Total Score",
+        "Elo", "GR", "GR Δ", "GR Score",
+        "UF", "UF Δ", "UF Score", "Total Score",
         "1/8s", "2/8s", "Lives Taken", "Lives Saved",
         "OP GR", "OP Δ", "ED GR", "ED Δ", "IN GR", "IN Δ",
         "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate",

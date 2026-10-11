@@ -157,21 +157,30 @@ def compute_player_rows(
         current_gr = cor / tot if tot else 0.0
         row.update({"GR": current_gr})
 
+        delta_gr = (current_gr * 100) - history_baselines["GR"] if pd.notnull(history_baselines["GR"]) else np.nan
+        row.update({"GR Δ": round(delta_gr, 2) if pd.notnull(delta_gr) else np.nan})
+
         if analyzer.use_teams and elo_map.get(name.lower()) is not None and str(elo_map.get(name.lower(), "")).strip() != "":
             gr_d = gr_delta_map.get(name, np.nan)
             row.update({"GR Score": int(gr_d) if pd.notnull(gr_d) else np.nan})
-        else:
-            delta_gr = (current_gr * 100) - history_baselines["GR"] if pd.notnull(history_baselines["GR"]) else np.nan
-            row.update({"GR Score": round(delta_gr, 2) if pd.notnull(delta_gr) else np.nan})
+        else: row.update({"GR Score": round(delta_gr, 2) if pd.notnull(delta_gr) else np.nan})
+
+        uf_val      = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
+        delta_uf    = uf_val - history_baselines["UF"] if pd.notnull(history_baselines["UF"]) else np.nan
+
+        row.update({
+            "UF"    : uf_val,
+            "UF Δ"  : round(delta_uf, 2) if pd.notnull(delta_uf) else np.nan
+        })
 
         if analyzer.use_teams:
-            uf_val      = (analyzer.p_usefulness_sum[name] * avg_rank * 8) / tot if tot else 0.0
             uf_d        = uf_delta_map.get(name, np.nan)
             score_val   = perf_map.get(name, np.nan)
 
-            row.update({"UF"            : uf_val})
-            row.update({"UF Score"      : int(uf_d) if pd.notnull(uf_d) else np.nan})
-            row.update({"Total Score"   : int(round(score_val)) if pd.notnull(score_val) else np.nan})
+            row.update({
+                "UF Score"      : int(uf_d) if pd.notnull(uf_d) else np.nan,
+                "Total Score"   : int(round(score_val)) if pd.notnull(score_val) else np.nan
+            })
 
         avg_over8 = analyzer.p_overs_sum[name] / cor if cor else np.nan
         row.update({"1/8s": analyzer.e_counts[name], "2/8s": analyzer.p_two_e[name], "7/8s": analyzer.p_rev_e[name], "Mean Over-8": avg_over8})
