@@ -66,17 +66,17 @@ def compute_player_performance_scores(plist: list, analyzer, elo_map: dict, avg_
         scores_uf = (1 / (1 + np.exp(SCALE_PERF * (res_uf / std_uf)))) * 100
         scores_gr = (1 / (1 + np.exp(SCALE_PERF * (res_gr / std_gr)))) * 100
 
-        gr_scores_50    = np.round(scores_gr * 0.5)
-        uf_scores_50    = np.round(scores_uf * 0.5)
-        total_scores    = gr_scores_50 + uf_scores_50
+        gr_scores       = np.round(scores_gr)
+        uf_scores       = np.round(scores_uf)
+        total_scores    = np.round((gr_scores + uf_scores) / 2.0)
 
-        analyzer._cached_gr_delta_map = dict(zip(plist, gr_scores_50))
-        analyzer._cached_uf_delta_map = dict(zip(plist, uf_scores_50))
+        analyzer._cached_gr_delta_map = dict(zip(plist, gr_scores))
+        analyzer._cached_uf_delta_map = dict(zip(plist, uf_scores))
 
         return list(total_scores)
 
-    analyzer._cached_gr_delta_map = {name: 25.0 for name in plist}
-    analyzer._cached_uf_delta_map = {name: 25.0 for name in plist}
+    analyzer._cached_gr_delta_map = {name: 50.0 for name in plist}
+    analyzer._cached_uf_delta_map = {name: 50.0 for name in plist}
 
     return [50.0] * len(plist)
 

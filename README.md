@@ -1,12 +1,10 @@
-# Hako Stats v1.3.0.2
+# Hako Stats v1.3.1
 
 ## Changelog
 
-1. Added update function
-2. Changed `GR Delta/UF Delta/Score` to `GR Score/UF Score/Total Score`
-3. Fixed new player management
-4. Fixed player alias assignment
-5. Moved archives to `Stats-Archive`
+1. Reverted `GR/UF Delta`
+2. Fixed delta lookup
+3. Doubled `GR/UF Score` and tweaked `Total Score` accordingly
 
 ## How to Install
 
