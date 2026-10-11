@@ -216,7 +216,7 @@ def compute_player_rows(
                 "Over-8 Δ"      : rig_over8 - avg_over8,
                 "Rig GR"        : analyzer.p_rigs_h[name] / analyzer.p_rigs[name]                   if analyzer.p_rigs[name]                else np.nan,
                 "Off GR"        : (cor - analyzer.p_rigs_h[name]) / (tot - analyzer.p_rigs[name])   if (tot - analyzer.p_rigs[name])        else np.nan,
-                "Rig Δ"         : (cor - analyzer.p_rigs[name]) / cor                               if cor and analyzer.p_rigs[name] > 0    else np.nan,
+                "Rig Surplus"   : (cor - analyzer.p_rigs[name]) / cor                               if cor and analyzer.p_rigs[name] > 0    else np.nan,
             })
 
         h_diffs = analyzer.p_hit_diff.get(name, [])

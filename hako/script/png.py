@@ -46,7 +46,7 @@ def create_player_png(
     if "Over-8 Δ"               in df_png.columns: df_png["Over-8 Δ"]               = pd.to_numeric(df_png["Over-8 Δ"],             errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
     if "Mean Difficulty Hit"    in df_png.columns: df_png["Mean Difficulty Hit"]    = pd.to_numeric(df_png["Mean Difficulty Hit"],  errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
 
-    pct_cols    = (["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Δ", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"])
+    pct_cols    = (["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Surplus", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"])
     delta_cols  = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ", "Rig Rate Δ"]
 
     for pc in pct_cols      : df_png[pc] = (pd.to_numeric(df_png[pc],   errors = "coerce").mul(100) .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A"))
@@ -494,7 +494,7 @@ def export_png(analyzer, df: pd.DataFrame, path: Path, fname: str, title: str, m
         "1/8s", "2/8s", "Lives Taken", "Lives Saved",
         "OP GR", "OP Δ", "ED GR", "ED Δ", "IN GR", "IN Δ",
         "Rigs", "Rig Rate", "Rig Rate Δ", "Solo Rigs", "Solo Rig Rate",
-        "Over-8 Δ", "Rig GR", "Off GR", "Rig Δ",
+        "Over-8 Δ", "Rig GR", "Off GR", "Rig Surplus",
         "Median Vintage Hit", "Chant GR",
         "Mean Elo", "Mean GR", "Total 1/8s", "Rig Synergy",
         "Off Synergy", "Shared Rigs", "Win Record"
@@ -577,7 +577,7 @@ def export_png(analyzer, df: pd.DataFrame, path: Path, fname: str, title: str, m
         gv_series   = pd.to_numeric(df["GR"].astype(str).str.replace("%", ""), errors = "coerce")
         borders     = get_threshold_borders(analyzer, gv_series)
 
-    col_borders = {"Player", "Total Score", "Mean Over-8", "Lives Saved", "IN Δ", "Rig Rate Δ", "Solo Rig Rate", "Over-8 Δ", "Rig Δ", "Median Vintage Hit", "Metric", "Value", "Team Leader"}
+    col_borders = {"Player", "Total Score", "Mean Over-8", "Lives Saved", "IN Δ", "Rig Rate Δ", "Solo Rig Rate", "Over-8 Δ", "Rig Surplus", "Median Vintage Hit", "Metric", "Value", "Team Leader"}
 
     if "Total Score"    not in df.columns : col_borders.add("GR Score") if "GR Score" in df.columns else col_borders.add("GR")
     if "IN Δ"           not in df.columns : col_borders.add("IN GR")

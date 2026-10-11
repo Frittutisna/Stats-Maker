@@ -35,7 +35,7 @@ const playerHeadersMasterConfig = [
     {id: "over8delta",          name: "Over-8 Δ",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: -8,    max: 8,     step: 1},
     {id: "rigguessrate",        name: "Rig GR",                 ascMetric: false,   teamReq: false, watchedReq: true,   def: true,  type: "range",          min: 0,     max: 100,   step: 1},
     {id: "offguessrate",        name: "Off GR",                 ascMetric: false,   teamReq: false, watchedReq: true,   def: true,  type: "range",          min: 0,     max: 100,   step: 1},
-    {id: "rigdelta",            name: "Rig Δ",                  ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: -1000, max: 100,   step: 0.01},
+    {id: "rigsurplus",          name: "Rig Surplus",            ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: -1000, max: 100,   step: 0.01},
     {id: "meandifficultyhit",   name: "Mean Difficulty Hit",    ascMetric: true,    teamReq: false, watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 0.01},
     {id: "medianvintagehit",    name: "Median Vintage Hit",     ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: 1900,  max: 2026,  step: 1},
     {id: "mediantime",          name: "Median Time",            ascMetric: true,    teamReq: false, watchedReq: false,  def: false, type: "range",          min: 0,     max: 20,    step: 0.01},

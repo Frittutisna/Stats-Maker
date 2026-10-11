@@ -8,8 +8,10 @@ const playerHeadersMasterConfig = [
     {id: "tier",                name: "Tier",                   ascMetric: true,    teamReq: true,  watchedReq: false,  def: false, type: "categorical",    subOptions: ["1", "2", "3", "4"]},
     {id: "elo",                 name: "Elo",                    ascMetric: false,   teamReq: true,  watchedReq: false,  def: true,  type: "range",          min: -10,   max: 200,   step: 1},
     {id: "guessrate",           name: "GR",                     ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "guessratedelta",      name: "GR Δ",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: -100,  max: 100,   step: 1},
     {id: "grscore",             name: "GR Score",               ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: 0,     max: 50,    step: 1},
     {id: "uf",                  name: "UF",                     ascMetric: false,   teamReq: true,  watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "ufdelta",             name: "UF Δ",                   ascMetric: false,   teamReq: true,  watchedReq: false,  def: true,  type: "range",          min: -100,  max: 100,   step: 1},
     {id: "ufscore",             name: "UF Score",               ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: 0,     max: 50,    step: 1},
     {id: "totalscore",          name: "Total Score",            ascMetric: false,   teamReq: true,  watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 1},
     {id: "18s",                 name: "1/8s",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: true,  type: "range",          min: 0,     max: 100,   step: 1},
@@ -26,13 +28,14 @@ const playerHeadersMasterConfig = [
     {id: "indelta",             name: "IN Δ",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: -100,  max: 100,   step: 1},
     {id: "rigs",                name: "Rigs",                   ascMetric: false,   teamReq: false, watchedReq: true,   def: true,  type: "range",          min: 0,     max: 100,   step: 1},
     {id: "rigrate",             name: "Rig Rate",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "rigratedelta",        name: "Rig Rate Δ",             ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: -100,  max: 100,   step: 1},
     {id: "solorigs",            name: "Solo Rigs",              ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 100,   step: 1},
     {id: "solorigrate",         name: "Solo Rig Rate",          ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 100,   step: 1},
     {id: "rigover8",            name: "Rig Over-8",             ascMetric: true,    teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 8,     step: 0.01},
     {id: "over8delta",          name: "Over-8 Δ",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: -8,    max: 8,     step: 1},
     {id: "rigguessrate",        name: "Rig GR",                 ascMetric: false,   teamReq: false, watchedReq: true,   def: true,  type: "range",          min: 0,     max: 100,   step: 1},
     {id: "offguessrate",        name: "Off GR",                 ascMetric: false,   teamReq: false, watchedReq: true,   def: true,  type: "range",          min: 0,     max: 100,   step: 1},
-    {id: "rigdelta",            name: "Rig Δ",                  ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: -1000, max: 100,   step: 0.01},
+    {id: "rigsurplus",          name: "Rig Surplus",            ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: -1000, max: 100,   step: 0.01},
     {id: "meandifficultyhit",   name: "Mean Difficulty Hit",    ascMetric: true,    teamReq: false, watchedReq: false,  def: false, type: "range",          min: 0,     max: 100,   step: 0.01},
     {id: "medianvintagehit",    name: "Median Vintage Hit",     ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: 1900,  max: 2026,  step: 1},
     {id: "mediantime",          name: "Median Time",            ascMetric: true,    teamReq: false, watchedReq: false,  def: false, type: "range",          min: 0,     max: 20,    step: 0.01},
@@ -43,7 +46,7 @@ let activePlayerHeadersConfig = playerHeadersMasterConfig.filter(col => {
     if (col.teamReq     && !use_teams)  return false;
     if (col.watchedReq  && !watched)    return false;
 
-    if (["GR Score", "UF Score", "OP Δ", "ED Δ", "IN Δ", "OP GR", "ED GR", "IN GR"].includes(col.name)) {
+    if (["GR Δ", "GR Score", "UF Δ", "UF Score", "OP GR", "OP Δ", "ED GR", "ED Δ", "IN GR", "IN Δ"].includes(col.name)) {
         if (!players || players.length === 0) return false;
 
         const areAllRowsMissingValue = players.every(p => {
@@ -158,14 +161,14 @@ function initPlayerColumnSettings() {
         triggerPlayerTableRefresh();
     });
 
-    const hasDeltaData  = activePlayerHeadersConfig.some(c => ["OP Δ", "ED Δ", "IN Δ"].includes(c.name));
+    const hasDeltaData  = activePlayerHeadersConfig.some(c => ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"].includes(c.name));
     const metricSection = document.getElementById("playerMetricModeSection");
 
     if (metricSection && hasDeltaData) metricSection.classList.remove("hidden");
 
     activePlayerHeadersConfig.forEach(col => {
-        if (currentPlayerMetricMode === "Δ" && ["OP GR",    "ED GR",    "IN GR"]    .includes(col.name)) col.visible = false;
-        if (currentPlayerMetricMode === "%" && ["OP Δ",     "ED Δ",     "IN Δ"]     .includes(col.name)) col.visible = false;
+        if (currentPlayerMetricMode === "Δ" && ["GR",   "UF",   "OP GR",    "ED GR",    "IN GR"]    .includes(col.name)) col.visible = false;
+        if (currentPlayerMetricMode === "%" && ["GR Δ", "UF Δ", "OP Δ",     "ED Δ",     "IN Δ"]     .includes(col.name)) col.visible = false;
     });
 
     activePlayerHeadersConfig.forEach(col => {
@@ -721,10 +724,10 @@ window.updatePlayerMetricModeFromRadio = function(selectedMode) {
     currentPlayerMetricMode = selectedMode;
 
     activePlayerHeadersConfig.forEach(col => {
-        if      (currentPlayerMetricMode === "Δ" && ["OP GR",   "ED GR",    "IN GR"]    .includes(col.name)) col.visible = false;
-        else if (currentPlayerMetricMode === "%" && ["OP Δ",    "ED Δ",     "IN Δ"]     .includes(col.name)) col.visible = false;
-        else if (currentPlayerMetricMode === "Δ" && ["OP Δ",    "ED Δ",     "IN Δ"]     .includes(col.name)) col.visible = true;
-        else if (currentPlayerMetricMode === "%" && ["OP GR",   "ED GR",    "IN GR"]    .includes(col.name)) col.visible = col.def;
+        if      (currentPlayerMetricMode === "Δ" && ["GR",      "UF",   "OP GR",    "ED GR",    "IN GR"]    .includes(col.name)) col.visible = false;
+        else if (currentPlayerMetricMode === "%" && ["GR Δ",    "UF Δ", "OP Δ",     "ED Δ",     "IN Δ"]     .includes(col.name)) col.visible = false;
+        else if (currentPlayerMetricMode === "Δ" && ["GR Δ",    "UF Δ", "OP Δ",     "ED Δ",     "IN Δ"]     .includes(col.name)) col.visible = true;
+        else if (currentPlayerMetricMode === "%" && ["GR",      "UF",   "OP GR",    "ED GR",    "IN GR"]    .includes(col.name)) col.visible = col.def;
     });
 
     initPlayerColumnSettings    ();
@@ -739,7 +742,7 @@ function updatePlayerHelpDropdown() {
     const dropdown = document.getElementById("playerGuideDropdown");
     if (!dropdown) return;
 
-    const hasDeltaMetrics = activePlayerHeadersConfig.some(c => ["OP Δ", "ED Δ", "IN Δ"].includes(c.name));
+    const hasDeltaMetrics = activePlayerHeadersConfig.some(c => ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ"].includes(c.name));
     let configSectionText = "";
 
     if (hasDeltaMetrics) {

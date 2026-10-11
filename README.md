@@ -1,11 +1,12 @@
-# Hako Stats v1.3.1.1
+# Hako Stats v1.3.2
 
 ## Changelog
 
 1. Reverted `GR/UF Δ`
 2. Fixed Δ lookup
-3. Doubled `GR/UF Score` and tweaked `Total Score` accordingly
+3. Adjusted `GR/UF/Total Score` scaling
 4. Added `Rig Rate Δ`
+5. Changed `Rig Δ` to `Rig Surplus`
 
 ## How to Install
 

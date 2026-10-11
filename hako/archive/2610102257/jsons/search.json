@@ -358,8 +358,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "mahirushiina",
-            "mami"
+            "mami",
+            "mahirushiina"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -2288,9 +2288,9 @@
             "Tugia"
         ],
         "lives_taken_flat": [
-            "emdiel",
+            "liljakatsuragi",
             "chata",
-            "liljakatsuragi"
+            "emdiel"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -3201,12 +3201,12 @@
             6
         ],
         "alts": [
-            "Cardfight!! Vanguard Divinez Deluxe Finals",
-            "Cardfight!! Vanguard Divinez Deluxe Arc",
             "Cardfight!! Vanguard Divinez Deluxe Kesshou-hen",
-            "Cardfight!! Vanguard overDress",
+            "Cardfight!! Vanguard Divinez Deluxe Finals",
+            "Cardfight!! Vanguard Divinez Deluxe-hen",
             "Cardfight!! Vanguard will+Dress Season 3",
-            "Cardfight!! Vanguard Divinez Deluxe-hen"
+            "Cardfight!! Vanguard overDress",
+            "Cardfight!! Vanguard Divinez Deluxe Arc"
         ],
         "start_sample": 22
     },
@@ -3440,8 +3440,8 @@
             1
         ],
         "alts": [
-            "Choujuushin Gravion Zwei",
-            "Gravion Zwei"
+            "Gravion Zwei",
+            "Choujuushin Gravion Zwei"
         ],
         "start_sample": 46
     },
@@ -4188,8 +4188,8 @@
             "xeyz"
         ],
         "lives_taken_flat": [
-            "konomi",
-            "eljuanchi"
+            "eljuanchi",
+            "konomi"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -4662,8 +4662,8 @@
             "xeyz"
         ],
         "lives_taken_flat": [
-            "emdiel",
-            "chata"
+            "chata",
+            "emdiel"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -4943,8 +4943,8 @@
             "xeyz"
         ],
         "lives_taken_flat": [
-            "joljol",
-            "anonimus_opinion"
+            "anonimus_opinion",
+            "joljol"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -5020,8 +5020,8 @@
             "xeyz"
         ],
         "lives_taken_flat": [
-            "bamboo",
-            "revel"
+            "revel",
+            "bamboo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -6899,8 +6899,8 @@
             6
         ],
         "alts": [
-            "Puella Magi Madoka Magica the Movie Part 1: Beginnings",
-            "Gekijouban Mahou Shoujo Madoka★Magica Zenpen: Hajimari no Monogatari"
+            "Gekijouban Mahou Shoujo Madoka★Magica Zenpen: Hajimari no Monogatari",
+            "Puella Magi Madoka Magica the Movie Part 1: Beginnings"
         ],
         "start_sample": 34
     },
@@ -7062,8 +7062,8 @@
             1
         ],
         "alts": [
-            "Idol Land PriPara",
-            "PriPara"
+            "PriPara",
+            "Idol Land PriPara"
         ],
         "start_sample": 25
     },
@@ -7410,9 +7410,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
+            "zomg",
             "neoburnz",
-            "baikinman",
-            "zomg"
+            "baikinman"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -7499,8 +7499,8 @@
             4
         ],
         "alts": [
-            "Ginga Tetsudou 999: Kimi wa Haha no You ni Aiseru ka!!",
-            "Galaxy Express 999: Can You Love Like a Mother!!"
+            "Galaxy Express 999: Can You Love Like a Mother!!",
+            "Ginga Tetsudou 999: Kimi wa Haha no You ni Aiseru ka!!"
         ],
         "start_sample": 70
     },
@@ -7806,8 +7806,8 @@
             "oh95"
         ],
         "lives_taken_flat": [
-            "bamboo",
-            "revel"
+            "revel",
+            "bamboo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -8622,9 +8622,9 @@
             "Tugia"
         ],
         "lives_taken_flat": [
-            "mikuu_",
+            "liljakatsuragi",
             "chata",
-            "liljakatsuragi"
+            "mikuu_"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -9021,8 +9021,8 @@
             "xeyz"
         ],
         "lives_taken_flat": [
-            "at17",
-            "xeyz"
+            "xeyz",
+            "at17"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -9157,8 +9157,8 @@
             "oh95"
         ],
         "lives_taken_flat": [
-            "bamboo",
             "revel",
+            "bamboo",
             "oh95"
         ],
         "lives_saved_flat": [],
@@ -11412,6 +11412,91 @@
     {
         "romaji": "Kekkai Sensen",
         "english": "Blood Blockade Battlefront",
+        "song": "White Gloves",
+        "artist_raw": "Ai Ninomiya",
+        "artist_arr": [
+            "Ai Ninomiya"
+        ],
+        "composer": "Taisei Iwasaki",
+        "arranger": "Taisei Iwasaki",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16340",
+        "anime_type": "TV",
+        "vintage": "Spring 2015",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Shounen",
+            "Super Power",
+            "Vampire",
+            "Slapstick",
+            "Tragedy",
+            "Post-Apocalyptic",
+            "Gore",
+            "Primarily Adult Cast",
+            "Alternate Universe",
+            "Aliens",
+            "Foreign",
+            "Dystopian",
+            "Urban Fantasy",
+            "Tanned Skin",
+            "Werewolf",
+            "Urban",
+            "Tomboy"
+        ],
+        "difficulty": "19.77",
+        "video_url": "https://nawdist.animemusicquiz.com/n7x7mg.mp3",
+        "guessers_flat": [
+            "ElJuanchi",
+            "konomi",
+            "neoburnz",
+            "at17"
+        ],
+        "guessers_hover": [
+            "Team neoburnz: neoburnz (6.55)",
+            "Team konomi: konomi (8.28), at17 (3.19), ElJuanchi (10.91)"
+        ],
+        "listers_flat": [
+            "xeyz",
+            "konomi",
+            "neoburnz",
+            "at17"
+        ],
+        "listers_hover": [
+            "Team neoburnz: neoburnz",
+            "Team konomi: konomi, at17, xeyz"
+        ],
+        "room_players": [
+            "Baikinman",
+            "ElJuanchi",
+            "I_dont_like_loli",
+            "at17",
+            "konomi",
+            "neoburnz",
+            "xeyz",
+            "zomg"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "neoburnz"
+        ],
+        "correct_teams_flat": [
+            5,
+            5,
+            4,
+            5
+        ],
+        "alts": [],
+        "start_sample": 13
+    },
+    {
+        "romaji": "Kekkai Sensen",
+        "english": "Blood Blockade Battlefront",
         "song": "On My Own",
         "artist_raw": "Ai Ninomiya",
         "artist_arr": [
@@ -11494,91 +11579,6 @@
         ],
         "alts": [],
         "start_sample": 32
-    },
-    {
-        "romaji": "Kekkai Sensen",
-        "english": "Blood Blockade Battlefront",
-        "song": "White Gloves",
-        "artist_raw": "Ai Ninomiya",
-        "artist_arr": [
-            "Ai Ninomiya"
-        ],
-        "composer": "Taisei Iwasaki",
-        "arranger": "Taisei Iwasaki",
-        "type": "Insert",
-        "chanting": "No",
-        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16340",
-        "anime_type": "TV",
-        "vintage": "Spring 2015",
-        "genres_raw": [
-            "Action",
-            "Comedy",
-            "Supernatural"
-        ],
-        "tags_raw": [
-            "Demons",
-            "Shounen",
-            "Super Power",
-            "Vampire",
-            "Slapstick",
-            "Tragedy",
-            "Post-Apocalyptic",
-            "Gore",
-            "Primarily Adult Cast",
-            "Alternate Universe",
-            "Aliens",
-            "Foreign",
-            "Dystopian",
-            "Urban Fantasy",
-            "Tanned Skin",
-            "Werewolf",
-            "Urban",
-            "Tomboy"
-        ],
-        "difficulty": "19.77",
-        "video_url": "https://nawdist.animemusicquiz.com/n7x7mg.mp3",
-        "guessers_flat": [
-            "ElJuanchi",
-            "konomi",
-            "neoburnz",
-            "at17"
-        ],
-        "guessers_hover": [
-            "Team neoburnz: neoburnz (6.55)",
-            "Team konomi: konomi (8.28), at17 (3.19), ElJuanchi (10.91)"
-        ],
-        "listers_flat": [
-            "xeyz",
-            "konomi",
-            "neoburnz",
-            "at17"
-        ],
-        "listers_hover": [
-            "Team neoburnz: neoburnz",
-            "Team konomi: konomi, at17, xeyz"
-        ],
-        "room_players": [
-            "Baikinman",
-            "ElJuanchi",
-            "I_dont_like_loli",
-            "at17",
-            "konomi",
-            "neoburnz",
-            "xeyz",
-            "zomg"
-        ],
-        "lives_taken_flat": [],
-        "lives_saved_flat": [
-            "neoburnz"
-        ],
-        "correct_teams_flat": [
-            5,
-            5,
-            4,
-            5
-        ],
-        "alts": [],
-        "start_sample": 13
     },
     {
         "romaji": "Kekkai Sensen & Beyond",
@@ -11986,8 +11986,8 @@
             "joljol"
         ],
         "lives_taken_flat": [
-            "mahirushiina",
-            "mami"
+            "mami",
+            "mahirushiina"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -12612,9 +12612,9 @@
             4
         ],
         "alts": [
-            "Ghost in the Shell: Stand Alone Complex - Individual Eleven",
-            "Koukaku Kidoutai: Stand Alone Complex",
             "Ghost in the Shell: Stand Alone Complex",
+            "Koukaku Kidoutai: Stand Alone Complex",
+            "Ghost in the Shell: Stand Alone Complex - Individual Eleven",
             "Koukaku Kidoutai S.A.C. 2nd GIG Individual Eleven"
         ],
         "start_sample": 87
@@ -13044,8 +13044,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "baikinman",
-            "i_dont_like_loli"
+            "i_dont_like_loli",
+            "baikinman"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -13109,8 +13109,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "baikinman",
-            "i_dont_like_loli"
+            "i_dont_like_loli",
+            "baikinman"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -13614,9 +13614,9 @@
             "oh95"
         ],
         "lives_taken_flat": [
-            "emdiel",
+            "liljakatsuragi",
             "chata",
-            "liljakatsuragi"
+            "emdiel"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -16213,8 +16213,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "joljol",
-            "catge"
+            "catge",
+            "joljol"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -16571,8 +16571,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "emdiel",
-            "liljakatsuragi"
+            "liljakatsuragi",
+            "emdiel"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -17139,10 +17139,10 @@
             4
         ],
         "alts": [
-            "Overlord",
-            "Gekijouban Overlord: Shikkoku no Eiyuu",
             "Gekijouban Overlord: Fushisha no Ou",
             "Overlord: The Undead King",
+            "Gekijouban Overlord: Shikkoku no Eiyuu",
+            "Overlord",
             "Overlord: The Dark Warrior"
         ],
         "start_sample": 6
@@ -17365,8 +17365,8 @@
             "oh95"
         ],
         "lives_taken_flat": [
-            "bamboo",
-            "revel"
+            "revel",
+            "bamboo"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -17756,10 +17756,10 @@
         ],
         "alts": [
             "Pocket Monsters Side Story",
-            "Pocket Monsters: Diamond & Pearl",
-            "Pokémon Chronicles",
             "Pokémon: Diamond and Pearl",
-            "Pokémon: Battle Frontier"
+            "Pokémon: Battle Frontier",
+            "Pocket Monsters: Diamond & Pearl",
+            "Pokémon Chronicles"
         ],
         "start_sample": 36
     },
@@ -17838,12 +17838,12 @@
         ],
         "alts": [
             "Pocket Monsters",
-            "Pocket Monsters Side Story",
-            "Pokémon Chronicles",
+            "Pokémon",
             "Pokémon: To Be a Pokémon Master",
+            "Pocket Monsters Side Story",
             "Pocket Monsters: Mezase Pokémon Master",
-            "Pokémon: Mezase Pokémon Master",
-            "Pokémon"
+            "Pokémon Chronicles",
+            "Pokémon: Mezase Pokémon Master"
         ],
         "start_sample": 8
     },
@@ -19562,9 +19562,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "emdiel",
+            "liljakatsuragi",
             "chata",
-            "liljakatsuragi"
+            "emdiel"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -19628,8 +19628,8 @@
             "zomg"
         ],
         "lives_taken_flat": [
-            "mikuu_",
-            "liljakatsuragi"
+            "liljakatsuragi",
+            "mikuu_"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -20151,8 +20151,8 @@
             6
         ],
         "alts": [
-            "Shingeki no Kyojin: The Final Season - Kanketsu-hen",
-            "Attack on Titan Final Season: The Final Chapters"
+            "Attack on Titan Final Season: The Final Chapters",
+            "Shingeki no Kyojin: The Final Season - Kanketsu-hen"
         ],
         "start_sample": 1
     },
@@ -20246,8 +20246,8 @@
             5
         ],
         "alts": [
-            "Attack on Titan: Chronicle",
-            "Shingeki no Kyojin: Chronicle"
+            "Shingeki no Kyojin: Chronicle",
+            "Attack on Titan: Chronicle"
         ],
         "start_sample": 70
     },
@@ -21040,9 +21040,9 @@
             "zomg"
         ],
         "lives_taken_flat": [
+            "zomg",
             "neoburnz",
-            "baikinman",
-            "zomg"
+            "baikinman"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -21051,8 +21051,8 @@
             4
         ],
         "alts": [
-            "Shoujo☆Kageki Revue Starlight",
-            "Revue Starlight"
+            "Revue Starlight",
+            "Shoujo☆Kageki Revue Starlight"
         ],
         "start_sample": 125
     },
@@ -21420,8 +21420,8 @@
             4
         ],
         "alts": [
-            "Slam Dunk: Hoero Basketman Tamashii! Hanamichi to Rukawa no Atsuki Natsu",
-            "Slam Dunk: Shouhoku Saidai no Kiki! Moero Sakuragi Hanamichi"
+            "Slam Dunk: Shouhoku Saidai no Kiki! Moero Sakuragi Hanamichi",
+            "Slam Dunk: Hoero Basketman Tamashii! Hanamichi to Rukawa no Atsuki Natsu"
         ],
         "start_sample": 58
     },
@@ -21492,8 +21492,8 @@
             1
         ],
         "alts": [
-            "Slam Dunk: Hoero Basketman Tamashii! Hanamichi to Rukawa no Atsuki Natsu",
-            "Slam Dunk: Shouhoku Saidai no Kiki! Moero Sakuragi Hanamichi"
+            "Slam Dunk: Shouhoku Saidai no Kiki! Moero Sakuragi Hanamichi",
+            "Slam Dunk: Hoero Basketman Tamashii! Hanamichi to Rukawa no Atsuki Natsu"
         ],
         "start_sample": 49
     },
@@ -21553,9 +21553,9 @@
             "oh95"
         ],
         "lives_taken_flat": [
-            "hakohoka",
             "tugia",
-            "mahirushiina"
+            "mahirushiina",
+            "hakohoka"
         ],
         "lives_saved_flat": [],
         "correct_teams_flat": [
@@ -21782,14 +21782,14 @@
             5
         ],
         "alts": [
-            "Armored Trooper Votoms: Red Shoulder Document - Roots of Treachery",
-            "Soukou Kihei Votoms: Pailsen Files",
-            "Armored Trooper Votoms: Big Battle",
-            "Soukou Kihei Votoms: Red Shoulder Document - Yabou no Roots",
-            "Armored Trooper Votoms: Pailsen Files",
-            "Armored Trooper Votoms: Phantom Arc",
             "Soukou Kihei Votoms: Big Battle",
-            "Soukou Kihei Votoms: Genei-hen"
+            "Armored Trooper Votoms: Red Shoulder Document - Roots of Treachery",
+            "Armored Trooper Votoms: Phantom Arc",
+            "Soukou Kihei Votoms: Red Shoulder Document - Yabou no Roots",
+            "Soukou Kihei Votoms: Genei-hen",
+            "Armored Trooper Votoms: Big Battle",
+            "Soukou Kihei Votoms: Pailsen Files",
+            "Armored Trooper Votoms: Pailsen Files"
         ],
         "start_sample": 0
     },
@@ -23306,8 +23306,8 @@
             4
         ],
         "alts": [
-            "That Time I Got Reincarnated as a Slime",
             "Tensura Dai 4 Ki",
+            "That Time I Got Reincarnated as a Slime",
             "Tensei shitara Slime Datta Ken",
             "Tensura"
         ],
@@ -25804,8 +25804,8 @@
             1
         ],
         "alts": [
-            "YuruYuri Ten",
-            "Yuru Yuri,"
+            "Yuru Yuri,",
+            "YuruYuri Ten"
         ],
         "start_sample": 96
     },

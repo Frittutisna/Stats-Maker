@@ -52,7 +52,7 @@ const thickBorderColumns = new Set([
     "Rig Rate Δ",
     "Solo Rig Rate",
     "Over-8 Δ",
-    "Rig Δ",
+    "Rig Surplus",
     "Metric",
     "Value",
     "Team Leader",
