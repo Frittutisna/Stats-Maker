@@ -28,6 +28,7 @@ const playerHeadersMasterConfig = [
     {id: "indelta",             name: "IN Δ",                   ascMetric: false,   teamReq: false, watchedReq: false,  def: false, type: "range",          min: -100,  max: 100,   step: 1},
     {id: "rigs",                name: "Rigs",                   ascMetric: false,   teamReq: false, watchedReq: true,   def: true,  type: "range",          min: 0,     max: 100,   step: 1},
     {id: "rigrate",             name: "Rig Rate",               ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 100,   step: 1},
+    {id: "rigratedelta",        name: "Rig Rate Δ",             ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: -100,  max: 100,   step: 1},
     {id: "solorigs",            name: "Solo Rigs",              ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 100,   step: 1},
     {id: "solorigrate",         name: "Solo Rig Rate",          ascMetric: false,   teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 100,   step: 1},
     {id: "rigover8",            name: "Rig Over-8",             ascMetric: true,    teamReq: false, watchedReq: true,   def: false, type: "range",          min: 0,     max: 8,     step: 0.01},

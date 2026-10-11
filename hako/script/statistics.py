@@ -139,6 +139,7 @@ def compute_player_rows(
                     for a_line in f_alias:
                         if "," in a_line:
                             p_splits = [x.strip() for x in a_line.split(",")]
+
                             if len(p_splits) >= 7 and (p_splits[0].lower() == name.lower() or p_splits[1].lower() == name.lower()):
                                 if p_splits[2] != "N/A": history_baselines = {
                                         "GR": float(p_splits[2]),
@@ -146,6 +147,7 @@ def compute_player_rows(
                                         "OP": float(p_splits[4]),
                                         "ED": float(p_splits[5]),
                                         "IN": float(p_splits[6]),
+                                        "RG": float(p_splits[7]) if len(p_splits) > 7 and p_splits[7] != "N/A" else np.nan
                                 }
 
                                 break
@@ -199,11 +201,15 @@ def compute_player_rows(
             else: row[f"{t_key} Δ"] = np.nan
 
         if watched:
-            rig_over8 = np.mean(analyzer.p_l_corr[name]) if analyzer.p_l_corr[name] else np.nan
+            rig_over8           = np.mean(analyzer.p_l_corr[name]) if analyzer.p_l_corr[name] else np.nan
+            current_rig_rate    = analyzer.p_rigs[name] / tot if tot else 0.0
+            history_rg          = history_baselines.get("RG", np.nan)
+            delta_rig_rate      = (current_rig_rate * 100) - history_rg if pd.notnull(history_rg) else np.nan
 
             row.update({
                 "Rigs"          : analyzer.p_rigs[name],
-                "Rig Rate"      : analyzer.p_rigs[name] / tot                                       if tot                                  else np.nan,
+                "Rig Rate"      : current_rig_rate,
+                "Rig Rate Δ"    : round(delta_rig_rate, 2)                                          if pd.notnull(delta_rig_rate)           else np.nan,
                 "Solo Rigs"     : analyzer.p_l_solos[name],
                 "Solo Rig Rate" : analyzer.p_l_solos[name] / analyzer.p_rigs[name]                  if analyzer.p_rigs[name]                else np.nan,
                 "Rig Over-8"    : rig_over8,

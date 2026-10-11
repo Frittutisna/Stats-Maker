@@ -49,7 +49,7 @@ const thickBorderColumns = new Set([
     "Tier",
     "Mean Over-8",
     "Lives Saved",
-    "Rig Rate",
+    "Rig Rate Δ",
     "Solo Rig Rate",
     "Over-8 Δ",
     "Rig Δ",

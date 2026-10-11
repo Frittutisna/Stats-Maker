@@ -94,12 +94,13 @@ def render_dashboard_player(
                 row.update({
                     "Rigs"          : int   (row_data["Rigs"]),
                     "Rig Rate"      : float (row_data["Rig Rate"]           * 100),
+                    "Rig Rate Δ"    : float (row_data["Rig Rate Δ"])                                                                                                    if pd.notnull(row_data.get("Rig Rate Δ"))   else np.nan,
                     "Solo Rigs"     : int   (row_data["Solo Rigs"]),
                     "Solo Rig Rate" : float (row_data["Solo Rig Rate"]      * 100),
-                    "Rig Over-8"    : float (row_data["Rig Over-8"])    if pd.notnull(row_data["Rig Over-8"])   else np.nan,
-                    "Over-8 Δ"      : float (row_data["Over-8 Δ"])      if pd.notnull(row_data["Over-8 Δ"])     else np.nan,
-                    "Rig GR"        : {"count": float(row_data["Rig GR"]    * 100), "details": [f"{succ_rig}/{tot_rig}"] + analyzer.player_song_details[name]["Rigs"]}  if pd.notnull(row_data["Rig GR"]) else np.nan,
-                    "Off GR"        : {"count": float(row_data["Off GR"]    * 100), "details": [f"{succ_off}/{tot_off}"] + off_details}                                 if pd.notnull(row_data["Off GR"]) else np.nan,
+                    "Rig Over-8"    : float (row_data["Rig Over-8"])                                                                                                    if pd.notnull(row_data["Rig Over-8"])       else np.nan,
+                    "Over-8 Δ"      : float (row_data["Over-8 Δ"])                                                                                                      if pd.notnull(row_data["Over-8 Δ"])         else np.nan,
+                    "Rig GR"        : {"count": float(row_data["Rig GR"]    * 100), "details": [f"{succ_rig}/{tot_rig}"] + analyzer.player_song_details[name]["Rigs"]}  if pd.notnull(row_data["Rig GR"])           else np.nan,
+                    "Off GR"        : {"count": float(row_data["Off GR"]    * 100), "details": [f"{succ_off}/{tot_off}"] + off_details}                                 if pd.notnull(row_data["Off GR"])           else np.nan,
                     "Rig Δ"         : float (row_data["Rig Δ"]              * 100),
                 })
 
@@ -172,7 +173,7 @@ def render_dashboard_player(
         "UF", "UF Δ", "UF Score", "Total Score",
         "1/8s", "2/8s", "Lives Taken", "Lives Saved",
         "OP GR", "OP Δ", "ED GR", "ED Δ", "IN GR", "IN Δ",
-        "Rigs", "Rig Rate", "Solo Rigs", "Solo Rig Rate",
+        "Rigs", "Rig Rate", "Rig Rate Δ", "Solo Rigs", "Solo Rig Rate",
         "Over-8 Δ", "Rig GR", "Off GR", "Rig Δ",
         "Median Vintage Hit", "Chant GR"
     ]
