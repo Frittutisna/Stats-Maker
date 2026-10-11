@@ -234,39 +234,41 @@ class TourAnalyzer:
                 wks_stats           = sheet.get_worksheet_by_id(sheet_ref) if isinstance(sheet_ref, int) else sheet.worksheet(sheet_ref)
                 rows_stats          = wks_stats.get_all_values()
                 id_table_lookup     = load_player_ids(alias_url)
-                df_stats            = pd.DataFrame(rows_stats[1:], columns = rows_stats[0])
+                df_stats            = pd.DataFrame(rows_stats[1:], columns = [str(c).strip() for c in rows_stats[0]])
+                df_stats.columns    = [str(c).strip().lower() for c in df_stats.columns]
                 history_profile_map = {}
                 name_profile_map    = {}
+                name_col            = next((c for c in ["player name", "name"] if c in df_stats.columns), None)
 
-                for _, r_row in df_stats.iterrows():
-                    norm_row = {str(k).strip().lower(): v for k, v in r_row.items() if pd.notnull(k)}
+                if name_col and not df_stats.empty:
+                    stat_cols = ["guess rate", "usefulness", "op guess rate", "ed guess rate", "in guess rate"]
 
-                    def _get_val(*keys):
-                        for k in keys:
-                            if k.lower() in norm_row: return norm_row[k.lower()]
+                    for col in stat_cols:
+                        if col in df_stats.columns  : df_stats[col] = pd.to_numeric(df_stats[col].astype(str).str.replace("%", ""), errors = "coerce").fillna(0.0)
+                        else                        : df_stats[col] = 0.0
 
-                        return ""
+                    if "timestamp" in df_stats.columns:
+                        df_stats["timestamp"]   = pd.to_datetime(df_stats["timestamp"], errors = "coerce")
+                        df_stats                = df_stats.sort_values(["timestamp"])
 
-                    def _parse_stat(val):
-                        if pd.isna(val) or val == "": return 0.0
+                    df_stats["_norm_name"]  = df_stats[name_col].str.strip().str.lower()
+                    recent_df               = df_stats.groupby("_norm_name").tail(10)
+                    agg_df                  = recent_df.groupby("_norm_name")[stat_cols].mean().reset_index()
 
-                        try:                 return float(str(val).strip().replace("%", ""))
-                        except ValueError:   return 0.0
+                    for _, r_row in agg_df.iterrows():
+                        raw_name = r_row["_norm_name"]
 
-                    raw_name = str(_get_val("player name", "name")).strip().lower()
+                        stats_data = {
+                            "GR": r_row.get("guess rate",       0.0),
+                            "UF": r_row.get("usefulness",       0.0),
+                            "OP": r_row.get("op guess rate",    0.0),
+                            "ED": r_row.get("ed guess rate",    0.0),
+                            "IN": r_row.get("in guess rate",    0.0),
+                        }
 
-                    stats_data = {
-                        "GR": _parse_stat(_get_val("average gr %",              "average gr",       "gr %")),
-                        "UF": _parse_stat(_get_val("average usefulness (new)",  "usefulness",       "average usefulness")),
-                        "OP": _parse_stat(_get_val("average ops gr %",          "average op gr %",  "op gr %")),
-                        "ED": _parse_stat(_get_val("average eds gr %",          "average ed gr %",  "ed gr %")),
-                        "IN": _parse_stat(_get_val("average ins gr %",          "average in gr %",  "in gr %")),
-                    }
+                        name_profile_map[raw_name]  = stats_data
+                        pid_key                     = id_table_lookup.get(raw_name)
 
-                    if raw_name:
-                        name_profile_map[raw_name] = stats_data
-
-                        pid_key = id_table_lookup.get(raw_name)
                         if pid_key is not None: history_profile_map[pid_key] = stats_data
 
                 alias_txt_path      = self.tour_dir / FILE_ALIAS
@@ -309,7 +311,7 @@ class TourAnalyzer:
                 print("[✓] Historic baselines saved to alias.txt")
             except Exception as e:
                 print(f"[!] Failed to fetch historic baselines: {e}")
-                print("[?] Continuing structural pipeline execution, ignoring baseline fetching")
+                print("[!] Skipped baseline fetching")
 
         if "sub_results" in meta_res:
             for sub_player, replaced_player in meta_res["sub_results"].items():

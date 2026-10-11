@@ -30,25 +30,25 @@ THRESH_TIME = 17.5
 THRESH_WTCH = 5
 
 ANT_URL_ALIAS   = "https://docs.google.com/spreadsheets/d/1JjI2GaHjAGr6dABR9Mo_mZ0CdKbXrvlKHnIpttr22uo/export?format=csv&gid=0"
-ANT_KEY_STATS   = "1WadyJ-rpY8AbjO8TW8rKBt1PerYOQH7tj2yk9hgNOzU"
+ANT_KEY_STATS   = "1R1Th9ngAr5RwQxX5KforK8xDzplRXGbcF1axCE8liF4"
 ANT_MAP_STATS   = {
-    "Usual"         : 1800755148,
-    "Watched"       : 1294827541
+    "Usual"         : 0,
+    "Watched"       : 220235184
 }
 
 TOUR_URL_ALIAS  = "https://docs.google.com/spreadsheets/d/1ihfqssregh74curDyvRE0GAFihQfovUAHpYDrtOIrOA/export?format=csv&gid=1903970832"
-TOUR_KEY_STATS  = "1Fm6pMyXv7qhOQkLah4yX9HNow4WaDR4HJuAVMukQl34"
+TOUR_KEY_STATS  = "1ihfqssregh74curDyvRE0GAFihQfovUAHpYDrtOIrOA"
 TOUR_MAP_STATS  = {
     "Usual"         : 0,
-    "Watched"       : 2040874005,
-    "Watched OP"    : 2122428774,
-    "Watched ED"    : 1177334024,
-    "Watched IN"    : 928352352,
-    "Watched 2+8s"  : 41221104,
-    "Watched 5s"    : 1525886733,
-    "Random OP"     : 1093764794,
-    "Random ED"     : 1863696842,
-    "Random IN"     : 1919154942
+    "Watched"       : 1719516221,
+    "Watched OP"    : 1478248904,
+    "Watched ED"    : 484347985,
+    "Watched IN"    : 1177294729,
+    "Watched 2+8s"  : 165193471,
+    "Watched 5s"    : 676003100,
+    "Random OP"     : 591917504,
+    "Random ED"     : 601464032,
+    "Random IN"     : 2075065970
 }
 
 EXCLUDED_TAGS = {
