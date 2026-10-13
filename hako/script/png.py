@@ -49,8 +49,11 @@ def create_player_png(
     pct_cols    = (["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Surplus", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"])
     delta_cols  = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ", "Rig Rate Δ"]
 
-    for pc in pct_cols      : df_png[pc] = (pd.to_numeric(df_png[pc],   errors = "coerce").mul(100) .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A"))
-    for dc in delta_cols    : df_png[dc] = pd.to_numeric(df_png[dc],    errors = "coerce")          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+    for pc in pct_cols:
+        if pc in df_png.columns: df_png[pc] = pd.to_numeric(df_png[pc], errors = "coerce").mul(100) .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
+
+    for dc in delta_cols:
+        if dc in df_png.columns: df_png[dc] = pd.to_numeric(df_png[dc], errors = "coerce")          .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
 
     export_png(analyzer, df_png, path, "Player.png", f"{prefix}{stage}", mask, val_str)
 

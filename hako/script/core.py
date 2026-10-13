@@ -307,7 +307,7 @@ class TourAnalyzer:
                         elif    a_low   in name_profile_map     : h_prof = name_profile_map[a_low]
 
                         if h_prof   : f_out.write(f"{p_name}, {alias_name}, {h_prof['GR']:.2f}, {h_prof['UF']:.2f}, {h_prof['OP']:.2f}, {h_prof['ED']:.2f}, {h_prof['IN']:.2f}, {h_prof['RG']:.2f}\n")
-                        else        : f_out.write(f"{p_name}, {alias_name}, N/A,                N/A,                N/A,                N/A,                N/A,                N/A\n")
+                        else        : f_out.write(f"{p_name}, {alias_name}, N/A, N/A, N/A, N/A, N/A, N/A\n")
 
                 print("[✓] Historic baselines saved to alias.txt")
             except Exception as e:
