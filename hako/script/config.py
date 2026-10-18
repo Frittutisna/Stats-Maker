@@ -32,8 +32,9 @@ THRESH_WTCH = 5
 ANT_URL_ALIAS   = "https://docs.google.com/spreadsheets/d/1JjI2GaHjAGr6dABR9Mo_mZ0CdKbXrvlKHnIpttr22uo/export?format=csv&gid=0"
 ANT_KEY_STATS   = "1R1Th9ngAr5RwQxX5KforK8xDzplRXGbcF1axCE8liF4"
 ANT_MAP_STATS   = {
-    "Usual"         : 0,
-    "Watched"       : 220235184
+    "Usual"     : 0,
+    "Watched"   : 220235184,
+    "JSON"      : 487191751
 }
 
 TOUR_URL_ALIAS  = "https://docs.google.com/spreadsheets/d/1ihfqssregh74curDyvRE0GAFihQfovUAHpYDrtOIrOA/export?format=csv&gid=1903970832"

@@ -1037,6 +1037,150 @@ class TourAnalyzer:
             insert_start_row = last_data_row + 1
             wks.insert_rows(rows_to_push, row = insert_start_row, value_input_option = "USER_ENTERED")
             print("[✓] Successfully pushed Ant stats to Google Spreadsheet!")
+
+            json_gid = ANT_MAP_STATS.get("JSON")
+
+            try:
+                wks_json        = sheet.get_worksheet_by_id(json_gid) if isinstance(json_gid, int) else sheet.worksheet("JSON")
+                codes_file      = self.tour_dir / FILE_CODES
+                codes_content   = ""
+
+                if codes_file.exists():
+                    with open(codes_file, "r", encoding = "utf-8") as cf: codes_content = cf.read().strip()
+
+                export_date_str     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+                json_rows_to_push   = []
+
+                def safe_get(d, *keys, default = ""):
+                    curr = d
+
+                    for k in keys:
+                        if not isinstance(curr, dict): return default
+                        curr = curr.get(k)
+                        if curr is None: return default
+
+                    return curr
+
+                for path in self.json_paths:
+                    try:
+                        with open(path, "r", encoding = "utf-8") as jf: data = json.load(jf)
+                    except Exception: continue
+
+                    songs = data.get("songs", [])
+                    if not isinstance(songs, list) or not songs: continue
+
+                    song_no_arr        = [f"Song {  s.get('songNumber', i + 1) if isinstance(s, dict) else i + 1}"  for i, s in enumerate(songs)]
+                    song_number_arr    = [str(      s.get("songNumber", i + 1) if isinstance(s, dict) else i + 1)   for i, s in enumerate(songs)]
+
+                    english_arr        = [safe_get      (s, "songInfo", "animeNames",           "english")                      for s in songs]
+                    romaji_arr         = [safe_get      (s, "songInfo", "animeNames",           "romaji")                       for s in songs]
+                    artist_arr         = [safe_get      (s, "songInfo", "artist")                                               for s in songs]
+                    composer_id_arr    = [str(safe_get  (s, "songInfo", "composerInfo",         "artistId"))                    for s in songs]
+                    composer_arr       = [safe_get      (s, "songInfo", "composerInfo",         "name")                         for s in songs]
+                    arranger_id_arr    = [str(safe_get  (s, "songInfo", "arrangerInfo",         "artistId"))                    for s in songs]
+                    arranger_arr       = [safe_get      (s, "songInfo", "arrangerInfo",         "name")                         for s in songs]
+                    song_name_arr      = [safe_get      (s, "songInfo", "songName")                                             for s in songs]
+                    type_arr           = [str(safe_get  (s, "songInfo", "type"))                                                for s in songs]
+                    type_number_arr    = [str(safe_get  (s, "songInfo", "typeNumber"))                                          for s in songs]
+                    ann_id_arr         = [str(safe_get  (s, "songInfo", "annId"))                                               for s in songs]
+                    ann_song_id_arr    = [str(safe_get  (s, "songInfo", "annSongId"))                                           for s in songs]
+                    high_risk_arr      = [str(safe_get  (s, "songInfo", "highRisk",                             default = 0))   for s in songs]
+                    score_arr          = [str(safe_get  (s, "songInfo", "animeScore"))                                          for s in songs]
+                    anime_type_arr     = [safe_get      (s, "songInfo", "animeType")                                            for s in songs]
+                    vintage_arr        = [safe_get      (s, "songInfo", "vintage")                                              for s in songs]
+                    difficulty_arr     = [str(safe_get  (s, "songInfo", "animeDifficulty"))                                     for s in songs]
+                    tags_arr           = [safe_get      (s, "songInfo", "animeTags",                            default = [])   for s in songs]
+                    genres_arr         = [safe_get      (s, "songInfo", "animeGenre",                           default = [])   for s in songs]
+                    alt_names_arr      = [safe_get      (s, "songInfo", "altAnimeNames",                        default = [])   for s in songs]
+                    alt_answers_arr    = [safe_get      (s, "songInfo", "altAnimeNamesAnswers",                 default = [])   for s in songs]
+                    site_ann_arr       = [str(safe_get  (s, "songInfo", "siteIds",              "annId"))                       for s in songs]
+                    site_mal_arr       = [str(safe_get  (s, "songInfo", "siteIds",              "malId"))                       for s in songs]
+                    site_kitsu_arr     = [str(safe_get  (s, "songInfo", "siteIds",              "kitsuId"))                     for s in songs]
+                    site_anilist_arr   = [str(safe_get  (s, "songInfo", "siteIds",              "aniListId"))                   for s in songs]
+                    rebroadcast_arr    = [str(safe_get  (s, "songInfo", "rebroadcast",                          default = 0))   for s in songs]
+                    dub_arr            = [str(safe_get  (s, "songInfo", "dub",                                  default = 0))   for s in songs]
+                    season_name_arr    = [safe_get      (s, "songInfo", "seasonInfo",           "name")                         for s in songs]
+                    season_num_arr     = [str(safe_get  (s, "songInfo", "seasonInfo",           "number"))                      for s in songs]
+                    pop_rank_arr       = [str(safe_get  (s, "songInfo", "popularityRank"))                                      for s in songs]
+
+                    correct_count_arr  = [str(s.get ("correctCount", len(s.get("correctGuessPlayers", []))))    if isinstance(s, dict) else "0" for s in songs]
+                    wrong_count_arr    = [str(s.get ("wrongCount",  ""))                                        if isinstance(s, dict) else ""  for s in songs]
+                    video_url_arr      = [s.get     ("videoUrl",    "")                                         if isinstance(s, dict) else ""  for s in songs]
+
+                    correct_players_arr = [[
+                        p if isinstance(p, str) else p.get("name", "") for p in s.get("correctGuessPlayers", [])
+                        ] if isinstance(s, dict) and isinstance(s.get("correctGuessPlayers"), list) else []
+                        for s in songs
+                    ]
+
+                    incorrect_players_arr = [[
+                        p if isinstance(p, str) else p.get("name", "") for p in s.get("incorrectGuessPlayers", [])
+                        ] if isinstance(s, dict) and isinstance(s.get("incorrectGuessPlayers"), list) else []
+                        for s in songs
+                    ]
+
+                    list_states_arr     = [s.get("listStates",      [])     if isinstance(s, dict) and isinstance(s.get("listStates"), list)    else [] for s in songs]
+                    sample_point_arr    = [str(s.get("startPoint",  ""))    if isinstance(s, dict)                                              else "" for s in songs]
+
+                    json_row = [
+                        self.tour_label,                    #0  : Tour
+                        export_date_str,                    #1  : Date
+                        json.dumps(song_no_arr),            #2  : Tour Song Number
+                        path.name,                          #3  : JSON
+                        json.dumps(song_number_arr),        #4  : JSON Song Number
+                        json.dumps(english_arr),            #5  : English
+                        json.dumps(romaji_arr),             #6  : Japanese
+                        json.dumps(artist_arr),             #7  : Artist
+                        json.dumps(composer_id_arr),        #8  : Composer ID
+                        json.dumps(composer_arr),           #9  : Composer
+                        json.dumps(arranger_id_arr),        #10 : Arranger ID
+                        json.dumps(arranger_arr),           #11 : Arranger
+                        json.dumps(song_name_arr),          #12 : Song
+                        json.dumps(type_arr),               #13 : Song Type
+                        json.dumps(type_number_arr),        #14 : Type Number
+                        json.dumps(ann_id_arr),             #15 : ANN ID
+                        json.dumps(ann_song_id_arr),        #16 : ANN Song ID
+                        json.dumps(high_risk_arr),          #17 : High Risk
+                        json.dumps(score_arr),              #18 : Score
+                        json.dumps(anime_type_arr),         #19 : Anime Type
+                        json.dumps(vintage_arr),            #20 : Vintage
+                        json.dumps(difficulty_arr),         #21 : Difficulty
+                        json.dumps(tags_arr),               #22 : Tag
+                        json.dumps(genres_arr),             #23 : Genre
+                        json.dumps(alt_names_arr),          #24 : Alt Name
+                        json.dumps(alt_answers_arr),        #25 : Alt Answer
+                        json.dumps(site_ann_arr),           #26 : ANN ID Copy
+                        json.dumps(site_mal_arr),           #27 : MAL ID
+                        json.dumps(site_kitsu_arr),         #28 : Kitsu ID
+                        json.dumps(site_anilist_arr),       #29 : AniList ID
+                        json.dumps(rebroadcast_arr),        #30 : Rebroadcast
+                        json.dumps(dub_arr),                #31 : Dub
+                        json.dumps(season_name_arr),        #32 : Season
+                        json.dumps(season_num_arr),         #33 : Season Number
+                        json.dumps(pop_rank_arr),           #34 : Rank
+                        json.dumps(correct_count_arr),      #35 : Correct Count
+                        json.dumps(wrong_count_arr),        #36 : Wrong Count
+                        json.dumps(video_url_arr),          #37 : URL
+                        json.dumps(correct_players_arr),    #38 : Correct Player
+                        json.dumps(incorrect_players_arr),  #39 : Incorrect Player
+                        json.dumps(list_states_arr),        #40 : List
+                        codes_content,                      #41 : Code
+                        json.dumps(sample_point_arr),       #42 : Sample
+                    ]
+
+                    json_rows_to_push.append(json_row)
+
+                if json_rows_to_push:
+                    json_rows_to_push.append([""] * 43)
+
+                    existing_json_vals  = wks_json.get_all_values()
+                    last_json_row       = len(existing_json_vals)
+
+                    while last_json_row > 0 and not any(existing_json_vals[last_json_row - 1]): last_json_row -= 1
+                    wks_json.insert_rows(json_rows_to_push, row = last_json_row + 1, value_input_option = "USER_ENTERED")
+                    print("[✓] Successfully pushed JSON raw data to Google Spreadsheet!")
+            except Exception as e: print(f"[X] Failed to push JSON raw data to Google Spreadsheet: {e}")
+
         except Exception as e: print(f"[X] Failed to push Ant stats to Google Spreadsheet: {e}")
 
     def _handle_github_deploy(self, web_path: Path):
