@@ -1,4 +1,4 @@
-# Hako Stats v1.3.2.2
+# Hako Stats v1.3.3
 
 ## Changelog
 
