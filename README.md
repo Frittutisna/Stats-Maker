@@ -1,7 +1,6 @@
 # Hako Stats v1.4.0
 
 ## Changelog
-
 1. Reverted `GR/UF Δ`
 2. Fixed Δ lookup
 3. Adjusted `GR/UF/Total Score` scaling
@@ -9,49 +8,20 @@
 5. Changed `Rig Δ` to `Rig Surplus`
 6. Moved text files to `/txt/`
 7. Changed `hako_[0-2]` to `hako-[0-2]`
-
-## How to Install
-
-1. Download or update to the latest release
-2. If this is your first time, extract and move them to your directory
-3. If you are working with **Dry Stats**, move them to the same level as the `assets` folder
+8. Simplified README
 
 ## Note
-From `v1.3.0`, the `Confirm` button changes to the `Update` button whenever there's a newer release on GitHub
+1. To use with **Dry Stats**, move to the same level as `assets`
+2. From `v1.3.0`, `Confirm` changes to `Update` whenever there's a newer release
+
+## How to Install
+[Download](https://github.com/Frittutisna/Stats-Maker/releases/latest) or update to the latest release
 
 ## How To Use
+1. Run `hako_clean.py`, then do the following:
 
-### Single Tour
-
-1. Before running stats for a new tour, run `hako_clean.py` to clean your directory
-2. Copy-paste from `#tour-information` to `codes.txt`. **Hako Stats** takes the following format as an example:
-
-```
-bofu (118.884) paperyoshi10 (98.474) justaweirdo (78.879) redrumyyy (72.540) | Total = 368.777 | Guesses = [5544]
-kaededayo (114.178) torradinhas (94.353) serozero (91.831) rhummy (68.191) | Total = 368.553 | Guesses = [5553]
-konomi (127.293) pile (110.347) foopypoopy (79.747) kazuyasouma1 (51.240) | Total = 368.627 | Guesses = [5551]
-liljakatsuragi (103.454) deerparkboss (97.130) sabetin (95.981) whales6978 (71.819) | Total = 368.384 | Guesses = [5554]
-
-Average: 368.585
-
-https://challonge.com/dblow5ep
-```
-
-3. Move the JSON files to the `jsons` folder
-4. Run `hako_stats.py`. You will be presented with the following prompt as an example. While you can usually click `Confirm` without changing anything, feel free to change the answer to each question as you see fit
-
-![Configuration Prompt Example](https://files.catbox.moe/s3hvth.png)
-
-5. For mid-tour stats, post `Player.png` and `Extra.png` from the `hako-0` folder to `#tour-talk`
-6. At the end of tour:
-    1. Run `hako_stats.py` again, but change `Do you want to fetch Challonge data?` and `Do you want to use Dry's script?` to `Yes`
-    2. Drag-and-drop `Site.zip` from the `hako-0` folder to [Netlify](https://app.netlify.com/drop)
-    3. Post the Netlify link to `#export-stats` below **Dry Stats** outputs
-
-### Multiple (Split) Tours
-
-1. **Hako Stats** supports up to three tours simultaneously. Before running stats for a new batch of tours, run `hako_clean.py` to clean your directory
-2. Copy-paste from `#tour-information` to each tour's respective `code.txt` in `hako/tour/[0-2]`. **Hako Stats** takes the following format as an example:
+* **Single Tour:** Copy-paste from `#tour-information` (example below), to `codes.txt` and move the JSON files to `jsons`
+* **Multiple Tours:** Copy-paste from `#tour-information` (example below) to each tour's `code.txt` in `hako/tour/[0-2]/txt` and move the JSON files to each tour's `hako/tour/[0-2]/json`
 
 ```
 bofu (118.884) paperyoshi10 (98.474) justaweirdo (78.879) redrumyyy (72.540) | Total = 368.777 | Guesses = [5544]
@@ -64,21 +34,20 @@ Average: 368.585
 https://challonge.com/dblow5ep
 ```
 
-3. Move the JSON files for each tour to their `json` folder in `hako/tour/[0-2]`
-4. Run `hako_stats.py`, then click `Confirm` if the prompt shown looks correct to you
+2. Run `hako_stats.py`. For **Multiple Tours**, confirm the Tour Selection prompt (example below)
 
-![Selection Prompt Example](https://files.catbox.moe/3h2qoh.webp)
+![Tour Selection Prompt Example](https://files.catbox.moe/3h2qoh.webp)
 
-5. You will be presented with the following prompt for each tour as an example. While you can usually click `Confirm` without changing anything, feel free to change the answer to each question as you see fit
+3. Modify accordingly, then confirm the Tour Configuration prompt (example below)
 
-![Configuration Prompt Example](https://files.catbox.moe/s3hvth.png)
+![Tour Configuration Prompt Example](https://files.catbox.moe/s3hvth.png)
 
-6. For mid-tour stats, post `Player.png` and `Extra.png` from their respective `hako-[0-2]` folder to `#tour-talk`
-7. At the end of tour:
-    1. Run `hako_stats.py` again, but change `Do you want to fetch Challonge data?` and `Do you want to use Dry's script?` to `Yes`
-    2. Drag-and-drop `Site.zip` from their respective `hako-[0-2]` folder to [Netlify](https://app.netlify.com/drop)
-    3. Post the Netlify link to `#export-stats` below **Dry Stats** outputs
+4. Do the following:
+    * **Mid-Tour:** Post `Player.png` and `Extra.png` from `hako-[0-2]` to `#tour-talk`
+    * **Post-Tour:** Copy-paste `Site.zip` from `hako-[0-2]` to [Netlify](https://app.netlify.com/drop), then post the link in `#export-stats` as `Site: [Link]` after **Dry Stats** PNGs
 
 ## Tools
-
-You will find `edit.py`, `stitch.py`, and `swap.py` in the `hako/tool` folder. You can use this to edit the JSON, stitch multiple JSONs from the same round into one JSON, and swap players within `codes.txt` respectively. Make sure to copy-paste the relevant JSON(s) or TXT file to the `hako/tool` folder before running the script.
+Copy-paste the relevant file(s) to the folder before running the script:
+1. `edit.py` edits per-song JSON data
+2. `stitch.py` stitches multiple JSONs from the same match into one
+3. `swap.py` swaps old and new players from `code.txt`
