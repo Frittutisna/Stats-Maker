@@ -41,10 +41,10 @@ https://challonge.com/dblow5ep
 
 ![Configuration Prompt Example](https://files.catbox.moe/s3hvth.png)
 
-5. For mid-tour stats, post `Player.png` and `Extra.png` from the `hako_0` folder to `#tour-talk`
+5. For mid-tour stats, post `Player.png` and `Extra.png` from the `hako-0` folder to `#tour-talk`
 6. At the end of tour:
     1. Run `hako_stats.py` again, but change `Do you want to fetch Challonge data?` and `Do you want to use Dry's script?` to `Yes`
-    2. Drag-and-drop `Site.zip` from the `hako_0` folder to [Netlify](https://app.netlify.com/drop)
+    2. Drag-and-drop `Site.zip` from the `hako-0` folder to [Netlify](https://app.netlify.com/drop)
     3. Post the Netlify link to `#export-stats` below **Dry Stats** outputs
 
 ### Multiple (Split) Tours
