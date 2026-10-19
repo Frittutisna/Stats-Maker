@@ -12,11 +12,11 @@
 
 ## How to Install
 
-1. Sign up for a [Netlify](https://app.netlify.com/signup) account
-2. Delete any folder and file with `hako` in their name from your directory
-3. Download the latest release, then extract the downloaded file and move them to your directory. If you are working with **Dry Stats** as well, put them on the same level as the `assets` folder
-4. Run `hako_clean.py` to clean your directory
-5. From `v1.3.0` onwards, the `Confirm` button will be replaced with an `Update` button if there's a newer release on GitHub
+1. Download or update to the latest release
+2. If this is your first time, extract and move them to your directory. If you are working with **Dry Stats**, move them to the same level as the `assets` folder
+
+## Note
+From `v1.3.0`, the `Confirm` button changes to the `Update` button whenever there's a newer release on GitHub
 
 ## How To Use
 
