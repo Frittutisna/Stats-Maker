@@ -13,7 +13,8 @@
 ## How to Install
 
 1. Download or update to the latest release
-2. If this is your first time, extract and move them to your directory. If you are working with **Dry Stats**, move them to the same level as the `assets` folder
+2. If this is your first time, extract and move them to your directory
+3. If you are working with **Dry Stats**, move them to the same level as the `assets` folder
 
 ## Note
 From `v1.3.0`, the `Confirm` button changes to the `Update` button whenever there's a newer release on GitHub
