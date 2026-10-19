@@ -47,7 +47,7 @@ https://challonge.com/dblow5ep
     * **Post-Tour:** Copy-paste `Site.zip` from `hako-[0-2]` to [Netlify](https://app.netlify.com/drop), then post the link in `#export-stats` as `Site: [Link]` after **Dry Stats** PNGs
 
 ## Tools
-Copy-paste the relevant file(s) to the folder before running the script:
+Copy-paste the relevant file(s) to `hako/tool` before running the script:
 1. `edit.py` edits per-song JSON data
 2. `stitch.py` stitches multiple JSONs from the same match into one
 3. `swap.py` swaps old and new players from `code.txt`
