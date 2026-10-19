@@ -17,8 +17,10 @@ DIR_OUT     = "hako"
 DIR_TOURS   = "tour"
 FILE_ALIAS  = "alias.txt"
 FILE_CHANT  = "chant.txt"
-FILE_CODES  = "code.txt"
+FILE_CODE   = "code.txt"
 FILE_HAKO   = "hako.json"
+FILE_MODE   = "mode.txt"
+FILE_SUB    = "sub.txt"
 SCALE_PERF  = -1.5
 TEAMS_RE    = r"([^\s(]+)\s*\(([-]?\d+(?:\.\d+)?)\)"
 THRESH_CHRL = 50
@@ -32,9 +34,16 @@ THRESH_WTCH = 5
 ANT_URL_ALIAS   = "https://docs.google.com/spreadsheets/d/1JjI2GaHjAGr6dABR9Mo_mZ0CdKbXrvlKHnIpttr22uo/export?format=csv&gid=0"
 ANT_KEY_STATS   = "1R1Th9ngAr5RwQxX5KforK8xDzplRXGbcF1axCE8liF4"
 ANT_MAP_STATS   = {
-    "Usual"     : 0,
-    "Watched"   : 220235184,
-    "JSON"      : 487191751
+    "Usual"                 : 0,
+    "Watched"               : 220235184,
+    "Watched OP"            : 313246506,
+    "Watched IN"            : 1251660941,
+    "Watched IN -Chanting"  : 559526622,
+    "Watched 2+8s"          : 881563885,
+    "Watched 2010+"         : 548559487,
+    "Random OP"             : 1955531566,
+    "Random IN"             : 71038376,
+    "JSON"                  : 487191751
 }
 
 TOUR_URL_ALIAS  = "https://docs.google.com/spreadsheets/d/1ihfqssregh74curDyvRE0GAFihQfovUAHpYDrtOIrOA/export?format=csv&gid=1903970832"

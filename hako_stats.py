@@ -123,7 +123,7 @@ if __name__ == "__main__":
         for j_file in root_jsons.glob("*.json"): shutil.copy(j_file, target_json_dir / j_file.name)
 
         root_codes      = script_directory / "codes.txt"
-        target_codes    = tour_folder_path / "0" / "code.txt"
+        target_codes    = tour_folder_path / "0" / FILE_CODE
 
         if root_codes.exists():
             target_codes.parent.mkdir(parents = True, exist_ok = True)

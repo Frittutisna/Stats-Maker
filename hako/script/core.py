@@ -847,7 +847,7 @@ class TourAnalyzer:
         target_codes_file   = self.script_dir.parent / "codes.txt"
 
         source_jsons_dir    = self.tour_dir / "json"
-        source_codes_file   = self.tour_dir / "code.txt"
+        source_codes_file   = self.tour_dir / FILE_CODE
 
         script_name     = "ngm_local.py" if "ngm_local" in self.dry_choice else "ngm_stats.py"
         target_script   = self.script_dir.parent / script_name
@@ -898,26 +898,16 @@ class TourAnalyzer:
 
     def _handle_ant_spreadsheet_push(self):
         print("[?] Pushing Ant stats to Google Spreadsheet")
-        ANT_SHEET_ID = "1R1Th9ngAr5RwQxX5KforK8xDzplRXGbcF1axCE8liF4"
-
-        if      self.tour_label == "Usual"                  : gid = 0
-        elif    self.tour_label == "Watched"                : gid = 220235184
-        elif    self.tour_label == "Watched OP"             : gid = 313246506
-        elif    self.tour_label == "Watched IN"             : gid = 1251660941
-        elif    self.tour_label == "Watched IN -Chanting"   : gid = 559526622
-        elif    self.tour_label == "Watched 2+8s"           : gid = 881563885
-        elif    self.tour_label == "Watched 2010+"          : gid = 548559487
-        elif    self.tour_label == "Random OP"              : gid = 1955531566
-        elif    self.tour_label == "Random IN"              : gid = 71038376
-        else                                                : gid = 1085890115
+        gid = ANT_MAP_STATS.get(self.tour_label, 1085890115)
 
         cred_file = self.script_dir / DIR_CREDS / "ant_credentials.json"
         auth_file = self.script_dir / DIR_CREDS / "ant_authorized_user.json"
 
         try:
-            gc              = gspread.oauth(credentials_filename = str(cred_file), authorized_user_filename = str(auth_file))
-            sheet           = gc.open_by_key(ANT_SHEET_ID)
-            wks             = sheet.get_worksheet_by_id(gid)
+            gc      = gspread.oauth(credentials_filename = str(cred_file), authorized_user_filename = str(auth_file))
+            sheet   = gc.open_by_key(ANT_KEY_STATS)
+            wks     = sheet.get_worksheet_by_id(gid)
+
             iso_timestamp   = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
             valid_elos      = [float(v) for v in self.elo_map.values() if str(v).replace(".", "", 1).isdigit() or (str(v).startswith("-") and str(v)[1:].replace(".", "", 1).isdigit())]
             avg_rank        = np.mean(valid_elos) if valid_elos else 1.0
@@ -1041,7 +1031,7 @@ class TourAnalyzer:
 
             try:
                 wks_json        = sheet.get_worksheet_by_id(json_gid) if isinstance(json_gid, int) else sheet.worksheet("JSON")
-                codes_file      = self.tour_dir / FILE_CODES
+                codes_file      = self.tour_dir / FILE_CODE
                 codes_content   = ""
 
                 if codes_file.exists():

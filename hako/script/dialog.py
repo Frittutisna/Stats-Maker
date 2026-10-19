@@ -282,9 +282,9 @@ class TourMetadataDialog(UnifiedDialog):
         self.tour_dir       = tour_dir
         saved_mode          = None
 
-        if self.tour_dir and (self.tour_dir / "mode.txt").exists():
+        if self.tour_dir and (self.tour_dir / FILE_MODE).exists():
             try:
-                with open(self.tour_dir / "mode.txt", "r", encoding = "utf-8") as f: saved_mode = f.read().strip()
+                with open(self.tour_dir / FILE_MODE, "r", encoding = "utf-8") as f: saved_mode = f.read().strip()
             except Exception: pass
 
         initial_mode    = saved_mode if saved_mode in ["Tour", "Ant"] else ("Ant" if self.has_ant_creds else "Tour")
@@ -614,8 +614,8 @@ class TourMetadataDialog(UnifiedDialog):
             sorted_originals    = sorted(list(original_players_list),   key = str.lower)
             saved_subs_map      = {}
 
-            if tour_dir and (tour_dir / "subs.txt").exists():
-                with open(tour_dir / "subs.txt", "r", encoding = "utf-8") as f:
+            if tour_dir and (tour_dir / FILE_SUB).exists():
+                with open(tour_dir / FILE_SUB, "r", encoding = "utf-8") as f:
                     for line in f:
                         if "," in line:
                             s_name, o_name                          = line.strip().split(",", 1)
@@ -791,7 +791,7 @@ class TourMetadataDialog(UnifiedDialog):
     def on_confirm(self):
         if self.tour_dir:
             try:
-                with open(self.tour_dir / "mode.txt", "w", encoding = "utf-8") as f: f.write(self.mode_var.get())
+                with open(self.tour_dir / FILE_MODE, "w", encoding = "utf-8") as f: f.write(self.mode_var.get())
             except Exception: pass
 
         try                 : base_exp = int(self.spin.get())
@@ -819,15 +819,15 @@ class TourMetadataDialog(UnifiedDialog):
         if self.tour_dir and sub_results:
             existing_lines = []
 
-            if (self.tour_dir / "subs.txt").exists():
-                with open(self.tour_dir / "subs.txt", "r", encoding = "utf-8") as f:
+            if (self.tour_dir / FILE_SUB).exists():
+                with open(self.tour_dir / FILE_SUB, "r", encoding = "utf-8") as f:
                     for line in f:
                         if "," in line:
                             s_part, _ = line.split(",", 1)
                             if s_part.strip().lower() not in [s.lower() for s in sub_results]: existing_lines.append(line.strip())
 
             for s_name, r_name in sub_results.items()                           : existing_lines.append(f"{s_name}, {r_name}")
-            with open(self.tour_dir / "subs.txt", "w", encoding = "utf-8") as f : f.write("\n".join(existing_lines) + "\n")
+            with open(self.tour_dir / FILE_SUB, "w", encoding = "utf-8") as f : f.write("\n".join(existing_lines) + "\n")
 
         super().on_confirm()
 

@@ -332,7 +332,7 @@ def compute_team_rows(analyzer, assigns: dict, t1_lookup: dict) -> pd.DataFrame:
     chal_matches = []
 
     if getattr(analyzer, "challonge_choice", "No") == "Yes":
-        codes_file  = analyzer.tour_dir / FILE_CODES
+        codes_file  = analyzer.tour_dir / FILE_CODE
         chal_link   = None
 
         if codes_file.exists():

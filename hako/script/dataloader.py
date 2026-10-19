@@ -204,7 +204,7 @@ def load_team_data(
     main_roster_names   : set[str],
     alias_url           : str = None
 ) -> tuple[bool, dict, dict, dict, defaultdict, set, list, list]:
-    codes = tour_dir / FILE_CODES
+    codes = tour_dir / FILE_CODE
 
     if not codes.exists() or os.path.getsize(codes) == 0    : return False, {}, {}, {}, defaultdict(set), all_known, [], list(all_known)
     with open(codes, "r", encoding = "utf-8") as f          : lines = [line.strip() for line in f if line.strip()]
