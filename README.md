@@ -1,4 +1,4 @@
-# Hako Stats v1.3.4
+# Hako Stats v1.4.0
 
 ## Changelog
 
@@ -7,6 +7,8 @@
 3. Adjusted `GR/UF/Total Score` scaling
 4. Added `Rig Rate Δ`
 5. Changed `Rig Δ` to `Rig Surplus`
+6. Moved text files to `/txt/`
+7. Changed `hako_[0-2]` to `hako-[0-2]`
 
 ## How to Install
 
@@ -70,10 +72,10 @@ https://challonge.com/dblow5ep
 
 ![Configuration Prompt Example](https://files.catbox.moe/s3hvth.png)
 
-6. For mid-tour stats, post `Player.png` and `Extra.png` from their respective `hako_[0-2]` folder to `#tour-talk`
+6. For mid-tour stats, post `Player.png` and `Extra.png` from their respective `hako-[0-2]` folder to `#tour-talk`
 7. At the end of tour:
     1. Run `hako_stats.py` again, but change `Do you want to fetch Challonge data?` and `Do you want to use Dry's script?` to `Yes`
-    2. Drag-and-drop `Site.zip` from their respective `hako_[0-2]` folder to [Netlify](https://app.netlify.com/drop)
+    2. Drag-and-drop `Site.zip` from their respective `hako-[0-2]` folder to [Netlify](https://app.netlify.com/drop)
     3. Post the Netlify link to `#export-stats` below **Dry Stats** outputs
 
 ## Tools

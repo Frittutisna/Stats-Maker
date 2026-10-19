@@ -1,54 +1,38 @@
-import shutil
 from pathlib import Path
+
+def delete_file(file: Path):
+    try:
+        if file.is_file() or file.is_symlink():
+            print(f"[?] Deleting: {file}")
+            file.unlink()
+    except Exception as e: print(f"[X] Failed to delete {file}: {e}")
+
+def clear_file(file: Path):
+    try:
+        print(f"[?] Clearing: {file}")
+        file.write_text("")
+    except Exception as e: print(f"[X] Failed to clear {file}: {e}")
 
 def clean():
     script_dir  = Path(__file__).parent.absolute()
     json_dir    = script_dir / "jsons"
     tour_dir    = script_dir / "hako" / "tour"
 
-    for hako_folder in script_dir.glob("hako_*"):
-        if hako_folder.is_dir():
-            print(f"[?] Deleting folder: {hako_folder}")
+    for folder in filter(Path.is_dir, script_dir.glob("hako-*")):
+        for item in folder.rglob("*"): delete_file(item)
 
-            try                     : shutil.rmtree(hako_folder)
-            except Exception as e   : print(f"[X] Failed to delete {hako_folder}: {e}")
+    for folder in filter(Path.is_dir, tour_dir.glob("*/*")):
+        if folder.name == "txt": continue
+        for item in folder.rglob("*"): delete_file(item)
 
-    for folder in tour_dir.glob("*/*"):
-        if folder.is_dir():
-            print(f"[?] Cleaning subfolder: {folder}")
-
-            for item in folder.rglob('*'):
-                try:
-                    if item.is_file() or item.is_symlink(): item.unlink()
-
-                except Exception as e:  print(f"[X] Failed to delete {item}: {e}")
-
-    txt_files = set(script_dir.glob('*.txt')).union(tour_dir.rglob('*.txt'))
-
-    for file_path in txt_files:
-        try:
-            print(f"[?] Clearing contents of: {file_path}")
-            file_path.write_text("")
-
-        except Exception as e: print(f"[X] Failed to clear {file_path}: {e}")
+    txt_files = set(script_dir.glob("*.txt")).union(tour_dir.rglob("*.txt"))
+    for file_path in txt_files: clear_file(file_path)
 
     name_json = script_dir / "hako" / "template" / "name.json"
+    if name_json.exists(): clear_file(name_json)
 
-    if name_json.exists():
-        try:
-            print(f"[?] Clearing contents of name.json")
-            name_json.write_text("")
-
-        except Exception as e: print(f"[X] Failed to clear name.json: {e}")
-
-    dry_files = set(script_dir.glob('*.png')).union(json_dir.glob('*.json'))
-
-    for file_path in dry_files:
-        try:
-            print(f"[?] Deleting Dry's files: {file_path}")
-            file_path.unlink()
-
-        except Exception as e: print(f"[X] Failed to delete {file_path}: {e}")
+    dry_files = set(script_dir.glob("*.png")).union(json_dir.glob("*.json"))
+    for file_path in dry_files: delete_file(file_path)
 
     print("[✓] Cleanup complete")
 

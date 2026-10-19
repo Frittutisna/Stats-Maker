@@ -271,7 +271,7 @@ class TourAnalyzer:
 
                         if pid_key is not None: history_profile_map[pid_key] = stats_data
 
-                alias_txt_path      = self.tour_dir / FILE_ALIAS
+                alias_txt_path      = self.tour_dir / TXT_ALIAS
                 current_alias_lines = []
                 seen_players        = set()
 
@@ -805,7 +805,7 @@ class TourAnalyzer:
         fuse_images(png_path)
         workspace_root = self.script_dir.parent
 
-        target_hako_dir = workspace_root / f"hako_{self.tour_id}"
+        target_hako_dir = workspace_root / f"hako-{self.tour_id}"
         target_hako_dir.mkdir(parents = True, exist_ok = True)
 
         allowed_files   = {"Player.png", "Extra.png"}
@@ -847,7 +847,7 @@ class TourAnalyzer:
         target_codes_file   = self.script_dir.parent / "codes.txt"
 
         source_jsons_dir    = self.tour_dir / "json"
-        source_codes_file   = self.tour_dir / FILE_CODE
+        source_codes_file   = self.tour_dir / TXT_CODE
 
         script_name     = "ngm_local.py" if "ngm_local" in self.dry_choice else "ngm_stats.py"
         target_script   = self.script_dir.parent / script_name
@@ -1031,7 +1031,7 @@ class TourAnalyzer:
 
             try:
                 wks_json        = sheet.get_worksheet_by_id(json_gid) if isinstance(json_gid, int) else sheet.worksheet("JSON")
-                codes_file      = self.tour_dir / FILE_CODE
+                codes_file      = self.tour_dir / TXT_CODE
                 codes_content   = ""
 
                 if codes_file.exists():

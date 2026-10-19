@@ -1,5 +1,5 @@
-import  re
-from    PIL import Image, ImageChops, ImageOps
+import re, os
+from PIL import Image, ImageChops, ImageOps
 
 BROWSER_PATHS = [
     r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
@@ -14,13 +14,10 @@ CONST_CONV  = 3
 DIR_CREDS   = "credential"
 DIR_JSONS   = "json"
 DIR_OUT     = "hako"
+DIR_TXT     = "txt"
 DIR_TOURS   = "tour"
-FILE_ALIAS  = "alias.txt"
 FILE_CHANT  = "chant.txt"
-FILE_CODE   = "code.txt"
 FILE_HAKO   = "hako.json"
-FILE_MODE   = "mode.txt"
-FILE_SUB    = "sub.txt"
 SCALE_PERF  = -1.5
 TEAMS_RE    = r"([^\s(]+)\s*\(([-]?\d+(?:\.\d+)?)\)"
 THRESH_CHRL = 50
@@ -30,6 +27,10 @@ THRESH_SONG = 35
 THRESH_TEAM = 4
 THRESH_TIME = 17.5
 THRESH_WTCH = 5
+TXT_ALIAS   = os.path.join("txt", "alias.txt")
+TXT_CODE    = os.path.join("txt", "code.txt")
+TXT_MODE    = os.path.join("txt", "mode.txt")
+TXT_SUB     = os.path.join("txt", "sub.txt")
 
 ANT_URL_ALIAS   = "https://docs.google.com/spreadsheets/d/1JjI2GaHjAGr6dABR9Mo_mZ0CdKbXrvlKHnIpttr22uo/export?format=csv&gid=0"
 ANT_KEY_STATS   = "1R1Th9ngAr5RwQxX5KforK8xDzplRXGbcF1axCE8liF4"

@@ -131,7 +131,7 @@ def compute_player_rows(
         eligibility.append(is_eligible)
 
         history_baselines   = {"GR": np.nan, "UF": np.nan, "OP": np.nan, "ED": np.nan, "IN": np.nan}
-        alias_txt_path      = analyzer.tour_dir / FILE_ALIAS
+        alias_txt_path      = analyzer.tour_dir / TXT_ALIAS
 
         if alias_txt_path.exists():
             try:
@@ -332,7 +332,7 @@ def compute_team_rows(analyzer, assigns: dict, t1_lookup: dict) -> pd.DataFrame:
     chal_matches = []
 
     if getattr(analyzer, "challonge_choice", "No") == "Yes":
-        codes_file  = analyzer.tour_dir / FILE_CODE
+        codes_file  = analyzer.tour_dir / TXT_CODE
         chal_link   = None
 
         if codes_file.exists():
@@ -362,7 +362,7 @@ def compute_team_rows(analyzer, assigns: dict, t1_lookup: dict) -> pd.DataFrame:
             except Exception as e: print(f"[!] Failed to fetch Challonge data: {e}")
 
     alias_map   = {}
-    alias_path  = analyzer.tour_dir / FILE_ALIAS
+    alias_path  = analyzer.tour_dir / TXT_ALIAS
 
     if alias_path.exists():
         with open(alias_path, "r", encoding = "utf-8") as f:
