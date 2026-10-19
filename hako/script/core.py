@@ -8,7 +8,6 @@ from .dialog        import *
 from .png           import *
 from .web           import create_dashboard_html
 from collections    import Counter, defaultdict
-from curl_cffi      import requests
 from pathlib        import Path
 from tkinter        import messagebox
 
@@ -1070,11 +1069,9 @@ class TourAnalyzer:
 
                     songs = data.get("songs", [])
                     if not isinstance(songs, list) or not songs: continue
+                    accumulated_song_count += len(songs)
 
-                    song_no_arr             =   [str(accumulated_song_count + i + 1) for i in range(len(songs))]
-                    song_number_arr         =   [str(s.get("songNumber", i + 1) if isinstance(s, dict) else i + 1) for i, s in enumerate(songs)]
-                    accumulated_song_count  +=  len(songs)
-                    raw_match_players       =   set()
+                    raw_match_players = set()
 
                     for s in songs:
                         if isinstance(s, dict):
@@ -1085,26 +1082,22 @@ class TourAnalyzer:
                             for ls_item in s.get("listStates", []):
                                 if      isinstance(ls_item, dict) and "name" in ls_item : raw_match_players.add(ls_item["name"])
 
-                    active_players_set = raw_match_players if raw_match_players else set(list(self.s_part.keys())[:8])
-
-                    english_arr        = [safe_get      (s, "songInfo", "animeNames",   "english")      for s in songs]
-                    romaji_arr         = [safe_get      (s, "songInfo", "animeNames",   "romaji")       for s in songs]
-                    artist_arr         = [safe_get      (s, "songInfo", "artist")                       for s in songs]
-                    composer_id_arr    = [str(safe_get  (s, "songInfo", "composerInfo", "artistId"))    for s in songs]
-                    composer_arr       = [safe_get      (s, "songInfo", "composerInfo", "name")         for s in songs]
-                    arranger_id_arr    = [str(safe_get  (s, "songInfo", "arrangerInfo", "artistId"))    for s in songs]
-                    arranger_arr       = [safe_get      (s, "songInfo", "arrangerInfo", "name")         for s in songs]
-                    song_name_arr      = [safe_get      (s, "songInfo", "songName")                     for s in songs]
-                    type_arr           = [str(safe_get  (s, "songInfo", "type"))                        for s in songs]
-                    type_number_arr    = [str(safe_get  (s, "songInfo", "typeNumber"))                  for s in songs]
-                    ann_id_arr         = [str(safe_get  (s, "songInfo", "annId"))                       for s in songs]
-                    ann_song_id_arr    = [str(safe_get  (s, "songInfo", "annSongId"))                   for s in songs]
-                    high_risk_arr      = [str(safe_get  (s, "songInfo", "highRisk",     default = 0))   for s in songs]
-                    score_arr          = [str(safe_get  (s, "songInfo", "animeScore"))                  for s in songs]
-                    anime_type_arr     = [safe_get      (s, "songInfo", "animeType")                    for s in songs]
-                    vintage_arr        = [safe_get      (s, "songInfo", "vintage")                      for s in songs]
-
-                    difficulty_arr = []
+                    active_players_set  = raw_match_players if raw_match_players else set(list(self.s_part.keys())[:8])
+                    english_arr         = [safe_get     (s, "songInfo", "animeNames",   "english")      for s in songs]
+                    romaji_arr          = [safe_get     (s, "songInfo", "animeNames",   "romaji")       for s in songs]
+                    artist_arr          = [safe_get     (s, "songInfo", "artist")                       for s in songs]
+                    composer_id_arr     = [str(safe_get (s, "songInfo", "composerInfo", "artistId"))    for s in songs]
+                    composer_arr        = [safe_get     (s, "songInfo", "composerInfo", "name")         for s in songs]
+                    arranger_id_arr     = [str(safe_get (s, "songInfo", "arrangerInfo", "artistId"))    for s in songs]
+                    arranger_arr        = [safe_get     (s, "songInfo", "arrangerInfo", "name")         for s in songs]
+                    song_name_arr       = [safe_get     (s, "songInfo", "songName")                     for s in songs]
+                    type_arr            = [str(safe_get (s, "songInfo", "type"))                        for s in songs]
+                    type_number_arr     = [str(safe_get (s, "songInfo", "typeNumber"))                  for s in songs]
+                    ann_song_id_arr     = [str(safe_get (s, "songInfo", "annSongId"))                   for s in songs]
+                    score_arr           = [str(safe_get (s, "songInfo", "animeScore"))                  for s in songs]
+                    anime_type_arr      = [safe_get     (s, "songInfo", "animeType")                    for s in songs]
+                    vintage_arr         = [safe_get     (s, "songInfo", "vintage")                      for s in songs]
+                    difficulty_arr      = []
 
                     for s in songs:
                         diff_val = safe_get(s, "songInfo", "animeDifficulty", default = None)
@@ -1112,28 +1105,34 @@ class TourAnalyzer:
                         try                             : difficulty_arr.append(f"{float(diff_val):.2f}")
                         except (ValueError, TypeError)  : difficulty_arr.append("0.00")
 
-                    tags_arr           = [safe_get      (s, "songInfo", "animeTags",            default = [])   for s in songs]
-                    genres_arr         = [safe_get      (s, "songInfo", "animeGenre",           default = [])   for s in songs]
-                    alt_names_arr      = [safe_get      (s, "songInfo", "altAnimeNames",        default = [])   for s in songs]
-                    alt_answers_arr    = [safe_get      (s, "songInfo", "altAnimeNamesAnswers", default = [])   for s in songs]
-                    site_ann_arr       = [str(safe_get  (s, "songInfo", "siteIds",              "annId"))       for s in songs]
-                    site_mal_arr       = [str(safe_get  (s, "songInfo", "siteIds",              "malId"))       for s in songs]
-                    site_kitsu_arr     = [str(safe_get  (s, "songInfo", "siteIds",              "kitsuId"))     for s in songs]
-                    site_anilist_arr   = [str(safe_get  (s, "songInfo", "siteIds",              "aniListId"))   for s in songs]
-                    rebroadcast_arr    = [str(safe_get  (s, "songInfo", "rebroadcast",          default = 0))   for s in songs]
-                    dub_arr            = [str(safe_get  (s, "songInfo", "dub",                  default = 0))   for s in songs]
-                    season_name_arr    = [safe_get      (s, "songInfo", "seasonInfo",           "name")         for s in songs]
-                    season_num_arr     = [str(safe_get  (s, "songInfo", "seasonInfo",           "number"))      for s in songs]
-                    pop_rank_arr       = [str(safe_get  (s, "songInfo", "popularityRank"))                      for s in songs]
+                    tags_arr            = [safe_get     (s, "songInfo", "animeTags",            default = [])   for s in songs]
+                    genres_arr          = [safe_get     (s, "songInfo", "animeGenre",           default = [])   for s in songs]
+                    alt_names_arr       = [safe_get     (s, "songInfo", "altAnimeNames",        default = [])   for s in songs]
+                    alt_answers_arr     = [safe_get     (s, "songInfo", "altAnimeNamesAnswers", default = [])   for s in songs]
+                    site_ann_arr        = [str(safe_get (s, "songInfo", "siteIds",              "annId"))       for s in songs]
+                    site_mal_arr        = [str(safe_get (s, "songInfo", "siteIds",              "malId"))       for s in songs]
+                    site_kitsu_arr      = [str(safe_get (s, "songInfo", "siteIds",              "kitsuId"))     for s in songs]
+                    site_anilist_arr    = [str(safe_get (s, "songInfo", "siteIds",              "aniListId"))   for s in songs]
+                    rebroadcast_arr     = [str(safe_get (s, "songInfo", "rebroadcast",          default = 0))   for s in songs]
+                    dub_arr             = [str(safe_get (s, "songInfo", "dub",                  default = 0))   for s in songs]
+                    season_name_arr     = [safe_get     (s, "songInfo", "seasonInfo",           "name")         for s in songs]
+                    season_num_arr      = [str(safe_get (s, "songInfo", "seasonInfo",           "number"))      for s in songs]
+                    pop_rank_arr        = [str(safe_get (s, "songInfo", "popularityRank"))                      for s in songs]
 
-                    correct_count_arr  = [str(s.get ("correctCount", len(s.get("correctGuessPlayers", []))))    if isinstance(s, dict) else "0" for s in songs]
-                    wrong_count_arr    = [str(s.get ("wrongCount",  ""))                                        if isinstance(s, dict) else ""  for s in songs]
-                    video_url_arr      = [s.get     ("videoUrl",    "")                                         if isinstance(s, dict) else ""  for s in songs]
+                    video_url_arr   = [s.get("videoUrl", "") if isinstance(s, dict) else "" for s in songs]
+                    cleaned_urls    = [Path(url).name for url in video_url_arr]
 
                     correct_players_arr = [[
                         p if isinstance(p, str) else p.get("name", "") for p in s.get("correctGuessPlayers", [])
-                        ] if isinstance(s, dict) and isinstance(s.get("correctGuessPlayers"), list) else []
-                        for s in songs
+                        ] if isinstance(s, dict) and isinstance(s.get("correctGuessPlayers"), list)
+                        else [] for s in songs
+                    ]
+
+                    answer_times_arr = [[
+                        f"{float(p['answerTime']):.2f}" for p in s.get("correctGuessPlayers", [])
+                            if isinstance(p, dict) and "answerTime" in p and p["answerTime"] is not None
+                        ]   if isinstance(s, dict) and isinstance(s.get("correctGuessPlayers"), list)
+                        else [] for s in songs
                     ]
 
                     incorrect_players_arr = []
@@ -1147,19 +1146,16 @@ class TourAnalyzer:
                         inc_players = sorted(list(active_players_set - c_players))
                         incorrect_players_arr.append(inc_players)
 
-                    list_states_arr     = [s.get("listStates",      [])     if isinstance(s, dict) and isinstance(s.get("listStates"), list)    else [] for s in songs]
-                    sample_point_arr    = [str(s.get("startPoint",  ""))    if isinstance(s, dict)                                              else "" for s in songs]
+                    list_states_arr     = [s.get("listStates",      [])     if isinstance(s, dict) and isinstance(s.get("listStates"), list)                else [] for s in songs]
+                    sample_point_arr    = [str(s.get("startPoint",  ""))    if isinstance(s, dict)                                                          else "" for s in songs]
+                    length_arr          = [str(round(s["videoLength"]))     if isinstance(s, dict) and "videoLength" in s and s["videoLength"] is not None  else "" for s in songs]
 
                     json_row = [
                         # Tour
-                        self.tour_label if file_idx == 0 else "", # Tour
-                        export_date_str if file_idx == 0 else "", # Date
-                        codes_content   if file_idx == 0 else "", # Code
-
-                        # JSON
-                        path.name,                      # JSON
-                        json.dumps(song_no_arr),        # Tour Song Number
-                        json.dumps(song_number_arr),    # JSON Song Number
+                        self.tour_label if file_idx == 0 else "",   # Tour
+                        export_date_str if file_idx == 0 else "",   # Date
+                        codes_content   if file_idx == 0 else "",   # Code
+                        path.stem,                                  # JSON
 
                         # Song
                         json.dumps(romaji_arr),         # Japanese
@@ -1172,9 +1168,10 @@ class TourAnalyzer:
                         json.dumps(type_number_arr),    # Type Number
                         json.dumps(difficulty_arr),     # Difficulty
                         json.dumps(sample_point_arr),   # Sample
+                        json.dumps(length_arr),         # Length
                         json.dumps(rebroadcast_arr),    # Rebroadcast
                         json.dumps(dub_arr),            # Dub
-                        json.dumps(video_url_arr),      # URL
+                        json.dumps(cleaned_urls),       # URL
 
                         # Anime
                         json.dumps(alt_names_arr),      # Alt Name
@@ -1189,9 +1186,8 @@ class TourAnalyzer:
                         json.dumps(tags_arr),           # Tag
 
                         # Player
-                        json.dumps(correct_count_arr),      # Correct Count
                         json.dumps(correct_players_arr),    # Correct Player
-                        json.dumps(wrong_count_arr),        # Wrong Count
+                        json.dumps(answer_times_arr),       # Answer Time
                         json.dumps(incorrect_players_arr),  # Wrong Player
                         json.dumps(list_states_arr),        # List
 
