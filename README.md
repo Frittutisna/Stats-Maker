@@ -1,14 +1,7 @@
-# Hako Stats v1.4.0
+# Hako Stats v1.4.1
 
 ## Changelog
-1. Reverted `GR/UF Δ`
-2. Fixed Δ lookup
-3. Adjusted `GR/UF/Total Score` scaling
-4. Added `Rig Rate Δ`
-5. Changed `Rig Δ` to `Rig Surplus`
-6. Moved text files to `/txt/`
-7. Changed `hako_[0-2]` to `hako-[0-2]`
-8. Simplified README
+1. Fixed auto-update feature
 
 ## Note
 1. To use with **Dry Stats**, move to the same level as `assets`

@@ -57,14 +57,14 @@ def update(tour_dialog_window, tag_name):
         req     = urllib.request.Request(zip_url, headers={"User-Agent": "Stats-Maker-Updater"})
 
         with urllib.request.urlopen(req) as response: zip_data = response.read()
-        script_dir = Path(__file__).parent.parent.absolute()
+        project_root = Path(__file__).parent.parent.parent.absolute()
 
         with zipfile.ZipFile(io.BytesIO(zip_data)) as zf:
             for member in zf.namelist():
                 parts = Path(member).parts
 
                 if len(parts) > 1:
-                    target_path = script_dir / Path(*parts[1:])
+                    target_path = project_root / Path(*parts[1:])
 
                     if member.endswith('/'): target_path.mkdir(parents = True, exist_ok = True)
                     else:
