@@ -263,9 +263,10 @@ class TourSelectionDialog(UnifiedDialog):
 
 class TourMetadataDialog(UnifiedDialog):
     def __init__(self, parent, tour_id, init_label, default_th, baseline_initial, active_players, elo_map = None, sub_candidates = None, original_players_list = None, tour_dir = None):
-        has_update, update_tag = check_github()
-        super().__init__(parent, f"Tour {tour_id} Configuration", "", update_available = has_update, update_tag = update_tag)
+        has_update, update_tag  = check_github      ()
+        version                 = get_local_version ()
 
+        super().__init__(parent, f"Tour {tour_id} Configuration v{version}", "", update_available = has_update, update_tag = update_tag)
         self.fill_color = "#000000"
 
         left_frame   = ttk.Frame(self.container)

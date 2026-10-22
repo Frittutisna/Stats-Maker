@@ -1,7 +1,8 @@
-# Hako Stats v1.4.1
+# Hako Stats v1.4.2
 
 ## Changelog
-1. Fixed auto-update feature
+1. Fixed auto-update
+2. Added version tag in Tour Configuration prompt
 
 ## Note
 1. To use with **Dry Stats**, move to the same level as `assets`
