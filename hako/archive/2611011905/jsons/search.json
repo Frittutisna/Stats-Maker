@@ -1,0 +1,3915 @@
+[
+    {
+        "romaji": "Adachi to Shimamura",
+        "english": "Adachi and Shimamura",
+        "song": "Kimi no Tonari de",
+        "artist_raw": "Akari Kito",
+        "artist_arr": [
+            "Akari Kito"
+        ],
+        "composer": "Tsubasa Ito",
+        "arranger": "Tsubasa Ito",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22954",
+        "anime_type": "TV",
+        "vintage": "Fall 2020",
+        "genres_raw": [
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Yuri",
+            "Iyashikei",
+            "Cute Girls Doing Cute Things",
+            "Coming of Age",
+            "Aliens",
+            "LGBTQ+ Themes",
+            "Unrequited Love"
+        ],
+        "difficulty": "31.15",
+        "video_url": "https://naedist.animemusicquiz.com/6ksakq.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "HaruUrara",
+            "Mikuu_"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (4.77), Tugia (3.19), at17 (17.52), Mikuu_ (8.78)",
+            "Team MikasaAckerman: MikasaAckerman (3.85)"
+        ],
+        "listers_flat": [
+            "Tugia",
+            "HaruUrara"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara, Tugia",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "mikasaackerman"
+        ],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1,
+            1
+        ],
+        "alts": [],
+        "start_sample": 62
+    },
+    {
+        "romaji": "Amanchu! Advance",
+        "english": "Amanchu! Advance",
+        "song": "Tieleusha",
+        "artist_raw": "Mina Kubota feat. MIYUU & MASUMI (Mistera Feo)",
+        "artist_arr": [
+            "Mina Kubota feat. MIYUU & MASUMI (Mistera Feo)"
+        ],
+        "composer": "Mina Kubota",
+        "arranger": "Mina Kubota",
+        "type": "Insert",
+        "chanting": "Yes",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20692",
+        "anime_type": "TV",
+        "vintage": "Spring 2018",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Iyashikei",
+            "School Club",
+            "Educational",
+            "Outdoor Activities",
+            "Scuba Diving",
+            "Coastal"
+        ],
+        "difficulty": "17.53",
+        "video_url": "https://naedist.animemusicquiz.com/bhp2ss.mp3",
+        "guessers_flat": [
+            "Tugia",
+            "at17"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: Tugia (12.78), at17 (5.82)",
+            "Team MikasaAckerman: None"
+        ],
+        "listers_flat": [
+            "Tugia",
+            "at17"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: Tugia, at17",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "at17",
+            "tugia"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            1
+        ],
+        "alts": [],
+        "start_sample": 25
+    },
+    {
+        "romaji": "Aria the Avvenire",
+        "english": "Aria the Avvenire",
+        "song": "Lumis Eterne",
+        "artist_raw": "Eri Kawai",
+        "artist_arr": [
+            "Eri Kawai"
+        ],
+        "composer": "Mina Kubota",
+        "arranger": "Mina Kubota",
+        "type": "Insert",
+        "chanting": "Yes",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16769",
+        "anime_type": "OVA",
+        "vintage": "Summer 2015",
+        "genres_raw": [
+            "Fantasy",
+            "Sci-Fi",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Space",
+            "Iyashikei",
+            "Work",
+            "Achronological Order",
+            "Episodic",
+            "Foreign",
+            "Tanned Skin"
+        ],
+        "difficulty": "18.89",
+        "video_url": "https://naedist.animemusicquiz.com/vbpgoy.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Mikuu_"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: Mikuu_ (9.52)",
+            "Team MikasaAckerman: MikasaAckerman (4.78)"
+        ],
+        "listers_flat": [
+            "MikasaAckerman"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: MikasaAckerman",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "mikuu_",
+            "mikasaackerman"
+        ],
+        "correct_teams_flat": [
+            2,
+            1
+        ],
+        "alts": [],
+        "start_sample": 97
+    },
+    {
+        "romaji": "Cardfight!! Vanguard: Asia Circuit-hen",
+        "english": "Cardfight!! Vanguard: Asia Circuit-hen",
+        "song": "Believe in my existence",
+        "artist_raw": "JAM Project",
+        "artist_arr": [
+            "JAM Project"
+        ],
+        "composer": "Hironobu Kageyama & Hiroshi Kitadani",
+        "arranger": "Hijiri Anze",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14090",
+        "anime_type": "TV",
+        "vintage": "Spring 2012",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Fantasy"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Card Battle"
+        ],
+        "difficulty": "38.01",
+        "video_url": "https://naedist.animemusicquiz.com/nl5nsy.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "at17",
+            "HaruUrara",
+            "Mikuu_",
+            "FurLain",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (6.31), at17 (9.70), Mikuu_ (17.38)",
+            "Team MikasaAckerman: MikasaAckerman (9.07), Skychael (15.75), FurLain (8.59)"
+        ],
+        "listers_flat": [
+            "at17"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: at17",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1,
+            2,
+            2
+        ],
+        "alts": [
+            "Cardfight!! Vanguard"
+        ],
+        "start_sample": 52
+    },
+    {
+        "romaji": "Comic Girls",
+        "english": "Comic Girls",
+        "song": "Namida wa Misenai",
+        "artist_raw": "Comic Girls",
+        "artist_arr": [
+            "Comic Girls"
+        ],
+        "composer": "mikito",
+        "arranger": "mikito",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20048",
+        "anime_type": "TV",
+        "vintage": "Spring 2018",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Yuri",
+            "Cute Girls Doing Cute Things",
+            "Otaku Culture",
+            "Coming of Age",
+            "Drawing",
+            "Meta",
+            "Work",
+            "Chuunibyou",
+            "Writing",
+            "LGBTQ+ Themes",
+            "Tomboy"
+        ],
+        "difficulty": "28.06",
+        "video_url": "https://naedist.animemusicquiz.com/zogsfq.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "HaruUrara",
+            "Mikuu_",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (7.15), Tugia (3.28), at17 (8.98), Mikuu_ (4.44)",
+            "Team MikasaAckerman: MikasaAckerman (3.75), FurLain (7.07), HakoHoka (3.97)"
+        ],
+        "listers_flat": [
+            "HakoHoka",
+            "MikasaAckerman",
+            "Tugia",
+            "Mikuu_"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: Tugia, Mikuu_",
+            "Team MikasaAckerman: MikasaAckerman, HakoHoka"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            2,
+            1,
+            1,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 22
+    },
+    {
+        "romaji": "Cosmos Pink Shock",
+        "english": "Cosmos Pink Shock",
+        "song": "Boy no Shinwa",
+        "artist_raw": "Mayumi Tanaka & Chika Sakamoto",
+        "artist_arr": [
+            "Mayumi Tanaka & Chika Sakamoto"
+        ],
+        "composer": "Ryomei Shirai",
+        "arranger": "Kenji Kawai",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=7075",
+        "anime_type": "OVA",
+        "vintage": "Summer 1986",
+        "genres_raw": [
+            "Adventure",
+            "Comedy",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Space"
+        ],
+        "difficulty": "19.91",
+        "video_url": "https://naedist.animemusicquiz.com/jcsszv.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "HaruUrara"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (14.89)",
+            "Team MikasaAckerman: MikasaAckerman (4.02)"
+        ],
+        "listers_flat": [
+            "HaruUrara"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "haruurara",
+            "mikasaackerman"
+        ],
+        "correct_teams_flat": [
+            2,
+            1
+        ],
+        "alts": [],
+        "start_sample": 96
+    },
+    {
+        "romaji": "D.C.II S.S.: Da Capo II Second Season",
+        "english": "D.C.II S.S.: Da Capo II Second Season",
+        "song": "Boku-tachi no Yukue",
+        "artist_raw": "CooRie",
+        "artist_arr": [
+            "CooRie"
+        ],
+        "composer": "rino",
+        "arranger": "Kaoru Okubo",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=9137",
+        "anime_type": "TV",
+        "vintage": "Spring 2008",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Fantasy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem"
+        ],
+        "difficulty": "20.68",
+        "video_url": "https://naedist.animemusicquiz.com/27v3ui.mp3",
+        "guessers_flat": [
+            "at17"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: at17 (12.94)",
+            "Team MikasaAckerman: None"
+        ],
+        "listers_flat": [
+            "MikasaAckerman"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: MikasaAckerman",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "at17"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1
+        ],
+        "alts": [],
+        "start_sample": 1
+    },
+    {
+        "romaji": "Danshi Koukousei no Nichijou",
+        "english": "Daily Lives of High School Boys",
+        "song": "Bungaku Shoujo",
+        "artist_raw": "ENA",
+        "artist_arr": [
+            "ENA"
+        ],
+        "composer": "Audio Highs",
+        "arranger": "ENA",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=13743",
+        "anime_type": "TV",
+        "vintage": "Winter 2012",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Satire",
+            "Slapstick",
+            "Meta",
+            "Episodic",
+            "Urban",
+            "Cute Boys Doing Cute Things"
+        ],
+        "difficulty": "37.75",
+        "video_url": "https://naedist.animemusicquiz.com/5o2tob.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "HaruUrara",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (12.94), Tugia (5.10), at17 (4.79)",
+            "Team MikasaAckerman: MikasaAckerman (3.31), FurLain (5.43)"
+        ],
+        "listers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "HaruUrara",
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara, Tugia",
+            "Team MikasaAckerman: MikasaAckerman, FurLain"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 3
+    },
+    {
+        "romaji": "Dareka no Manazashi",
+        "english": "Someone's Gaze",
+        "song": "Sore de Ii yo",
+        "artist_raw": "Kazusa",
+        "artist_arr": [
+            "Kazusa"
+        ],
+        "composer": "Daisuke Kawaguchi",
+        "arranger": "Akihisa Matzura",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15115",
+        "anime_type": "Movie",
+        "vintage": "Winter 2013",
+        "genres_raw": [
+            "Drama",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Tragedy",
+            "Family Life",
+            "Coming of Age",
+            "Primarily Adult Cast",
+            "Animals"
+        ],
+        "difficulty": "22.30",
+        "video_url": "https://naedist.animemusicquiz.com/usf6h9.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "HaruUrara",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (6.42), Tugia (12.71), at17 (3.66)",
+            "Team MikasaAckerman: MikasaAckerman (6.98), FurLain (8.63)"
+        ],
+        "listers_flat": [
+            "Tugia",
+            "HaruUrara",
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara, Tugia",
+            "Team MikasaAckerman: FurLain"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 81
+    },
+    {
+        "romaji": "Evangelion Shin Gekijouban: Jo",
+        "english": "Evangelion: 1.11 You Are (Not) Alone",
+        "song": "You are the only one",
+        "artist_raw": "Kotono Mitsuishi",
+        "artist_arr": [
+            "Kotono Mitsuishi"
+        ],
+        "composer": "Yuki Matsuura",
+        "arranger": "Fumiki Ikema",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=8420",
+        "anime_type": "Movie",
+        "vintage": "Summer 2007",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Mecha",
+            "Psychological",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "CGI",
+            "Post-Apocalyptic",
+            "Coming of Age",
+            "Super Robot",
+            "Real Robot",
+            "Aliens",
+            "Dystopian",
+            "Kaiju",
+            "Urban",
+            "Denpa",
+            "Kuudere"
+        ],
+        "difficulty": "29.89",
+        "video_url": "https://naedist.animemusicquiz.com/3zl69c.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "Mikuu_",
+            "FurLain",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: Tugia (7.56), at17 (4.96), Mikuu_ (12.58)",
+            "Team MikasaAckerman: MikasaAckerman (3.30), Skychael (4.04), FurLain (6.42)"
+        ],
+        "listers_flat": [
+            "MikasaAckerman",
+            "at17",
+            "HaruUrara",
+            "Mikuu_",
+            "Skychael"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara, at17, Mikuu_",
+            "Team MikasaAckerman: MikasaAckerman, Skychael"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1,
+            2,
+            2
+        ],
+        "alts": [
+            "Neon Genesis Evangelion",
+            "Shinseiki Evangelion"
+        ],
+        "start_sample": 6
+    },
+    {
+        "romaji": "Ganbare! Memeko-chan",
+        "english": "Ganbare! Memeko-chan",
+        "song": "Nanka Ii Koto",
+        "artist_raw": "Yura Hatsuki",
+        "artist_arr": [
+            "Yura Hatsuki"
+        ],
+        "composer": "Kenshiro Morii",
+        "arranger": "Drop",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24822",
+        "anime_type": "OVA",
+        "vintage": "Summer 2008",
+        "genres_raw": [
+            "Comedy"
+        ],
+        "tags_raw": [
+            "Flash",
+            "Animals"
+        ],
+        "difficulty": "19.56",
+        "video_url": "https://naedist.animemusicquiz.com/e0g84c.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team MikasaAckerman: MikasaAckerman (3.45), FurLain (14.62)",
+            "Team HaruUrara: None"
+        ],
+        "listers_flat": [
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: FurLain",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "furlain",
+            "mikasaackerman"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            2
+        ],
+        "alts": [],
+        "start_sample": 41
+    },
+    {
+        "romaji": "Gekijouban Hakuouki Dai Isshou: Kyoto Ranbu",
+        "english": "Hakuoki: Demon of the Fleeting Blossom - Wild Dance of Kyoto",
+        "song": "Kurenai no Ito",
+        "artist_raw": "Aika Yoshioka",
+        "artist_arr": [
+            "Aika Yoshioka"
+        ],
+        "composer": "Yoshiaki Dewa",
+        "arranger": "Yoshiaki Dewa",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15102",
+        "anime_type": "Movie",
+        "vintage": "Summer 2013",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Historical",
+            "Swordplay",
+            "Tragedy",
+            "Primarily Adult Cast",
+            "War",
+            "Male Harem",
+            "Guns",
+            "Samurai"
+        ],
+        "difficulty": "16.76",
+        "video_url": "https://naedist.animemusicquiz.com/4g7637.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "at17",
+            "HaruUrara"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (7.39), at17 (11.06)",
+            "Team MikasaAckerman: MikasaAckerman (12.47)"
+        ],
+        "listers_flat": [
+            "HaruUrara"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "mikasaackerman"
+        ],
+        "correct_teams_flat": [
+            2,
+            1,
+            1
+        ],
+        "alts": [],
+        "start_sample": 31
+    },
+    {
+        "romaji": "Gekijouban Macross Δ: Gekijou no Walküre",
+        "english": "Macross Delta: Passionate Walküre",
+        "song": "Namidame Bakuhatsuon",
+        "artist_raw": "Walküre",
+        "artist_arr": [
+            "Walküre"
+        ],
+        "composer": "Kohei Dojima",
+        "arranger": "Katsutoshi Kitagawa",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20180",
+        "anime_type": "Movie",
+        "vintage": "Winter 2018",
+        "genres_raw": [
+            "Action",
+            "Mecha",
+            "Music",
+            "Romance",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Space",
+            "War",
+            "Idol",
+            "Space Opera",
+            "Musical Theater"
+        ],
+        "difficulty": "29.88",
+        "video_url": "https://naedist.animemusicquiz.com/h2nq4l.mp3",
+        "guessers_flat": [
+            "MikasaAckerman"
+        ],
+        "guessers_hover": [
+            "Team MikasaAckerman: MikasaAckerman (7.52)",
+            "Team HaruUrara: None"
+        ],
+        "listers_flat": [
+            "HaruUrara"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "mikasaackerman"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2
+        ],
+        "alts": [
+            "Macross Δ",
+            "Macross Delta"
+        ],
+        "start_sample": 62
+    },
+    {
+        "romaji": "Gundam Build Fighters: GM no Gyakushuu",
+        "english": "Gundam Build Fighters: GM's Counterattack",
+        "song": "Carry on",
+        "artist_raw": "BACK-ON",
+        "artist_arr": [
+            "BACK-ON"
+        ],
+        "composer": "KENJI03",
+        "arranger": "KENJI03",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=19917",
+        "anime_type": "ONA",
+        "vintage": "Summer 2017",
+        "genres_raw": [
+            "Action",
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Super Robot",
+            "Robots",
+            "Primarily Child Cast"
+        ],
+        "difficulty": "22.37",
+        "video_url": "https://naedist.animemusicquiz.com/96j0zw.mp3",
+        "guessers_flat": [
+            "at17",
+            "HaruUrara"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (18.07), at17 (4.28)",
+            "Team MikasaAckerman: None"
+        ],
+        "listers_flat": [
+            "at17"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: at17",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "at17",
+            "haruurara"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            1
+        ],
+        "alts": [],
+        "start_sample": 78
+    },
+    {
+        "romaji": "Gyakuten Saiban: Sono \"Shinjitsu\", Igi Ari! Season 2",
+        "english": "Ace Attorney Season 2",
+        "song": "Beautiful Days",
+        "artist_raw": "Coalamode.",
+        "artist_arr": [
+            "Coalamode."
+        ],
+        "composer": "Annyu",
+        "arranger": "Yasuhiro Obata",
+        "type": "Ending 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21192",
+        "anime_type": "TV",
+        "vintage": "Fall 2018",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Mystery",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Police",
+            "Slapstick",
+            "Tragedy",
+            "Primarily Adult Cast",
+            "Work",
+            "Ghost",
+            "Revenge",
+            "Shrine Maiden",
+            "Twins",
+            "Crime",
+            "Detective"
+        ],
+        "difficulty": "16.53",
+        "video_url": "https://naedist.animemusicquiz.com/ikww2g.mp3",
+        "guessers_flat": [
+            "HakoHoka"
+        ],
+        "guessers_hover": [
+            "Team MikasaAckerman: HakoHoka (4.74)",
+            "Team HaruUrara: None"
+        ],
+        "listers_flat": [
+            "HakoHoka"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: HakoHoka",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "hakohoka"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2
+        ],
+        "alts": [],
+        "start_sample": 7
+    },
+    {
+        "romaji": "Hayate no Gotoku!!",
+        "english": "Hayate the Combat Butler!!",
+        "song": "Honjitsu, Mankai Watashi-iro!",
+        "artist_raw": "Shizuka Itou with Shiraou Gakuin Seitokai Sannin Musume",
+        "artist_arr": [
+            "Shizuka Itou with Shiraou Gakuin Seitokai Sannin Musume"
+        ],
+        "composer": "Atsuko Isobe",
+        "arranger": "Takeshi Masuda",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=10662",
+        "anime_type": "TV",
+        "vintage": "Spring 2009",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Parody",
+            "Shounen",
+            "Otaku Culture",
+            "Tsundere",
+            "Crossdressing",
+            "Maids",
+            "Nun",
+            "Kuudere",
+            "Butler",
+            "Tomboy"
+        ],
+        "difficulty": "23.70",
+        "video_url": "https://naedist.animemusicquiz.com/op9rew.mp3",
+        "guessers_flat": [
+            "MikasaAckerman"
+        ],
+        "guessers_hover": [
+            "Team MikasaAckerman: MikasaAckerman (5.01)",
+            "Team HaruUrara: None"
+        ],
+        "listers_flat": [
+            "Mikuu_"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: Mikuu_",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "mikasaackerman"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2
+        ],
+        "alts": [
+            "Hayate the Combat Butler!",
+            "Hayate no Gotoku!"
+        ],
+        "start_sample": 37
+    },
+    {
+        "romaji": "Hellsing Ultimate",
+        "english": "Hellsing Ultimate",
+        "song": "Akuma Stocking",
+        "artist_raw": "Tokusatsu",
+        "artist_arr": [
+            "Tokusatsu"
+        ],
+        "composer": "Teruyuki Takahashi",
+        "arranger": "Tokusatsu",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=5114",
+        "anime_type": "OVA",
+        "vintage": "Winter 2006",
+        "genres_raw": [
+            "Action",
+            "Horror",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Military",
+            "Seinen",
+            "Vampire",
+            "Gore",
+            "Anti-Hero",
+            "Primarily Adult Cast",
+            "War",
+            "Guns",
+            "Foreign",
+            "Monster Girl",
+            "Urban Fantasy",
+            "Noir",
+            "Urban",
+            "Body Horror",
+            "Butler",
+            "Cannibalism",
+            "Monster Boy",
+            "Religion"
+        ],
+        "difficulty": "20.98",
+        "video_url": "https://naedist.animemusicquiz.com/mjp3os.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: Mikuu_ (7.11)",
+            "Team MikasaAckerman: MikasaAckerman (4.31), Skychael (5.45)"
+        ],
+        "listers_flat": [
+            "Mikuu_",
+            "Skychael"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: Mikuu_",
+            "Team MikasaAckerman: Skychael"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "mikuu_"
+        ],
+        "correct_teams_flat": [
+            2,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 133
+    },
+    {
+        "romaji": "Heroine Tarumono! Kiraware Heroine to Naisho no Oshigoto",
+        "english": "Heroines Run the Show",
+        "song": "Yume Fanfare",
+        "artist_raw": "Sora Amamiya & Shiina Natsukawa",
+        "artist_arr": [
+            "Sora Amamiya & Shiina Natsukawa"
+        ],
+        "composer": "HoneyWorks",
+        "arranger": "HoneyWorks",
+        "type": "Ending 4",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24673",
+        "anime_type": "TV",
+        "vintage": "Spring 2022",
+        "genres_raw": [
+            "Drama",
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Idol",
+            "Work",
+            "Crossover",
+            "Athletics",
+            "Cute Boys Doing Cute Things"
+        ],
+        "difficulty": "30.42",
+        "video_url": "https://naedist.animemusicquiz.com/alb1sw.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "at17",
+            "HaruUrara",
+            "Mikuu_",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (11.19), at17 (10.16), Mikuu_ (15.14)",
+            "Team MikasaAckerman: MikasaAckerman (4.28), FurLain (15.21)"
+        ],
+        "listers_flat": [
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: FurLain",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 32
+    },
+    {
+        "romaji": "Himegoto",
+        "english": "Himegoto",
+        "song": "Make-up!",
+        "artist_raw": "I My Me Mine",
+        "artist_arr": [
+            "I My Me Mine"
+        ],
+        "composer": "Shuhei Mutsuki",
+        "arranger": "Shuhei Mutsuki",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15977",
+        "anime_type": "TV",
+        "vintage": "Summer 2014",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Gender Bending",
+            "Crossdressing",
+            "Episodic",
+            "Femboy"
+        ],
+        "difficulty": "34.27",
+        "video_url": "https://naedist.animemusicquiz.com/4llmxb.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "HaruUrara",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (4.19), Tugia (8.58), at17 (8.18)",
+            "Team MikasaAckerman: MikasaAckerman (3.07), Skychael (6.91)"
+        ],
+        "listers_flat": [
+            "MikasaAckerman",
+            "Skychael"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: MikasaAckerman, Skychael",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 5
+    },
+    {
+        "romaji": "Inukami!",
+        "english": "Inukami!",
+        "song": "Yuujou Monogatari・Danshi (?) Version",
+        "artist_raw": "Super Zou-sans & Rice⁵",
+        "artist_arr": [
+            "Super Zou-sans & Rice⁵"
+        ],
+        "composer": "Shigenobu Okawa",
+        "arranger": "Shigenobu Okawa",
+        "type": "Ending 3",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=6077",
+        "anime_type": "TV",
+        "vintage": "Spring 2006",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi",
+            "Romance",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Super Power",
+            "Slapstick",
+            "Otaku Culture",
+            "Youkai"
+        ],
+        "difficulty": "28.21",
+        "video_url": "https://naedist.animemusicquiz.com/gvliin.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team MikasaAckerman: MikasaAckerman (3.23), Skychael (9.49)",
+            "Team HaruUrara: None"
+        ],
+        "listers_flat": [
+            "MikasaAckerman",
+            "Skychael"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: MikasaAckerman, Skychael",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "mikasaackerman",
+            "skychael"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            2
+        ],
+        "alts": [],
+        "start_sample": 56
+    },
+    {
+        "romaji": "Issho ni Training 026: Bathtime with Hinako & Hiyoko",
+        "english": "Issho ni Training 026: Bathtime with Hinako & Hiyoko",
+        "song": "0262816",
+        "artist_raw": "Hinako to Hiyoko",
+        "artist_arr": [
+            "Hinako to Hiyoko"
+        ],
+        "composer": "Lisa Reco",
+        "arranger": "Raito",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=12117",
+        "anime_type": "OVA",
+        "vintage": "Fall 2010",
+        "genres_raw": [
+            "Ecchi",
+            "Sports"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Yuri",
+            "Nudity",
+            "POV",
+            "Isekai"
+        ],
+        "difficulty": "24.07",
+        "video_url": "https://naedist.animemusicquiz.com/7jli0w.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "HaruUrara",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (13.15), Tugia (4.41), at17 (20.16)",
+            "Team MikasaAckerman: MikasaAckerman (4.13), Skychael (8.45)"
+        ],
+        "listers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "Skychael"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: Tugia",
+            "Team MikasaAckerman: MikasaAckerman, Skychael"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 27
+    },
+    {
+        "romaji": "I★CHU: Halfway Through The Idol",
+        "english": "I★CHU: Halfway Through The Idol",
+        "song": "Hana to Chiru Ran",
+        "artist_raw": "Tenjou Tenge",
+        "artist_arr": [
+            "Tenjou Tenge"
+        ],
+        "composer": "Daichi Hayakawa",
+        "arranger": "Ouji Master",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23791",
+        "anime_type": "TV",
+        "vintage": "Winter 2021",
+        "genres_raw": [
+            "Music"
+        ],
+        "tags_raw": [
+            "Idol",
+            "Crossdressing",
+            "Cute Boys Doing Cute Things"
+        ],
+        "difficulty": "15.58",
+        "video_url": "https://naedist.animemusicquiz.com/qn2u30.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "HaruUrara"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (11.98)",
+            "Team MikasaAckerman: MikasaAckerman (5.12)"
+        ],
+        "listers_flat": [
+            "MikasaAckerman"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: MikasaAckerman",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "haruurara",
+            "mikasaackerman"
+        ],
+        "correct_teams_flat": [
+            2,
+            1
+        ],
+        "alts": [],
+        "start_sample": 12
+    },
+    {
+        "romaji": "Jujutsu Kaisen",
+        "english": "Jujutsu Kaisen",
+        "song": "Beautiful Dreamer",
+        "artist_raw": "Yuriko Okamoto, Ami Sekimoto, Ibuki Hoshino, Miyu Ootsuka, Yukina Miyamoto, Reiko Itaya, Mitsuaki Oota, Natsuko Kawasaki, Mai Suzuki",
+        "artist_arr": [
+            "Yuriko Okamoto",
+            "Ami Sekimoto",
+            "Ibuki Hoshino",
+            "Miyu Ootsuka",
+            "Yukina Miyamoto",
+            "Reiko Itaya",
+            "Mitsuaki Oota",
+            "Natsuko Kawasaki",
+            "Mai Suzuki"
+        ],
+        "composer": "Stephen Foster",
+        "arranger": "Yoshitake Wada",
+        "type": "Insert",
+        "chanting": "Yes",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=25346",
+        "anime_type": "TV",
+        "vintage": "Summer 2023",
+        "genres_raw": [
+            "Action",
+            "Drama",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Martial Arts",
+            "Shounen",
+            "Super Power",
+            "Tragedy",
+            "Gore",
+            "Henshin",
+            "Battle Royale",
+            "Survival",
+            "Body Swapping",
+            "Youkai",
+            "Reincarnation",
+            "Revenge",
+            "Urban Fantasy",
+            "Tokusatsu",
+            "Dissociative Identities",
+            "Urban",
+            "Body Horror",
+            "Rotoscoping",
+            "Curses",
+            "Exorcism"
+        ],
+        "difficulty": "21.47",
+        "video_url": "https://naedist.animemusicquiz.com/ao8d5e.mp3",
+        "guessers_flat": [
+            "Tugia",
+            "at17"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: Tugia (10.56), at17 (3.93)",
+            "Team MikasaAckerman: None"
+        ],
+        "listers_flat": [
+            "at17",
+            "Mikuu_"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: at17, Mikuu_",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "at17",
+            "tugia"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            1
+        ],
+        "alts": [],
+        "start_sample": 27
+    },
+    {
+        "romaji": "Kaguya-sama wa Kokurasetai: First Kiss wa Owaranai",
+        "english": "Kaguya-sama: Love is War - The First Kiss That Never Ends",
+        "song": "heart notes",
+        "artist_raw": "Airi Suzuki",
+        "artist_arr": [
+            "Airi Suzuki"
+        ],
+        "composer": "Katsuhiko Sugiyama",
+        "arranger": "Katsuhiko Sugiyama",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26033",
+        "anime_type": "Movie",
+        "vintage": "Fall 2022",
+        "genres_raw": [
+            "Comedy",
+            "Psychological",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Seinen",
+            "Slapstick",
+            "School Club",
+            "Coming of Age",
+            "Tsundere",
+            "Chibi",
+            "Philosophy",
+            "Dissociative Identities",
+            "Kuudere",
+            "Ojou-sama"
+        ],
+        "difficulty": "26.55",
+        "video_url": "https://naedist.animemusicquiz.com/n0fem9.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: Tugia (12.48), at17 (3.64)",
+            "Team MikasaAckerman: MikasaAckerman (13.43), FurLain (6.20), HakoHoka (16.44)"
+        ],
+        "listers_flat": [
+            "at17"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: at17",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            2,
+            1,
+            1,
+            2
+        ],
+        "alts": [
+            "Kaguya-sama: Love is War - The Stairs to Adulthood",
+            "Kaguya-sama wa Kokurasetai: Otona e no Kaidan"
+        ],
+        "start_sample": 10
+    },
+    {
+        "romaji": "Kamigawa: Kagayakeru Sekai",
+        "english": "Kamigawa: Kagayakeru Sekai",
+        "song": "Scratch",
+        "artist_raw": "TK from Ling tosite sigure with Koshi Inaba",
+        "artist_arr": [
+            "TK from Ling tosite sigure with Koshi Inaba"
+        ],
+        "composer": "TK",
+        "arranger": "TK",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=26801",
+        "anime_type": "ONA",
+        "vintage": "Winter 2022",
+        "genres_raw": [
+            "Action",
+            "Fantasy",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Swordplay",
+            "Coming of Age",
+            "Cyberpunk",
+            "Ninja",
+            "No Dialogue",
+            "Advertisement",
+            "Cyborg"
+        ],
+        "difficulty": "28.77",
+        "video_url": "https://naedist.animemusicquiz.com/9v5yzg.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "HaruUrara",
+            "FurLain",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (4.68), Tugia (8.38), at17 (6.79)",
+            "Team MikasaAckerman: MikasaAckerman (3.96), Skychael (7.42), FurLain (11.00)"
+        ],
+        "listers_flat": [
+            "HaruUrara",
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara",
+            "Team MikasaAckerman: FurLain"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1,
+            2,
+            2
+        ],
+        "alts": [],
+        "start_sample": 133
+    },
+    {
+        "romaji": "Kekkai Sensen",
+        "english": "Blood Blockade Battlefront",
+        "song": "The Land of Nod",
+        "artist_raw": "Ben Lorentzen",
+        "artist_arr": [
+            "Ben Lorentzen"
+        ],
+        "composer": "Taisei Iwasaki",
+        "arranger": "Taisei Iwasaki",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16340",
+        "anime_type": "TV",
+        "vintage": "Spring 2015",
+        "genres_raw": [
+            "Action",
+            "Comedy",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Shounen",
+            "Super Power",
+            "Vampire",
+            "Slapstick",
+            "Tragedy",
+            "Post-Apocalyptic",
+            "Gore",
+            "Primarily Adult Cast",
+            "Alternate Universe",
+            "Aliens",
+            "Foreign",
+            "Dystopian",
+            "Urban Fantasy",
+            "Tanned Skin",
+            "Werewolf",
+            "Urban",
+            "Tomboy"
+        ],
+        "difficulty": "15.76",
+        "video_url": "https://naedist.animemusicquiz.com/7tx78j.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "at17",
+            "Mikuu_",
+            "FurLain",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: at17 (7.66), Mikuu_ (8.86)",
+            "Team MikasaAckerman: Skychael (15.84), FurLain (18.34), HakoHoka (13.08)"
+        ],
+        "listers_flat": [
+            "at17",
+            "Mikuu_",
+            "Skychael"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: at17, Mikuu_",
+            "Team MikasaAckerman: Skychael"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            2,
+            2
+        ],
+        "alts": [],
+        "start_sample": 4
+    },
+    {
+        "romaji": "Keroro Gunsou",
+        "english": "Sgt. Frog",
+        "song": "Afro Sensou ~DANCE☆MAN VS DASONU☆MASO~",
+        "artist_raw": "DANCE☆MAN VS Yuuichi Nagashima",
+        "artist_arr": [
+            "DANCE☆MAN VS Yuuichi Nagashima"
+        ],
+        "composer": "DANCE☆MAN",
+        "arranger": "DANCE☆MAN",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=3711",
+        "anime_type": "TV",
+        "vintage": "Spring 2004",
+        "genres_raw": [
+            "Comedy",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Military",
+            "Parody",
+            "Shounen",
+            "Space",
+            "Otaku Culture",
+            "Anti-Hero",
+            "Meta",
+            "Aliens",
+            "Episodic",
+            "Ninja",
+            "Cosmic Horror"
+        ],
+        "difficulty": "26.68",
+        "video_url": "https://naedist.animemusicquiz.com/cblm4b.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "at17",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: at17 (12.33)",
+            "Team MikasaAckerman: MikasaAckerman (8.19), Skychael (5.36)"
+        ],
+        "listers_flat": [
+            "at17"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: at17",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "at17"
+        ],
+        "correct_teams_flat": [
+            2,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 30
+    },
+    {
+        "romaji": "Kiddy Grade: Maelstrom",
+        "english": "Kiddy Grade: Maelstrom",
+        "song": "Mou Nidoto",
+        "artist_raw": "savage genius",
+        "artist_arr": [
+            "savage genius"
+        ],
+        "composer": "Takumi",
+        "arranger": "George Kamata",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=9066",
+        "anime_type": "Movie",
+        "vintage": "Spring 2007",
+        "genres_raw": [
+            "Action",
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Nudity"
+        ],
+        "difficulty": "23.84",
+        "video_url": "https://naedist.animemusicquiz.com/1n7g1b.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "HaruUrara",
+            "Mikuu_",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (5.92), Tugia (14.04), at17 (4.16), Mikuu_ (16.98)",
+            "Team MikasaAckerman: MikasaAckerman (12.08), Skychael (9.51)"
+        ],
+        "listers_flat": [
+            "MikasaAckerman",
+            "Mikuu_"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: Mikuu_",
+            "Team MikasaAckerman: MikasaAckerman"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 168
+    },
+    {
+        "romaji": "Koi Suru Asteroid",
+        "english": "Asteroid in Love",
+        "song": "Aruite Ikou!",
+        "artist_raw": "Nao Toyama",
+        "artist_arr": [
+            "Nao Toyama"
+        ],
+        "composer": "Ai Kawashima",
+        "arranger": "Takuro Iga",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=22609",
+        "anime_type": "TV",
+        "vintage": "Winter 2020",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Seinen",
+            "Yuri",
+            "Iyashikei",
+            "School Club",
+            "Cute Girls Doing Cute Things",
+            "Coming of Age",
+            "Educational",
+            "Tsundere",
+            "Outdoor Activities",
+            "LGBTQ+ Themes",
+            "Astronomy"
+        ],
+        "difficulty": "32.33",
+        "video_url": "https://naedist.animemusicquiz.com/nqhb38.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: Tugia (3.07), at17 (15.25)",
+            "Team MikasaAckerman: MikasaAckerman (3.54), FurLain (8.66), HakoHoka (3.66)"
+        ],
+        "listers_flat": [
+            "HakoHoka",
+            "MikasaAckerman",
+            "Tugia"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: Tugia",
+            "Team MikasaAckerman: MikasaAckerman, HakoHoka"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            2,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 7
+    },
+    {
+        "romaji": "Magic-kyun! Renaissance",
+        "english": "Magic-kyun! Renaissance",
+        "song": "Kimi to Iu Hikari",
+        "artist_raw": "Yuuichirou Umehara",
+        "artist_arr": [
+            "Yuuichirou Umehara"
+        ],
+        "composer": "Koichi Fujimoto",
+        "arranger": "Koichi Fujimoto",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18467",
+        "anime_type": "TV",
+        "vintage": "Fall 2016",
+        "genres_raw": [
+            "Music",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Magic",
+            "School Club",
+            "Idol",
+            "Male Harem",
+            "Tsundere",
+            "Calligraphy",
+            "Urban",
+            "Kuudere"
+        ],
+        "difficulty": "22.00",
+        "video_url": "https://naedist.animemusicquiz.com/g0by0m.mp3",
+        "guessers_flat": [
+            "MikasaAckerman"
+        ],
+        "guessers_hover": [
+            "Team MikasaAckerman: MikasaAckerman (5.47)",
+            "Team HaruUrara: None"
+        ],
+        "listers_flat": [
+            "MikasaAckerman"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: MikasaAckerman",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "mikasaackerman"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2
+        ],
+        "alts": [],
+        "start_sample": 0
+    },
+    {
+        "romaji": "Mahou no Shimai LuluttoLilly",
+        "english": "Magical Sisters LuluttoLilly",
+        "song": "La Lu Sugarin'",
+        "artist_raw": "May Tachibana",
+        "artist_arr": [
+            "May Tachibana"
+        ],
+        "composer": "ha-j",
+        "arranger": "ha-j",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=35141",
+        "anime_type": "TV",
+        "vintage": "Spring 2026",
+        "genres_raw": [
+            "Mahou Shoujo",
+            "Music"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Magic",
+            "CGI",
+            "Henshin",
+            "Coming of Age",
+            "Idol",
+            "Aliens",
+            "Urban Fantasy",
+            "Urban"
+        ],
+        "difficulty": "33.37",
+        "video_url": "https://naedist.animemusicquiz.com/p6z0sy.mp3",
+        "guessers_flat": [
+            "Tugia"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: Tugia (5.51)",
+            "Team MikasaAckerman: None"
+        ],
+        "listers_flat": [
+            "Tugia"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: Tugia",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "tugia"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1
+        ],
+        "alts": [],
+        "start_sample": 32
+    },
+    {
+        "romaji": "Mahou Sensei Negima!: Shiroki Tsubasa Ala Alba",
+        "english": "Magister Negi Magi: Ala Alba",
+        "song": "Happy☆Material Return",
+        "artist_raw": "Mahora Gakuen Chuutoubu 3-A",
+        "artist_arr": [
+            "Mahora Gakuen Chuutoubu 3-A"
+        ],
+        "composer": "Shigenobu Okawa",
+        "arranger": "Eiji Kawai",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=9721",
+        "anime_type": "OVA",
+        "vintage": "Summer 2008",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Ecchi",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Female Harem",
+            "Magic",
+            "Shounen",
+            "Vampire",
+            "Teacher",
+            "Card Battle",
+            "Surreal Comedy",
+            "Urban Fantasy"
+        ],
+        "difficulty": "25.03",
+        "video_url": "https://naedist.animemusicquiz.com/a23vkk.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "HaruUrara",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (6.90), Tugia (14.68)",
+            "Team MikasaAckerman: MikasaAckerman (4.79), FurLain (9.09)"
+        ],
+        "listers_flat": [
+            "MikasaAckerman"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: MikasaAckerman",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 14
+    },
+    {
+        "romaji": "Mai no Mahou to Katei no Hi",
+        "english": "Mai, Magic and Family Day",
+        "song": "Kirari Kururi",
+        "artist_raw": "eufonius",
+        "artist_arr": [
+            "eufonius"
+        ],
+        "composer": "Hajime Kikuchi",
+        "arranger": "Hajime Kikuchi",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=12164",
+        "anime_type": "Special",
+        "vintage": "Winter 2011",
+        "genres_raw": [],
+        "tags_raw": [
+            "Magic"
+        ],
+        "difficulty": "22.41",
+        "video_url": "https://naedist.animemusicquiz.com/chwuxf.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "at17",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: at17 (6.27)",
+            "Team MikasaAckerman: MikasaAckerman (3.24), FurLain (16.74)"
+        ],
+        "listers_flat": [
+            "MikasaAckerman",
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: MikasaAckerman, FurLain",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "at17"
+        ],
+        "correct_teams_flat": [
+            2,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 63
+    },
+    {
+        "romaji": "Majo no Takkyuubin",
+        "english": "Kiki's Delivery Service",
+        "song": "Surfin Shirt",
+        "artist_raw": "Surfin Dave And The Absent Legends",
+        "artist_arr": [
+            "Surfin Dave And The Absent Legends"
+        ],
+        "composer": "David Coleman",
+        "arranger": "David Coleman",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=595",
+        "anime_type": "Movie",
+        "vintage": "Summer 1989",
+        "genres_raw": [
+            "Adventure",
+            "Drama",
+            "Fantasy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Magic",
+            "Iyashikei",
+            "Coming of Age",
+            "Primarily Adult Cast",
+            "Work",
+            "Witch",
+            "Urban Fantasy",
+            "Aviation",
+            "Animals",
+            "Urban",
+            "Travel",
+            "Coastal"
+        ],
+        "difficulty": "20.15",
+        "video_url": "https://naedist.animemusicquiz.com/59eu4i.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: Tugia (4.13)",
+            "Team MikasaAckerman: MikasaAckerman (5.57)"
+        ],
+        "listers_flat": [
+            "MikasaAckerman",
+            "Tugia"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: Tugia",
+            "Team MikasaAckerman: MikasaAckerman"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "tugia",
+            "mikasaackerman"
+        ],
+        "correct_teams_flat": [
+            2,
+            1
+        ],
+        "alts": [],
+        "start_sample": 9
+    },
+    {
+        "romaji": "Marginal#4: Kiss kara Tsukuru Big Bang",
+        "english": "Marginal #4 the Animation",
+        "song": "Tamashii no Nonstop Lover",
+        "artist_raw": "Toshiki Masuda",
+        "artist_arr": [
+            "Toshiki Masuda"
+        ],
+        "composer": "MIKOTO",
+        "arranger": "Yuji Hamasaki",
+        "type": "Ending 9",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18677",
+        "anime_type": "TV",
+        "vintage": "Winter 2017",
+        "genres_raw": [
+            "Comedy",
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Idol",
+            "Twins",
+            "Cute Boys Doing Cute Things"
+        ],
+        "difficulty": "29.48",
+        "video_url": "https://naedist.animemusicquiz.com/n2dj85.mp3",
+        "guessers_flat": [
+            "HaruUrara"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (10.18)",
+            "Team MikasaAckerman: None"
+        ],
+        "listers_flat": [
+            "HaruUrara"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "haruurara"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1
+        ],
+        "alts": [],
+        "start_sample": 3
+    },
+    {
+        "romaji": "Mitsudomoe",
+        "english": "Mitsudomoe",
+        "song": "Mittsu Kazoete Daishuugou!",
+        "artist_raw": "Ayahi Takagaki, Satomi Akesaka, Haruka Tomatsu",
+        "artist_arr": [
+            "Ayahi Takagaki",
+            "Satomi Akesaka",
+            "Haruka Tomatsu"
+        ],
+        "composer": "Kenichi Maeyamada",
+        "arranger": "Kenichi Maeyamada",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=11180",
+        "anime_type": "TV",
+        "vintage": "Summer 2010",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Cute Girls Doing Cute Things",
+            "Meta",
+            "Teacher",
+            "Bullying",
+            "Primarily Child Cast",
+            "Kuudere"
+        ],
+        "difficulty": "25.61",
+        "video_url": "https://naedist.animemusicquiz.com/7r8elp.mp3",
+        "guessers_flat": [
+            "MikasaAckerman"
+        ],
+        "guessers_hover": [
+            "Team MikasaAckerman: MikasaAckerman (3.57)",
+            "Team HaruUrara: None"
+        ],
+        "listers_flat": [
+            "MikasaAckerman"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: MikasaAckerman",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "mikasaackerman"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2
+        ],
+        "alts": [],
+        "start_sample": 48
+    },
+    {
+        "romaji": "Nihon e Youkoso Elf-san.",
+        "english": "Welcome to Japan, Ms. Elf!",
+        "song": "Palette Days",
+        "artist_raw": "Rico Sasaki",
+        "artist_arr": [
+            "Rico Sasaki"
+        ],
+        "composer": "KOUGA",
+        "arranger": "KOUGA",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=31172",
+        "anime_type": "TV",
+        "vintage": "Winter 2025",
+        "genres_raw": [
+            "Comedy",
+            "Fantasy",
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Magic",
+            "Iyashikei",
+            "Age Gap",
+            "Food",
+            "Isekai",
+            "Kemonomimi",
+            "Monster Girl",
+            "Urban Fantasy",
+            "Language Barrier",
+            "Elf",
+            "Dungeon",
+            "Travel",
+            "Reverse Isekai",
+            "Interspecies"
+        ],
+        "difficulty": "30.04",
+        "video_url": "https://naedist.animemusicquiz.com/hhjvl6.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "FurLain",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: Tugia (5.67)",
+            "Team MikasaAckerman: MikasaAckerman (15.79), Skychael (6.99), FurLain (8.67)"
+        ],
+        "listers_flat": [
+            "FurLain",
+            "Skychael"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: Skychael, FurLain",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "tugia"
+        ],
+        "correct_teams_flat": [
+            2,
+            1,
+            2,
+            2
+        ],
+        "alts": [],
+        "start_sample": 47
+    },
+    {
+        "romaji": "Pocket Monsters: Sun & Moon",
+        "english": "Pokémon Sun & Moon",
+        "song": "Breath",
+        "artist_raw": "Porno Graffitti",
+        "artist_arr": [
+            "Porno Graffitti"
+        ],
+        "composer": "Akihito Okano",
+        "arranger": "Porno Graffitti & tasuku",
+        "type": "Ending 3",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18745",
+        "anime_type": "TV",
+        "vintage": "Fall 2016",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Fantasy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Kids",
+            "Slapstick",
+            "Henshin",
+            "Aliens",
+            "Episodic",
+            "Animals",
+            "Primarily Child Cast",
+            "Proxy Battle",
+            "Coastal",
+            "Estranged Family",
+            "Criminal Organization",
+            "Creature Taming"
+        ],
+        "difficulty": "22.66",
+        "video_url": "https://naedist.animemusicquiz.com/8fm1wt.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "HaruUrara"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (14.03), Tugia (5.18), at17 (5.83)",
+            "Team MikasaAckerman: MikasaAckerman (5.03)"
+        ],
+        "listers_flat": [
+            "Tugia"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: Tugia",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "mikasaackerman"
+        ],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1
+        ],
+        "alts": [
+            "Pokémon the Movie: The Power of Us",
+            "Pokémon The Series: Sun & Moon",
+            "Pocket Monsters: Minna no Monogatari"
+        ],
+        "start_sample": 13
+    },
+    {
+        "romaji": "Re:Stage! Dream Days♪",
+        "english": "Re:Stage! Dream Days♪",
+        "song": "FlowerS ~Tonari de Saku Hana no You ni~",
+        "artist_raw": "ortensia",
+        "artist_arr": [
+            "ortensia"
+        ],
+        "composer": "Shunsuke Takizawa",
+        "arranger": "Shunsuke Takizawa",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=21866",
+        "anime_type": "TV",
+        "vintage": "Summer 2019",
+        "genres_raw": [
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "School Club",
+            "Cute Girls Doing Cute Things",
+            "Idol",
+            "Dancing"
+        ],
+        "difficulty": "22.72",
+        "video_url": "https://naedist.animemusicquiz.com/d82727.mp3",
+        "guessers_flat": [
+            "Tugia",
+            "HaruUrara",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (3.48), Tugia (4.45)",
+            "Team MikasaAckerman: FurLain (9.47)"
+        ],
+        "listers_flat": [
+            "Tugia",
+            "HaruUrara",
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara, Tugia",
+            "Team MikasaAckerman: FurLain"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "furlain"
+        ],
+        "correct_teams_flat": [
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 1
+    },
+    {
+        "romaji": "Regalia: The Three Sacred Stars",
+        "english": "Regalia: The Three Sacred Stars",
+        "song": "Patria",
+        "artist_raw": "Minami",
+        "artist_arr": [
+            "Minami"
+        ],
+        "composer": "Shunryu",
+        "arranger": "Daisuke Kikuta",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18243",
+        "anime_type": "TV",
+        "vintage": "Summer 2016",
+        "genres_raw": [
+            "Mecha",
+            "Sci-Fi"
+        ],
+        "tags_raw": [
+            "Super Power",
+            "Tragedy",
+            "Cute Girls Doing Cute Things",
+            "Politics",
+            "Super Robot",
+            "Lost Civilization",
+            "Artificial Intelligence",
+            "Kuudere",
+            "Adoption",
+            "Found Family"
+        ],
+        "difficulty": "24.70",
+        "video_url": "https://naedist.animemusicquiz.com/aeztk7.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: Tugia (6.90), at17 (4.87)",
+            "Team MikasaAckerman: MikasaAckerman (4.30), Skychael (3.63)"
+        ],
+        "listers_flat": [
+            "Skychael"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: Skychael",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 15
+    },
+    {
+        "romaji": "Saiki Kusuo no Psi-nan",
+        "english": "The Disastrous Life of Saiki K.",
+        "song": "Angel Wink",
+        "artist_raw": "Ai Kayano",
+        "artist_arr": [
+            "Ai Kayano"
+        ],
+        "composer": "Kenichirou Oishi",
+        "arranger": "Kenichirou Oishi",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18401",
+        "anime_type": "TV",
+        "vintage": "Summer 2016",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Shounen",
+            "Super Power",
+            "Satire",
+            "Meta",
+            "Tsundere",
+            "Episodic",
+            "Mythology",
+            "Chuunibyou",
+            "Surreal Comedy",
+            "Memory Manipulation",
+            "Urban",
+            "Asexual",
+            "Kuudere",
+            "Unrequited Love",
+            "Aromantic"
+        ],
+        "difficulty": "30.77",
+        "video_url": "https://naedist.animemusicquiz.com/tdtarl.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "HaruUrara",
+            "Mikuu_",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (12.90), Tugia (8.31), Mikuu_ (9.51)",
+            "Team MikasaAckerman: MikasaAckerman (12.02), FurLain (10.11)"
+        ],
+        "listers_flat": [
+            "HaruUrara",
+            "Mikuu_"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara, Mikuu_",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 5
+    },
+    {
+        "romaji": "SD Gundam World Heroes",
+        "english": "SD Gundam World Heroes",
+        "song": "Borderless",
+        "artist_raw": "THIS IS JAPAN",
+        "artist_arr": [
+            "THIS IS JAPAN"
+        ],
+        "composer": "Kawamura & Jack Sugimori",
+        "arranger": "THIS IS JAPAN",
+        "type": "Opening 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=24158",
+        "anime_type": "ONA",
+        "vintage": "Spring 2021",
+        "genres_raw": [
+            "Action",
+            "Mecha"
+        ],
+        "tags_raw": [],
+        "difficulty": "16.28",
+        "video_url": "https://naedist.animemusicquiz.com/lm7s2m.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "at17"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: at17 (20.14)",
+            "Team MikasaAckerman: MikasaAckerman (9.63)"
+        ],
+        "listers_flat": [
+            "at17"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: at17",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "at17",
+            "mikasaackerman"
+        ],
+        "correct_teams_flat": [
+            2,
+            1
+        ],
+        "alts": [],
+        "start_sample": 60
+    },
+    {
+        "romaji": "Seto no Hanayome",
+        "english": "My Bride is a Mermaid",
+        "song": "Dan Dan Dan",
+        "artist_raw": "SUN&LUNAR",
+        "artist_arr": [
+            "SUN&LUNAR"
+        ],
+        "composer": "Shuuhei Naruse",
+        "arranger": "Shuuhei Naruse",
+        "type": "Ending 2",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=7460",
+        "anime_type": "TV",
+        "vintage": "Spring 2007",
+        "genres_raw": [
+            "Comedy",
+            "Romance"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Slapstick",
+            "Gangs",
+            "Idol",
+            "Yakuza",
+            "Chibi",
+            "Mermaid"
+        ],
+        "difficulty": "20.81",
+        "video_url": "https://naedist.animemusicquiz.com/b79d1y.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team MikasaAckerman: MikasaAckerman (4.57), Skychael (4.67)",
+            "Team HaruUrara: None"
+        ],
+        "listers_flat": [
+            "MikasaAckerman",
+            "Skychael"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: MikasaAckerman, Skychael",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "mikasaackerman",
+            "skychael"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            2
+        ],
+        "alts": [],
+        "start_sample": 50
+    },
+    {
+        "romaji": "Show By Rock!! Short!!",
+        "english": "Show By Rock!! Short!!",
+        "song": "Do Re Mi Fa PARTY",
+        "artist_raw": "Plasmagica",
+        "artist_arr": [
+            "Plasmagica"
+        ],
+        "composer": "no_my",
+        "arranger": "Yoshihiro Kusano",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18447",
+        "anime_type": "TV",
+        "vintage": "Summer 2016",
+        "genres_raw": [
+            "Comedy",
+            "Music",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Band",
+            "Nekomimi",
+            "Idol",
+            "Kemonomimi"
+        ],
+        "difficulty": "29.58",
+        "video_url": "https://naedist.animemusicquiz.com/hr9xgg.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "HaruUrara",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (4.93), Tugia (4.68), at17 (7.03)",
+            "Team MikasaAckerman: MikasaAckerman (4.31), FurLain (13.26)"
+        ],
+        "listers_flat": [
+            "Tugia",
+            "HaruUrara"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara, Tugia",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            1,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 3
+    },
+    {
+        "romaji": "Show By Rock!! Stars!!",
+        "english": "Show By Rock!! Stars!!",
+        "song": "ain't nobody STOP",
+        "artist_raw": "REIJINGSIGNAL",
+        "artist_arr": [
+            "REIJINGSIGNAL"
+        ],
+        "composer": "Chihiro Tamaki",
+        "arranger": "Chihiro Tamaki",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=23132",
+        "anime_type": "TV",
+        "vintage": "Winter 2021",
+        "genres_raw": [
+            "Comedy",
+            "Music"
+        ],
+        "tags_raw": [
+            "Cute Girls Doing Cute Things",
+            "Band",
+            "Nekomimi",
+            "Idol",
+            "Isekai",
+            "Kemonomimi",
+            "Werewolf",
+            "Rock Music"
+        ],
+        "difficulty": "20.92",
+        "video_url": "https://naedist.animemusicquiz.com/2fl2dq.mp3",
+        "guessers_flat": [
+            "Tugia",
+            "HaruUrara"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (10.30), Tugia (7.38)",
+            "Team MikasaAckerman: None"
+        ],
+        "listers_flat": [
+            "Tugia",
+            "HaruUrara"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara, Tugia",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "tugia",
+            "haruurara"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1,
+            1
+        ],
+        "alts": [],
+        "start_sample": 34
+    },
+    {
+        "romaji": "Show By Rock!!#",
+        "english": "Show By Rock!!#",
+        "song": "Haitoku no Catastrophe",
+        "artist_raw": "SHINGANCRIMSONZ",
+        "artist_arr": [
+            "SHINGANCRIMSONZ"
+        ],
+        "composer": "RegaSound",
+        "arranger": "RegaSound",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=18546",
+        "anime_type": "TV",
+        "vintage": "Fall 2016",
+        "genres_raw": [
+            "Comedy",
+            "Fantasy",
+            "Music"
+        ],
+        "tags_raw": [
+            "Yuri",
+            "Band",
+            "Nekomimi",
+            "Idol",
+            "Super Robot",
+            "Aliens",
+            "Isekai",
+            "Kemonomimi",
+            "Rock Music"
+        ],
+        "difficulty": "26.85",
+        "video_url": "https://naedist.animemusicquiz.com/wap9kc.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "Tugia",
+            "HaruUrara"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (12.39), Tugia (4.26)",
+            "Team MikasaAckerman: MikasaAckerman (11.72)"
+        ],
+        "listers_flat": [
+            "Tugia",
+            "HaruUrara"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara, Tugia",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "mikasaackerman"
+        ],
+        "correct_teams_flat": [
+            2,
+            1,
+            1
+        ],
+        "alts": [],
+        "start_sample": 28
+    },
+    {
+        "romaji": "SKET Dance",
+        "english": "SKET Dance",
+        "song": "Reboot",
+        "artist_raw": "everset",
+        "artist_arr": [
+            "everset"
+        ],
+        "composer": "tatsuo",
+        "arranger": "tatsuo",
+        "type": "Opening 5",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=12089",
+        "anime_type": "TV",
+        "vintage": "Spring 2011",
+        "genres_raw": [
+            "Comedy",
+            "Drama",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "Parody",
+            "Shounen",
+            "Slapstick",
+            "School Club",
+            "Tragedy",
+            "Otaku Culture",
+            "Coming of Age",
+            "Love Triangle",
+            "Meta",
+            "Episodic",
+            "Video Games",
+            "Delinquents",
+            "Twins",
+            "Kuudere"
+        ],
+        "difficulty": "22.37",
+        "video_url": "https://naedist.animemusicquiz.com/1d5a2l.mp3",
+        "guessers_flat": [
+            "MikasaAckerman"
+        ],
+        "guessers_hover": [
+            "Team MikasaAckerman: MikasaAckerman (4.96)",
+            "Team HaruUrara: None"
+        ],
+        "listers_flat": [
+            "MikasaAckerman",
+            "Mikuu_"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: Mikuu_",
+            "Team MikasaAckerman: MikasaAckerman"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "mikasaackerman"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2
+        ],
+        "alts": [],
+        "start_sample": 61
+    },
+    {
+        "romaji": "Sousei no Onmyouji",
+        "english": "Twin Star Exorcists",
+        "song": "Valkyrie -Ikusa Otome-",
+        "artist_raw": "Wagakki Band",
+        "artist_arr": [
+            "Wagakki Band"
+        ],
+        "composer": "Asa",
+        "arranger": "Tatsuya Kurauchi",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=17890",
+        "anime_type": "TV",
+        "vintage": "Spring 2016",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Drama",
+            "Fantasy",
+            "Romance",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Demons",
+            "Magic",
+            "Swordplay",
+            "Shounen",
+            "Tragedy",
+            "Yandere",
+            "Revenge",
+            "Urban Fantasy",
+            "Exorcism"
+        ],
+        "difficulty": "39.76",
+        "video_url": "https://naedist.animemusicquiz.com/jctvj2.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "MikasaAckerman",
+            "Tugia",
+            "at17",
+            "HaruUrara",
+            "Mikuu_",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (4.35), Tugia (9.13), at17 (19.21), Mikuu_ (10.13)",
+            "Team MikasaAckerman: MikasaAckerman (4.08), FurLain (8.67), HakoHoka (2.74)"
+        ],
+        "listers_flat": [
+            "HakoHoka",
+            "HaruUrara",
+            "Mikuu_"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara, Mikuu_",
+            "Team MikasaAckerman: HakoHoka"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            2,
+            1,
+            1,
+            1,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 40
+    },
+    {
+        "romaji": "Tamako Love Story",
+        "english": "Tamako Love Story",
+        "song": "Mamedai-san e",
+        "artist_raw": "Yoko Hikasa",
+        "artist_arr": [
+            "Yoko Hikasa"
+        ],
+        "composer": "France Minyou",
+        "arranger": "Tomoko Kataoka",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=15900",
+        "anime_type": "Movie",
+        "vintage": "Spring 2014",
+        "genres_raw": [
+            "Romance",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "School Club",
+            "Coming of Age",
+            "Food"
+        ],
+        "difficulty": "25.66",
+        "video_url": "https://naedist.animemusicquiz.com/g816pk.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "Tugia",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: Tugia (13.54)",
+            "Team MikasaAckerman: FurLain (8.66), HakoHoka (5.23)"
+        ],
+        "listers_flat": [
+            "HakoHoka",
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: FurLain, HakoHoka",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "tugia"
+        ],
+        "correct_teams_flat": [
+            2,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 2
+    },
+    {
+        "romaji": "Tamako Market",
+        "english": "Tamako Market",
+        "song": "Un Lieu de Rencontre",
+        "artist_raw": "Marilou",
+        "artist_arr": [
+            "Marilou"
+        ],
+        "composer": "Gille Audiard",
+        "arranger": "Raymond Vion",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=14908",
+        "anime_type": "TV",
+        "vintage": "Winter 2013",
+        "genres_raw": [
+            "Comedy",
+            "Slice of Life"
+        ],
+        "tags_raw": [
+            "School Club",
+            "Family Life",
+            "Cute Girls Doing Cute Things",
+            "Coming of Age",
+            "Food",
+            "Episodic",
+            "Surreal Comedy",
+            "Animals",
+            "LGBTQ+ Themes",
+            "Urban",
+            "Anthropomorphism"
+        ],
+        "difficulty": "28.20",
+        "video_url": "https://naedist.animemusicquiz.com/pny453.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "MikasaAckerman",
+            "Tugia",
+            "HaruUrara",
+            "FurLain",
+            "Skychael"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (4.54), Tugia (3.67)",
+            "Team MikasaAckerman: MikasaAckerman (10.59), Skychael (18.09), FurLain (4.27), HakoHoka (6.47)"
+        ],
+        "listers_flat": [
+            "HakoHoka",
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team MikasaAckerman: FurLain, HakoHoka",
+            "Team HaruUrara: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            2,
+            1,
+            1,
+            2,
+            2
+        ],
+        "alts": [],
+        "start_sample": 16
+    },
+    {
+        "romaji": "TO-Y",
+        "english": "TO-Y",
+        "song": "Kaze no Naka de",
+        "artist_raw": "Seishiro Kusunose",
+        "artist_arr": [
+            "Seishiro Kusunose"
+        ],
+        "composer": "Masaya Matsuura",
+        "arranger": "Masaya Matsuura",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=827",
+        "anime_type": "OVA",
+        "vintage": "Fall 1987",
+        "genres_raw": [
+            "Drama",
+            "Music"
+        ],
+        "tags_raw": [
+            "Shounen",
+            "Band",
+            "Rock Music"
+        ],
+        "difficulty": "17.49",
+        "video_url": "https://naedist.animemusicquiz.com/tdp90o.mp3",
+        "guessers_flat": [
+            "MikasaAckerman"
+        ],
+        "guessers_hover": [
+            "Team MikasaAckerman: MikasaAckerman (4.26)",
+            "Team HaruUrara: None"
+        ],
+        "listers_flat": [
+            "Mikuu_"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: Mikuu_",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "mikasaackerman"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2
+        ],
+        "alts": [],
+        "start_sample": 88
+    },
+    {
+        "romaji": "Tsukimonogatari",
+        "english": "Tsukimonogatari",
+        "song": "border",
+        "artist_raw": "ClariS",
+        "artist_arr": [
+            "ClariS"
+        ],
+        "composer": "Ryosuke Shigenaga",
+        "arranger": "Ryosuke Shigenaga",
+        "type": "Ending 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16342",
+        "anime_type": "TV",
+        "vintage": "Fall 2014",
+        "genres_raw": [
+            "Comedy",
+            "Ecchi",
+            "Mystery",
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Vampire",
+            "Nudity",
+            "Coming of Age",
+            "Incest",
+            "Achronological Order",
+            "Urban Fantasy",
+            "Philosophy",
+            "Snowscape"
+        ],
+        "difficulty": "37.86",
+        "video_url": "https://naedist.animemusicquiz.com/rzxqbv.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "at17",
+            "HaruUrara"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (8.36), at17 (4.84)",
+            "Team MikasaAckerman: MikasaAckerman (6.01)"
+        ],
+        "listers_flat": [
+            "MikasaAckerman",
+            "at17",
+            "Mikuu_"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: at17, Mikuu_",
+            "Team MikasaAckerman: MikasaAckerman"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "mikasaackerman"
+        ],
+        "correct_teams_flat": [
+            2,
+            1,
+            1
+        ],
+        "alts": [],
+        "start_sample": 20
+    },
+    {
+        "romaji": "Uma Musume: Pretty Derby",
+        "english": "Uma Musume: Pretty Derby",
+        "song": "Special Record!",
+        "artist_raw": "Yui Kondo, Tomoyo Takayanagi, Spica, Rigil (without Yuka Ootsubo)",
+        "artist_arr": [
+            "Yui Kondo",
+            "Tomoyo Takayanagi",
+            "Spica",
+            "Rigil (without Yuka Ootsubo)"
+        ],
+        "composer": "Shun Aratame",
+        "arranger": "Shun Aratame, Yuya Hirosawa, Naoki Tani",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=20598",
+        "anime_type": "TV",
+        "vintage": "Spring 2018",
+        "genres_raw": [
+            "Drama",
+            "Music",
+            "Slice of Life",
+            "Sports"
+        ],
+        "tags_raw": [
+            "Gambling",
+            "Cute Girls Doing Cute Things",
+            "Idol",
+            "Time Skip",
+            "Kemonomimi",
+            "Athletics",
+            "Rehabilitation",
+            "Animals",
+            "Kuudere",
+            "Boarding School"
+        ],
+        "difficulty": "23.86",
+        "video_url": "https://naedist.animemusicquiz.com/dvboee.mp3",
+        "guessers_flat": [
+            "HakoHoka",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team MikasaAckerman: FurLain (7.17), HakoHoka (3.34)",
+            "Team HaruUrara: None"
+        ],
+        "listers_flat": [
+            "HakoHoka",
+            "MikasaAckerman",
+            "HaruUrara",
+            "Mikuu_",
+            "FurLain",
+            "Skychael"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara, Mikuu_",
+            "Team MikasaAckerman: MikasaAckerman, Skychael, FurLain, HakoHoka"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "hakohoka",
+            "furlain"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            2,
+            2
+        ],
+        "alts": [],
+        "start_sample": 41
+    },
+    {
+        "romaji": "Zekkyou Gakkyuu",
+        "english": "Zekkyou Gakkyuu",
+        "song": "ALICE Douzai Innocent",
+        "artist_raw": "ALI PROJECT",
+        "artist_arr": [
+            "ALI PROJECT"
+        ],
+        "composer": "Mikiya Katakura",
+        "arranger": "Mikiya Katakura",
+        "type": "Insert",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=16804",
+        "anime_type": "TV",
+        "vintage": "Fall 2012",
+        "genres_raw": [
+            "Supernatural"
+        ],
+        "tags_raw": [
+            "Shoujo",
+            "Advertisement"
+        ],
+        "difficulty": "24.32",
+        "video_url": "https://naedist.animemusicquiz.com/rcv4k4.mp3",
+        "guessers_flat": [
+            "MikasaAckerman",
+            "HaruUrara",
+            "FurLain"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: HaruUrara (8.12)",
+            "Team MikasaAckerman: MikasaAckerman (13.39), FurLain (13.88)"
+        ],
+        "listers_flat": [
+            "HaruUrara",
+            "FurLain"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: HaruUrara",
+            "Team MikasaAckerman: FurLain"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [],
+        "lives_saved_flat": [
+            "haruurara"
+        ],
+        "correct_teams_flat": [
+            2,
+            1,
+            2
+        ],
+        "alts": [],
+        "start_sample": 2
+    },
+    {
+        "romaji": "Zoids Genesis",
+        "english": "Zoids Genesis",
+        "song": "Yotaka no Yume",
+        "artist_raw": "Do As Infinity",
+        "artist_arr": [
+            "Do As Infinity"
+        ],
+        "composer": "D・A・I",
+        "arranger": "Do As Infinity & Seiji Kameda",
+        "type": "Opening 1",
+        "chanting": "No",
+        "ann_url": "https://www.animenewsnetwork.com/encyclopedia/anime.php?id=5055",
+        "anime_type": "TV",
+        "vintage": "Spring 2005",
+        "genres_raw": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Mecha"
+        ],
+        "tags_raw": [
+            "Military",
+            "Super Robot",
+            "Real Robot"
+        ],
+        "difficulty": "19.64",
+        "video_url": "https://naedist.animemusicquiz.com/jh4pq6.mp3",
+        "guessers_flat": [
+            "at17"
+        ],
+        "guessers_hover": [
+            "Team HaruUrara: at17 (4.83)",
+            "Team MikasaAckerman: None"
+        ],
+        "listers_flat": [
+            "at17"
+        ],
+        "listers_hover": [
+            "Team HaruUrara: at17",
+            "Team MikasaAckerman: None"
+        ],
+        "room_players": [
+            "FurLain",
+            "HakoHoka",
+            "HaruUrara",
+            "MikasaAckerman",
+            "Mikuu_",
+            "Skychael",
+            "Tugia",
+            "at17"
+        ],
+        "lives_taken_flat": [
+            "at17"
+        ],
+        "lives_saved_flat": [],
+        "correct_teams_flat": [
+            1
+        ],
+        "alts": [],
+        "start_sample": 4
+    }
+]
