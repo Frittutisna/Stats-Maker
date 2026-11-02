@@ -269,14 +269,6 @@ class TourMetadataDialog(UnifiedDialog):
         super().__init__(parent, f"Tour {tour_id} Configuration v{version}", "", update_available = has_update, update_tag = update_tag)
         self.fill_color = "#000000"
 
-        left_frame   = ttk.Frame(self.container)
-        mid_frame    = ttk.Frame(self.container)
-        right_frame  = ttk.Frame(self.container)
-
-        left_frame  .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
-        mid_frame   .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
-        right_frame .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
-
         script_dir          = Path(__file__).parent.parent.absolute()
         ant_cred_path       = script_dir / DIR_CREDS / "ant_credentials.json"
         self.has_ant_creds  = ant_cred_path.exists()
@@ -290,6 +282,14 @@ class TourMetadataDialog(UnifiedDialog):
 
         initial_mode    = saved_mode if saved_mode in ["Tour", "Ant"] else ("Ant" if self.has_ant_creds else "Tour")
         self.mode_var   = tk.StringVar(value = initial_mode)
+
+        left_frame   = ttk.Frame(self.container)
+        mid_frame    = ttk.Frame(self.container)
+        right_frame  = ttk.Frame(self.container)
+
+        left_frame                                                                  .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
+        if not (self.has_ant_creds and self.mode_var.get() == "Ant"):  mid_frame    .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
+        right_frame                                                                 .pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10)
 
         if self.has_ant_creds:
             f_mode_container = ttk.Frame(left_frame)
@@ -309,10 +309,12 @@ class TourMetadataDialog(UnifiedDialog):
                 self.mode_var.set(new_mode)
 
                 if new_mode == "Ant":
+                    mid_frame.pack_forget()
                     self._select_np_opt("No")
                     for name, var in self.player_vars.items(): var.set(False)
 
                 else:
+                    mid_frame.pack(side = tk.LEFT, fill = tk.BOTH, expand = True, padx = 10, before = right_frame)
                     has_round_elo, round_elo_players = self._check_round_elos()
 
                     if has_round_elo:

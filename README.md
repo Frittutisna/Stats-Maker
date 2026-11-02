@@ -1,9 +1,7 @@
-# Hako Stats v1.5.0
+# Hako Stats v1.5.1
 
 ## Changelog
-1. Fixed auto-update
-2. Added version tag in Tour Configuration prompt
-3. Added `.gitignore` to public repo
+1. Removed new player configuration from **Ant Mode**
 
 ## Note
 1. To use with **Dry Stats**, move to the same level as `assets`
