@@ -1,150 +1,55 @@
-import json
+import datetime, json, re
 import tkinter as tk
 
 from pathlib import Path
-from tkinter import messagebox, ttk
-
-class CustomSpinbox(tk.Frame):
-    def __init__(self, parent, from_, to, initial_val = 1, command = None):
-        super().__init__(parent, bg = "white")
-
-        self.from_      = from_
-        self.to         = to
-        self.command    = command
-        self.var        = tk.StringVar(value = str(initial_val))
-        vcmd            = (self.register(self._validate_input), "%P")
-
-        self.btn_dec, self.dec_arrow = self._create_arrow_button(column = 0, coords = (7,   9,  17, 9,  12, 15), delta = -1)
-        self.btn_inc, self.inc_arrow = self._create_arrow_button(column = 2, coords = (12,  9,  7,  15, 17, 15), delta = 1)
-
-        self.entry = tk.Entry(
-            self,
-            textvariable        = self.var,
-            bg                  = "white",
-            fg                  = "black",
-            font                = ("Segoe UI", 10),
-            justify             = "center",
-            width               = 5,
-            bd                  = 1,
-            relief              = "solid",
-            highlightthickness  = 0,
-            validate            = "key",
-            validatecommand     = vcmd,
-        )
-
-        self.entry.grid             (row = 0, column = 1, sticky = "ns")
-        self.grid_columnconfigure   (1, minsize = 25)
-        self._update_button_states  (initial_val)
-
-    def _create_arrow_button(self, column, coords, delta):
-        btn = tk.Canvas(
-            self,
-            width               = 25,
-            height              = 25,
-            bg                  = "black",
-            highlightthickness  = 0,
-            borderwidth         = 0,
-            cursor              = "hand2",
-        )
-
-        arrow = btn.create_polygon(*coords, fill = "white")
-        btn.grid(row = 0, column = column, sticky = "nsew")
-        btn.bind("<Button-1>", lambda _: self._adjust_value(delta))
-
-        return btn, arrow
-
-    def _update_button_states(self, current_val):
-        if current_val <= self.from_:
-            self.btn_dec.configure(bg = "#f0f0f0", cursor = "arrow")
-            self.btn_dec.itemconfig(self.dec_arrow, fill = "gray50")
-
-        else:
-            self.btn_dec.configure(bg = "black", cursor = "hand2")
-            self.btn_dec.itemconfig(self.dec_arrow, fill = "white")
-
-        if current_val >= self.to:
-            self.btn_inc.configure(bg = "#f0f0f0", cursor = "arrow")
-            self.btn_inc.itemconfig(self.inc_arrow, fill = "gray50")
-
-        else:
-            self.btn_inc.configure(bg = "black", cursor = "hand2")
-            self.btn_inc.itemconfig(self.inc_arrow, fill = "white")
-
-    def _validate_input(self, current_text):
-        if current_text == "": return True
-
-        if current_text.isdigit():
-            val = int(current_text)
-
-            if self.from_ <= val <= self.to:
-                self._update_button_states(val)
-                if self.command: self.after(10, lambda: self.command(val))
-                return True
-
-        return False
-
-    def _adjust_value(self, delta):
-        try                 : curr = int(self.var.get())
-        except ValueError   : curr = self.from_
-
-        if delta == -1  and curr <= self.from_  : return
-        if delta == 1   and curr >= self.to     : return
-
-        new_val = max(self.from_, min(self.to, curr + delta))
-        self.var.set(str(new_val))
-        self._update_button_states(new_val)
-        if self.command: self.command(new_val)
-
-    def get(self):
-        try                 : return int(self.var.get())
-        except ValueError   : return self.from_
-
-    def set(self, val):
-        bounded_val = max(self.from_, min(self.to, int(val)))
-        self.var.set(str(bounded_val))
-        self._update_button_states(bounded_val)
-        if self.command: self.command(bounded_val)
+from tkinter import font as tkfont
+from tkinter import messagebox
 
 class JSONEditor(tk.Tk):
     def __init__(self):
         super().__init__()
+
         self.title("JSON Editor")
         self.configure(bg = "white")
 
         self.file_path      = None
         self.output_path    = None
         self.data           = None
-        self.all_players    = set()
-        self.player_vars    = {}
-        self.list_vars      = {}
-        self.manual_entries = []
-        self.fill_color     = "#000000"
-        self.style          = ttk.Style(self)
+        self.players        = []
+        self.row_states     = []
+        self.hit_regions    = []
 
-        self.style.configure(".", background = "white", foreground = "black")
-        self.style.configure("TLabel", font = ("Segoe UI", 10))
-        self.style.configure("TButton", font = ("Segoe UI", 10), padding = 5)
+        self.font_regular   = tkfont.Font(family="Segoe UI", size = 10)
+        self.font_bold      = tkfont.Font(family="Segoe UI", size = 10, weight = "bold")
+        self.font_btn_sm    = tkfont.Font(family="Segoe UI", size = 8,  weight = "bold")
 
         if not self.find_and_load_file():
             self.destroy()
             return
 
+        self._init_row_states   ()
         self.create_widgets     ()
-        self.on_song_changed    (1)
+        self.render_table       ()
 
     def find_and_load_file(self):
         current_dir = Path(__file__).parent.absolute()
-        json_files  = list(current_dir.glob("*.json"))
-        json_files  = [f for f in json_files if not f.name.startswith("edited-")]
+        json_files  = [f for f in current_dir.glob("*.json") if not f.name.startswith("edited-")]
 
         if not json_files:
             messagebox.showerror("Error", "No JSON files found in folder")
             return False
 
+        def get_start_time(file_path):
+            try:
+                with open(file_path, "r", encoding = "utf-8") as f: raw_time = json.load(f).get("startTime", "")
+                return                  datetime.strptime       (raw_time.replace("GMT", ""), "%a %b %d %Y %H:%M:%S %z")
+            except Exception: return    datetime.max.replace    (tzinfo = datetime.now().astimezone().tzinfo)
+
         if len(json_files) > 1:
+            self.file_path = min(json_files, key = get_start_time)
+            messagebox.showinfo("Multiple Files Found", f"Found multiple JSONs, automatically processing oldest: {self.file_path.name}")
+        else:
             self.file_path = json_files[0]
-            messagebox.showinfo("Multiple Files Found", f"Found multiple JSONs, automatically processing {self.file_path.name}")
-        else: self.file_path = json_files[0]
 
         self.output_path = current_dir / f"edited-{self.file_path.stem}{self.file_path.suffix}"
 
@@ -152,280 +57,351 @@ class JSONEditor(tk.Tk):
             with open(self.file_path, "r", encoding = "utf-8") as f: self.data = json.load(f)
             self.extract_all_players()
             return True
-
         except Exception as e:
             messagebox.showerror("Error", f"Failed to parse {self.file_path.name}: {str(e)}")
             return False
 
     def extract_all_players(self):
-        self.all_players.clear()
+        found = set()
 
-        if "songs" in self.data:
-            for song in self.data["songs"]:
-                for player in song.get("correctGuessPlayers", []): 
-                    if      isinstance(player, dict) and "name" in player   : self.all_players.add(player["name"])
-                    elif    isinstance(player, str)                         : self.all_players.add(player)
+        for song in self.data.get("songs", []):
+            for player in song.get("correctGuessPlayers", []):
+                if      isinstance(player, dict) and "name" in player   : found.add(player["name"])
+                elif    isinstance(player, str)                         : found.add(player)
 
-                for state in song.get("listStates", []):
-                    if isinstance(state, dict) and "name" in state: self.all_players.add(state["name"])
+            for state in song.get("listStates", []):
+                if isinstance(state, dict) and "name" in state: found.add(state["name"])
+
+        self.players = sorted(found, key = str.lower)
+
+    def _init_row_states(self):
+        self.row_states.clear()
+
+        for song in self.data.get("songs", []):
+            correct_set = set()
+
+            for p in song.get("correctGuessPlayers", []):
+                if      isinstance(p, dict) and "name" in p : correct_set.add(p["name"])
+                elif    isinstance(p, str)                  : correct_set.add(p)
+
+            self.row_states.append({"song": song, "correct": {p: (p in correct_set) for p in self.players}})
 
     def create_widgets(self):
-        main_frame = ttk.Frame(self, padding = 20)
-        main_frame.pack(fill = tk.BOTH, expand = True)
+        self.top_bar = tk.Frame(self, bg = "white", padx = 15, pady = 5)
+        self.top_bar.pack(fill = tk.X)
 
-        ttk.Label(main_frame, text = f"Editing {self.file_path.name}",      font = ("Segoe UI", 10, "italic"), foreground = "gray50")   .pack(anchor = "w", pady = (0, 5))
-        ttk.Label(main_frame, text = "Which song would you like to edit?",  font = ("Segoe UI", 10, "bold"))                            .pack(anchor = "w", pady = (0, 5))
+        self.file_lbl = tk.Label(self.top_bar, text = f"Editing {self.file_path.name}", bg = "white", fg = "black", font = self.font_regular)
+        self.file_lbl.pack(side = tk.LEFT)
 
-        max_songs = len(self.data.get("songs", []))
+        action_frame = tk.Frame(self.top_bar, bg = "white")
+        action_frame.pack(side = tk.RIGHT)
 
-        self.song_spinbox = CustomSpinbox(main_frame, from_ = 1, to = max_songs if max_songs > 0 else 1, initial_val = 1, command = self.on_song_changed)
-        self.song_spinbox.pack(anchor = "w", pady = (0, 10))
+        control_h = 20
 
-        self.info_frame = ttk.Frame(main_frame)
-        self.info_frame.pack(anchor = "w", pady = (0, 10))
+        self.add_player_frame = tk.Frame(action_frame, bg = "white")
+        if len(self.players) < 8: self.add_player_frame.pack(side = tk.LEFT)
 
-        self.lbl_anime = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
-        self.lbl_anime.pack(anchor = "w")
+        tk.Label(self.add_player_frame, text = "New Player:", bg = "white", fg = "black", font = self.font_regular).pack(side = tk.LEFT, padx = (0, 5))
 
-        self.lbl_type = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
-        self.lbl_type.pack(anchor = "w")
+        entry_wrap = tk.Frame(self.add_player_frame, width = 100, height = control_h, bg = "white", highlightthickness = 1, highlightbackground = "black")
+        entry_wrap.pack_propagate(False)
+        entry_wrap.pack(side = tk.LEFT, padx = (0, 5))
 
-        self.lbl_songname = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
-        self.lbl_songname.pack(anchor = "w")
+        self.new_player_var     = tk.StringVar()
+        self.new_player_entry   = tk.Entry(
+            entry_wrap,
+            textvariable        = self.new_player_var,
+            bg                  = "white",
+            fg                  = "black",
+            insertbackground    = "black",
+            selectbackground    = "black",
+            selectforeground    = "white",
+            font                = self.font_regular,
+            bd                  = 0,
+            highlightthickness = 0
+        )
 
-        self.lbl_artist = ttk.Label(self.info_frame, text = "", font = ("Segoe UI", 10, "italic"), foreground = "gray50")
-        self.lbl_artist.pack(anchor = "w")
+        self.new_player_entry.pack(fill = tk.BOTH, expand = True, padx = 5)
+        self.new_player_entry.bind("<Return>", lambda _: self.add_player())
 
-        ttk.Label(main_frame, text = "Who got this song right?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 5))
-        self.player_frame = ttk.Frame(main_frame)
+        self._make_fixed_button(self.add_player_frame, text = "Add", command = self.add_player, width = 50, height = control_h, inverted = False).pack(side = tk.LEFT, padx = (0, 5))
 
-        self.player_frame.pack(side = "top", fill = "x", pady = (0, 10))
-        ttk.Label(main_frame, text = "Who has this song on their list?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 5))
+        self.save_btn = self._make_fixed_button(action_frame, text = "Save", command = self.save_changes, width = 50, height = control_h, inverted = True)
+        self.save_btn.pack(side = tk.LEFT)
 
-        self.list_frame = ttk.Frame(main_frame)
-        self.list_frame.pack(side = "top", fill = "x", pady = (0, 10))
+        container = tk.Frame(self, bg = "white")
+        container.pack(fill = tk.BOTH, expand = True, padx = 15, pady = (0, 15))
 
-        self.manual_container = ttk.Frame(main_frame)
-        self.manual_container.pack(fill = "x", anchor = "w")
+        self.canvas = tk.Canvas(container, bg = "white", highlightthickness = 0, bd = 0, yscrollincrement = 20, xscrollincrement = 20)
+        self.canvas.pack(side = tk.LEFT, fill = tk.BOTH, expand = True)
 
-        self.build_manual_slots()
-        ttk.Label(main_frame, text = "Would you like to delete the last song?", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 5))
+        self.canvas.bind("<Button-1>",  self._on_canvas_click)
+        self.canvas.bind("<Motion>",    self._on_canvas_motion)
+        self.canvas.bind("<Button-4>",  lambda _: self.canvas.yview_scroll(-1,  "units"))
+        self.canvas.bind("<Button-5>",  lambda _: self.canvas.yview_scroll(1,   "units"))
 
-        self.delete_var = tk.StringVar(value = "No")
-        self.del_boxes  = {}
+    def _make_fixed_button(self, parent, text, command, width, height, inverted = False):
+        bg = "black" if inverted else "white"
+        fg = "white" if inverted else "black"
 
-        for opt in ["No", "Yes"]:
-            f_opt = ttk.Frame(main_frame)
-            f_opt.pack(anchor = "w", pady = 1)
+        wrap = tk.Frame(parent, width = width, height = height, bg = bg, highlightthickness = 1, highlightbackground = "black")
+        wrap.pack_propagate(False)
 
-            is_sel      = self.delete_var.get() == opt
-            bg_color    = self.fill_color if is_sel else "white"
+        btn = tk.Button(
+            wrap,
+            text                = text,
+            command             = command,
+            bg                  = bg,
+            fg                  = fg,
+            activebackground    = fg,
+            activeforeground    = bg,
+            font                = self.font_btn_sm,
+            bd                  = 0,
+            relief              = "flat",
+            highlightthickness  = 0,
+            cursor              = "hand2",
+        )
 
-            box = tk.Canvas(
-                f_opt,
-                width               = 10,
-                height              = 10,
-                bg                  = bg_color,
-                highlightthickness  = 1,
-                highlightbackground = "black",
-            )
+        btn.pack(fill = tk.BOTH, expand = True)
+        return wrap
 
-            box.pack(side = tk.LEFT, padx = (0, 5))
+    def add_player(self):
+        name = self.new_player_var.get().strip()
+        if not name: return
 
-            self.del_boxes[opt] = box
-            lbl                 = ttk.Label(f_opt, text = opt, font = ("Segoe UI", 10))
+        if name in self.players:
+            messagebox.showinfo("Duplicate Player", f"'{name}' is already in the table")
+            return
 
-            lbl.pack(side = tk.LEFT)
-            for w in (box, lbl): w.bind("<Button-1>", lambda _, o = opt: self._select_del_opt(o))
+        self.players.append(name)
+        self.players.sort(key = str.lower)
 
-        self.confirm_btn = ttk.Button(main_frame, text = "Confirm", command = self.on_confirm)
-        self.confirm_btn.pack(side = tk.RIGHT)
+        for row in self.row_states: row["correct"].setdefault(name, False)
 
-    def build_manual_slots(self):
-        for widget in self.manual_container.winfo_children(): widget.destroy()
-        self.manual_entries.clear()
-        found_count = len(self.all_players)
+        self.new_player_var.set ("")
+        self.render_table       ()
 
-        if found_count < 8:
-            slots_needed = 8 - found_count
-            ttk.Label(self.manual_container, text = "Add new players: ", font = ("Segoe UI", 10, "bold")).pack(anchor = "w", pady = (0, 5))
+    def _format_song_type(self, song_info):
+        song_type   = song_info.get("type",         3)
+        type_num    = song_info.get("typeNumber",   0)
 
-            for i in range(slots_needed):
-                f_slot = ttk.Frame(self.manual_container)
-                f_slot.pack(anchor = "w", fill = "x", pady = 5)
-                ttk.Label(f_slot, text = f"Player {found_count + i + 1}: ", width = 10, font = ("Segoe UI", 10)).pack(side = tk.LEFT)
+        if song_type == 1: return   f"OP{type_num}" if type_num else "OP"
+        if song_type == 2: return   f"ED{type_num}" if type_num else "ED"
+        return                      "IN"
 
-                ent = ttk.Entry(f_slot, width = 30)
-                ent.pack(side = tk.LEFT, padx = 5)
-                self.manual_entries.append(ent)
+    def _draw_delete_button(self, cx, cy):
+        bw, bh = 50,            20
+        x0, y0 = cx - bw / 2,   cy - bh / 2
+        x1, y1 = cx + bw / 2,   cy + bh / 2
 
-    def _select_del_opt(self, opt):
-        self.delete_var.set(opt)
-        for k, box in self.del_boxes.items(): box.configure(bg = self.fill_color if k == opt else "white")
+        self.canvas.create_text(cx, cy, text = "Delete", fill = "black", font = self.font_btn_sm)
+        return x0, y0, x1, y1
 
-    def toggle_custom_player(self, name, box, var_dict):
-        new_val = not var_dict[name].get()
-        var_dict[name].set(new_val)
-        box.configure(bg = self.fill_color if new_val else "white")
+    def render_table(self):
+        self.canvas.delete      ("all")
+        self.hit_regions.clear  ()
 
-    def on_song_changed(self, song_num):
-        for widget in self.player_frame .winfo_children(): widget.destroy()
-        for widget in self.list_frame   .winfo_children(): widget.destroy()
+        num_players     = len(self.players)
+        sub_cols        = max(1, num_players)
+        pad_x, pad_y    = 4, 2
+        line_h          = self.font_regular.metrics("linespace")
+        prepared_rows   = []
 
-        if not self.data or "songs" not in self.data or not self.data["songs"]: return
+        for row_data in self.row_states:
+            song_info       = row_data["song"].get("songInfo", {})
+            anime_lines     = [song_info.get("animeNames", {}).get("romaji", "Unknown") or "Unknown"]
+            song_lines      = [song_info.get("songName",   "Unknown") or "Unknown"]
+            raw_artists     = re.split(r"\s*[&,]\s*", song_info.get("artist", "Unknown"))
+            artist_lines    = [part for part in raw_artists if part] or ["Unknown"]
+            type_str        = self._format_song_type(song_info)
 
-        idx = song_num - 1
-        if idx >= len(self.data["songs"]): return
+            prepared_rows.append((row_data, anime_lines, song_lines, artist_lines, type_str))
 
-        target_song     = self.data["songs"][idx]
-        song_info       = target_song.get("songInfo",   {})
-        anime_romaji    = song_info.get("animeNames",   {}).get("romaji", "Unknown")
-        song_type       = song_info.get("type",         3)
-        type_num        = song_info.get("typeNumber",   0)
-        song_name       = song_info.get("songName",     "Unknown")
-        artist_name     = song_info.get("artist",       "Unknown")
+        def calc_col_width(header_title, rows_lines):
+            max_w = self.font_bold.measure(header_title) + 15
 
-        self.lbl_anime      .configure(text = anime_romaji)
-        self.lbl_songname   .configure(text = song_name)
-        self.lbl_artist     .configure(text = artist_name)
+            for lines in rows_lines:
+                for line in lines: max_w = max(max_w, self.font_regular.measure(line) + pad_x * 2 + 4)
 
-        if      song_type == 1  : self.lbl_type.configure(text = f"Opening {type_num}")
-        elif    song_type == 2  : self.lbl_type.configure(text = f"Ending {type_num}")
-        else                    : self.lbl_type.configure(text = "Insert")
+            return max_w
 
-        correct_guess_raw   = target_song.get("correctGuessPlayers", [])
-        correct_guessers    = set()
+        w_num       = 20
+        w_anime     = calc_col_width("Anime",   [r[1] for r in prepared_rows])
+        w_type      = 40
+        w_song      = calc_col_width("Song",    [r[2] for r in prepared_rows])
+        w_artist    = calc_col_width("Artist",  [r[3] for r in prepared_rows])
+        w_del       = 60
 
-        for p in correct_guess_raw:
-            if      isinstance(p, dict) and "name" in p : correct_guessers.add(p["name"])
-            elif    isinstance(p, str)                  : correct_guessers.add(p)
+        player_widths   = [self.font_bold.measure(p) + 15 for p in self.players]
+        w_players       = sum(player_widths)
+        x_num           = 0
+        x_anime         = x_num     + w_num
+        x_type          = x_anime   + w_anime
+        x_song          = x_type    + w_type
+        x_artist        = x_song    + w_song
+        x_players       = x_artist  + w_artist
+        x_del           = x_players + w_players
+        total_w         = x_del     + w_del
+        hdr_h           = 20
 
-        list_state_players  = set(state["name"] for state in target_song.get("listStates", []) if "name" in state)
+        self.canvas.create_rectangle(0, 0, total_w, hdr_h, fill = "black", outline = "black")
 
-        self.player_vars    .clear()
-        self.list_vars      .clear()
+        fixed_headers = [
+            (x_num,     w_num,      "#"),
+            (x_anime,   w_anime,    "Anime"),
+            (x_type,    w_type,     "Type"),
+            (x_song,    w_song,     "Song"),
+            (x_artist,  w_artist,   "Artist"),
+            (x_del,     w_del,      "Delete"),
+        ]
 
-        sorted_players  = sorted(list(self.all_players), key = str.lower)
-        rows_per_col    = 8
+        for x, w, title in fixed_headers                                            : self.canvas.create_text(x + w / 2, hdr_h / 2, text = title, fill = "white", font = self.font_bold)
+        for vx          in (x_anime, x_type, x_song, x_artist, x_players, x_del)    : self.canvas.create_line(vx, 0, vx, hdr_h, fill = "white")
 
-        for i, name in enumerate(sorted_players):
-            col                     = i //  rows_per_col
-            row                     = i %   rows_per_col
-            is_correct              = name in correct_guessers
-            var                     = tk.BooleanVar(value = is_correct)
-            self.player_vars[name]  = var
-            item_frame              = ttk.Frame(self.player_frame)
+        cur_x = x_players
 
-            item_frame.grid(row = row, column = col, pady = 1, sticky = "w")
-            initial_bg = self.fill_color if is_correct else "white"
+        for i in range(sub_cols):
+            pw      = player_widths [i]
+            ptitle  = self.players  [i] if num_players > 0 else "-"
 
-            box = tk.Canvas(
-                item_frame,
-                width               = 10,
-                height              = 10,
-                bg                  = initial_bg,
-                highlightthickness  = 1,
-                highlightbackground = "black",
-            )
+            if i > 0: self.canvas.create_line(cur_x, 0, cur_x, hdr_h, fill = "white")
+            self.canvas.create_text(cur_x + pw / 2, hdr_h / 2, text = ptitle, fill = "white", font = self.font_bold)
 
-            box.pack(side = tk.LEFT, padx = (0, 5))
-            lbl = ttk.Label(item_frame, text = name, font = ("Segoe UI", 10))
-            lbl.pack(side = tk.LEFT)
-            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n = name, b = box: self.toggle_custom_player(n, b, self.player_vars))
+            cur_x += pw
 
-        for i, name in enumerate(sorted_players):
-            col                     = i // rows_per_col
-            row                     = i % rows_per_col
-            has_list                = name in list_state_players
-            var                     = tk.BooleanVar(value = has_list)
-            self.list_vars[name]    = var
-            item_frame              = ttk.Frame(self.list_frame)
+        y = hdr_h
 
-            item_frame.grid(row = row, column = col, pady = 1, sticky = "w")
-            initial_bg = self.fill_color if has_list else "white"
+        for idx, (row_data, anime_lines, song_lines, artist_lines, type_str) in enumerate(prepared_rows):
+            max_lines   = max(len(anime_lines), len(song_lines), len(artist_lines), 1)
+            row_h       = max(10, max_lines * line_h + pad_y * 2)
 
-            box = tk.Canvas(
-                item_frame,
-                width               = 10,
-                height              = 10,
-                bg                  = initial_bg,
-                highlightthickness  = 1,
-                highlightbackground = "black",
-            )
+            y1 = y + row_h
+            cy = y + row_h / 2
 
-            box.pack(side = tk.LEFT, padx = (0, 5))
-            lbl = ttk.Label(item_frame, text = name, font = ("Segoe UI", 10))
-            lbl.pack(side = tk.LEFT)
-            for widget in (box, lbl): widget.bind("<Button-1>", lambda _, n = name, b = box: self.toggle_custom_player(n, b, self.list_vars))
+            self.canvas.create_rectangle(0, y, total_w, y1, fill = "white", outline = "black")
+            for vx in (x_num, x_anime, x_type, x_song, x_artist, x_players, x_del, total_w): self.canvas.create_line(vx, y, vx, y1, fill = "black")
 
-    def on_confirm(self):
-        if not self.data or "songs" not in self.data or not self.data["songs"]: return
+            self.canvas.create_text(x_num       + w_num     / 2,    cy, text = str(idx + 1),            fill = "black", font = self.font_regular)
+            self.canvas.create_text(x_anime     + pad_x,            cy, text = "\n".join(anime_lines),  fill = "black", font = self.font_regular, anchor = "w")
+            self.canvas.create_text(x_type      + w_type    / 2,    cy, text = type_str,                fill = "black", font = self.font_regular)
+            self.canvas.create_text(x_song      + pad_x,            cy, text = "\n".join(song_lines),   fill = "black", font = self.font_regular, anchor = "w")
+            self.canvas.create_text(x_artist    + pad_x,            cy, text = "\n".join(artist_lines), fill = "black", font = self.font_regular, anchor = "w")
 
-        if self.delete_var.get() == "Yes":
-            confirm = messagebox.askyesno("Deletion Confirmation", "Are you sure you want to delete the last song?")
+            cur_x = x_players
 
-            if confirm:
-                self.data["songs"].pop()
-                self.save_and_reload("Deleted the last song")
-                return
+            for i in range(sub_cols):
+                pw = player_widths[i]
+                if i > 0: self.canvas.create_line(cur_x, y, cur_x, y1, fill = "black")
 
-        idx = self.song_spinbox.get() - 1
-        if idx >= len(self.data["songs"]): return
+                if num_players > 0:
+                    player  = self.players[i]
+                    checked = row_data["correct"][player]
+                    tag     = f"cb_{idx}_{i}"
 
-        song            = self.data["songs"][idx]
-        updated_correct = [name for name, var in self.player_vars.items() if var.get()]
+                    self.canvas.create_rectangle    (cur_x, y, cur_x + pw, y1, fill = "black" if checked else "white", outline = "black", tags = (tag, ))
+                    self.hit_regions.append         ((cur_x, y, cur_x + pw, y1, ("check", tag), idx, player))
+                else: self.canvas.create_text       (cur_x + pw / 2, cy, text = "-", fill = "black", font = self.font_regular)
 
-        for ent in self.manual_entries:
-            val = ent.get().strip()
-            if val and val not in updated_correct: updated_correct.append(val)
+                cur_x += pw
 
-        old_correct_count   = len(song.get("correctGuessPlayers", []))
-        new_correct_count   = len(updated_correct)
-        diff                = new_correct_count - old_correct_count
+            self._draw_delete_button    (x_del + w_del / 2, cy)
+            self.hit_regions.append     ((x_del, y, total_w, y1, ("delete", None), idx, None))
 
-        song["correctGuessPlayers"] = updated_correct
-        song["correctCount"]        = song.get("correctCount", 0) + diff
+            y = y1
 
-        if      diff > 0: song["wrongCount"] = max(0, song.get("wrongCount", 0) - diff)
-        elif    diff < 0: song["wrongCount"] = song.get("wrongCount", 0) + abs(diff)
+        self.canvas.create_rectangle    (0, 0, total_w, hdr_h, outline = "black")
+        self.canvas.create_rectangle    (0, hdr_h - 1, total_w, hdr_h + 1, fill = "white")
+        self.canvas.configure           (scrollregion = (0, 0, total_w, max(y, 1)))
+        self.canvas.xview_moveto        (0)
+        self.canvas.yview_moveto        (0)
+        self.update_idletasks           ()
 
-        current_list_states = song.get("listStates", [])
-        existing_list_names = {state["name"] for state in current_list_states if "name" in state}
-        new_list_states     = []
+        pad_w = 30 + 1
+        pad_h = 20 + 1 + self.top_bar.winfo_reqheight()
 
-        for state in current_list_states:
-            if "name" in state and self.list_vars.get(state["name"], tk.BooleanVar(value = True)).get(): new_list_states.append(state)
+        req_w = pad_w + total_w
+        req_h = pad_h + max(y, 1)
 
-        for name, var in self.list_vars.items():
-            if var.get() and name not in existing_list_names: new_list_states.append({
-                "name"      : name,
-                "status"    : 2,
-                "score"     : None
-            })
+        max_w = self.winfo_screenwidth  () - 80
+        max_h = self.winfo_screenheight () - 100
 
-        song["listStates"] = new_list_states
+        self.geometry(f"{min(req_w, max_w)}x{min(req_h, max_h)}")
 
-        self.save_and_reload("Updated song records")
+    def _find_hit(self, event):
+        cx = self.canvas.canvasx(event.x)
+        cy = self.canvas.canvasy(event.y)
 
-    def save_and_reload(self, success_message):
+        for region in self.hit_regions:
+            x0, y0, x1, y1, action, row_idx, player = region
+            if x0 <= cx <= x1 and y0 <= cy <= y1: return action, row_idx, player
+
+        return None
+
+    def _on_canvas_motion(self, event):
+        hit = self._find_hit(event)
+        self.canvas.configure(cursor = "hand2" if hit else "")
+
+    def _on_canvas_click(self, event):
+        hit = self._find_hit(event)
+        if not hit: return
+
+        (kind, tag), row_idx, player = hit
+
+        if kind == "check":
+            new_val = not self.row_states[row_idx]["correct"][player]
+            self.row_states[row_idx]["correct"][player] = new_val
+            self.canvas.itemconfigure(tag, fill = "black" if new_val else "white")
+        elif kind == "delete": self.delete_song(row_idx)
+
+    def delete_song(self, row_idx):
+        if not (0 <= row_idx < len(self.row_states)): return
+
+        song_info   = self.row_states[row_idx]["song"].get("songInfo", {})
+        song_name   = song_info.get("songName", "Unknown")
+        artist      = song_info.get("artist", "Unknown")
+        anime_name  = song_info.get("animeNames", {}).get("romaji", "Unknown")
+
+        if not messagebox.askyesno("Delete Song", f"Delete {song_name} by {artist} in {anime_name}?"): return
+
+        self.row_states.pop (row_idx)
+        self.render_table   ()
+
+    def save_changes(self):
+        if not self.data: return
+        updated_songs = []
+
+        for idx, row_data in enumerate(self.row_states):
+            song = row_data["song"]
+            if "songNumber" in song: song["songNumber"] = idx + 1
+
+            updated_correct     = [p for p in self.players if row_data["correct"].get(p, False)]
+            old_correct_count   = len(song.get("correctGuessPlayers", []))
+            new_correct_count   = len(updated_correct)
+            diff                = new_correct_count - old_correct_count
+
+            song["correctGuessPlayers"] = updated_correct
+            song["correctCount"]        = song.get("correctCount", 0) + diff
+
+            if      diff > 0: song["wrongCount"] = max(0, song  .get("wrongCount", 0) - diff)
+            elif    diff < 0: song["wrongCount"] = song         .get("wrongCount", 0) + abs(diff)
+
+            updated_songs.append(song)
+
+        self.data["songs"] = updated_songs
+
         try:
             with open(self.output_path, "w", encoding = "utf-8") as f: json.dump(self.data, f, ensure_ascii = False)
-            messagebox.showinfo("Success", success_message)
+            messagebox.showinfo("Success", f"Saved changes to {self.output_path.name}")
 
             self.file_path = self.output_path
+            self.file_lbl.configure(text = f"Editing {self.file_path.name}")
+
             with open(self.file_path, "r", encoding = "utf-8") as f: self.data = json.load(f)
 
             self.extract_all_players    ()
-            self.build_manual_slots     ()
-
-            max_songs = len(self.data.get("songs", []))
-
-            self.song_spinbox.to = max_songs if max_songs > 0 else 1
-            self.song_spinbox.set(min(self.song_spinbox.get(), max_songs))
-
-            self._select_del_opt("No")
-
-        except Exception as e: messagebox.showerror("Error", f"Failed to save changes:\n{str(e)}")
+            self._init_row_states       ()
+            self.render_table           ()
+        except Exception as e: messagebox.showerror("Error", f"Failed to save changes: {str(e)}")
 
 if __name__ == "__main__":
     app = JSONEditor()

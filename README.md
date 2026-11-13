@@ -1,8 +1,9 @@
-# Hako Stats v1.5.2
+# Hako Stats v1.6.0
 
 ## Changelog
 1. Removed new player configuration from **Ant Mode**
 2. Added `Rig Δ` and `Off Δ`
+3. Revamped `hako/tool/edit.py`
 
 ## Note
 1. To use with **Dry Stats**, move to the same level as `assets`
