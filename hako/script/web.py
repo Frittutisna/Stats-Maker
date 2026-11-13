@@ -100,8 +100,10 @@ def render_dashboard_player(
                     "Rig Over-8"    : float (row_data["Rig Over-8"])                                                                                                    if pd.notnull(row_data["Rig Over-8"])       else np.nan,
                     "Over-8 Δ"      : float (row_data["Over-8 Δ"])                                                                                                      if pd.notnull(row_data["Over-8 Δ"])         else np.nan,
                     "Rig GR"        : {"count": float(row_data["Rig GR"]    * 100), "details": [f"{succ_rig}/{tot_rig}"] + analyzer.player_song_details[name]["Rigs"]}  if pd.notnull(row_data["Rig GR"])           else np.nan,
+                    "Rig Δ"         : float (row_data["Rig Δ"])                                                                                                      if pd.notnull(row_data.get("Rig Δ"))     else np.nan,
                     "Off GR"        : {"count": float(row_data["Off GR"]    * 100), "details": [f"{succ_off}/{tot_off}"] + off_details}                                 if pd.notnull(row_data["Off GR"])           else np.nan,
-                    "Rig Surplus"   : float (row_data["Rig Surplus"]              * 100),
+                    "Off Δ"         : float (row_data["Off Δ"])                                                                                                      if pd.notnull(row_data.get("Off Δ"))     else np.nan,
+                    "Rig Surplus"   : float (row_data["Rig Surplus"]        * 100)
                 })
 
             h_diffs = analyzer.p_hit_diff       .get(name, [])
@@ -173,8 +175,10 @@ def render_dashboard_player(
         "UF", "UF Δ", "UF Score", "Total Score",
         "1/8s", "2/8s", "Lives Taken", "Lives Saved",
         "OP GR", "OP Δ", "ED GR", "ED Δ", "IN GR", "IN Δ",
-        "Rigs", "Rig Rate", "Rig Rate Δ", "Solo Rigs", "Solo Rig Rate",
-        "Over-8 Δ", "Rig GR", "Off GR", "Rig Surplus",
+        "Rigs", "Rig Rate", "Rig Rate Δ",
+        "Solo Rigs", "Solo Rig Rate",
+        "Over-8 Δ", "Rig GR", "Rig Δ",
+        "Off GR", "Off Δ", "Rig Surplus",
         "Median Vintage Hit", "Chant GR"
     ]
 

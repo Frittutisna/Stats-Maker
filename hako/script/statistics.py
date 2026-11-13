@@ -130,7 +130,7 @@ def compute_player_rows(
         is_eligible = not ("▼" in d_name or "▲" in d_name)
         eligibility.append(is_eligible)
 
-        history_baselines   = {"GR": np.nan, "UF": np.nan, "OP": np.nan, "ED": np.nan, "IN": np.nan}
+        history_baselines   = {"GR": np.nan, "UF": np.nan, "OP": np.nan, "ED": np.nan, "IN": np.nan, "ON": np.nan, "OF": np.nan}
         alias_txt_path      = analyzer.tour_dir / TXT_ALIAS
 
         if alias_txt_path.exists():
@@ -147,7 +147,9 @@ def compute_player_rows(
                                         "OP": float(p_splits[4]),
                                         "ED": float(p_splits[5]),
                                         "IN": float(p_splits[6]),
-                                        "RG": float(p_splits[7]) if len(p_splits) > 7 and p_splits[7] != "N/A" else np.nan
+                                        "RG": float(p_splits[7]) if len(p_splits) > 7 and p_splits[7] != "N/A" else np.nan,
+                                        "ON": float(p_splits[8]) if len(p_splits) > 8 and p_splits[8] != "N/A" else np.nan,
+                                        "OF": float(p_splits[9]) if len(p_splits) > 9 and p_splits[9] != "N/A" else np.nan
                                 }
 
                                 break
@@ -206,6 +208,14 @@ def compute_player_rows(
             history_rg          = history_baselines.get("RG", np.nan)
             delta_rig_rate      = (current_rig_rate * 100) - history_rg if pd.notnull(history_rg) else np.nan
 
+            current_rig_gr      = analyzer.p_rigs_h[name] / analyzer.p_rigs[name] if analyzer.p_rigs[name] else np.nan
+            history_rig_gr      = history_baselines.get("ON", np.nan)
+            delta_rig_gr        = (current_rig_gr * 100) - history_rig_gr if pd.notnull(current_rig_gr) and pd.notnull(history_rig_gr) else np.nan
+
+            current_off_gr      = (cor - analyzer.p_rigs_h[name]) / (tot - analyzer.p_rigs[name]) if (tot - analyzer.p_rigs[name]) else np.nan
+            history_off_gr      = history_baselines.get("OF", np.nan)
+            delta_off_gr        = (current_off_gr * 100) - history_off_gr if pd.notnull(current_off_gr) and pd.notnull(history_off_gr) else np.nan
+
             row.update({
                 "Rigs"          : analyzer.p_rigs[name],
                 "Rig Rate"      : current_rig_rate,
@@ -214,8 +224,10 @@ def compute_player_rows(
                 "Solo Rig Rate" : analyzer.p_l_solos[name] / analyzer.p_rigs[name]                  if analyzer.p_rigs[name]                else np.nan,
                 "Rig Over-8"    : rig_over8,
                 "Over-8 Δ"      : rig_over8 - avg_over8,
-                "Rig GR"        : analyzer.p_rigs_h[name] / analyzer.p_rigs[name]                   if analyzer.p_rigs[name]                else np.nan,
-                "Off GR"        : (cor - analyzer.p_rigs_h[name]) / (tot - analyzer.p_rigs[name])   if (tot - analyzer.p_rigs[name])        else np.nan,
+                "Rig GR"        : current_rig_gr,
+                "Rig Δ"         : round(delta_rig_gr, 2)                                            if pd.notnull(delta_rig_gr)             else np.nan,
+                "Off GR"        : current_off_gr,
+                "Off Δ"         : round(delta_off_gr, 2)                                            if pd.notnull(delta_off_gr)             else np.nan,
                 "Rig Surplus"   : (cor - analyzer.p_rigs[name]) / cor                               if cor and analyzer.p_rigs[name] > 0    else np.nan,
             })
 

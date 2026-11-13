@@ -47,7 +47,7 @@ def create_player_png(
     if "Mean Difficulty Hit"    in df_png.columns: df_png["Mean Difficulty Hit"]    = pd.to_numeric(df_png["Mean Difficulty Hit"],  errors = "coerce").map(lambda x: f"{x:.2f}"     if pd.notnull(x) else "N/A")
 
     pct_cols    = (["GR"] + [t_labels[t] for t in active] + (["Rig Rate", "Solo Rig Rate", "Rig Surplus", "Rig GR", "Off GR"] if watched else []) + ["Chant GR"])
-    delta_cols  = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ", "Rig Rate Δ"]
+    delta_cols  = ["GR Δ", "UF Δ", "OP Δ", "ED Δ", "IN Δ", "Rig Rate Δ", "Rig Δ", "Off Δ"]
 
     for pc in pct_cols:
         if pc in df_png.columns: df_png[pc] = pd.to_numeric(df_png[pc], errors = "coerce").mul(100) .map(lambda x: f"{x:.2f}" if pd.notnull(x) else "N/A")
@@ -496,8 +496,10 @@ def export_png(analyzer, df: pd.DataFrame, path: Path, fname: str, title: str, m
         "UF", "UF Δ", "UF Score", "Total Score",
         "1/8s", "2/8s", "Lives Taken", "Lives Saved",
         "OP GR", "OP Δ", "ED GR", "ED Δ", "IN GR", "IN Δ",
-        "Rigs", "Rig Rate", "Rig Rate Δ", "Solo Rigs", "Solo Rig Rate",
-        "Over-8 Δ", "Rig GR", "Off GR", "Rig Surplus",
+        "Rigs", "Rig Rate", "Rig Rate Δ",
+        "Solo Rigs", "Solo Rig Rate",
+        "Over-8 Δ", "Rig GR", "Rig Δ",
+        "Off GR", "Off Δ", "Rig Surplus",
         "Median Vintage Hit", "Chant GR",
         "Mean Elo", "Mean GR", "Total 1/8s", "Rig Synergy",
         "Off Synergy", "Shared Rigs", "Win Record"

@@ -240,7 +240,7 @@ class TourAnalyzer:
                 name_col            = next((c for c in ["player name", "name"] if c in df_stats.columns), None)
 
                 if name_col and not df_stats.empty:
-                    stat_cols = ["guess rate", "usefulness", "op guess rate", "ed guess rate", "in guess rate", "rig %"]
+                    stat_cols = ["guess rate", "usefulness", "op guess rate", "ed guess rate", "in guess rate", "rig %", "onlist", "offlist"]
 
                     for col in stat_cols:
                         if col in df_stats.columns  : df_stats[col] = pd.to_numeric(df_stats[col].astype(str).str.replace("%", ""), errors = "coerce").fillna(0.0)
@@ -264,6 +264,8 @@ class TourAnalyzer:
                             "ED": r_row.get("ed guess rate",    0.0),
                             "IN": r_row.get("in guess rate",    0.0),
                             "RG": r_row.get("rig %",            0.0),
+                            "ON": r_row.get("onlist",           0.0),
+                            "OF": r_row.get("offlist",          0.0),
                         }
 
                         name_profile_map[raw_name]  = stats_data
@@ -305,8 +307,8 @@ class TourAnalyzer:
                         elif    p_low   in name_profile_map     : h_prof = name_profile_map[p_low]
                         elif    a_low   in name_profile_map     : h_prof = name_profile_map[a_low]
 
-                        if h_prof   : f_out.write(f"{p_name}, {alias_name}, {h_prof['GR']:.2f}, {h_prof['UF']:.2f}, {h_prof['OP']:.2f}, {h_prof['ED']:.2f}, {h_prof['IN']:.2f}, {h_prof['RG']:.2f}\n")
-                        else        : f_out.write(f"{p_name}, {alias_name}, N/A, N/A, N/A, N/A, N/A, N/A\n")
+                        if h_prof   : f_out.write(f"{p_name}, {alias_name}, {h_prof['GR']:.2f}, {h_prof['UF']:.2f}, {h_prof['OP']:.2f}, {h_prof['ED']:.2f}, {h_prof['IN']:.2f}, {h_prof['RG']:.2f}, {h_prof['ON']:.2f}, {h_prof['OF']:.2f}\n")
+                        else        : f_out.write(f"{p_name}, {alias_name}, N/A, N/A, N/A, N/A, N/A, N/A, N/A, N/A\n")
 
                 print("[✓] Historic baselines saved to alias.txt")
             except Exception as e:
